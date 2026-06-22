@@ -1,0 +1,18 @@
+[package]
+name = "rxchef_tui"
+version = "1.1.0"
+edition = "2021"
+description = "Interactive terminal interface for rxchef"
+license = "Apache-2.0"
+
+[[bin]]
+name = "rxchef_tui"
+path = "src/main.rs"
+
+[dependencies]
+rxchef       = { path = "../.." }
+rxchef_store = { path = "../store" }
+ratatui      = "0.28"
+crossterm    = "0.27"
+serde_json   = "1"
+chrono       = "0.4"

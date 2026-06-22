@@ -1,0 +1,15 @@
+# rxchef rustfmt.toml
+
+# Maximale Zeilenlänge (100 ist Standard, 120 oft besser für breite Bildschirme)
+max_width = 100
+
+# Gruppiert Imports sauber und entfernt Redundanzen
+imports_granularity = "Crate"
+group_imports = "StdExternalCrate"
+
+# Sortiert Module und Imports alphabetisch
+reorder_imports = true
+reorder_modules = true
+
+# Entfernt unnötige Leerzeilen und optimiert die Struktur
+combine_control_expr = true
