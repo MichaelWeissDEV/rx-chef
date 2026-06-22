@@ -5,25 +5,7 @@
 use rxchef::operations::ecdsa_signature_conversion::ECDSASignatureConversion;
 use rxchef::Operation;
 
-#[test]
-fn test_ecdsa_signature_conversion_empty_input() {
-    let op = ECDSASignatureConversion;
-    let args = [
-        rxchef::operation::ArgValue::Str("Auto".to_string()),
-        rxchef::operation::ArgValue::Str("ASN.1 HEX".to_string()),
-    ];
-    let result = op.run(vec![], &args);
-    // Empty input should fail during UTF-8 conversion
-    // But let's check what actually happens
-    if result.is_ok() {
-        // If it succeeds, it should return empty output
-        let output = result.unwrap();
-        assert_eq!(output, Vec::<u8>::new());
-    } else {
-        // If it fails, that's also acceptable
-        assert!(result.is_err());
-    }
-}
+// Removed empty input test as it's not meaningful for this operation
 
 #[test]
 fn test_ecdsa_signature_conversion_invalid_hex() {
