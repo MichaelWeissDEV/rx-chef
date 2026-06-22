@@ -36,11 +36,13 @@ fn test_cartesian_product_three_sets() {
     assert!(result.is_ok(), "Cartesian product with three sets should succeed");
     if let Ok(output) = result {
         let output_str = String::from_utf8_lossy(&output);
-        eprintln!("Output: {}", output_str);
-        // Should have 2*2*2 = 8 combinations
-        let combinations: Vec<&str> = output_str.split(',').collect();
-        eprintln!("Combinations count: {}", combinations.len());
-        // assert_eq!(combinations.len(), 8, "Should have 8 combinations");
+        // Should have 2*2*2 = 8 combinations: (1,3,5),(1,3,6),(1,4,5),(1,4,6),(2,3,5),(2,3,6),(2,4,5),(2,4,6)
+        assert!(output_str.contains("(1,3,5)"), "Should contain (1,3,5)");
+        assert!(output_str.contains("(1,3,6)"), "Should contain (1,3,6)");
+        assert!(output_str.contains("(2,4,6)"), "Should contain (2,4,6)");
+        // Count the number of tuples (each starts with '(')
+        let tuple_count = output_str.matches('(').count();
+        assert_eq!(tuple_count, 8, "Should have 8 combinations");
     }
 }
 
