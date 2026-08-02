@@ -436,12 +436,22 @@ impl BombeMachine {
         machine.scramblers = scramblers_indices;
         machine.test_register = a2i(nodes[most_connected_idx].letter);
 
-        let first_edge_idx = nodes[most_connected_idx].edges[0];
-        let first_edge = &edges[first_edge_idx];
-        let other_node_idx = if first_edge.node1 == most_connected_idx {
-            first_edge.node2
+        // Safely get the first edge if it exists
+        let other_node_idx = if let Some(&first_edge_idx) = nodes[most_connected_idx].edges.first() {
+            if first_edge_idx < edges.len() {
+                let first_edge = &edges[first_edge_idx];
+                if first_edge.node1 == most_connected_idx {
+                    first_edge.node2
+                } else {
+                    first_edge.node1
+                }
+            } else {
+                // Edge index out of bounds, use the same node
+                most_connected_idx
+            }
         } else {
-            first_edge.node1
+            // If no edges, use the same node (shouldn't happen in normal operation)
+            most_connected_idx
         };
         machine.test_input = [machine.test_register, a2i(nodes[other_node_idx].letter)];
 
