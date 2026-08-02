@@ -11,12 +11,14 @@ Load precedence: project overrides global when names conflict.
 pub mod history;
 pub mod models;
 mod paths;
+mod project;
 mod recipe;
 mod vars;
 
 pub use history::{append_history, clear_history, get_history, list_history, new_history_id};
 pub use models::{bytes_preview, HistoryEntry, HistoryStep, Recipe, RecipeStep, Variable};
 pub use paths::{global_dir, project_dir, Scope};
+pub use project::{Project, ProjectCheckpoint, ProjectData, load_project, save_project};
 pub use recipe::{
     delete_recipe, export_recipe, import_recipe, list_recipes, load_recipe, save_recipe, RecipeMeta,
 };

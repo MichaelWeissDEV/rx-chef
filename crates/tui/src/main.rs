@@ -115,6 +115,8 @@ enum Mode {
     LoadPrompt,
     LoadPicker,
     TraceView,
+    CheckpointsList,
+    CheckpointSavePrompt,
 }
 
 struct App {
@@ -122,6 +124,7 @@ struct App {
     pipeline: Vec<PipelineStep>,
     selected: usize,
     input_text: String,
+    checkpoints: Vec<TuiCheckpoint>,
     results: Vec<StepResult>,
     status: String,
 
@@ -145,6 +148,8 @@ struct App {
     // Recipe picker
     recipe_list: Vec<String>,
     recipe_list_state: ListState,
+
+    checkpoint_list_state: ListState,
 
     // Trace view scroll
     trace_scroll: u16,
@@ -173,6 +178,8 @@ impl App {
             output_step_view: 0,
             recipe_list: Vec::new(),
             recipe_list_state: ListState::default(),
+            checkpoints: Vec::new(),
+            checkpoint_list_state: ListState::default(),
             trace_scroll: 0,
         }
     }
@@ -427,6 +434,32 @@ impl App {
             .unwrap_or("?");
         format!("step {}/{}: {}", idx + 1, self.pipeline.len(), step_name)
     }
+
+    fn save_checkpoint(&mut self, name: &str) {
+        self.checkpoints.push(TuiCheckpoint {
+            name: name.to_string(),
+            pipeline: self.pipeline.clone(),
+            input_text: self.input_text.clone(),
+        });
+        self.status = format!("Checkpoint '{}' saved.", name);
+    }
+
+    fn restore_checkpoint(&mut self, idx: usize) {
+        if let Some(cp) = self.checkpoints.get(idx).cloned() {
+            self.pipeline = cp.pipeline;
+            self.input_text = cp.input_text;
+            self.selected = 0;
+            self.status = format!("Restored checkpoint '{}'.", cp.name);
+            self.run_pipeline();
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+struct TuiCheckpoint {
+    name: String,
+    pipeline: Vec<PipelineStep>,
+    input_text: String,
 }
 
 // ─── UI rendering ─────────────────────────────────────────────────────────────
@@ -472,9 +505,10 @@ fn ui(f: &mut Frame, app: &mut App) {
         Mode::AddStep => render_add_overlay(f, app, size),
         Mode::EditArgs => render_edit_args_overlay(f, app, size),
         Mode::Help => render_help_overlay(f, size),
-        Mode::SavePrompt | Mode::LoadPrompt => render_file_prompt(f, app, size),
+        Mode::SavePrompt | Mode::LoadPrompt | Mode::CheckpointSavePrompt => render_file_prompt(f, app, size),
         Mode::LoadPicker => render_load_picker(f, app, size),
         Mode::TraceView => render_trace_view(f, app, size),
+        Mode::CheckpointsList => render_checkpoints_list(f, app, size),
         _ => {}
     }
 }
@@ -616,7 +650,7 @@ fn render_step_selector(f: &mut Frame, app: &App, area: Rect) {
 fn render_status(f: &mut Frame, app: &App, area: Rect) {
     let keys = match app.mode {
         Mode::Normal => {
-            " [a]dd [d]el [e]dit [r]un [i]nput [t]race [←→]view [s]ave [l]oad [?]help [q]uit"
+            " [a]dd [d]el [e]dit [r]un [i]nput [t]race [←→]view [s]ave [l]oad [c]hkpts [C]save chkpt [?]help [q]uit"
         }
         Mode::AddStep => " type to search  [↑↓] select  [Enter] add  [Esc] cancel",
         Mode::EditArgs => " [Tab/↑↓] next arg  type to edit  [Enter] confirm  [Esc] cancel",
@@ -624,8 +658,9 @@ fn render_status(f: &mut Frame, app: &App, area: Rect) {
         Mode::Help => " [Esc/?/q] close help",
         Mode::SavePrompt => " enter name  [Enter] save  [Esc] cancel",
         Mode::LoadPrompt => " enter name  [Enter] load  [Esc] cancel",
-        Mode::LoadPicker => " [↑↓] select  [Enter] load  [Esc] cancel",
+        Mode::LoadPicker | Mode::CheckpointsList => " [↑↓] select  [Enter] load/restore  [Esc] cancel",
         Mode::TraceView => " [↑↓/PgUp/PgDn] scroll  [Esc/t/q] close",
+        Mode::CheckpointSavePrompt => " enter checkpoint name  [Enter] save  [Esc] cancel",
     };
 
     let status = format!("{}  │  {}", app.status, keys);
@@ -696,6 +731,8 @@ fn render_help_overlay(f: &mut Frame, area: Rect) {
         "  ← / →       change output step view",
         "  s           save pipeline as JSON",
         "  l           load pipeline from JSON",
+        "  c           view/restore checkpoints",
+        "  C           save new checkpoint",
         "  ? / q       quit / close help",
         "",
         "ADD MODE",
@@ -725,6 +762,8 @@ fn render_file_prompt(f: &mut Frame, app: &App, area: Rect) {
     let overlay = centered_rect(50, 12, area);
     let title = if app.mode == Mode::SavePrompt {
         " Save recipe to file "
+    } else if app.mode == Mode::CheckpointSavePrompt {
+        " Save checkpoint "
     } else {
         " Load recipe from file "
     };
@@ -735,6 +774,8 @@ fn render_file_prompt(f: &mut Frame, app: &App, area: Rect) {
 
     let hint = if app.mode == Mode::SavePrompt {
         "Enter filename (e.g. recipe.json):"
+    } else if app.mode == Mode::CheckpointSavePrompt {
+        "Enter checkpoint name:"
     } else {
         "Enter filename to load:"
     };
@@ -894,9 +935,10 @@ fn handle_key(app: &mut App, key: KeyEvent) {
         Mode::EditArgs => handle_edit_args(app, key),
         Mode::EditInput => handle_edit_input(app, key),
         Mode::Help => handle_help(app, key),
-        Mode::SavePrompt | Mode::LoadPrompt => handle_file_prompt(app, key),
+        Mode::SavePrompt | Mode::LoadPrompt | Mode::CheckpointSavePrompt => handle_file_prompt(app, key),
         Mode::LoadPicker => handle_load_picker(app, key),
         Mode::TraceView => handle_trace_view(app, key),
+        Mode::CheckpointsList => handle_checkpoints_list(app, key),
     }
 }
 
@@ -930,6 +972,18 @@ fn handle_normal(app: &mut App, key: KeyEvent) {
                 app.recipe_list = names;
                 app.recipe_list_state.select(Some(0));
                 app.mode = Mode::LoadPicker;
+            }
+        }
+        (KeyCode::Char('C'), KeyModifiers::SHIFT) => {
+            app.file_prompt.clear();
+            app.mode = Mode::CheckpointSavePrompt;
+        }
+        (KeyCode::Char('c'), KeyModifiers::NONE) => {
+            if !app.checkpoints.is_empty() {
+                app.checkpoint_list_state.select(Some(0));
+                app.mode = Mode::CheckpointsList;
+            } else {
+                app.status = "No checkpoints saved yet. Press (C) to save one.".into();
             }
         }
         (KeyCode::Char('t'), _) => {
@@ -1109,6 +1163,8 @@ fn handle_file_prompt(app: &mut App, key: KeyEvent) {
             }
             if app.mode == Mode::SavePrompt {
                 app.save_recipe(&path);
+            } else if app.mode == Mode::CheckpointSavePrompt {
+                app.save_checkpoint(&path);
             } else {
                 app.load_recipe(&path);
             }
@@ -1120,6 +1176,63 @@ fn handle_file_prompt(app: &mut App, key: KeyEvent) {
         KeyCode::Char(c) => app.file_prompt.push(c),
         _ => {}
     }
+}
+
+fn handle_checkpoints_list(app: &mut App, key: KeyEvent) {
+    match key.code {
+        KeyCode::Esc => app.mode = Mode::Normal,
+        KeyCode::Enter => {
+            if let Some(idx) = app.checkpoint_list_state.selected() {
+                app.restore_checkpoint(idx);
+            }
+            app.mode = Mode::Normal;
+        }
+        KeyCode::Down | KeyCode::Char('j') => {
+            let max = app.checkpoints.len().saturating_sub(1);
+            let next = app
+                .checkpoint_list_state
+                .selected()
+                .unwrap_or(0)
+                .saturating_add(1)
+                .min(max);
+            app.checkpoint_list_state.select(Some(next));
+        }
+        KeyCode::Up | KeyCode::Char('k') => {
+            let prev = app
+                .checkpoint_list_state
+                .selected()
+                .unwrap_or(0)
+                .saturating_sub(1);
+            app.checkpoint_list_state.select(Some(prev));
+        }
+        _ => {}
+    }
+}
+
+fn render_checkpoints_list(f: &mut Frame, app: &mut App, area: Rect) {
+    let overlay = centered_rect(50, 60, area);
+    let block = Block::default()
+        .title(format!(" Checkpoints ({}) ", app.checkpoints.len()))
+        .borders(Borders::ALL)
+        .border_style(Style::default().fg(Color::Cyan));
+
+    let items: Vec<ListItem> = app
+        .checkpoints
+        .iter()
+        .map(|cp| ListItem::new(cp.name.as_str()))
+        .collect();
+
+    let list = List::new(items)
+        .block(block)
+        .highlight_style(
+            Style::default()
+                .fg(Color::Black)
+                .bg(Color::Cyan)
+                .add_modifier(Modifier::BOLD),
+        )
+        .highlight_symbol("▶ ");
+
+    f.render_stateful_widget(list, overlay, &mut app.checkpoint_list_state);
 }
 
 // ─── Layout helpers ───────────────────────────────────────────────────────────

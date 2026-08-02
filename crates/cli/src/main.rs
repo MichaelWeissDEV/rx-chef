@@ -86,6 +86,8 @@ enum Command {
     Magic(MagicArgs),
     /// Scan files or streams for encoded/high-entropy strings and auto-decode.
     Scan(ScanArgs),
+    /// Load and run full CTF projects (YAML/JSON) with data, vars, and pipelines.
+    Project(ProjectArgs),
 }
 
 // ─── List ─────────────────────────────────────────────────────────────────────
@@ -455,6 +457,25 @@ struct ScanArgs {
     json: bool,
 }
 
+// ─── Project ──────────────────────────────────────────────────────────────────
+
+#[derive(Debug, Args)]
+struct ProjectArgs {
+    #[command(subcommand)]
+    action: ProjectAction,
+}
+
+#[derive(Debug, Subcommand)]
+enum ProjectAction {
+    /// Run a CTF project file (YAML/JSON).
+    Run {
+        /// Project file path
+        file: PathBuf,
+        #[arg(short, long)]
+        trace: bool,
+    },
+}
+
 // ─── Entry point ─────────────────────────────────────────────────────────────
 
 fn main() {
@@ -473,9 +494,9 @@ fn run() -> Result<(), String> {
         Command::Recipe(a) => cmd_recipe(a),
         Command::Pipeline(a) => cmd_pipeline(a),
         Command::Var(a) => cmd_var(a),
-        Command::History(a) => cmd_history(a),
         Command::Magic(a) => cmd_magic(a),
         Command::Scan(a) => cmd_scan(a),
+        Command::Project(a) => cmd_project(a),
     }
 }
 
@@ -1607,6 +1628,40 @@ fn write_output_raw<W: Write>(output: &[u8], hex: bool, w: &mut W) -> Result<(),
                 }
                 w.write_all(b"\n").map_err(|e| e.to_string())
             }
+        }
+    }
+}
+
+// ─── Project ──────────────────────────────────────────────────────────────────
+
+fn cmd_project(a: ProjectArgs) -> Result<(), String> {
+    match a.action {
+        ProjectAction::Run { file, trace } => {
+            let project = store::load_project(&file).map_err(|e| format!("Failed to load project: {}", e))?;
+            
+            let input_bytes = match project.data {
+                Some(store::ProjectData::Inline { inline }) => inline.into_bytes(),
+                Some(store::ProjectData::File { file: path }) => {
+                    let base_dir = file.parent().unwrap_or(std::path::Path::new(""));
+                    std::fs::read(base_dir.join(path)).map_err(|e| e.to_string())?
+                },
+                None => Vec::new(),
+            };
+            
+            let steps: Vec<_> = project.pipeline.iter().map(|s| Step {
+                op: s.op.clone(),
+                args: s.args.clone(),
+            }).collect();
+            
+            let mut overrides = std::collections::HashMap::new();
+            for (k, v) in project.variables.iter() {
+                overrides.insert(k.clone(), v.clone());
+            }
+            
+            let result = run_steps(&steps, input_bytes.clone(), &overrides, trace, false)?;
+            write_output(&result.final_output, false)?;
+            
+            Ok(())
         }
     }
 }
