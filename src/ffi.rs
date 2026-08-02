@@ -135,7 +135,7 @@ pub unsafe extern "C" fn rxchef_magic(input_data: *const c_uchar, input_len: usi
     } else {
         &[]
     };
-    let results = crate::magic::analyze_input(input);
+    let results = crate::magic::magic(input, &crate::magic::MagicOptions::default());
     let json = serde_json::to_string(&results).unwrap_or_default();
     CString::new(json).unwrap_or_default().into_raw()
 }

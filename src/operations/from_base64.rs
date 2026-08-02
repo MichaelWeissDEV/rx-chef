@@ -9,7 +9,11 @@
  * -----------------------------------------------------------------------------
  */
 
-use base64::{alphabet, engine, engine::general_purpose, Engine as _};
+use base64::{
+    alphabet,
+    engine::{DecodePaddingMode, GeneralPurpose, GeneralPurposeConfig},
+    Engine as _,
+};
 
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
 
@@ -67,7 +71,7 @@ impl Operation for FromBase64 {
             .and_then(|v| v.as_str())
             .unwrap_or("A-Za-z0-9+/=");
         let remove_non_alph = args.get(1).and_then(|v| v.as_bool()).unwrap_or(true);
-        // Strict mode is ignored for now as we use the base64 crate's defaults
+        let strict = args.get(2).and_then(|v| v.as_bool()).unwrap_or(false);
 
         let alphabet_str = expand_alphabet(alphabet_arg);
 
@@ -80,21 +84,6 @@ impl Operation for FromBase64 {
             input_str
         };
 
-        // Handle standard alphabet specially for performance
-        if alphabet_str == "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/" {
-            return general_purpose::STANDARD
-                .decode(clean_input.trim())
-                .map_err(|e| OperationError::InvalidInput(format!("Base64 decode failed: {}", e)));
-        }
-
-        // Handle URL safe alphabet specially
-        if alphabet_str == "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_" {
-            return general_purpose::URL_SAFE
-                .decode(clean_input.trim())
-                .map_err(|e| OperationError::InvalidInput(format!("Base64 decode failed: {}", e)));
-        }
-
-        // Custom alphabet
         if alphabet_str.len() != 64 {
             return Err(OperationError::InvalidArgument {
                 name: "Alphabet".to_string(),
@@ -105,18 +94,25 @@ impl Operation for FromBase64 {
             });
         }
 
-        let mut alphabet_bytes = [0u8; 64];
-        alphabet_bytes.copy_from_slice(alphabet_str.as_bytes());
-        let custom_alphabet =
-            alphabet::Alphabet::new(std::str::from_utf8(&alphabet_bytes).map_err(|e| {
-                OperationError::InvalidInput(format!("invalid UTF-8 in alphabet: {}", e))
-            })?)
-            .map_err(|e| OperationError::InvalidArgument {
+        let custom_alphabet = alphabet::Alphabet::new(&alphabet_str).map_err(|e| {
+            OperationError::InvalidArgument {
                 name: "Alphabet".to_string(),
                 reason: format!("Invalid alphabet: {}", e),
-            })?;
+            }
+        })?;
 
-        let engine = engine::GeneralPurpose::new(&custom_alphabet, general_purpose::PAD);
+        // In strict mode require canonical padding; otherwise decode forgivingly
+        // (accept missing padding and non-zero trailing bits), matching the
+        // behaviour of CyberChef's non-strict From Base64.
+        let config = if strict {
+            GeneralPurposeConfig::new()
+                .with_decode_padding_mode(DecodePaddingMode::RequireCanonical)
+        } else {
+            GeneralPurposeConfig::new()
+                .with_decode_padding_mode(DecodePaddingMode::Indifferent)
+                .with_decode_allow_trailing_bits(true)
+        };
+        let engine = GeneralPurpose::new(&custom_alphabet, config);
 
         engine
             .decode(clean_input.trim())

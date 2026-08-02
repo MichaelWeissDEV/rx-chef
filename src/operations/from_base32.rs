@@ -75,6 +75,15 @@ impl Operation for FromBase32 {
             input_str
         };
 
+        // Normalise padding: strip any `=` then re-pad to a multiple of 8 so
+        // both correctly-padded and unpadded Base32 decode (the scanner and
+        // other tools routinely produce unpadded tokens).
+        let mut clean_input: String = clean_input.trim().chars().filter(|&c| c != '=').collect();
+        let rem = clean_input.len() % 8;
+        if rem != 0 {
+            clean_input.push_str(&"=".repeat(8 - rem));
+        }
+
         let mut spec = Specification::new();
         spec.symbols = alphabet_str;
         spec.padding = Some('=');

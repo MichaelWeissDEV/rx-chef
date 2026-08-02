@@ -24,7 +24,14 @@ rxchef pipe "aes_encrypt,$KEY,$IV,CBC" --input Hello
 
 rxchef history list                      # show run history
 rxchef history show <id>
-rxchef magic --input "SGVsbG8="         # auto-suggest operations
+
+rxchef magic --input "U0dWc2JHOD0="     # recursively detect + decode
+rxchef magic --input "…" --decode        # print best plaintext only (pipe-friendly)
+rxchef magic --input "…" --crib SECRET   # rank decodes matching a known string
+
+rxchef scan dump.bin --decode            # find + decode encoded strings in a file
+rxchef scan ./logs -r --decode --json    # recurse a dir, emit NDJSON for jq/grep
+cat huge.pcap | rxchef scan --entropy 4.5 # stream stdin, flag high-entropy blobs
 ```
 */
 
@@ -75,8 +82,10 @@ enum Command {
     Var(VarArgs),
     /// Browse and replay run history.
     History(HistoryArgs),
-    /// Analyze input and suggest operations.
+    /// Analyze input: recursively detect and decode encoded/encrypted data.
     Magic(MagicArgs),
+    /// Scan files or streams for encoded/high-entropy strings and auto-decode.
+    Scan(ScanArgs),
 }
 
 // ─── List ─────────────────────────────────────────────────────────────────────
@@ -393,6 +402,55 @@ struct MagicArgs {
     input: Option<String>,
     #[arg(short = 'f', long, value_name = "PATH", conflicts_with = "input")]
     input_file: Option<PathBuf>,
+    /// Maximum recursion depth (chained decodes).
+    #[arg(short, long, default_value = "3")]
+    depth: usize,
+    /// Known-plaintext filter (substring/regex); matching candidates rank first.
+    #[arg(long, value_name = "REGEX")]
+    crib: Option<String>,
+    /// Try aggressive decoders too (ROT13, Base58/85).
+    #[arg(long)]
+    intensive: bool,
+    /// Print only the best decoded output (raw, pipe-friendly).
+    #[arg(long)]
+    decode: bool,
+    /// Output as hex when using --decode.
+    #[arg(long)]
+    hex: bool,
+    /// Output as JSON.
+    #[arg(short, long)]
+    json: bool,
+}
+
+// ─── Scan ─────────────────────────────────────────────────────────────────────
+
+#[derive(Debug, Args)]
+struct ScanArgs {
+    /// Files or directories to scan. Omit to read from stdin.
+    #[arg(value_name = "PATH")]
+    paths: Vec<PathBuf>,
+    /// Recurse into directories.
+    #[arg(short, long)]
+    recursive: bool,
+    /// Minimum token length to consider.
+    #[arg(long, default_value = "16")]
+    min_len: usize,
+    /// Attempt to decode each finding via the magic engine.
+    #[arg(short, long)]
+    decode: bool,
+    /// Recursion depth when decoding.
+    #[arg(long, default_value = "3")]
+    depth: usize,
+    /// Only report findings whose decode matches this crib (regex; implies --decode).
+    #[arg(long, value_name = "REGEX")]
+    crib: Option<String>,
+    /// Also report tokens with entropy >= this (bits/byte), even if no decoder fired.
+    #[arg(long, value_name = "BITS")]
+    entropy: Option<f64>,
+    /// Restrict to these encodings, comma-separated (e.g. base64,hex).
+    #[arg(long, value_delimiter = ',', value_name = "KIND")]
+    kind: Vec<String>,
+    /// Emit newline-delimited JSON (one finding per line), ideal for jq/grep.
     #[arg(short, long)]
     json: bool,
 }
@@ -417,6 +475,7 @@ fn run() -> Result<(), String> {
         Command::Var(a) => cmd_var(a),
         Command::History(a) => cmd_history(a),
         Command::Magic(a) => cmd_magic(a),
+        Command::Scan(a) => cmd_scan(a),
     }
 }
 
@@ -1119,34 +1178,201 @@ fn cmd_history(a: HistoryArgs) -> Result<(), String> {
 // ─── Magic ────────────────────────────────────────────────────────────────────
 
 fn cmd_magic(a: MagicArgs) -> Result<(), String> {
+    use rxchef::magic::{magic, MagicOptions};
+
     let input = load_input_from(a.input, a.input_file, &[])?.bytes;
-    let results = rxchef::magic::analyze_input(&input);
-    if results.is_empty() {
-        println!("No operation suggestions.");
-        return Ok(());
+    let crib = match &a.crib {
+        Some(c) => {
+            Some(regex::Regex::new(c).map_err(|e| format!("invalid crib regex '{c}': {e}"))?)
+        }
+        None => None,
+    };
+    let opts = MagicOptions {
+        depth: a.depth,
+        crib,
+        intensive: a.intensive,
+        max_results: 20,
+    };
+    let results = magic(&input, &opts);
+
+    // --decode: emit only the winning plaintext, raw. Nothing else on stdout.
+    if a.decode {
+        return match results.first() {
+            Some(m) => write_output(&m.data, a.hex),
+            None => Err("magic: no decoding found".into()),
+        };
     }
+
     if a.json {
-        let v: Vec<_> = results
-            .iter()
-            .map(|r| {
-                serde_json::json!({
-                    "op": r.op_name, "confidence": r.confidence, "description": r.description
-                })
-            })
-            .collect();
-        println!("{}", serde_json::to_string_pretty(&v).unwrap());
+        println!("{}", serde_json::to_string_pretty(&results).unwrap());
         return Ok(());
     }
-    println!("Suggested operations:\n");
-    for r in &results {
+
+    if results.is_empty() {
+        println!("No candidate decodings found.");
+        if !input.is_empty() {
+            eprintln!(
+                "hint: try --intensive for aggressive decoders, or --depth for deeper chains"
+            );
+        }
+        return Ok(());
+    }
+
+    println!("{} candidate decoding(s), best first:\n", results.len());
+    for (i, m) in results.iter().enumerate() {
+        let recipe = format_recipe(&m.recipe);
+        let crib_tag = if m.matched_crib { "  ✓crib" } else { "" };
         println!(
-            "  {:<28}  {:>3.0}%  {}",
-            r.op_name,
-            r.confidence * 100.0,
-            r.description
+            "{:>2}. {}  [entropy {:.2}]{}",
+            i + 1,
+            recipe,
+            m.entropy,
+            crib_tag
         );
+        println!("    {}", m.preview);
+    }
+    eprintln!("\nRe-run one recipe with:  rxchef pipe \"...\" --input <data>");
+    Ok(())
+}
+
+fn format_recipe(steps: &[rxchef::magic::RecipeStep]) -> String {
+    steps
+        .iter()
+        .map(|s| {
+            if s.args.is_empty() {
+                s.op.clone()
+            } else {
+                format!("{}({})", s.op, s.args.join(","))
+            }
+        })
+        .collect::<Vec<_>>()
+        .join(" → ")
+}
+
+// ─── Scan ─────────────────────────────────────────────────────────────────────
+
+fn cmd_scan(a: ScanArgs) -> Result<(), String> {
+    use rxchef::scan::{ScanOptions, Scanner};
+
+    let crib = match &a.crib {
+        Some(c) => {
+            Some(regex::Regex::new(c).map_err(|e| format!("invalid crib regex '{c}': {e}"))?)
+        }
+        None => None,
+    };
+    let opts = ScanOptions {
+        min_len: a.min_len,
+        max_len: 1 << 20,
+        decode: a.decode,
+        depth: a.depth,
+        crib,
+        min_entropy: a.entropy.unwrap_or(0.0),
+        only_kinds: a.kind.clone(),
+    };
+
+    let stdout = io::stdout();
+    let mut out = stdout.lock();
+    let mut total = 0usize;
+
+    // Collect the source list: explicit paths (walked) or stdin.
+    let mut sources: Vec<Option<PathBuf>> = Vec::new();
+    if a.paths.is_empty() {
+        sources.push(None); // stdin
+    } else {
+        for p in &a.paths {
+            collect_paths(p, a.recursive, &mut sources)?;
+        }
+    }
+
+    for src in sources {
+        let label = src
+            .as_ref()
+            .map(|p| p.display().to_string())
+            .unwrap_or_else(|| "<stdin>".to_string());
+
+        let reader: Box<dyn Read> = match &src {
+            Some(p) => Box::new(
+                fs::File::open(p).map_err(|e| format!("cannot open '{}': {e}", p.display()))?,
+            ),
+            None => Box::new(io::stdin().lock()),
+        };
+        let mut reader = io::BufReader::with_capacity(64 * 1024, reader);
+
+        let mut scanner = Scanner::new(opts.clone());
+        let mut buf = vec![0u8; 64 * 1024];
+        let mut emit = |f: rxchef::scan::Finding| {
+            total += 1;
+            print_finding(&mut out, &label, &f, a.json);
+        };
+        loop {
+            let n = reader
+                .read(&mut buf)
+                .map_err(|e| format!("read error on '{label}': {e}"))?;
+            if n == 0 {
+                break;
+            }
+            scanner.push(&buf[..n], &mut emit);
+        }
+        scanner.finish(&mut emit);
+    }
+
+    eprintln!("\n{} finding(s)", total);
+    Ok(())
+}
+
+/// Expand a path into a list of files to scan, walking directories.
+fn collect_paths(
+    path: &std::path::Path,
+    recursive: bool,
+    out: &mut Vec<Option<PathBuf>>,
+) -> Result<(), String> {
+    let meta = fs::metadata(path).map_err(|e| format!("cannot stat '{}': {e}", path.display()))?;
+    if meta.is_dir() {
+        let entries =
+            fs::read_dir(path).map_err(|e| format!("cannot read dir '{}': {e}", path.display()))?;
+        let mut children: Vec<PathBuf> = entries.filter_map(|e| e.ok().map(|e| e.path())).collect();
+        children.sort();
+        for child in children {
+            if child.is_dir() {
+                if recursive {
+                    collect_paths(&child, recursive, out)?;
+                }
+            } else {
+                out.push(Some(child));
+            }
+        }
+    } else {
+        out.push(Some(path.to_path_buf()));
     }
     Ok(())
+}
+
+fn print_finding<W: Write>(w: &mut W, file: &str, f: &rxchef::scan::Finding, json: bool) {
+    if json {
+        let mut v = serde_json::to_value(f).unwrap_or(serde_json::json!({}));
+        v["file"] = serde_json::json!(file);
+        let _ = writeln!(w, "{}", serde_json::to_string(&v).unwrap());
+    } else {
+        let kinds = if f.kinds.is_empty() {
+            "high-entropy".to_string()
+        } else {
+            f.kinds.join(",")
+        };
+        let _ = writeln!(
+            w,
+            "{}:{}  [{}]  entropy {:.2}  len {}",
+            file, f.offset, kinds, f.entropy, f.len
+        );
+        let _ = writeln!(w, "    token:  {}", f.token);
+        if let Some(dec) = &f.decoded {
+            let recipe = f
+                .recipe
+                .as_ref()
+                .map(|r| format_recipe(r))
+                .unwrap_or_default();
+            let _ = writeln!(w, "    decode: {}  [{}]", dec, recipe);
+        }
+    }
 }
 
 // ─── Pipeline execution helpers ───────────────────────────────────────────────

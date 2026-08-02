@@ -15,6 +15,7 @@ pub mod operation;
 pub mod operations;
 pub mod pipeline;
 pub mod runtime;
+pub mod scan;
 
 pub use operation::{ArgSchema, ArgValue, DataType, Operation, OperationData, OperationError};
 pub use pipeline::{Pipeline, PipelineError};

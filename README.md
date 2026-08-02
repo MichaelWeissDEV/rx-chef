@@ -14,7 +14,12 @@ This is a **work in progress**. Things may break, APIs may change, and not every
 - Interactive TUI for building and running pipelines visually
 - FFI interface (C-compatible) for integration with other languages
 - Pipeline engine with automatic type coercion between steps
-- Magic module for auto-detecting input encoding
+- **Magic** — a recursive detect-and-decode engine that peels back chained
+  encodings (e.g. double Base64 → plaintext) and ranks candidates by entropy,
+  printability and an optional known-plaintext crib
+- **Scan** — a streaming scanner that finds (and optionally decodes) encoded or
+  high-entropy strings across large files, whole directories, or piped stdin,
+  emitting newline-delimited JSON for `jq`/`grep` pipelines
 
 ## Requirements
 
@@ -145,11 +150,70 @@ cargo run -p rxchef_cli -- var list
 
 Variables are expanded in pipeline arguments via `$KEY` syntax.
 
-### Magic (auto-detect)
+### Magic (recursive detect + decode)
+
+`magic` recursively tries the operations that fit the input, decodes, and
+recurses — so layered encodings unwrap in one shot. Results are ranked best
+first (higher printability / lower entropy / crib match wins).
 
 ```bash
-cargo run -p rxchef_cli -- magic --input "SGVsbG8gV29ybGQ="
+# Double Base64 → recovers "Hello" through both layers
+rxchef magic --input "U0dWc2JHOD0="
+
+# Print only the winning plaintext (raw, pipe-friendly)
+rxchef magic --input "U0dWc2JHOD0=" --decode
+
+# Rank decodes that contain a known string first
+rxchef magic --input "…" --crib "flag{"
+
+# Aggressive decoders (ROT13, Base58/85) and deeper chains
+rxchef magic --input "…" --intensive --depth 5
 ```
+
+Because `--decode` writes only the recovered bytes to stdout, `magic` composes
+like any other filter:
+
+```bash
+echo -n "SGVsbG8gV29ybGQ=" | rxchef magic --decode | rxchef run "To Upper Case"
+```
+
+### Scan (find encoded strings in files and streams)
+
+`scan` walks files, directories (`-r`), or stdin, extracts candidate tokens,
+classifies them, and (with `--decode`) runs the Magic engine on each. It streams
+in chunks — a token that straddles a read boundary is stitched back together —
+so it handles GB-scale PCAPs and RAM dumps without loading them into memory.
+
+```bash
+# Find and decode encoded strings in a binary
+rxchef scan dump.bin --decode
+
+# Recurse a directory and emit NDJSON, one finding per line, for jq
+rxchef scan ./logs -r --decode --json | jq 'select(.kinds[]=="From Hex")'
+
+# Stream stdin and flag high-entropy blobs (possible keys / ciphertext)
+cat memory.dump | rxchef scan --entropy 4.5
+
+# Only report findings whose decode matches a crib, across many files
+rxchef scan ./captures -r --crib "password"
+
+# Restrict to specific encodings
+rxchef scan dump.bin --kind base64,hex --min-len 24
+```
+
+Data goes to stdout; progress and the finding count go to stderr, so pipelines
+stay clean.
+
+**Notes and current limitations:**
+
+- Standard and URL-safe Base64, Base32, Hex, and JWT segments are all detected.
+  Run `magic` directly on a whole JWT (`header.payload.signature`) for a single
+  structured decode; `scan` catches the `eyJ…` header/payload segments as they
+  stream past and decodes each to JSON.
+- Memory stays bounded on huge inputs (chunked reads + a per-token size cap),
+  but `--decode` runs the full Magic engine on every candidate token, so on
+  multi-GB dumps prefer a first pass *without* `--decode` (or narrow with
+  `--kind` / `--min-len` / `--entropy`) and decode the interesting hits after.
 
 ### Recipe files
 

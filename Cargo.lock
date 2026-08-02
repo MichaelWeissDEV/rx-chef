@@ -5596,6 +5596,7 @@ dependencies = [
  "base64",
  "chrono",
  "clap 4.6.1",
+ "regex",
  "rxchef",
  "rxchef_store",
  "serde_json",

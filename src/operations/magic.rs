@@ -9,27 +9,11 @@
  * -----------------------------------------------------------------------------
  */
 
-use serde::{Deserialize, Serialize};
-
+use crate::magic::{magic as run_magic, MagicOptions};
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
 
 /// Magic operation
 pub struct Magic;
-
-#[derive(Serialize, Deserialize)]
-struct MagicResult {
-    recipe: Vec<RecipeStep>,
-    data: String,
-    entropy: f64,
-    matches_crib: bool,
-    // Add more fields as needed
-}
-
-#[derive(Serialize, Deserialize)]
-struct RecipeStep {
-    op: String,
-    args: Vec<String>,
-}
 
 impl Operation for Magic {
     fn name(&self) -> &'static str {
@@ -79,102 +63,30 @@ impl Operation for Magic {
     }
 
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
-        let _depth = args.first().and_then(|v| v.as_f64()).unwrap_or(3.0) as usize;
-        let _intensive = args.get(1).and_then(|v| v.as_bool()).unwrap_or(false);
-        let _ext_lang = args.get(2).and_then(|v| v.as_bool()).unwrap_or(false);
-        let crib = args.get(3).and_then(|v| v.as_str()).unwrap_or("");
+        let depth = args.first().and_then(|v| v.as_f64()).unwrap_or(3.0) as usize;
+        let intensive = args.get(1).and_then(|v| v.as_bool()).unwrap_or(false);
+        // args[2] "Extensive language support" is accepted for CyberChef parity
+        // but not yet used by the engine.
+        let crib_raw = args.get(3).and_then(|v| v.as_str()).unwrap_or("");
 
-        let entropy = calculate_entropy(&input);
+        let crib = if crib_raw.is_empty() {
+            None
+        } else {
+            Some(
+                regex::Regex::new(crib_raw).map_err(|e| OperationError::InvalidArgument {
+                    name: "Crib".to_string(),
+                    reason: format!("invalid crib regex: {e}"),
+                })?,
+            )
+        };
 
-        let mut results = Vec::new();
-
-        // Basic detection logic
-        if is_base64(&input) {
-            results.push(MagicResult {
-                recipe: vec![RecipeStep {
-                    op: "From Base64".to_string(),
-                    args: vec![],
-                }],
-                data: "Detected Base64".to_string(),
-                entropy,
-                matches_crib: crib.is_empty() || "Detected Base64".contains(crib),
-            });
-        }
-
-        if is_hex(&input) {
-            results.push(MagicResult {
-                recipe: vec![RecipeStep {
-                    op: "From Hex".to_string(),
-                    args: vec![],
-                }],
-                data: "Detected Hex".to_string(),
-                entropy,
-                matches_crib: crib.is_empty() || "Detected Hex".contains(crib),
-            });
-        }
-
-        if input.starts_with(&[0x1f, 0x8b]) {
-            results.push(MagicResult {
-                recipe: vec![RecipeStep {
-                    op: "Gunzip".to_string(),
-                    args: vec![],
-                }],
-                data: "Detected Gzip".to_string(),
-                entropy,
-                matches_crib: crib.is_empty() || "Detected Gzip".contains(crib),
-            });
-        }
-
+        let opts = MagicOptions {
+            depth,
+            crib,
+            intensive,
+            max_results: 20,
+        };
+        let results = run_magic(&input, &opts);
         serde_json::to_vec(&results).map_err(|e| OperationError::ProcessingError(e.to_string()))
     }
-}
-
-fn calculate_entropy(data: &[u8]) -> f64 {
-    if data.is_empty() {
-        return 0.0;
-    }
-    let mut counts = [0usize; 256];
-    for &b in data {
-        counts[b as usize] += 1;
-    }
-    let len = data.len() as f64;
-    let mut entropy = 0.0;
-    for &count in &counts {
-        if count > 0 {
-            let p = count as f64 / len;
-            entropy -= p * p.log2();
-        }
-    }
-    entropy
-}
-
-fn is_base64(data: &[u8]) -> bool {
-    if data.len() < 4 {
-        return false;
-    }
-    data.iter().all(|&b| {
-        (b >= b'A' && b <= b'Z')
-            || (b >= b'a' && b <= b'z')
-            || (b >= b'0' && b <= b'9')
-            || b == b'+'
-            || b == b'/'
-            || b == b'='
-            || b == b'\r'
-            || b == b'\n'
-    }) && data.len().is_multiple_of(4)
-}
-
-fn is_hex(data: &[u8]) -> bool {
-    if data.len() < 2 {
-        return false;
-    }
-    data.iter().all(|&b| {
-        (b >= b'0' && b <= b'9')
-            || (b >= b'a' && b <= b'f')
-            || (b >= b'A' && b <= b'F')
-            || b == b' '
-            || b == b'\r'
-            || b == b'\n'
-            || b == b':'
-    })
 }
