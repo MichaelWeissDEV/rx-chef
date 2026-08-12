@@ -1,9 +1,9 @@
-use std::collections::HashMap;
-use serde::{Deserialize, Serialize};
-use crate::models::{RecipeStep, Variable};
-use std::path::{Path, PathBuf};
+use crate::models::RecipeStep;
 use crate::StoreError;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::fs;
+use std::path::Path;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -63,8 +63,7 @@ pub fn save_project(project: &Project, path: &Path) -> Result<(), StoreError> {
         serde_yaml::to_string(project)?
     } else {
         serde_json::to_string_pretty(project)?
-    }
-    ;
+    };
     if let Some(parent) = path.parent() {
         fs::create_dir_all(parent)?;
     }

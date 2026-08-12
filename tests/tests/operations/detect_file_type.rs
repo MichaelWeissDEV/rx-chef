@@ -304,7 +304,7 @@ fn test_detect_file_type_multiple_matches() {
         rxchef::operation::ArgValue::Bool(true),
         rxchef::operation::ArgValue::Bool(true),
     ];
-    
+
     // Test with ZIP header (should only match ZIP)
     let zip_header = vec![0x50, 0x4B, 0x03, 0x04];
     let result = op.run(zip_header, &args).unwrap();

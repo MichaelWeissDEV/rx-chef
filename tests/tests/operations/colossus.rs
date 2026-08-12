@@ -44,7 +44,10 @@ fn test_colossus_invalid_characters() {
     // Use characters that are invalid even when uppercase
     let result = op.run("123@#$".as_bytes().to_vec(), &[]);
     assert!(result.is_err());
-    assert!(result.unwrap_err().to_string().contains("Invalid ITA2 character"));
+    assert!(result
+        .unwrap_err()
+        .to_string()
+        .contains("Invalid ITA2 character"));
 }
 
 #[test]

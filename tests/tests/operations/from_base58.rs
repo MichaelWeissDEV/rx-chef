@@ -9,7 +9,9 @@ use rxchef::Operation;
 fn test_from_base58_empty_input() {
     let op = FromBase58;
     let args = [
-        rxchef::operation::ArgValue::Str("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".to_string()),
+        rxchef::operation::ArgValue::Str(
+            "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".to_string(),
+        ),
         rxchef::operation::ArgValue::Bool(true),
     ];
     let result = op.run(vec![], &args).unwrap();
@@ -20,7 +22,9 @@ fn test_from_base58_empty_input() {
 fn test_from_base58_simple_decode() {
     let op = FromBase58;
     let args = [
-        rxchef::operation::ArgValue::Str("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".to_string()),
+        rxchef::operation::ArgValue::Str(
+            "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".to_string(),
+        ),
         rxchef::operation::ArgValue::Bool(true),
     ];
     // Simple Base58 encoding: "a" -> should decode to some bytes
@@ -34,7 +38,9 @@ fn test_from_base58_simple_decode() {
 fn test_from_base58_with_cleaning() {
     let op = FromBase58;
     let args = [
-        rxchef::operation::ArgValue::Str("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".to_string()),
+        rxchef::operation::ArgValue::Str(
+            "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".to_string(),
+        ),
         rxchef::operation::ArgValue::Bool(true), // Remove non-alphabet chars
     ];
     // Base58 with invalid characters
@@ -48,7 +54,9 @@ fn test_from_base58_with_cleaning() {
 fn test_from_base58_invalid_characters_no_cleaning() {
     let op = FromBase58;
     let args = [
-        rxchef::operation::ArgValue::Str("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".to_string()),
+        rxchef::operation::ArgValue::Str(
+            "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".to_string(),
+        ),
         rxchef::operation::ArgValue::Bool(false), // Don't remove non-alphabet chars
     ];
     // Base58 with invalid characters
@@ -62,7 +70,9 @@ fn test_from_base58_invalid_characters_no_cleaning() {
 fn test_from_base58_different_alphabet() {
     let op = FromBase58;
     let args = [
-        rxchef::operation::ArgValue::Str("rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz".to_string()),
+        rxchef::operation::ArgValue::Str(
+            "rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz".to_string(),
+        ),
         rxchef::operation::ArgValue::Bool(true),
     ];
     // Using Flickr alphabet

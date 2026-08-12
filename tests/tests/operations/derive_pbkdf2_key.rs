@@ -5,7 +5,13 @@
 use rxchef::operations::derive_pbkdf2_key::DerivePBKDF2Key;
 use rxchef::Operation;
 
-fn run(passphrase: &str, key_size: usize, iterations: usize, hash_func: &str, salt: &str) -> String {
+fn run(
+    passphrase: &str,
+    key_size: usize,
+    iterations: usize,
+    hash_func: &str,
+    salt: &str,
+) -> String {
     let op = DerivePBKDF2Key;
     let args = [
         rxchef::operation::ArgValue::Str(passphrase.to_string()),
@@ -49,7 +55,7 @@ fn test_derive_pbkdf2_different_iterations() {
 fn test_derive_pbkdf2_different_hash_functions() {
     // Test different hash functions
     let hash_functions = ["SHA1", "SHA256", "SHA384", "SHA512", "MD5"];
-    
+
     for hash_func in hash_functions {
         let result = run("password", 128, 1, hash_func, "salt");
         assert_eq!(result.len(), 32); // 128 bits = 32 hex characters
@@ -70,7 +76,7 @@ fn test_derive_pbkdf2_empty_salt() {
     // Test with empty salt (should generate random salt)
     let result1 = run("password", 128, 1, "SHA256", "");
     let result2 = run("password", 128, 1, "SHA256", "");
-    
+
     // Should produce different results due to random salts
     assert_ne!(result1, result2);
     assert_eq!(result1.len(), 32);
@@ -103,10 +109,13 @@ fn test_derive_pbkdf2_invalid_hash_function() {
         rxchef::operation::ArgValue::Str("INVALID".to_string()),
         rxchef::operation::ArgValue::Str("salt".to_string()),
     ];
-    
+
     let result = op.run(vec![], &args);
     assert!(result.is_err());
-    assert!(result.unwrap_err().to_string().contains("Unsupported hashing function"));
+    assert!(result
+        .unwrap_err()
+        .to_string()
+        .contains("Unsupported hashing function"));
 }
 
 #[test]
@@ -114,7 +123,7 @@ fn test_derive_pbkdf2_deterministic() {
     // Test that same inputs produce same outputs
     let result1 = run("password", 128, 1, "SHA256", "salt");
     let result2 = run("password", 128, 1, "SHA256", "salt");
-    
+
     assert_eq!(result1, result2); // Same inputs should produce same output
 }
 
@@ -123,7 +132,7 @@ fn test_derive_pbkdf2_different_salts() {
     // Test that different salts produce different outputs
     let result1 = run("password", 128, 1, "SHA256", "salt1");
     let result2 = run("password", 128, 1, "SHA256", "salt2");
-    
+
     assert_ne!(result1, result2); // Different salts should produce different outputs
 }
 

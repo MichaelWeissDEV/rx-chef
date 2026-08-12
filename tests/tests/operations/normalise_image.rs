@@ -27,9 +27,9 @@ fn test_normalise_image_error_handling() {
     let op = NormaliseImage;
     let invalid_data = vec![0xFF, 0xFF, 0xFF, 0xFF]; // Invalid image data
     let args = [];
-    
+
     let result = op.run(invalid_data, &args);
-    
+
     // Should return an error for invalid image data
     assert!(result.is_err());
     if let Err(e) = result {
@@ -42,9 +42,9 @@ fn test_normalise_image_unsupported_format() {
     let op = NormaliseImage;
     let unsupported_data = vec![0x47, 0x49, 0x46, 0x38]; // GIF signature
     let args = [];
-    
+
     let result = op.run(unsupported_data, &args);
-    
+
     // Should return an error for unsupported format
     assert!(result.is_err());
     if let Err(e) = result {
@@ -58,9 +58,9 @@ fn test_normalise_image_processing_error() {
     // Incomplete PNG header
     let incomplete_png = vec![0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A];
     let args = [];
-    
+
     let result = op.run(incomplete_png, &args);
-    
+
     // Should return an error for incomplete image
     assert!(result.is_err());
 }

@@ -39,9 +39,7 @@ fn test_extract_audio_metadata_with_filename() {
         rxchef::operation::ArgValue::Num(524288.0),
     ];
     // Minimal ID3 tag (just header)
-    let minimal_id3 = vec![
-        0x49, 0x44, 0x33, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    ];
+    let minimal_id3 = vec![0x49, 0x44, 0x33, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
     let result = op.run(minimal_id3, &args);
     // This will likely fail but we're testing the argument handling
     assert!(result.is_err());

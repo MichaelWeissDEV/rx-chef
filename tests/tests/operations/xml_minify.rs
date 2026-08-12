@@ -20,7 +20,9 @@ fn test_xml_minify_simple_xml() {
     let input = r#"<?xml version="1.0"?>
 <root>
     <child>Hello World</child>
-</root>"#.as_bytes().to_vec();
+</root>"#
+        .as_bytes()
+        .to_vec();
     let result = op.run(input, &args).unwrap();
     let result_str = String::from_utf8(result).unwrap();
     assert!(result_str.contains("<root>"));
@@ -39,7 +41,9 @@ fn test_xml_minify_with_comments() {
 <root>
     <child>Hello</child>
     <!-- Another comment -->
-</root>"#.as_bytes().to_vec();
+</root>"#
+        .as_bytes()
+        .to_vec();
     let result = op.run(input, &args).unwrap();
     let result_str = String::from_utf8(result).unwrap();
     // Comments should be removed
@@ -58,7 +62,9 @@ fn test_xml_minify_preserve_comments() {
 <!-- This is a comment -->
 <root>
     <child>Hello</child>
-</root>"#.as_bytes().to_vec();
+</root>"#
+        .as_bytes()
+        .to_vec();
     let result = op.run(input, &args).unwrap();
     let result_str = String::from_utf8(result).unwrap();
     // Comments should be preserved
@@ -83,7 +89,9 @@ fn test_xml_minify_complex_xml() {
         <title>Midnight Rain</title>
         <price>5.95</price>
     </book>
-</catalog>"#.as_bytes().to_vec();
+</catalog>"#
+        .as_bytes()
+        .to_vec();
     let result = op.run(input, &args).unwrap();
     let result_str = String::from_utf8(result).unwrap();
     // Should contain all elements
@@ -103,7 +111,9 @@ fn test_xml_minify_invalid_xml() {
     let invalid_xml = r#"<?xml version="1.0"?>
 <root>
     <unclosed>
-</root>"#.as_bytes().to_vec();
+</root>"#
+        .as_bytes()
+        .to_vec();
     let result = op.run(invalid_xml, &args);
     assert!(result.is_err());
 }
@@ -116,7 +126,9 @@ fn test_xml_minify_self_closing_tags() {
 <root>
     <selfclosing/>
     <empty></empty>
-</root>"#.as_bytes().to_vec();
+</root>"#
+        .as_bytes()
+        .to_vec();
     let result = op.run(input, &args).unwrap();
     let result_str = String::from_utf8(result).unwrap();
     assert!(result_str.contains("selfclosing"));
@@ -130,7 +142,9 @@ fn test_xml_minify_attributes() {
     let input = r#"<?xml version="1.0"?>
 <root>
     <element attr1="value1" attr2="value2">Content</element>
-</root>"#.as_bytes().to_vec();
+</root>"#
+        .as_bytes()
+        .to_vec();
     let result = op.run(input, &args).unwrap();
     let result_str = String::from_utf8(result).unwrap();
     assert!(result_str.contains("attr1=\"value1\""));
@@ -149,7 +163,9 @@ fn test_xml_minify_cdata() {
             return "Hello < World &";
         }
     ]]></script>
-</root>"#.as_bytes().to_vec();
+</root>"#
+        .as_bytes()
+        .to_vec();
     let result = op.run(input, &args).unwrap();
     let result_str = String::from_utf8(result).unwrap();
     // CDATA should be preserved
@@ -164,7 +180,9 @@ fn test_xml_minify_whitespace_preservation() {
     let input = r#"<?xml version="1.0"?>
 <root>
     <text>  Multiple   spaces  </text>
-</root>"#.as_bytes().to_vec();
+</root>"#
+        .as_bytes()
+        .to_vec();
     let result = op.run(input, &args).unwrap();
     let result_str = String::from_utf8(result).unwrap();
     // Text content should be trimmed

@@ -22,7 +22,7 @@ fn test_decode_netbios_basic_encoding() {
     // Test basic NetBIOS name decoding
     // The algorithm: each pair of bytes represents high and low nibbles
     // Each nibble has the offset subtracted, then combined: (high << 4) | (low & 0xf)
-    
+
     // Let's test a simple case with offset 65:
     // Input bytes: (70, 70)
     // high = 70 - 65 = 5, low = 70 - 65 = 5
@@ -36,7 +36,7 @@ fn test_decode_netbios_basic_encoding() {
 fn test_decode_netbios_offset_variation() {
     // Test with different offset values
     let input = vec![70, 70];
-    
+
     // Test offset 64
     let result = run(&input, 64);
     // high = 70 - 64 = 6, low = 70 - 64 = 6
@@ -115,7 +115,10 @@ fn test_decode_netbios_invalid_offset() {
     let args = [rxchef::operation::ArgValue::Str("invalid".to_string())]; // Invalid offset
     let result = op.run(input, &args);
     assert!(result.is_err());
-    assert!(result.unwrap_err().to_string().contains("Offset must be a number"));
+    assert!(result
+        .unwrap_err()
+        .to_string()
+        .contains("Offset must be a number"));
 }
 
 #[test]
@@ -145,8 +148,8 @@ fn test_decode_netbios_realistic_example() {
     // Test with values that might appear in real NetBIOS encoding
     // Using offset 65 (standard NetBIOS offset)
     let input = vec![
-        75, 74,  // Some encoded bytes
-        80, 79,  // More encoded bytes
+        75, 74, // Some encoded bytes
+        80, 79, // More encoded bytes
     ];
     let result = run(&input, 65);
     assert_eq!(result.len(), 2);

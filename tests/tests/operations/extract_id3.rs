@@ -28,9 +28,7 @@ fn test_extract_id3_minimal_id3_tag() {
     let op = ExtractID3;
     let args = [];
     // Minimal ID3v2 tag (just header)
-    let minimal_id3 = vec![
-        0x49, 0x44, 0x33, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    ];
+    let minimal_id3 = vec![0x49, 0x44, 0x33, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
     let result = op.run(minimal_id3, &args);
     // This will likely fail but we're testing the parsing attempt
     assert!(result.is_err());

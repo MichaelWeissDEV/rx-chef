@@ -27,13 +27,13 @@ fn test_add_text_to_image_invalid_format() {
 fn test_add_text_to_image_with_text() {
     // This test will likely fail without the font file, but we can test the basic flow
     let op = AddTextToImage;
-    
+
     // Create a simple 1x1 PNG image
     let mut img_buf = Vec::new();
     let img = image::RgbaImage::new(100, 100);
     let mut cursor = std::io::Cursor::new(&mut img_buf);
     img.write_to(&mut cursor, image::ImageFormat::Png).unwrap();
-    
+
     let args = [
         rxchef::operation::ArgValue::Str("Test Text".to_string()),
         rxchef::operation::ArgValue::Str("Center".to_string()),
@@ -46,7 +46,7 @@ fn test_add_text_to_image_with_text() {
         rxchef::operation::ArgValue::Num(0.0),
         rxchef::operation::ArgValue::Num(255.0),
     ];
-    
+
     let result = op.run(img_buf, &args);
     // This may fail due to missing font, but we can at least test that it doesn't panic
     // and handles the error gracefully
@@ -64,20 +64,16 @@ fn test_add_text_to_image_with_text() {
 #[test]
 fn test_add_text_to_image_different_alignments() {
     let op = AddTextToImage;
-    
+
     // Create a simple 1x1 PNG image
     let mut img_buf = Vec::new();
     let img = image::RgbaImage::new(200, 200);
     let mut cursor = std::io::Cursor::new(&mut img_buf);
     img.write_to(&mut cursor, image::ImageFormat::Png).unwrap();
-    
+
     // Test different alignment combinations
-    let alignments = vec![
-        ("Left", "Top"),
-        ("Center", "Middle"),
-        ("Right", "Bottom"),
-    ];
-    
+    let alignments = vec![("Left", "Top"), ("Center", "Middle"), ("Right", "Bottom")];
+
     for (h_align, v_align) in alignments {
         let args = [
             rxchef::operation::ArgValue::Str("Align Test".to_string()),
@@ -91,7 +87,7 @@ fn test_add_text_to_image_different_alignments() {
             rxchef::operation::ArgValue::Num(255.0),
             rxchef::operation::ArgValue::Num(255.0),
         ];
-        
+
         let result = op.run(img_buf.clone(), &args);
         // Similar to above, this may fail due to font, but shouldn't panic
         assert!(result.is_ok() || result.unwrap_err().to_string().contains("font"));
@@ -101,13 +97,13 @@ fn test_add_text_to_image_different_alignments() {
 #[test]
 fn test_add_text_to_image_custom_colors() {
     let op = AddTextToImage;
-    
+
     // Create a simple 1x1 PNG image
     let mut img_buf = Vec::new();
     let img = image::RgbaImage::new(100, 100);
     let mut cursor = std::io::Cursor::new(&mut img_buf);
     img.write_to(&mut cursor, image::ImageFormat::Png).unwrap();
-    
+
     // Test with custom RGB color (red text)
     let args = [
         rxchef::operation::ArgValue::Str("Red Text".to_string()),
@@ -121,7 +117,7 @@ fn test_add_text_to_image_custom_colors() {
         rxchef::operation::ArgValue::Num(0.0),   // Blue
         rxchef::operation::ArgValue::Num(255.0), // Alpha
     ];
-    
+
     let result = op.run(img_buf, &args);
     // This may fail due to missing font, but shouldn't panic
     assert!(result.is_ok() || result.unwrap_err().to_string().contains("font"));

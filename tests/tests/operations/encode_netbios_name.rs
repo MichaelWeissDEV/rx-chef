@@ -44,7 +44,7 @@ fn test_encode_netbios_name_exact_length() {
     let input = b"EXACTLY16CHARS".to_vec(); // Exactly 16 bytes
     let result = op.run(input, &args).unwrap();
     assert_eq!(result.len(), 32); // 16 * 2
-    // Should encode all 16 characters without padding
+                                  // Should encode all 16 characters without padding
 }
 
 #[test]

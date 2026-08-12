@@ -62,8 +62,12 @@ fn test_to_morse_code_with_spaces() {
         rxchef::operation::ArgValue::Str("Line feed".to_string()),
     ];
     let result = op.run("HELLO WORLD".as_bytes().to_vec(), &args).unwrap();
-    assert_eq!(result, ".... . .-.. .-.. ---
-.-- --- .-. .-.. -..".as_bytes());
+    assert_eq!(
+        result,
+        ".... . .-.. .-.. ---
+.-- --- .-. .-.. -.."
+            .as_bytes()
+    );
 }
 
 #[test]
@@ -157,8 +161,12 @@ fn test_to_morse_code_multiline_input() {
     ];
     let input = "HELLO\nWORLD".as_bytes().to_vec();
     let result = op.run(input, &args).unwrap();
-    assert_eq!(result, ".... . .-.. .-.. ---
-.-- --- .-. .-.. -..".as_bytes());
+    assert_eq!(
+        result,
+        ".... . .-.. .-.. ---
+.-- --- .-. .-.. -.."
+            .as_bytes()
+    );
 }
 
 #[test]

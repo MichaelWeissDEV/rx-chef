@@ -45,7 +45,9 @@ fn test_from_bech32_hex_output() {
     let hex_output = result.unwrap();
     assert!(!hex_output.is_empty());
     // Should be valid hex
-    assert!(String::from_utf8_lossy(&hex_output).chars().all(|c| c.is_ascii_hexdigit()));
+    assert!(String::from_utf8_lossy(&hex_output)
+        .chars()
+        .all(|c| c.is_ascii_hexdigit()));
 }
 
 #[test]

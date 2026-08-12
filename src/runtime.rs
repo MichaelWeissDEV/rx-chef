@@ -198,3 +198,66 @@ fn slugify(s: &str) -> String {
         .map(|c| c.to_ascii_lowercase())
         .collect()
 }
+
+#[cfg(test)]
+mod tests {
+    use std::collections::HashSet;
+
+    use super::{operation_info, operation_names, parse_operation_arg, resolve_operation_name};
+    use crate::operation::ArgValue;
+
+    #[test]
+    fn every_registered_operation_has_complete_unique_metadata() {
+        let names = operation_names(None);
+        assert!(!names.is_empty());
+        let mut unique = HashSet::new();
+        for name in names {
+            assert!(
+                unique.insert(name.clone()),
+                "duplicate operation name: {name}"
+            );
+            let info = operation_info(&name).unwrap();
+            assert!(!info.name.trim().is_empty(), "empty name for {name}");
+            assert!(!info.module.trim().is_empty(), "empty module for {name}");
+            assert!(
+                !info.description.trim().is_empty(),
+                "empty description for {name}"
+            );
+            let mut arg_names = HashSet::new();
+            for arg in info.args {
+                assert!(
+                    !arg.name.trim().is_empty(),
+                    "empty argument name for {name}"
+                );
+                assert!(
+                    !arg.description.trim().is_empty(),
+                    "empty description for {name} argument {}",
+                    arg.name
+                );
+                assert!(
+                    arg_names.insert(arg.name.to_ascii_lowercase()),
+                    "duplicate argument '{}' for {name}",
+                    arg.name
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn operation_names_accept_cli_friendly_spellings() {
+        for alias in ["To Hex", "to hex", "to_hex", "to-hex", "ToHex"] {
+            assert_eq!(resolve_operation_name(alias).as_deref(), Some("To Hex"));
+        }
+    }
+
+    #[test]
+    fn typed_argument_prefixes_are_parsed() {
+        assert!(matches!(parse_operation_arg("num:12.5"), Ok(ArgValue::Num(n)) if n == 12.5));
+        assert!(matches!(
+            parse_operation_arg("bool:TRUE"),
+            Ok(ArgValue::Bool(true))
+        ));
+        assert!(matches!(parse_operation_arg("hex:48 69"), Ok(ArgValue::Bytes(v)) if v == b"Hi"));
+        assert!(matches!(parse_operation_arg("plain"), Ok(ArgValue::Str(v)) if v == "plain"));
+    }
+}

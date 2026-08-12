@@ -36,7 +36,12 @@ fn test_ecdsa_signature_conversion_invalid_output_format() {
         rxchef::operation::ArgValue::Str("ASN.1 HEX".to_string()),
         rxchef::operation::ArgValue::Str("UNSUPPORTED".to_string()),
     ];
-    let result = op.run("304402201234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890ab".as_bytes().to_vec(), &args);
+    let result = op.run(
+        "304402201234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890ab"
+            .as_bytes()
+            .to_vec(),
+        &args,
+    );
     assert!(result.is_err());
 }
 
@@ -78,7 +83,7 @@ fn test_ecdsa_signature_conversion_asn1_to_formats() {
     let op = ECDSASignatureConversion;
     // Using a simpler valid ASN.1 structure
     let asn1_hex = "3006020101020102";
-    
+
     // Test ASN.1 to ASN.1 (should be same)
     let args_asn1 = [
         rxchef::operation::ArgValue::Str("ASN.1 HEX".to_string()),
@@ -86,7 +91,7 @@ fn test_ecdsa_signature_conversion_asn1_to_formats() {
     ];
     let result = op.run(asn1_hex.as_bytes().to_vec(), &args_asn1);
     assert!(result.is_ok());
-    
+
     // Test ASN.1 to P1363
     let args_p1363 = [
         rxchef::operation::ArgValue::Str("ASN.1 HEX".to_string()),
@@ -96,7 +101,7 @@ fn test_ecdsa_signature_conversion_asn1_to_formats() {
     assert!(result.is_ok());
     let result_str = String::from_utf8(result.unwrap()).unwrap();
     assert!(result_str.len() > 0);
-    
+
     // Test ASN.1 to JWS
     let args_jws = [
         rxchef::operation::ArgValue::Str("ASN.1 HEX".to_string()),
@@ -104,7 +109,7 @@ fn test_ecdsa_signature_conversion_asn1_to_formats() {
     ];
     let result = op.run(asn1_hex.as_bytes().to_vec(), &args_jws);
     assert!(result.is_ok());
-    
+
     // Test ASN.1 to Raw JSON
     let args_json = [
         rxchef::operation::ArgValue::Str("ASN.1 HEX".to_string()),
@@ -122,7 +127,7 @@ fn test_ecdsa_signature_conversion_p1363_to_asn1() {
     let op = ECDSASignatureConversion;
     // P1363 format: R || S (concatenated hex)
     let p1363_hex = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
-    
+
     let args = [
         rxchef::operation::ArgValue::Str("P1363 HEX".to_string()),
         rxchef::operation::ArgValue::Str("ASN.1 HEX".to_string()),
@@ -152,7 +157,7 @@ fn test_ecdsa_signature_conversion_jws_to_asn1() {
     // JWS format is base64url encoded R||S
     // Using invalid base64 to test error handling
     let jws_input = "invalid_base64";
-    
+
     let args = [
         rxchef::operation::ArgValue::Str("JSON Web Signature".to_string()),
         rxchef::operation::ArgValue::Str("ASN.1 HEX".to_string()),

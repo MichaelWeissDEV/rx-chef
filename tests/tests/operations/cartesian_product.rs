@@ -10,10 +10,13 @@ use rxchef::Operation;
 fn test_cartesian_product_basic() {
     let op = CartesianProduct;
     let input = "1,2\n\n3,4".to_string(); // Two sets: [1,2] and [3,4]
-    let args = [ArgValue::Str("\\n\\n".to_string()), ArgValue::Str(",".to_string())];
-    
+    let args = [
+        ArgValue::Str("\\n\\n".to_string()),
+        ArgValue::Str(",".to_string()),
+    ];
+
     let result = op.run(input.into_bytes(), &args);
-    
+
     assert!(result.is_ok(), "Cartesian product should succeed");
     if let Ok(output) = result {
         let output_str = String::from_utf8_lossy(&output);
@@ -29,11 +32,17 @@ fn test_cartesian_product_basic() {
 fn test_cartesian_product_three_sets() {
     let op = CartesianProduct;
     let input = "1,2\n\n3,4\n\n5,6".to_string(); // Three sets: [1,2], [3,4], [5,6]
-    let args = [ArgValue::Str("\\n\\n".to_string()), ArgValue::Str(",".to_string())];
-    
+    let args = [
+        ArgValue::Str("\\n\\n".to_string()),
+        ArgValue::Str(",".to_string()),
+    ];
+
     let result = op.run(input.into_bytes(), &args);
-    
-    assert!(result.is_ok(), "Cartesian product with three sets should succeed");
+
+    assert!(
+        result.is_ok(),
+        "Cartesian product with three sets should succeed"
+    );
     if let Ok(output) = result {
         let output_str = String::from_utf8_lossy(&output);
         // Should have 2*2*2 = 8 combinations: (1,3,5),(1,3,6),(1,4,5),(1,4,6),(2,3,5),(2,3,6),(2,4,5),(2,4,6)
@@ -50,10 +59,13 @@ fn test_cartesian_product_three_sets() {
 fn test_cartesian_product_single_set() {
     let op = CartesianProduct;
     let input = "1,2,3".to_string(); // Only one set
-    let args = [ArgValue::Str("\\n\\n".to_string()), ArgValue::Str(",".to_string())];
-    
+    let args = [
+        ArgValue::Str("\\n\\n".to_string()),
+        ArgValue::Str(",".to_string()),
+    ];
+
     let result = op.run(input.into_bytes(), &args);
-    
+
     // Should return error for insufficient sets
     assert!(result.is_err());
     if let Err(e) = result {
@@ -65,11 +77,17 @@ fn test_cartesian_product_single_set() {
 fn test_cartesian_product_custom_delimiters() {
     let op = CartesianProduct;
     let input = "a|b###c|d".to_string(); // Sets separated by ###, items by |
-    let args = [ArgValue::Str("###".to_string()), ArgValue::Str("|".to_string())];
-    
+    let args = [
+        ArgValue::Str("###".to_string()),
+        ArgValue::Str("|".to_string()),
+    ];
+
     let result = op.run(input.into_bytes(), &args);
-    
-    assert!(result.is_ok(), "Cartesian product with custom delimiters should succeed");
+
+    assert!(
+        result.is_ok(),
+        "Cartesian product with custom delimiters should succeed"
+    );
     if let Ok(output) = result {
         let output_str = String::from_utf8_lossy(&output);
         assert!(output_str.contains("(a,c)"), "Should contain (a,c)");
@@ -83,10 +101,13 @@ fn test_cartesian_product_custom_delimiters() {
 fn test_cartesian_product_empty_sets() {
     let op = CartesianProduct;
     let input = "\n\n".to_string(); // Empty sets
-    let args = [ArgValue::Str("\\n\\n".to_string()), ArgValue::Str(",".to_string())];
-    
+    let args = [
+        ArgValue::Str("\\n\\n".to_string()),
+        ArgValue::Str(",".to_string()),
+    ];
+
     let result = op.run(input.into_bytes(), &args);
-    
+
     // Should handle empty sets gracefully
     assert!(result.is_ok(), "Should handle empty sets");
 }
@@ -95,11 +116,17 @@ fn test_cartesian_product_empty_sets() {
 fn test_cartesian_product_single_item_sets() {
     let op = CartesianProduct;
     let input = "a\n\nb\n\nc".to_string(); // Three sets with single items each
-    let args = [ArgValue::Str("\\n\\n".to_string()), ArgValue::Str(",".to_string())];
-    
+    let args = [
+        ArgValue::Str("\\n\\n".to_string()),
+        ArgValue::Str(",".to_string()),
+    ];
+
     let result = op.run(input.into_bytes(), &args);
-    
-    assert!(result.is_ok(), "Cartesian product with single-item sets should succeed");
+
+    assert!(
+        result.is_ok(),
+        "Cartesian product with single-item sets should succeed"
+    );
     if let Ok(output) = result {
         let output_str = String::from_utf8_lossy(&output);
         // Should have one combination: (a,b,c)

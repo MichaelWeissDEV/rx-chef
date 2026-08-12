@@ -47,7 +47,9 @@ fn test_to_base64_custom_alphabet() {
     let input = "test".as_bytes();
     // Use a truly custom alphabet that won't be expanded
     let custom_alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/";
-    let args = [rxchef::operation::ArgValue::Str(custom_alphabet.to_string())];
+    let args = [rxchef::operation::ArgValue::Str(
+        custom_alphabet.to_string(),
+    )];
     let result = run(input, &args);
     // Standard base64 of "test" is "dGVzdA==", with custom alphabet it should be different
     assert_ne!(result, "dGVzdA==".as_bytes());
@@ -61,7 +63,9 @@ fn test_to_base64_long_input() {
     let input = "This is a longer test string that should be encoded properly".as_bytes();
     let args = [rxchef::operation::ArgValue::Str("A-Za-z0-9+/=".to_string())];
     let result = run(input, &args);
-    let expected = "VGhpcyBpcyBhIGxvbmdlciB0ZXN0IHN0cmluZyB0aGF0IHNob3VsZCBiZSBlbmNvZGVkIHByb3Blcmx5".as_bytes();
+    let expected =
+        "VGhpcyBpcyBhIGxvbmdlciB0ZXN0IHN0cmluZyB0aGF0IHNob3VsZCBiZSBlbmNvZGVkIHByb3Blcmx5"
+            .as_bytes();
     assert_eq!(result, expected);
 }
 
@@ -110,7 +114,9 @@ fn test_to_base64_invalid_alphabet() {
     let op = ToBase64;
     let input = "test".as_bytes();
     let invalid_alphabet = "short"; // Less than 64 characters
-    let args = [rxchef::operation::ArgValue::Str(invalid_alphabet.to_string())];
+    let args = [rxchef::operation::ArgValue::Str(
+        invalid_alphabet.to_string(),
+    )];
     let result = op.run(input.to_vec(), &args);
     assert!(result.is_err());
     if let Err(e) = result {

@@ -60,7 +60,9 @@ fn test_ecdsa_sign_simple_message() {
     // This test would need a valid PEM key to work, but we can test the error handling
     let op = ECDSASign;
     let args = [
-        rxchef::operation::ArgValue::Str("-----BEGIN EC PRIVATE KEY-----\ninvalid key\n-----END EC PRIVATE KEY-----".to_string()),
+        rxchef::operation::ArgValue::Str(
+            "-----BEGIN EC PRIVATE KEY-----\ninvalid key\n-----END EC PRIVATE KEY-----".to_string(),
+        ),
         rxchef::operation::ArgValue::Str("SHA-256".to_string()),
         rxchef::operation::ArgValue::Str("ASN.1 HEX".to_string()),
     ];
@@ -72,7 +74,7 @@ fn test_ecdsa_sign_simple_message() {
 #[test]
 fn test_ecdsa_sign_different_output_formats() {
     let op = ECDSASign;
-    
+
     // Test ASN.1 HEX format
     let args_asn1 = [
         rxchef::operation::ArgValue::Str("invalid key".to_string()),
@@ -81,7 +83,7 @@ fn test_ecdsa_sign_different_output_formats() {
     ];
     let result = op.run("test".as_bytes().to_vec(), &args_asn1);
     assert!(result.is_err());
-    
+
     // Test P1363 HEX format
     let args_p1363 = [
         rxchef::operation::ArgValue::Str("invalid key".to_string()),
@@ -90,7 +92,7 @@ fn test_ecdsa_sign_different_output_formats() {
     ];
     let result = op.run("test".as_bytes().to_vec(), &args_p1363);
     assert!(result.is_err());
-    
+
     // Test JSON Web Signature format
     let args_jws = [
         rxchef::operation::ArgValue::Str("invalid key".to_string()),
@@ -99,7 +101,7 @@ fn test_ecdsa_sign_different_output_formats() {
     ];
     let result = op.run("test".as_bytes().to_vec(), &args_jws);
     assert!(result.is_err());
-    
+
     // Test Raw JSON format
     let args_json = [
         rxchef::operation::ArgValue::Str("invalid key".to_string()),

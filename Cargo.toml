@@ -13,7 +13,7 @@ members = [
     "crates/tui",
     "crates/store",
     "tests"
-]
+, "crates/xtask"]
 default-members = [
     ".",
     "crates/cli",

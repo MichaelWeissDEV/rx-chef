@@ -160,7 +160,7 @@ fn test_elf_info_big_endian_elf() {
     elf_data.extend_from_slice(&[0x00, 0x00]);
     // EV_CURRENT version (0x00000001)
     elf_data.extend_from_slice(&[0x00, 0x00, 0x00, 0x01]); // Big-endian
-    // Entry point (0x00000000)
+                                                           // Entry point (0x00000000)
     elf_data.extend_from_slice(&[0x00, 0x00, 0x00, 0x00]);
     // Program header offset (0x00000000)
     elf_data.extend_from_slice(&[0x00, 0x00, 0x00, 0x00]);

@@ -2,8 +2,8 @@
 // Run only these tests:
 //   cargo test -p cyberchef-rust-tests --test operations enigma::
 
-use rxchef::operations::enigma::Enigma;
 use rxchef::operation::{ArgValue, DataType};
+use rxchef::operations::enigma::Enigma;
 use rxchef::Operation;
 
 fn default_args_3() -> Vec<ArgValue> {

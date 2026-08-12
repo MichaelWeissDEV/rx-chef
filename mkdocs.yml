@@ -1,0 +1,14 @@
+site_name: rx-chef
+site_url: https://rx-chef.readthedocs.io/
+repo_url: https://github.com/MichaelWeissDEV/rx-chef
+site_description: CyberChef operations in the terminal
+
+theme:
+  name: readthedocs
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - admonition
+  - codehilite
+  - tables

@@ -124,7 +124,7 @@ fn test_ecdsa_verify_different_signature_formats() {
     let asn1_sig = "3006020101020102";
     let result = op.run(asn1_sig.as_bytes().to_vec(), &args);
     assert!(result.is_err());
-    
+
     // Test P1363 format
     let args_p1363 = [
         rxchef::operation::ArgValue::Str("P1363 HEX".to_string()),
@@ -151,7 +151,7 @@ fn test_ecdsa_verify_different_message_formats() {
     let asn1_sig = "3006020101020102";
     let result = op.run(asn1_sig.as_bytes().to_vec(), &args);
     assert!(result.is_err());
-    
+
     // Test Hex message format
     let args_hex = [
         rxchef::operation::ArgValue::Str("Auto".to_string()),
@@ -162,7 +162,7 @@ fn test_ecdsa_verify_different_message_formats() {
     ];
     let result = op.run(asn1_sig.as_bytes().to_vec(), &args_hex);
     assert!(result.is_err());
-    
+
     // Test Base64 message format
     let args_base64 = [
         rxchef::operation::ArgValue::Str("Auto".to_string()),

@@ -92,7 +92,10 @@ fn test_cbor_decode_invalid_input() {
     let input = vec![0xff, 0xff, 0xff];
     let result = op.run(input, &[]);
     assert!(result.is_err());
-    assert!(result.unwrap_err().to_string().contains("CBOR decode failed"));
+    assert!(result
+        .unwrap_err()
+        .to_string()
+        .contains("CBOR decode failed"));
 }
 
 #[test]

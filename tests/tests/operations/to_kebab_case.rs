@@ -57,7 +57,9 @@ fn test_to_kebab_case_with_special_chars() {
 fn test_to_kebab_case_already_kebab() {
     let op = ToKebabCase;
     let args = [rxchef::operation::ArgValue::Bool(false)];
-    let result = op.run("already-kebab-case".as_bytes().to_vec(), &args).unwrap();
+    let result = op
+        .run("already-kebab-case".as_bytes().to_vec(), &args)
+        .unwrap();
     assert_eq!(result, "already-kebab-case".as_bytes());
 }
 
@@ -65,7 +67,9 @@ fn test_to_kebab_case_already_kebab() {
 fn test_to_kebab_case_smart_mode() {
     let op = ToKebabCase;
     let args = [rxchef::operation::ArgValue::Bool(true)];
-    let result = op.run("var myVariable = 42;".as_bytes().to_vec(), &args).unwrap();
+    let result = op
+        .run("var myVariable = 42;".as_bytes().to_vec(), &args)
+        .unwrap();
     assert_eq!(result, "var my-variable = 42;".as_bytes());
 }
 
@@ -73,8 +77,16 @@ fn test_to_kebab_case_smart_mode() {
 fn test_to_kebab_case_smart_with_quotes() {
     let op = ToKebabCase;
     let args = [rxchef::operation::ArgValue::Bool(true)];
-    let result = op.run(r#"function myFunction() { return "hello"; }"#.as_bytes().to_vec(), &args).unwrap();
-    assert_eq!(result, r#"function my-function() { return "hello"; }"#.as_bytes());
+    let result = op
+        .run(
+            r#"function myFunction() { return "hello"; }"#.as_bytes().to_vec(),
+            &args,
+        )
+        .unwrap();
+    assert_eq!(
+        result,
+        r#"function my-function() { return "hello"; }"#.as_bytes()
+    );
 }
 
 #[test]
@@ -97,6 +109,8 @@ fn test_to_kebab_case_single_word() {
 fn test_to_kebab_case_with_underscores() {
     let op = ToKebabCase;
     let args = [rxchef::operation::ArgValue::Bool(false)];
-    let result = op.run("hello_world_test".as_bytes().to_vec(), &args).unwrap();
+    let result = op
+        .run("hello_world_test".as_bytes().to_vec(), &args)
+        .unwrap();
     assert_eq!(result, "hello-world-test".as_bytes());
 }

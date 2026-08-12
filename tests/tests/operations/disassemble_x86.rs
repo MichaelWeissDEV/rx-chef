@@ -89,7 +89,9 @@ fn test_disassemble_x86_with_whitespace() {
         rxchef::operation::ArgValue::Bool(true),
     ];
     // Input with spaces and newlines
-    let result = op.run("48 89 C8\n48 89 D1".as_bytes().to_vec(), &args).unwrap();
+    let result = op
+        .run("48 89 C8\n48 89 D1".as_bytes().to_vec(), &args)
+        .unwrap();
     let result_str = String::from_utf8(result).unwrap();
     assert!(result_str.contains("mov"));
 }
@@ -189,7 +191,9 @@ fn test_disassemble_x86_multiple_instructions() {
         rxchef::operation::ArgValue::Bool(true),
     ];
     // Multiple instructions: MOV, ADD, RET
-    let result = op.run("4889C84883C001C3".as_bytes().to_vec(), &args).unwrap();
+    let result = op
+        .run("4889C84883C001C3".as_bytes().to_vec(), &args)
+        .unwrap();
     let result_str = String::from_utf8(result).unwrap();
     assert!(result_str.contains("mov"));
     assert!(result_str.contains("add"));

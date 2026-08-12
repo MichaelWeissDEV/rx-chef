@@ -4,7 +4,7 @@ rxchef — CyberChef operations in the terminal
 # Quick reference
 
 ```
-rxchef run <op> [input]                  # single operation
+rxchef run <op> --input <text>           # single operation
 rxchef pipe "to_hex" "sha2,256" -- Hello # pipeline inline
 echo Hello | rxchef pipe "to_base64"     # from stdin
 rxchef recipe recipe.json --input Hello  # JSON/YAML recipe file
@@ -16,7 +16,7 @@ rxchef pipeline add my-pipe sha2 256
 rxchef pipeline run my-pipe --input Hello --trace
 rxchef pipeline set my-pipe 1 1 Colon   # step 1, arg 1 = "Colon"
 rxchef pipeline show my-pipe
-rxchef pipeline export my-pipe --yaml
+rxchef pipeline export my-pipe --format yaml
 
 rxchef var set KEY secret123            # store variable
 rxchef var list                          # show all variables
@@ -67,7 +67,7 @@ enum Command {
     List(ListArgs),
     /// Show operation metadata and argument schema.
     Info(InfoArgs),
-    /// Run a single operation.
+    /// Run a single operation (input: --input, --input-file, or stdin).
     Run(RunArgs),
     /// Run a pipeline of operations inline.
     ///
@@ -118,6 +118,9 @@ struct InfoArgs {
 // ─── Run ──────────────────────────────────────────────────────────────────────
 
 #[derive(Debug, Args)]
+#[command(
+    after_long_help = "INPUT\n  Use --input for literal UTF-8 text, --input-file for exact file bytes, or omit\n  both to read stdin. Operation arguments support num:, bool:, hex:, and bytes:\n  type prefixes. Use --arg NAME=VALUE to address an argument by schema name.\n\nEXAMPLES\n  printf 'hello' | rxchef run to_base64\n  rxchef run sha2 --input hello --arg Size=256\n  rxchef run xor --input-file data.bin hex:deadbeef Standard false"
+)]
 struct RunArgs {
     /// Operation name.
     operation: String,
@@ -150,6 +153,9 @@ struct RunArgs {
 // ─── Pipe ─────────────────────────────────────────────────────────────────────
 
 #[derive(Debug, Args)]
+#[command(
+    after_long_help = "STEP SYNTAX\n  Each STEP is a comma-separated operation and its arguments. Quote or escape a\n  comma inside an argument: 'find_replace,\"a,b\",Simple string,x'.\n  Steps execute left-to-right; stdout contains only the final bytes and --trace\n  writes intermediate results to stderr. Input comes from --input, --input-file,\n  or stdin.\n\nEXAMPLES\n  printf 'hello' | rxchef pipe to_upper_case to_base64\n  rxchef pipe 'find_replace,\"a,b\",Simple string,x' to_base64 --input 'a,b'"
+)]
 struct PipeArgs {
     /// Steps: "OpName" or "OpName,arg1,arg2". Supports to_hex / ToHex / "To Hex".
     #[arg(value_name = "STEP")]
@@ -494,6 +500,7 @@ fn run() -> Result<(), String> {
         Command::Recipe(a) => cmd_recipe(a),
         Command::Pipeline(a) => cmd_pipeline(a),
         Command::Var(a) => cmd_var(a),
+        Command::History(a) => cmd_history(a),
         Command::Magic(a) => cmd_magic(a),
         Command::Scan(a) => cmd_scan(a),
         Command::Project(a) => cmd_project(a),
@@ -602,7 +609,11 @@ fn cmd_pipe(a: PipeArgs) -> Result<(), String> {
     }
     let var_overrides = parse_set_vars(&a.set_vars)?;
     let input = load_input_from(a.input, a.input_file, &[])?;
-    let steps: Vec<_> = a.steps.iter().map(|s| parse_step_str(s)).collect();
+    let steps = a
+        .steps
+        .iter()
+        .map(|s| parse_step_str(s))
+        .collect::<Result<Vec<_>, _>>()?;
     let input_bytes = input.bytes.clone();
     let result = run_steps(
         &steps,
@@ -807,7 +818,7 @@ fn cmd_pipeline(a: PipelineArgs) -> Result<(), String> {
                 Scope::Project
             };
             let mut recipe = store::load_recipe(&pipeline).map_err(|e| e.to_string())?;
-            let parsed = parse_step_str(&step);
+            let parsed = parse_step_str(&step)?;
             let mut all_args = parsed.args;
             all_args.extend(args);
             recipe.steps.push(store::RecipeStep {
@@ -1490,14 +1501,55 @@ fn chrono_now() -> String {
 
 // ─── Step parsing ─────────────────────────────────────────────────────────────
 
-fn parse_step_str(s: &str) -> Step {
-    let mut parts = s.splitn(2, ',');
-    let op = parts.next().unwrap_or("").trim().to_string();
-    let args: Vec<String> = parts
-        .next()
-        .map(|rest| rest.split(',').map(|a| a.trim().to_string()).collect())
-        .unwrap_or_default();
-    Step { op, args }
+fn parse_step_str(s: &str) -> Result<Step, String> {
+    let fields = split_step_fields(s)?;
+    let op = fields.first().cloned().unwrap_or_default();
+    if op.is_empty() {
+        return Err(format!("invalid empty operation in step '{s}'"));
+    }
+    Ok(Step {
+        op,
+        args: fields.into_iter().skip(1).collect(),
+    })
+}
+
+/// Split the compact CLI step format while allowing commas in arguments.
+///
+/// Both single and double quotes group fields. A backslash escapes comma,
+/// quote, or backslash; before any other character it is kept literally so
+/// regular expressions such as `\d+` survive parsing.
+fn split_step_fields(s: &str) -> Result<Vec<String>, String> {
+    let mut fields = Vec::new();
+    let mut field = String::new();
+    let mut quote: Option<char> = None;
+    let mut chars = s.chars().peekable();
+
+    while let Some(ch) = chars.next() {
+        match ch {
+            '\\' => match chars.peek().copied() {
+                Some(next) if next == ',' || next == '\\' || Some(next) == quote => {
+                    field.push(chars.next().expect("peeked character"));
+                }
+                _ => field.push('\\'),
+            },
+            '\'' | '"' => match quote {
+                Some(active) if active == ch => quote = None,
+                None => quote = Some(ch),
+                Some(_) => field.push(ch),
+            },
+            ',' if quote.is_none() => {
+                fields.push(field.trim().to_string());
+                field.clear();
+            }
+            _ => field.push(ch),
+        }
+    }
+
+    if let Some(unclosed) = quote {
+        return Err(format!("invalid step '{s}': unclosed {unclosed} quote"));
+    }
+    fields.push(field.trim().to_string());
+    Ok(fields)
 }
 
 fn parse_set_vars(raw: &[String]) -> Result<HashMap<String, String>, String> {
@@ -1637,31 +1689,74 @@ fn write_output_raw<W: Write>(output: &[u8], hex: bool, w: &mut W) -> Result<(),
 fn cmd_project(a: ProjectArgs) -> Result<(), String> {
     match a.action {
         ProjectAction::Run { file, trace } => {
-            let project = store::load_project(&file).map_err(|e| format!("Failed to load project: {}", e))?;
-            
+            let project =
+                store::load_project(&file).map_err(|e| format!("Failed to load project: {}", e))?;
+
             let input_bytes = match project.data {
                 Some(store::ProjectData::Inline { inline }) => inline.into_bytes(),
                 Some(store::ProjectData::File { file: path }) => {
                     let base_dir = file.parent().unwrap_or(std::path::Path::new(""));
                     std::fs::read(base_dir.join(path)).map_err(|e| e.to_string())?
-                },
+                }
                 None => Vec::new(),
             };
-            
-            let steps: Vec<_> = project.pipeline.iter().map(|s| Step {
-                op: s.op.clone(),
-                args: s.args.clone(),
-            }).collect();
-            
+
+            let steps: Vec<_> = project
+                .pipeline
+                .iter()
+                .map(|s| Step {
+                    op: s.op.clone(),
+                    args: s.args.clone(),
+                })
+                .collect();
+
             let mut overrides = std::collections::HashMap::new();
             for (k, v) in project.variables.iter() {
                 overrides.insert(k.clone(), v.clone());
             }
-            
+
             let result = run_steps(&steps, input_bytes.clone(), &overrides, trace, false)?;
             write_output(&result.final_output, false)?;
-            
+
             Ok(())
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{parse_set_vars, parse_step_str, split_step_fields};
+
+    #[test]
+    fn parses_plain_pipeline_step() {
+        let step = parse_step_str("to_hex, Space, num:0").unwrap();
+        assert_eq!(step.op, "to_hex");
+        assert_eq!(step.args, ["Space", "num:0"]);
+    }
+
+    #[test]
+    fn parses_quoted_and_escaped_commas() {
+        assert_eq!(
+            split_step_fields(r#"find_replace,"a,b",x\,y"#).unwrap(),
+            ["find_replace", "a,b", "x,y"]
+        );
+    }
+
+    #[test]
+    fn preserves_regular_expression_backslashes() {
+        let step = parse_step_str(r"regular_expression,User,\\d+").unwrap();
+        assert_eq!(step.args[1], r"\d+");
+    }
+
+    #[test]
+    fn rejects_unclosed_quotes_and_empty_operations() {
+        assert!(parse_step_str(r#"op,"unterminated"#).is_err());
+        assert!(parse_step_str(" ,arg").is_err());
+    }
+
+    #[test]
+    fn variable_values_may_contain_equals() {
+        let vars = parse_set_vars(&["TOKEN=a=b=c".into()]).unwrap();
+        assert_eq!(vars["TOKEN"], "a=b=c");
     }
 }

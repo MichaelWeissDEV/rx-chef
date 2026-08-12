@@ -505,7 +505,9 @@ fn ui(f: &mut Frame, app: &mut App) {
         Mode::AddStep => render_add_overlay(f, app, size),
         Mode::EditArgs => render_edit_args_overlay(f, app, size),
         Mode::Help => render_help_overlay(f, size),
-        Mode::SavePrompt | Mode::LoadPrompt | Mode::CheckpointSavePrompt => render_file_prompt(f, app, size),
+        Mode::SavePrompt | Mode::LoadPrompt | Mode::CheckpointSavePrompt => {
+            render_file_prompt(f, app, size)
+        }
         Mode::LoadPicker => render_load_picker(f, app, size),
         Mode::TraceView => render_trace_view(f, app, size),
         Mode::CheckpointsList => render_checkpoints_list(f, app, size),
@@ -935,7 +937,9 @@ fn handle_key(app: &mut App, key: KeyEvent) {
         Mode::EditArgs => handle_edit_args(app, key),
         Mode::EditInput => handle_edit_input(app, key),
         Mode::Help => handle_help(app, key),
-        Mode::SavePrompt | Mode::LoadPrompt | Mode::CheckpointSavePrompt => handle_file_prompt(app, key),
+        Mode::SavePrompt | Mode::LoadPrompt | Mode::CheckpointSavePrompt => {
+            handle_file_prompt(app, key)
+        }
         Mode::LoadPicker => handle_load_picker(app, key),
         Mode::TraceView => handle_trace_view(app, key),
         Mode::CheckpointsList => handle_checkpoints_list(app, key),

@@ -2,7 +2,6 @@
 // Run only these tests:
 //   cargo test -p cyberchef-rust-tests --test operations ls47_decrypt::
 
-
 #[test]
 fn test_ls47_decrypt_basic() {
     // Test case based on CyberChef defaults if possible

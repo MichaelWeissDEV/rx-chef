@@ -437,7 +437,8 @@ impl BombeMachine {
         machine.test_register = a2i(nodes[most_connected_idx].letter);
 
         // Safely get the first edge if it exists
-        let other_node_idx = if let Some(&first_edge_idx) = nodes[most_connected_idx].edges.first() {
+        let other_node_idx = if let Some(&first_edge_idx) = nodes[most_connected_idx].edges.first()
+        {
             if first_edge_idx < edges.len() {
                 let first_edge = &edges[first_edge_idx];
                 if first_edge.node1 == most_connected_idx {

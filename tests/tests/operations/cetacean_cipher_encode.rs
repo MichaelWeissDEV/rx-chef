@@ -80,11 +80,11 @@ fn test_cetacean_encode_roundtrip() {
     // Test that encoding and then decoding gives us back the original
     let op_encode = CetaceanCipherEncode;
     let op_decode = rxchef::operations::cetacean_cipher_decode::CetaceanCipherDecode;
-    
+
     let original = "hello";
     let encoded = op_encode.run(original.as_bytes().to_vec(), &[]).unwrap();
     let decoded = op_decode.run(encoded, &[]).unwrap();
-    
+
     assert_eq!(String::from_utf8(decoded).unwrap(), original);
 }
 
