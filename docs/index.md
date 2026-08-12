@@ -14,6 +14,8 @@ Welcome to the **rx-chef** documentation.
 - Pipelining with standard Unix tools (stdin/stdout)
 - CTF project state and variable management
 - Automated scanning and magical decoding of embedded secrets
+- Persistent JSONL/JSON-RPC stdio API for Neovim and other editor plugins
+- Reusable Rust integration API for operation discovery, execution, and recipes
 
 ## Quick Links
 
@@ -21,3 +23,4 @@ Welcome to the **rx-chef** documentation.
 - [Quickstart](getting-started/quickstart.md)
 - [Operations Reference](operations/index.md)
 - [Architecture](architecture/overview.md)
+- [Editor Integration Protocol](cli/integration.md)

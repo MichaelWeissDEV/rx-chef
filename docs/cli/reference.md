@@ -2,6 +2,14 @@
 
 The canonical, version-specific syntax is always available from `rxchef COMMAND --help`. This page describes the behavior and purpose of every command and subcommand.
 
+## `operations`
+
+Lists complete operation descriptors through the stable integration API. `--json` emits canonical name, module, description, types, broken flag, and the ordered argument schema for every operation. This is the recommended discovery command for editor plugins; `list --json` remains a compact name array.
+
+## `operation describe OPERATION`
+
+Resolves normalized names and returns one complete descriptor. Use `--json` for machine-readable output.
+
 ## `list [SEARCH]`
 
 Lists registered operation names, optionally filtered case-insensitively by `SEARCH`.
@@ -49,6 +57,16 @@ Runs a JSON/YAML path, saved name, or inline JSON array.
 
 - input: `--input`, `--input-file`, or stdin;
 - `--trace`, `--hex`, `--save`, and repeatable `--set KEY=VALUE` behave as for `pipe`.
+
+## `bake`
+
+Executes a recipe directly without importing it into persistent storage.
+
+- exactly one of `--recipe PATH` or `--recipe-json JSON` is required;
+- recipes may be step arrays or objects containing `steps` (also `pipeline`);
+- file recipes support JSON/YAML based on the extension;
+- input comes from `--input`, `--input-file`, or stdin;
+- `--hex` renders bytes and `--json` emits a binary-safe result envelope.
 
 ## `pipeline`
 
@@ -122,3 +140,7 @@ Findings go to stdout and the total goes to stderr. Without paths, scan reads st
 Loads a YAML/JSON project, resolves inline or relative file input, expands project variables, and executes its pipeline.
 
 - `--trace`: write intermediate results to stderr.
+
+## `serve --stdio`
+
+Starts the persistent newline-delimited JSON transport. It writes no greeting or log text to stdout. One request is read per line, responses are flushed immediately, and the process continues until EOF or `shutdown`. See the [protocol specification](integration.md).

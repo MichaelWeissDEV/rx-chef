@@ -5,6 +5,10 @@ rxchef — CyberChef operations in the terminal
 
 ```
 rxchef run <op> --input <text>           # single operation
+rxchef operations --json                 # complete machine-readable registry
+rxchef operation describe to_base64 --json
+rxchef bake --recipe recipe.json --input Hello
+rxchef serve --stdio                     # persistent JSONL/JSON-RPC transport
 rxchef pipe "to_hex" "sha2,256" -- Hello # pipeline inline
 echo Hello | rxchef pipe "to_base64"     # from stdin
 rxchef recipe recipe.json --input Hello  # JSON/YAML recipe file
@@ -38,7 +42,7 @@ cat huge.pcap | rxchef scan --entropy 4.5 # stream stdin, flag high-entropy blob
 use std::{
     collections::HashMap,
     fs,
-    io::{self, IsTerminal, Read, Write},
+    io::{self, BufReader, IsTerminal, Read, Write},
     path::PathBuf,
 };
 
@@ -63,6 +67,10 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Command {
+    /// List complete operation descriptors for machine integrations.
+    Operations(OperationsArgs),
+    /// Inspect an operation through the integration API.
+    Operation(OperationArgs),
     /// List available operations.
     List(ListArgs),
     /// Show operation metadata and argument schema.
@@ -76,6 +84,8 @@ enum Command {
     Pipe(PipeArgs),
     /// Run a JSON or YAML recipe file (or inline JSON string).
     Recipe(RecipeArgs),
+    /// Execute a JSON/YAML recipe without persistent store behavior.
+    Bake(BakeArgs),
     /// Manage saved pipelines (list, new, add, remove, set, run, export, import, delete).
     Pipeline(PipelineArgs),
     /// Manage stored variables used in pipeline args ($VAR expansion).
@@ -88,6 +98,71 @@ enum Command {
     Scan(ScanArgs),
     /// Load and run full CTF projects (YAML/JSON) with data, vars, and pipelines.
     Project(ProjectArgs),
+    /// Run a persistent machine-readable transport.
+    Serve(ServeArgs),
+}
+
+// ─── Machine integration ─────────────────────────────────────────────────────
+
+#[derive(Debug, Args)]
+struct OperationsArgs {
+    /// Emit complete descriptors as JSON.
+    #[arg(long)]
+    json: bool,
+}
+
+#[derive(Debug, Args)]
+struct OperationArgs {
+    #[command(subcommand)]
+    action: OperationAction,
+}
+
+#[derive(Debug, Subcommand)]
+enum OperationAction {
+    /// Describe one operation and its complete argument schema.
+    Describe {
+        operation: String,
+        /// Emit a machine-readable descriptor.
+        #[arg(long)]
+        json: bool,
+    },
+}
+
+#[derive(Debug, Args)]
+struct BakeArgs {
+    /// JSON/YAML recipe file (step array or object containing `steps`).
+    #[arg(
+        long,
+        value_name = "PATH",
+        conflicts_with = "recipe_json",
+        required_unless_present = "recipe_json"
+    )]
+    recipe: Option<PathBuf>,
+    /// Inline JSON recipe (step array or object containing `steps`).
+    #[arg(
+        long,
+        value_name = "JSON",
+        conflicts_with = "recipe",
+        required_unless_present = "recipe"
+    )]
+    recipe_json: Option<String>,
+    #[arg(short, long, conflicts_with = "input_file")]
+    input: Option<String>,
+    #[arg(short = 'f', long, value_name = "PATH", conflicts_with = "input")]
+    input_file: Option<PathBuf>,
+    /// Render output as a hex dump.
+    #[arg(long)]
+    hex: bool,
+    /// Emit the binary-safe result envelope as JSON.
+    #[arg(long)]
+    json: bool,
+}
+
+#[derive(Debug, Args)]
+struct ServeArgs {
+    /// Read one JSON request per stdin line and write one response per stdout line.
+    #[arg(long, required = true)]
+    stdio: bool,
 }
 
 // ─── List ─────────────────────────────────────────────────────────────────────
@@ -493,18 +568,61 @@ fn main() {
 
 fn run() -> Result<(), String> {
     match Cli::parse().command {
+        Command::Operations(a) => cmd_operations(a),
+        Command::Operation(a) => cmd_operation(a),
         Command::List(a) => cmd_list(a),
         Command::Info(a) => cmd_info(a),
         Command::Run(a) => cmd_run(a),
         Command::Pipe(a) => cmd_pipe(a),
         Command::Recipe(a) => cmd_recipe(a),
+        Command::Bake(a) => cmd_bake(a),
         Command::Pipeline(a) => cmd_pipeline(a),
         Command::Var(a) => cmd_var(a),
         Command::History(a) => cmd_history(a),
         Command::Magic(a) => cmd_magic(a),
         Command::Scan(a) => cmd_scan(a),
         Command::Project(a) => cmd_project(a),
+        Command::Serve(a) => cmd_serve(a),
     }
+}
+
+fn cmd_operations(a: OperationsArgs) -> Result<(), String> {
+    let operations = rxchef::integration::operations()?;
+    if a.json {
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&operations).map_err(|error| error.to_string())?
+        );
+    } else {
+        for operation in &operations {
+            println!(
+                "{:<28} {:<18} {}",
+                operation.name, operation.module, operation.description
+            );
+        }
+        eprintln!("\n{} operation(s)", operations.len());
+    }
+    Ok(())
+}
+
+fn cmd_operation(a: OperationArgs) -> Result<(), String> {
+    match a.action {
+        OperationAction::Describe { operation, json } => {
+            let descriptor = rxchef::integration::describe(&operation)?;
+            if json {
+                println!(
+                    "{}",
+                    serde_json::to_string_pretty(&descriptor).map_err(|error| error.to_string())?
+                );
+            } else {
+                cmd_info(InfoArgs {
+                    operation,
+                    json: false,
+                })?;
+            }
+        }
+    }
+    Ok(())
 }
 
 // ─── List ─────────────────────────────────────────────────────────────────────
@@ -722,6 +840,65 @@ fn load_recipe_from_file(path: &std::path::Path) -> Result<store::Recipe, String
         }
         serde_json::from_str(&content).map_err(|e| format!("JSON error: {e}"))
     }
+}
+
+#[derive(Debug, serde::Deserialize)]
+#[serde(untagged)]
+enum BakeRecipe {
+    Steps(Vec<rxchef::integration::RecipeStep>),
+    Document {
+        #[serde(alias = "pipeline")]
+        steps: Vec<rxchef::integration::RecipeStep>,
+    },
+}
+
+impl BakeRecipe {
+    fn into_steps(self) -> Vec<rxchef::integration::RecipeStep> {
+        match self {
+            Self::Steps(steps) | Self::Document { steps } => steps,
+        }
+    }
+}
+
+fn cmd_bake(a: BakeArgs) -> Result<(), String> {
+    let (content, is_yaml) = match (a.recipe, a.recipe_json) {
+        (Some(path), None) => {
+            let content = fs::read_to_string(&path)
+                .map_err(|error| format!("cannot read '{}': {error}", path.display()))?;
+            let is_yaml = matches!(
+                path.extension().and_then(|extension| extension.to_str()),
+                Some("yaml" | "yml")
+            );
+            (content, is_yaml)
+        }
+        (None, Some(content)) => (content, false),
+        _ => return Err("provide exactly one of --recipe or --recipe-json".into()),
+    };
+    let recipe: BakeRecipe = if is_yaml {
+        serde_yaml::from_str(&content).map_err(|error| format!("invalid recipe YAML: {error}"))?
+    } else {
+        serde_json::from_str(&content).map_err(|error| format!("invalid recipe JSON: {error}"))?
+    };
+    let input = load_input_from(a.input, a.input_file, &[])?.bytes;
+    let result = rxchef::integration::bake(input, &recipe.into_steps())?;
+    if a.json {
+        println!(
+            "{}",
+            serde_json::to_string(&result).map_err(|error| error.to_string())?
+        );
+    } else {
+        write_output(&result.into_bytes()?, a.hex)?;
+    }
+    Ok(())
+}
+
+fn cmd_serve(a: ServeArgs) -> Result<(), String> {
+    if !a.stdio {
+        return Err("only --stdio transport is currently supported".into());
+    }
+    let stdin = io::stdin();
+    let stdout = io::stdout();
+    rxchef::integration::serve_jsonl(BufReader::new(stdin.lock()), stdout.lock())
 }
 
 // ─── Pipeline management ─────────────────────────────────────────────────────

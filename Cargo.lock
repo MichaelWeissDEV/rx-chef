@@ -5599,6 +5599,7 @@ dependencies = [
  "regex",
  "rxchef",
  "rxchef_store",
+ "serde",
  "serde_json",
  "serde_yaml",
 ]

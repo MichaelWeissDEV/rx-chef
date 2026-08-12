@@ -278,7 +278,7 @@ impl Operation for Lorenz {
             },
             ArgSchema {
                 name: "KT-Schalter",
-                description: "",
+                description: "Enable the SZ42a Klartext feedback switch",
                 default_value: "false",
             },
             ArgSchema {

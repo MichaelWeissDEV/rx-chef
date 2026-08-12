@@ -14,6 +14,7 @@ This is a **work in progress**. Things may break, APIs may change, and not every
 - Interactive TUI for building and running pipelines visually
 - FFI interface (C-compatible) for integration with other languages
 - Pipeline engine with automatic type coercion between steps
+- Persistent JSONL/JSON-RPC stdio server for Neovim and other editor plugins
 - **Magic** — a recursive detect-and-decode engine that peels back chained
   encodings (e.g. double Base64 → plaintext) and ranks candidates by entropy,
   printability and an optional known-plaintext crib
@@ -67,6 +68,18 @@ cargo test -p cyberchef-rust-tests --test pipeline
 ```
 
 ## CLI Usage
+
+### Machine-readable integration
+
+```bash
+rxchef operations --json
+rxchef operation describe "From Base64" --json
+rxchef bake --recipe recipe.json --input "SGVsbG8="
+rxchef bake --recipe-json '[{"op":"From Base64"}]' --input "SGVsbG8="
+rxchef serve --stdio
+```
+
+`serve --stdio` keeps one process open and supports `ping`, `operations`, `describe`, `run`, `bake`, and `shutdown`. Exact binary input/output uses Base64. See the [integration protocol](docs/cli/integration.md).
 
 ### List operations
 

@@ -10,5 +10,5 @@ Provides a place to write comments within the flow of the recipe. This operation
 
 | # | Argument | Default | Description |
 |---:|---|---|---|
-| 1 |  | `<empty>` | Comment text |
+| 1 | Comment | `<empty>` | Comment text |
 

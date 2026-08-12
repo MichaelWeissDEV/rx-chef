@@ -42,12 +42,12 @@ impl Operation for SHA2 {
                 default_value: "256",
             },
             ArgSchema {
-                name: "Rounds",
+                name: "Rounds (SHA-256)",
                 description: "Number of rounds for 256/224 (minimum 16)",
                 default_value: "64",
             },
             ArgSchema {
-                name: "Rounds",
+                name: "Rounds (SHA-512)",
                 description: "Number of rounds for 512/384/224/256 (minimum 32)",
                 default_value: "160",
             },

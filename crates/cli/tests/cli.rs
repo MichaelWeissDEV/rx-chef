@@ -38,8 +38,21 @@ fn top_level_and_subcommand_help_are_useful() {
     assert_success(&top);
     let help = String::from_utf8_lossy(&top.stdout);
     for command in [
-        "list", "info", "run", "pipe", "recipe", "pipeline", "var", "history", "magic", "scan",
+        "operations",
+        "operation",
+        "list",
+        "info",
+        "run",
+        "pipe",
+        "recipe",
+        "bake",
+        "pipeline",
+        "var",
+        "history",
+        "magic",
+        "scan",
         "project",
+        "serve",
     ] {
         assert!(
             help.contains(command),
@@ -107,4 +120,56 @@ fn invalid_pipeline_syntax_fails_with_context() {
     let output = rxchef(&["pipe", r#"to_hex,"broken"#], Some(b"hello"));
     assert!(!output.status.success());
     assert!(String::from_utf8_lossy(&output.stderr).contains("unclosed"));
+}
+
+#[test]
+fn integration_commands_expose_complete_descriptors() {
+    let output = rxchef(&["operations", "--json"], None);
+    assert_success(&output);
+    let operations: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+    let operations = operations.as_array().unwrap();
+    assert!(operations.len() > 400);
+    let base64 = operations
+        .iter()
+        .find(|operation| operation["name"] == "From Base64")
+        .expect("From Base64 descriptor");
+    assert!(base64["args"].is_array());
+    assert!(base64["description"].as_str().unwrap().len() > 10);
+
+    let output = rxchef(&["operation", "describe", "from_base64", "--json"], None);
+    assert_success(&output);
+    let descriptor: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+    assert_eq!(descriptor["name"], "From Base64");
+    assert_eq!(descriptor["input_type"], "String");
+}
+
+#[test]
+fn bake_accepts_inline_recipe_and_stdin() {
+    let recipe = r#"[{"op":"to_upper_case"},{"op":"to_base64"},{"op":"from_base64"}]"#;
+    let output = rxchef(&["bake", "--recipe-json", recipe], Some(b"Hello"));
+    assert_success(&output);
+    assert_eq!(output.stdout, b"HELLO");
+}
+
+#[test]
+fn stdio_server_handles_multiple_requests_in_one_process() {
+    let requests = concat!(
+        "{\"id\":1,\"method\":\"operations\"}\n",
+        "{\"id\":2,\"method\":\"describe\",\"params\":{\"operation\":\"XOR\"}}\n",
+        "{\"jsonrpc\":\"2.0\",\"id\":3,\"method\":\"bake\",\"params\":{\"input\":\"Hello\",\"recipe\":[{\"op\":\"to_upper_case\"},{\"op\":\"to_base64\"}]}}\n",
+        "{\"id\":4,\"method\":\"shutdown\"}\n"
+    );
+    let output = rxchef(&["serve", "--stdio"], Some(requests.as_bytes()));
+    assert_success(&output);
+    assert!(output.stderr.is_empty());
+    let responses: Vec<serde_json::Value> = String::from_utf8(output.stdout)
+        .unwrap()
+        .lines()
+        .map(|line| serde_json::from_str(line).unwrap())
+        .collect();
+    assert_eq!(responses.len(), 4);
+    assert!(responses[0]["result"].as_array().unwrap().len() > 400);
+    assert_eq!(responses[1]["result"]["name"], "XOR");
+    assert_eq!(responses[2]["result"]["output"], "SEVMTE8=");
+    assert_eq!(responses[3]["result"]["shutdown"], true);
 }

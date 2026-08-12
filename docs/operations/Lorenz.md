@@ -12,7 +12,7 @@ The Lorenz SZ40/42 cipher attachment was a WW2 German rotor cipher machine.
 |---:|---|---|---|
 | 1 | Model | `SZ40` | SZ40, SZ42a, SZ42b |
 | 2 | Wheel Pattern | `KH Pattern` | KH, ZMUG, BREAM, etc. |
-| 3 | KT-Schalter | `false` |  |
+| 3 | KT-Schalter | `false` | Enable the SZ42a Klartext feedback switch |
 | 4 | Mode | `Send` | Send or Receive |
 | 5 | Input Type | `Plaintext` | Plaintext or ITA2 |
 | 6 | Output Type | `Plaintext` | Plaintext or ITA2 |

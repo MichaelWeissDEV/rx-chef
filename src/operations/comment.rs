@@ -32,7 +32,7 @@ impl Operation for CommentOp {
 
     fn args_schema(&self) -> &'static [ArgSchema] {
         static SCHEMA: &[ArgSchema] = &[ArgSchema {
-            name: "",
+            name: "Comment",
             description: "Comment text",
             default_value: "",
         }];

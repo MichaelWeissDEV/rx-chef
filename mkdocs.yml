@@ -1,10 +1,82 @@
-site_name: rx-chef
+site_name: rxchef
 site_url: https://rx-chef.readthedocs.io/
 repo_url: https://github.com/MichaelWeissDEV/rx-chef
-site_description: CyberChef operations in the terminal
+site_description: CyberChef-style transformation operations in the terminal
 
 theme:
   name: readthedocs
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Quickstart: getting-started/quickstart.md
+      - First Pipeline: getting-started/first-pipeline.md
+  - Project:
+      - Overview: project/overview.md
+      - Project Structure: project/structure.md
+      - Licensing: project/licensing.md
+      - Contributing: project/contributing.md
+  - Architecture:
+      - Overview: architecture/overview.md
+      - Execution Engine: architecture/execution-engine.md
+      - Operation Model: architecture/operation-model.md
+      - Pipeline Engine: architecture/pipeline-engine.md
+      - Registry: architecture/registry.md
+      - Generated Code: architecture/generated-code.md
+      - Magic: architecture/magic.md
+      - Scan: architecture/scan.md
+      - Store: architecture/store.md
+      - TUI: architecture/tui.md
+      - Workspace: architecture/workspace.md
+      - FFI: architecture/ffi.md
+  - Concepts:
+      - Data model: concepts/data-model.md
+      - Errors and exit codes: concepts/errors-and-exit-codes.md
+      - Input and output: concepts/input-output.md
+      - Operation arguments: concepts/operation-arguments.md
+      - Pipelines: concepts/pipelines.md
+      - Recipes: concepts/recipes.md
+      - Security model: concepts/security-model.md
+      - Storage: concepts/storage.md
+      - Variables: concepts/variables.md
+  - CLI:
+      - Overview: cli/index.md
+      - History: cli/history.md
+      - Info: cli/info.md
+      - List: cli/list.md
+      - Magic: cli/magic.md
+      - Pipe: cli/pipe.md
+      - Pipeline syntax: cli/pipelines.md
+      - Pipeline: cli/pipeline.md
+      - Project: cli/project.md
+      - Recipe: cli/recipe.md
+      - Recipe formats: cli/recipes.md
+      - Editor integration: cli/integration.md
+      - Reference: cli/reference.md
+      - Run: cli/run.md
+      - Scan: cli/scan.md
+      - Var: cli/var.md
+  - Operations:
+      - Overview: operations/index.md
+  - Rust library: library.md
+  - Performance:
+      - Methodology: performance/methodology.md
+      - Results: performance/results.md
+  - Reference:
+      - Operations matrix: reference/operation-matrix.md
+      - Feature matrix: reference/feature-matrix.md
+      - JSON output: reference/json-output.md
+      - Reference index: reference/operations.md
+  - Development:
+      - Building: development/building.md
+      - Adding an operation: development/adding-an-operation.md
+      - Documenting an operation: development/documenting-an-operation.md
+      - Testing: development/testing.md
+      - Benchmarking: development/benchmarking.md
+      - Fuzzing: development/fuzzing.md
+      - Release process: development/release-process.md
+      - Current status: development/current-status.md
 
 markdown_extensions:
   - toc:
@@ -12,3 +84,8 @@ markdown_extensions:
   - admonition
   - codehilite
   - tables
+  - attr_list
+
+not_in_nav: |
+  /installation.md
+  /operations/*.md

@@ -2,6 +2,28 @@
 
 The `rxchef` crate exposes operation discovery, direct execution, typed values, pipelines, Magic, and scanning. Operations are stateless boxed trait objects and can be looked up by canonical name.
 
+## Integration API
+
+Editor and plugin authors can use the same API that backs `operations`, `operation describe`, `bake`, and `serve --stdio`:
+
+```rust
+use rxchef::integration::{self, RecipeStep};
+
+let catalog = integration::operations()?;
+let xor = integration::describe("xor")?;
+let result = integration::bake(
+    b"Hello".to_vec(),
+    &[RecipeStep { op: "to_base64".into(), args: vec![] }],
+)?;
+
+assert!(!catalog.is_empty());
+assert_eq!(xor.name, "XOR");
+assert_eq!(result.output, "SGVsbG8=");
+# Ok::<(), String>(())
+```
+
+`ExecutionResult` contains a lossy display string plus exact Base64 bytes. `serve_jsonl(reader, writer)` exposes the protocol without depending on the CLI crate, so Rust hosts can reuse it over any buffered I/O transport.
+
 ## Direct operation use
 
 ```rust

@@ -10,6 +10,7 @@
  */
 
 pub mod ffi;
+pub mod integration;
 pub mod magic;
 pub mod operation;
 pub mod operations;

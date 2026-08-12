@@ -21,11 +21,28 @@ fn inline_code(value: &str) -> String {
     }
 }
 
+fn write_or_check(path: &std::path::Path, content: &str, check: bool) -> Result<(), String> {
+    if check {
+        let current = fs::read_to_string(path)
+            .map_err(|error| format!("cannot read {}: {error}", path.display()))?;
+        if current != content {
+            return Err(format!(
+                "{} is stale; run `cargo run -p xtask -- docs`",
+                path.display()
+            ));
+        }
+        Ok(())
+    } else {
+        fs::write(path, content).map_err(|error| error.to_string())
+    }
+}
+
 fn main() -> Result<(), String> {
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 || args[1] != "docs" {
         return Ok(());
     }
+    let check = args.iter().any(|arg| arg == "--check");
 
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     let workspace_root = PathBuf::from(manifest_dir).join("../../");
@@ -35,14 +52,14 @@ fn main() -> Result<(), String> {
 
     let names = operation_names(None);
     let mut modules: BTreeMap<String, Vec<String>> = BTreeMap::new();
-    
+
     for name in &names {
         let info = operation_info(name)?;
         modules
             .entry(info.module.to_string())
             .or_default()
             .push(name.clone());
-            
+
         let mut out = String::new();
         out.push_str(&format!("# {}\n\n", info.name));
         if info.is_broken {
@@ -59,7 +76,9 @@ fn main() -> Result<(), String> {
         if info.args.is_empty() {
             out.push_str("- Arguments: none\n\n");
         } else {
-            out.push_str("\n## Arguments\n\n| # | Argument | Default | Description |\n|---:|---|---|---|\n");
+            out.push_str(
+                "\n## Arguments\n\n| # | Argument | Default | Description |\n|---:|---|---|---|\n",
+            );
             for (index, arg) in info.args.iter().enumerate() {
                 out.push_str(&format!(
                     "| {} | {} | {} | {} |\n",
@@ -71,9 +90,9 @@ fn main() -> Result<(), String> {
             }
             out.push('\n');
         }
-        
+
         let file_name = format!("{}.md", name.replace('/', "_"));
-        fs::write(docs_dir.join(&file_name), out).map_err(|e| e.to_string())?;
+        write_or_check(&docs_dir.join(&file_name), &out, check)?;
     }
 
     let mut index = String::new();
@@ -84,7 +103,7 @@ fn main() -> Result<(), String> {
         names.len()
     ));
     index.push_str("Arguments are positional in the order shown. Omitted arguments use their defaults. CLI values are strings unless prefixed with `num:`, `bool:`, `hex:`, or `bytes:`. For named arguments use `rxchef run <OP> --arg NAME=VALUE`.\n\n");
-    
+
     for (module, operations) in &modules {
         index.push_str(&format!("## {}\n\n", module));
         for name in operations {
@@ -94,9 +113,27 @@ fn main() -> Result<(), String> {
         }
         index.push('\n');
     }
-    
-    fs::write(docs_dir.join("index.md"), index).map_err(|e| e.to_string())?;
-    
-    println!("generated operations docs in docs/operations/");
+
+    write_or_check(&docs_dir.join("index.md"), &index, check)?;
+
+    if check {
+        let markdown_files = fs::read_dir(&docs_dir)
+            .map_err(|error| error.to_string())?
+            .filter_map(Result::ok)
+            .filter(|entry| entry.path().extension().and_then(|value| value.to_str()) == Some("md"))
+            .count();
+        let expected = names.len() + 1;
+        if markdown_files != expected {
+            return Err(format!(
+                "operation docs contain {markdown_files} Markdown files, expected {expected}"
+            ));
+        }
+        println!(
+            "operation documentation is current ({} operations)",
+            names.len()
+        );
+    } else {
+        println!("generated operations docs in docs/operations/");
+    }
     Ok(())
 }

@@ -11,6 +11,6 @@ The SHA-2 (Secure Hash Algorithm 2) hash functions were designed by the NSA. SHA
 | # | Argument | Default | Description |
 |---:|---|---|---|
 | 1 | Size | `256` | Output size (224, 256, 384, 512, 512/256, 512/224) |
-| 2 | Rounds | `64` | Number of rounds for 256/224 (minimum 16) |
-| 3 | Rounds | `160` | Number of rounds for 512/384/224/256 (minimum 32) |
+| 2 | Rounds (SHA-256) | `64` | Number of rounds for 256/224 (minimum 16) |
+| 3 | Rounds (SHA-512) | `160` | Number of rounds for 512/384/224/256 (minimum 32) |
 
