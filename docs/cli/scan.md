@@ -1,1 +1,22 @@
-# Placeholder for cli/scan.md
+# Scan command
+
+The `scan` command searches input streams or files for encoded data, suspicious tokens, or other content worth investigating.
+
+## Usage
+
+```bash
+rxchef scan dump.bin
+rxchef scan ./logs -r --decode
+```
+
+## What it helps with
+
+- find candidate strings in large files,
+- identify data that may be encoded,
+- and optionally hand results to the decode engine for deeper analysis.
+
+## Related pages
+
+- [Magic](magic.md)
+- [CLI overview](index.md)
+- [Architecture: Scan](../architecture/scan.md)

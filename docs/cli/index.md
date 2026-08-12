@@ -1,50 +1,41 @@
-# Command-line interface
+# CLI overview
 
-The installed executable is `rxchef`. Help is available at every level:
+The rxchef CLI is the primary interface for executing operations, composing pipelines, and managing saved state.
 
-```console
-rxchef --help
-rxchef bake --help
-rxchef operation describe --help
-rxchef serve --help
-```
+## Typical usage
 
-## Human and machine discovery
-
-```console
+```bash
 rxchef list hash
 rxchef info "From Base64"
-rxchef operations --json
-rxchef operation describe from_base64 --json
+rxchef run "From Base64" --input "SGVsbG8="
+rxchef pipe to_upper_case to_base64 --input "hello"
 ```
 
-Use `list` and `info` interactively. Integrations should use `operations --json` and `operation describe --json`, whose complete descriptors are shared with the library and stdio server.
+## Common command groups
 
-## Input and output
+- `list` discovers available operations,
+- `info` shows the metadata and parameters for an operation,
+- `run` executes one operation,
+- `pipe` composes several operations inline,
+- `scan` searches files or streams for suspicious or encoded content,
+- `magic` recursively attempts decode chains,
+- and `var` / project commands manage persistent state.
 
-Execution commands accept literal `--input`, exact bytes from `--input-file`, or stdin when neither option is present:
+## Input and output model
 
-```console
-rxchef run to_base64 --input Hello
-rxchef run detect_file_type --input-file sample.bin
-printf Hello | rxchef pipe to_upper_case to_base64
-```
+CLI commands accept:
 
-Final data goes to stdout. Diagnostics and traces go to stderr. Redirected text output is not given an extra newline, so shell pipelines remain byte-clean.
+- direct input via `--input`,
+- file input via `--input-file`,
+- or piped stdin when no explicit input is supplied.
 
-## Recipes
+Output is streamed to stdout while diagnostics and trace information remain on stderr, so Unix pipelines stay clean and composable.
 
-`recipe` integrates with saved recipes and history. `bake` is the stateless machine-facing form:
+## Related pages
 
-```console
-rxchef bake --recipe recipe.yaml --input Hello
-printf Hello | rxchef bake --recipe-json '[{"op":"to_base64"}]'
-```
-
-## Persistent editor integration
-
-```console
-rxchef serve --stdio
-```
-
-The server accepts JSONL/JSON-RPC requests until EOF and is designed to be started once by an editor plugin. See the [protocol specification](integration.md).
+- [List](list.md)
+- [Info](info.md)
+- [Run](run.md)
+- [Pipe](pipe.md)
+- [Scan](scan.md)
+- [Magic](magic.md)
