@@ -1,7 +1,6 @@
 /*
  * -----------------------------------------------------------------------------
  * Project:     rxchef
- * Version:     1.0.0
  * Author:      Michael Weiss
  * Source:      Ported from GCHQ's CyberChef (JavaScript)
  * License:     Apache-2.0
@@ -14,8 +13,7 @@ use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError}
 /// PGP Encrypt and Sign operation
 ///
 /// Encrypts a message to a recipient and signs it with the sender's private key.
-/// This is a stub implementation - full PGP operation requires key material
-/// at runtime and sequoia-openpgp integration.
+/// The implementation is available when the `pgp` feature is enabled.
 pub struct PGPEncryptAndSign;
 
 impl Operation for PGPEncryptAndSign {
@@ -64,6 +62,10 @@ impl Operation for PGPEncryptAndSign {
 
     fn is_broken(&self) -> bool {
         !cfg!(feature = "pgp")
+    }
+
+    fn feature_requirements(&self) -> &'static [&'static str] {
+        &["pgp"]
     }
 
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {

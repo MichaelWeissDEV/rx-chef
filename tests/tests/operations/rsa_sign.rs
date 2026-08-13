@@ -6,7 +6,7 @@ use rxchef::operation::ArgValue;
 use rxchef::operations::rsa_sign::RSASign;
 use rxchef::Operation;
 
-// NOTE: The above is a dummy key with replaced content for size, it won't actually work as a real key.
+// NOTE: The fixture is intentionally invalid and exercises key rejection.
 // I should generate a small real key for testing.
 #[test]
 fn test_rsa_sign_invalid_key() {

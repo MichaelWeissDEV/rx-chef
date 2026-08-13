@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use crate::{
     models::Recipe,
-    paths::{ensure_dir, recipes_dir, Scope},
+    paths::{atomic_write, ensure_scope_dir, recipes_dir, Scope},
     StoreError,
 };
 
@@ -69,12 +69,26 @@ pub fn list_recipes(scope: Option<Scope>) -> Vec<RecipeMeta> {
 
 /// Load recipe by name, searching project scope first then global.
 pub fn load_recipe(name: &str) -> Result<Recipe, StoreError> {
+    load_recipe_resolved(name)
+}
+
+pub fn load_recipe_resolved(name: &str) -> Result<Recipe, StoreError> {
     for scope in [Scope::Project, Scope::Global] {
         if let Some(path) = find_recipe_file(name, scope) {
             return load_file(&path);
         }
     }
     Err(StoreError::NotFound(format!("recipe '{}'", name)))
+}
+
+pub fn load_recipe_in_scope(name: &str, scope: Scope) -> Result<Recipe, StoreError> {
+    let path = find_recipe_file(name, scope)
+        .ok_or_else(|| StoreError::NotFound(format!("recipe '{}' in {:?} scope", name, scope)))?;
+    load_file(&path)
+}
+
+pub fn load_recipe_file(path: &std::path::Path) -> Result<Recipe, StoreError> {
+    load_file(path)
 }
 
 fn find_recipe_file(name: &str, scope: Scope) -> Option<PathBuf> {
@@ -151,13 +165,12 @@ fn load_file(path: &std::path::Path) -> Result<Recipe, StoreError> {
 // ─── Save ─────────────────────────────────────────────────────────────────────
 
 pub fn save_recipe(recipe: &Recipe, scope: Scope) -> Result<PathBuf, StoreError> {
+    ensure_scope_dir(scope)?;
     let dir = recipes_dir(scope);
-    ensure_dir(&dir)?;
+    std::fs::create_dir_all(&dir)?;
     let path = dir.join(format!("{}.json", sanitize_name(&recipe.name)));
     let json = serde_json::to_string_pretty(recipe)?;
-    let tmp = path.with_extension("tmp");
-    std::fs::write(&tmp, &json)?;
-    std::fs::rename(&tmp, &path)?;
+    atomic_write(&path, json.as_bytes(), false)?;
     Ok(path)
 }
 

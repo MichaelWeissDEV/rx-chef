@@ -24,6 +24,12 @@ Without a persistence layer, user-level workflow state would disappear after eac
 
 The store is intentionally separate from the core transformation engine so that data persistence does not leak into the operation execution logic. This keeps the runtime domain model clean and easier to evolve.
 
+Global state normally lives in the platform configuration directory and can be
+redirected with `RXCHEF_HOME`. Project state is the nearest ancestor `.rxchef`
+directory and must be created with `rxchef project init`. Reads resolve project
+before global, while every mutation names one exact scope. Store documents are
+written through a flushed, synced temporary file and atomic rename.
+
 ## Related pages
 
 - [Workspace](workspace.md)

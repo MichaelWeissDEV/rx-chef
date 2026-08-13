@@ -25,7 +25,6 @@ fn test_add_text_to_image_invalid_format() {
 
 #[test]
 fn test_add_text_to_image_with_text() {
-    // This test will likely fail without the font file, but we can test the basic flow
     let op = AddTextToImage;
 
     // Create a simple 1x1 PNG image
@@ -47,18 +46,9 @@ fn test_add_text_to_image_with_text() {
         rxchef::operation::ArgValue::Num(255.0),
     ];
 
-    let result = op.run(img_buf, &args);
-    // This may fail due to missing font, but we can at least test that it doesn't panic
-    // and handles the error gracefully
-    if result.is_err() {
-        // Expected when font is not available
-        let err = result.unwrap_err();
-        assert!(err.to_string().contains("font") || err.to_string().contains("Font"));
-    } else {
-        // If font is available, we should get valid image data
-        let output = result.unwrap();
-        assert!(!output.is_empty());
-    }
+    let output = op.run(img_buf, &args).unwrap();
+    let rendered = image::load_from_memory(&output).unwrap().to_rgba8();
+    assert!(rendered.pixels().any(|pixel| pixel[3] != 0));
 }
 
 #[test]
@@ -88,9 +78,8 @@ fn test_add_text_to_image_different_alignments() {
             rxchef::operation::ArgValue::Num(255.0),
         ];
 
-        let result = op.run(img_buf.clone(), &args);
-        // Similar to above, this may fail due to font, but shouldn't panic
-        assert!(result.is_ok() || result.unwrap_err().to_string().contains("font"));
+        let output = op.run(img_buf.clone(), &args).unwrap();
+        assert_eq!(image::load_from_memory(&output).unwrap().width(), 200);
     }
 }
 
@@ -118,7 +107,9 @@ fn test_add_text_to_image_custom_colors() {
         rxchef::operation::ArgValue::Num(255.0), // Alpha
     ];
 
-    let result = op.run(img_buf, &args);
-    // This may fail due to missing font, but shouldn't panic
-    assert!(result.is_ok() || result.unwrap_err().to_string().contains("font"));
+    let output = op.run(img_buf, &args).unwrap();
+    let rendered = image::load_from_memory(&output).unwrap().to_rgba8();
+    assert!(rendered
+        .pixels()
+        .any(|pixel| pixel[0] > 0 && pixel[1] == 0 && pixel[2] == 0));
 }

@@ -1,23 +1,90 @@
 # Heatmap chart
 
+## Overview
+
 A heatmap is a graphical representation of data where the individual values contained in a matrix are represented as colors.
 
-- Input: `String`
-- Output: `HTML`
-- CLI: `rxchef run "Heatmap chart"`
+## Status
+
+| Field | Value |
+|---|---|
+| Implementation | `Partial` |
+| Parity | `Unknown` |
+| Availability | available |
+| Features | none |
+| Side effects | `[]` |
+| Deterministic | true |
+
+## Input
+
+Declared input type: `String`.
+
+## Output
+
+Declared output type: `HTML`. Redirect stdout or use `--output-file` for exact binary bytes.
 
 ## Arguments
 
-| # | Argument | Default | Description |
-|---:|---|---|---|
-| 1 | Record delimiter | `Line feed` | The record delimiter |
-| 2 | Field delimiter | `Comma` | The field delimiter |
-| 3 | Number of vertical bins | `25` | Number of vertical bins |
-| 4 | Number of horizontal bins | `25` | Number of horizontal bins |
-| 5 | Use column headers as labels | `true` | Use column headers as labels |
-| 6 | X label | `<empty>` | X label |
-| 7 | Y label | `<empty>` | Y label |
-| 8 | Draw bin edges | `false` | Draw bin edges |
-| 9 | Min colour value | `white` | Min colour value |
-| 10 | Max colour value | `black` | Max colour value |
+| # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
+|---:|---|---|:---:|---|---|:---:|---|
+| 1 | Record delimiter | `String` | no | `Line feed` | — | no | The record delimiter |
+| 2 | Field delimiter | `String` | no | `Comma` | — | no | The field delimiter |
+| 3 | Number of vertical bins | `Integer` | no | `25` | — | no | Number of vertical bins |
+| 4 | Number of horizontal bins | `Integer` | no | `25` | — | no | Number of horizontal bins |
+| 5 | Use column headers as labels | `Boolean` | no | `true` | — | no | Use column headers as labels |
+| 6 | X label | `String` | no | `<empty>` | — | no | X label |
+| 7 | Y label | `String` | no | `<empty>` | — | no | Y label |
+| 8 | Draw bin edges | `Boolean` | no | `false` | — | no | Draw bin edges |
+| 9 | Min colour value | `String` | no | `white` | — | no | Min colour value |
+| 10 | Max colour value | `String` | no | `black` | — | no | Max colour value |
 
+## How it works
+
+The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+
+## Implementation
+
+Source module: `src/operations/heatmap_chart.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+
+## Examples
+
+```console
+printf 'input' | rxchef run "Heatmap chart"
+```
+
+For file or binary input use `rxchef run "Heatmap chart" --input-file INPUT --output-file OUTPUT`.
+
+## Pipeline usage
+
+```console
+printf 'input' | rxchef pipe "Heatmap chart" to_base64
+```
+
+## Error conditions
+
+Invalid input representations, invalid argument values, unavailable feature backends, and operation-specific processing failures return an error and a non-zero CLI status. Exact limitations are listed below when known.
+
+## CyberChef compatibility
+
+Parity status: `Unknown`. `Unknown` means compatibility has not been independently verified and must not be read as an exact-match claim.
+
+## Security considerations
+
+Side effects: `[]`. Treat parser inputs as untrusted and use execution limits for large data. Sensitive arguments are redacted by metadata-aware History output.
+
+## Testing
+
+The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+
+## Performance
+
+See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+
+## Limitations
+
+No verified limitation metadata is currently recorded; this is not a claim of perfect upstream parity.
+
+## References
+
+- [Operation quality matrix](../reference/operation-matrix.md)
+- [CLI run documentation](../cli/run.md)

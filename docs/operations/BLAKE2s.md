@@ -1,16 +1,83 @@
 # BLAKE2s
 
+## Overview
+
 Performs BLAKE2s hashing on the input. BLAKE2s is a flavour of the BLAKE cryptographic hash function that is optimized for 8- to 32-bit platforms and produces digests of any size between 1 and 32 bytes. Supports the use of an optional key.
 
-- Input: `Bytes`
-- Output: `String`
-- CLI: `rxchef run "BLAKE2s"`
+## Status
+
+| Field | Value |
+|---|---|
+| Implementation | `Partial` |
+| Parity | `Unknown` |
+| Availability | available |
+| Features | none |
+| Side effects | `[]` |
+| Deterministic | true |
+
+## Input
+
+Declared input type: `Bytes`.
+
+## Output
+
+Declared output type: `String`. Redirect stdout or use `--output-file` for exact binary bytes.
 
 ## Arguments
 
-| # | Argument | Default | Description |
-|---:|---|---|---|
-| 1 | Size | `256` | Output size in bits (256, 160, 128) |
-| 2 | Output Encoding | `Hex` | Output encoding (Hex, Base64, Raw) |
-| 3 | Key | `<empty>` | Optional key for keyed hashing |
+| # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
+|---:|---|---|:---:|---|---|:---:|---|
+| 1 | Size | `Integer` | no | `256` | — | no | Output size in bits (256, 160, 128) |
+| 2 | Output Encoding | `String` | no | `Hex` | — | no | Output encoding (Hex, Base64, Raw) |
+| 3 | Key | `String` | no | `<empty>` | — | no | Optional key for keyed hashing |
 
+## How it works
+
+The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+
+## Implementation
+
+Source module: `src/operations/blake2s.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+
+## Examples
+
+```console
+printf 'input' | rxchef run "BLAKE2s"
+```
+
+For file or binary input use `rxchef run "BLAKE2s" --input-file INPUT --output-file OUTPUT`.
+
+## Pipeline usage
+
+```console
+printf 'input' | rxchef pipe "BLAKE2s" to_base64
+```
+
+## Error conditions
+
+Invalid input representations, invalid argument values, unavailable feature backends, and operation-specific processing failures return an error and a non-zero CLI status. Exact limitations are listed below when known.
+
+## CyberChef compatibility
+
+Parity status: `Unknown`. `Unknown` means compatibility has not been independently verified and must not be read as an exact-match claim.
+
+## Security considerations
+
+Side effects: `[]`. Treat parser inputs as untrusted and use execution limits for large data. Sensitive arguments are redacted by metadata-aware History output.
+
+## Testing
+
+The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+
+## Performance
+
+See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+
+## Limitations
+
+No verified limitation metadata is currently recorded; this is not a claim of perfect upstream parity.
+
+## References
+
+- [Operation quality matrix](../reference/operation-matrix.md)
+- [CLI run documentation](../cli/run.md)

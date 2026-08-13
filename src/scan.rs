@@ -58,6 +58,8 @@ pub struct ScanOptions {
     /// Restrict reported findings to these decoders (matched against `kinds`).
     /// Empty means "any".
     pub only_kinds: Vec<String>,
+    /// Stop emitting after this many findings.
+    pub max_findings: usize,
 }
 
 impl Default for ScanOptions {
@@ -70,6 +72,7 @@ impl Default for ScanOptions {
             crib: None,
             min_entropy: 0.0,
             only_kinds: Vec::new(),
+            max_findings: 10_000,
         }
     }
 }
@@ -102,6 +105,7 @@ pub struct Scanner {
     pos: u64,
     /// True once `pending` hit `max_len` and further run bytes are dropped.
     truncated: bool,
+    findings: usize,
 }
 
 impl Scanner {
@@ -112,12 +116,21 @@ impl Scanner {
             pending_start: 0,
             pos: 0,
             truncated: false,
+            findings: 0,
         }
+    }
+
+    /// Whether the configured finding budget has been exhausted.
+    pub fn limit_reached(&self) -> bool {
+        self.findings >= self.opts.max_findings
     }
 
     /// Feed a chunk. `emit` is called for every completed token that passes the
     /// configured filters.
     pub fn push<F: FnMut(Finding)>(&mut self, chunk: &[u8], emit: &mut F) {
+        if self.limit_reached() {
+            return;
+        }
         for &b in chunk {
             if is_token_byte(b) {
                 if self.pending.is_empty() {
@@ -130,6 +143,9 @@ impl Scanner {
                 }
             } else if !self.pending.is_empty() {
                 self.flush_pending(emit);
+                if self.limit_reached() {
+                    return;
+                }
             }
             self.pos += 1;
         }
@@ -146,7 +162,11 @@ impl Scanner {
         let token = std::mem::take(&mut self.pending);
         let start = self.pending_start;
         let truncated = std::mem::replace(&mut self.truncated, false);
+        if self.limit_reached() {
+            return;
+        }
         if let Some(f) = self.evaluate(token, start, truncated) {
+            self.findings += 1;
             emit(f);
         }
     }
@@ -184,6 +204,7 @@ impl Scanner {
                 crib: self.opts.crib.clone(),
                 intensive: false,
                 max_results: 1,
+                ..MagicOptions::default()
             };
             let results = magic::magic(&token, &opts);
             // With a crib set, only keep findings that actually matched it.
@@ -339,5 +360,22 @@ mod tests {
         let findings = scan_bytes(data, opts);
         assert_eq!(findings.len(), 1);
         assert_eq!(findings[0].decoded.as_deref(), Some("Hello World"));
+    }
+
+    #[test]
+    fn finding_and_token_limits_bound_streaming_work() {
+        let opts = ScanOptions {
+            min_len: 8,
+            max_len: 12,
+            max_findings: 1,
+            ..ScanOptions::default()
+        };
+        let findings = scan_bytes(
+            b"SGVsbG8gV29ybGQ= U0dWc2JHOD0= QUJDREVGR0hJSktMTU5PUA==",
+            opts,
+        );
+        assert_eq!(findings.len(), 1);
+        assert!(findings[0].token.ends_with('…'));
+        assert!(findings[0].len <= 12);
     }
 }

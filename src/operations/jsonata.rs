@@ -1,7 +1,6 @@
 /*
  * -----------------------------------------------------------------------------
  * Project:     rxchef
- * Version:     1.1.0
  * Author:      Michael Weiss
  * Source:      Ported from GCHQ's CyberChef (JavaScript)
  * License:     Apache-2.0
@@ -50,6 +49,10 @@ impl Operation for Jsonata {
         return true;
         #[cfg(feature = "jsonata")]
         return false;
+    }
+
+    fn feature_requirements(&self) -> &'static [&'static str] {
+        &["jsonata"]
     }
 
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {

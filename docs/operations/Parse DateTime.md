@@ -1,15 +1,82 @@
 # Parse DateTime
 
+## Overview
+
 Parses a DateTime string using strftime format specifiers and displays detailed date/time information including day of year, week number, quarter, and leap year status. Format uses strftime tokens (e.g. %d/%m/%Y %H:%M:%S).
 
-- Input: `String`
-- Output: `String`
-- CLI: `rxchef run "Parse DateTime"`
+## Status
+
+| Field | Value |
+|---|---|
+| Implementation | `Partial` |
+| Parity | `Unknown` |
+| Availability | available |
+| Features | none |
+| Side effects | `[]` |
+| Deterministic | true |
+
+## Input
+
+Declared input type: `String`.
+
+## Output
+
+Declared output type: `String`. Redirect stdout or use `--output-file` for exact binary bytes.
 
 ## Arguments
 
-| # | Argument | Default | Description |
-|---:|---|---|---|
-| 1 | Input format string | `%d/%m/%Y %H:%M:%S` | strftime format string (e.g. %d/%m/%Y %H:%M:%S) |
-| 2 | Input timezone | `UTC` | Timezone name (currently UTC only) |
+| # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
+|---:|---|---|:---:|---|---|:---:|---|
+| 1 | Input format string | `String` | no | `%d/%m/%Y %H:%M:%S` | — | no | strftime format string (e.g. %d/%m/%Y %H:%M:%S) |
+| 2 | Input timezone | `String` | no | `UTC` | — | no | Timezone name (currently UTC only) |
 
+## How it works
+
+The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+
+## Implementation
+
+Source module: `src/operations/parse_date_time.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+
+## Examples
+
+```console
+printf 'input' | rxchef run "Parse DateTime"
+```
+
+For file or binary input use `rxchef run "Parse DateTime" --input-file INPUT --output-file OUTPUT`.
+
+## Pipeline usage
+
+```console
+printf 'input' | rxchef pipe "Parse DateTime" to_base64
+```
+
+## Error conditions
+
+Invalid input representations, invalid argument values, unavailable feature backends, and operation-specific processing failures return an error and a non-zero CLI status. Exact limitations are listed below when known.
+
+## CyberChef compatibility
+
+Parity status: `Unknown`. `Unknown` means compatibility has not been independently verified and must not be read as an exact-match claim.
+
+## Security considerations
+
+Side effects: `[]`. Treat parser inputs as untrusted and use execution limits for large data. Sensitive arguments are redacted by metadata-aware History output.
+
+## Testing
+
+The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+
+## Performance
+
+See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+
+## Limitations
+
+No verified limitation metadata is currently recorded; this is not a claim of perfect upstream parity.
+
+## References
+
+- [Operation quality matrix](../reference/operation-matrix.md)
+- [CLI run documentation](../cli/run.md)

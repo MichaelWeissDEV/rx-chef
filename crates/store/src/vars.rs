@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::{
     models::Variable,
-    paths::{ensure_dir, store_dir, vars_path, Scope},
+    paths::{atomic_write, ensure_scope_dir, vars_path, Scope},
     StoreError,
 };
 
@@ -20,12 +20,10 @@ fn load_vars(scope: Scope) -> VarMap {
 }
 
 fn save_vars(scope: Scope, map: &VarMap) -> Result<(), StoreError> {
+    ensure_scope_dir(scope)?;
     let path = vars_path(scope);
-    ensure_dir(path.parent().unwrap_or(store_dir(scope).as_path()))?;
     let json = serde_json::to_string_pretty(map)?;
-    let tmp = path.with_extension("tmp");
-    std::fs::write(&tmp, &json)?;
-    std::fs::rename(&tmp, &path)?;
+    atomic_write(&path, json.as_bytes(), true)?;
     Ok(())
 }
 
@@ -33,6 +31,16 @@ fn save_vars(scope: Scope, map: &VarMap) -> Result<(), StoreError> {
 
 /// Set a variable in the given scope.
 pub fn set_var(name: &str, value: &str, description: &str, scope: Scope) -> Result<(), StoreError> {
+    set_var_with_options(name, value, description, false, scope)
+}
+
+pub fn set_var_with_options(
+    name: &str,
+    value: &str,
+    description: &str,
+    secret: bool,
+    scope: Scope,
+) -> Result<(), StoreError> {
     let mut map = load_vars(scope);
     map.insert(
         name.to_uppercase(),
@@ -40,6 +48,7 @@ pub fn set_var(name: &str, value: &str, description: &str, scope: Scope) -> Resu
             name: name.to_uppercase(),
             value: value.to_string(),
             description: description.to_string(),
+            secret,
         },
     );
     save_vars(scope, &map)
@@ -58,17 +67,25 @@ pub fn get_var(name: &str) -> Option<String> {
 
 /// List variables from the given scope (or both if None).
 pub fn list_vars(scope: Option<Scope>) -> Vec<Variable> {
-    let mut result: HashMap<String, Variable> = HashMap::new();
+    list_vars_with_scope(scope)
+        .into_iter()
+        .map(|(_, variable)| variable)
+        .collect()
+}
+
+/// List resolved variables while retaining the scope that supplied each value.
+pub fn list_vars_with_scope(scope: Option<Scope>) -> Vec<(Scope, Variable)> {
+    let mut result: HashMap<String, (Scope, Variable)> = HashMap::new();
     // Load global first, then project overrides
     for s in [Scope::Global, Scope::Project] {
         if scope.is_none() || scope == Some(s) {
             for (k, v) in load_vars(s) {
-                result.insert(k, v);
+                result.insert(k, (s, v));
             }
         }
     }
-    let mut vars: Vec<Variable> = result.into_values().collect();
-    vars.sort_by(|a, b| a.name.cmp(&b.name));
+    let mut vars: Vec<(Scope, Variable)> = result.into_values().collect();
+    vars.sort_by(|a, b| a.1.name.cmp(&b.1.name));
     vars
 }
 

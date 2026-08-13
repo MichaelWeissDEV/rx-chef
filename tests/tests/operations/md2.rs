@@ -2,7 +2,6 @@
 // Run only these tests:
 //   cargo test -p cyberchef-rust-tests --test operations md2::
 
-use rxchef::operation::ArgValue;
 use rxchef::operations::md2::MD2;
 use rxchef::Operation;
 
@@ -33,10 +32,7 @@ fn test_md2_binary() {
     assert_eq!(output.len(), 32); // 128 bits = 32 hex chars
 }
 #[test]
-fn test_md2_rounds_validation() {
+fn test_md2_does_not_advertise_fake_rounds_parameter() {
     let operation = MD2;
-    let input = b"test".to_vec();
-    let args = [ArgValue::Num(-1.0)]; // Invalid - negative rounds
-    let result = operation.run(input, &args);
-    assert!(result.is_err());
+    assert!(operation.args_schema().is_empty());
 }

@@ -1,5 +1,15 @@
 # Project files
 
+Initialize project-local storage explicitly:
+
+```console
+rxchef project init
+```
+
+Commands invoked in this directory or any descendant discover that `.rxchef`
+directory by walking upwards. Project-scoped mutations never create it
+implicitly.
+
 A project combines input, variables, and a pipeline in one JSON/YAML document.
 
 ```yaml

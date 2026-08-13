@@ -1,0 +1,37 @@
+[package]
+name = "rxchef-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+serde_json = "1"
+rxchef = { path = ".." }
+
+[[bin]]
+name = "execution_recipe"
+path = "fuzz_targets/execution_recipe.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "magic_engine"
+path = "fuzz_targets/magic_engine.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "streaming_scan"
+path = "fuzz_targets/streaming_scan.rs"
+test = false
+doc = false
+bench = false
+
+[workspace]
+members = ["."]

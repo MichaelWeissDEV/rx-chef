@@ -2109,7 +2109,7 @@ Keyed-Hash Message Authentication Codes (HMAC) are a mechanism for message authe
 
 | # | Argument | Default | Description |
 |---:|---|---|---|
-| 1 | Key | `<empty>` | The secret key (Hex, Base64, UTF8, or Latin1) |
+| 1 | Key | `<empty>` | The secret key as UTF-8 text, or explicitly prefixed with hex:/0x or base64: |
 | 2 | Hashing function | `SHA-256` | Hashing algorithm (MD5, SHA-1, SHA-256, SHA-384, SHA-512) |
 | 3 | Output encoding | `Hex` | Output encoding (Hex, Base64) |
 
@@ -2844,9 +2844,9 @@ Takes a 'Defanged' Universal Resource Locator (URL) and 'Fangs' it. Meaning, it 
 
 | # | Argument | Default | Description |
 |---:|---|---|---|
-| 1 | Restore [.] | `true` | Restore [.] to . |
+| 1 | Restore dots | `true` | Restore [.] to . |
 | 2 | Restore hxxp | `true` | Restore hxxp to http |
-| 3 | Restore :// | `true` | Restore [://] to :// |
+| 3 | Restore scheme separator | `true` | Restore [://] to :// |
 
 ### Fernet Decrypt
 
@@ -5133,10 +5133,7 @@ MD2 (Message-Digest 2) is a cryptographic hash function developed by Ronald Rive
 - Input: `Bytes`
 - Output: `String`
 - CLI: `rxchef run "MD2"`
-
-| # | Argument | Default | Description |
-|---:|---|---|---|
-| 1 | Rounds | `18` | Number of rounds (minimum 0) |
+- Arguments: none
 
 ### MD4
 

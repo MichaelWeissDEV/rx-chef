@@ -12,6 +12,10 @@
 - no greeting or non-JSON logs are written to stdout;
 - protocol version `1`, discoverable with `ping`.
 
+The default request-line limit is 1 MiB and can be changed with
+`--max-request-bytes`. An oversized line receives domain error `-32004`, is
+discarded without unbounded buffering, and does not terminate the session.
+
 Malformed JSON returns error `-32700` without terminating the process. Both JSON-RPC 2.0 and compact JSONL requests are accepted:
 
 ```json

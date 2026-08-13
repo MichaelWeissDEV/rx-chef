@@ -1,7 +1,6 @@
 /*
  * -----------------------------------------------------------------------------
  * Project:     rxchef
- * Version:     1.0.0
  * Author:      Michael Weiss
  * Source:      Generated operations registry for rxchef
  * License:     Apache-2.0
@@ -4071,6 +4070,2880 @@ pub fn get_operation(name: &str) -> Option<Box<dyn Operation>> {
         let op = zlib_inflate::ZlibInflate;
         if op.name().to_lowercase() == lowered {
             return Some(Box::new(zlib_inflate::ZlibInflate));
+        }
+    }
+    None
+}
+
+/// Returns the source module identifier for an operation.
+pub fn operation_source(name: &str) -> Option<&'static str> {
+    let lowered = name.to_lowercase();
+    {
+        let op = a1z26_cipher_decode::A1Z26CipherDecode;
+        if op.name().to_lowercase() == lowered {
+            return Some("a1z26_cipher_decode");
+        }
+    }
+    {
+        let op = a1z26_cipher_encode::A1Z26CipherEncode;
+        if op.name().to_lowercase() == lowered {
+            return Some("a1z26_cipher_encode");
+        }
+    }
+    {
+        let op = add::AddOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("add");
+        }
+    }
+    {
+        let op = add_line_numbers::AddLineNumbers;
+        if op.name().to_lowercase() == lowered {
+            return Some("add_line_numbers");
+        }
+    }
+    {
+        let op = add_text_to_image::AddTextToImage;
+        if op.name().to_lowercase() == lowered {
+            return Some("add_text_to_image");
+        }
+    }
+    {
+        let op = adler32_checksum::Adler32Checksum;
+        if op.name().to_lowercase() == lowered {
+            return Some("adler32_checksum");
+        }
+    }
+    {
+        let op = aes_decrypt::AesDecrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("aes_decrypt");
+        }
+    }
+    {
+        let op = aes_encrypt::AesEncrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("aes_encrypt");
+        }
+    }
+    {
+        let op = aes_key_unwrap::AesKeyUnwrap;
+        if op.name().to_lowercase() == lowered {
+            return Some("aes_key_unwrap");
+        }
+    }
+    {
+        let op = aes_key_wrap::AesKeyWrap;
+        if op.name().to_lowercase() == lowered {
+            return Some("aes_key_wrap");
+        }
+    }
+    {
+        let op = affine_cipher_decode::AffineCipherDecode;
+        if op.name().to_lowercase() == lowered {
+            return Some("affine_cipher_decode");
+        }
+    }
+    {
+        let op = affine_cipher_encode::AffineCipherEncode;
+        if op.name().to_lowercase() == lowered {
+            return Some("affine_cipher_encode");
+        }
+    }
+    {
+        let op = alternating_caps::AlternatingCaps;
+        if op.name().to_lowercase() == lowered {
+            return Some("alternating_caps");
+        }
+    }
+    {
+        let op = amf_decode::AmfDecode;
+        if op.name().to_lowercase() == lowered {
+            return Some("amf_decode");
+        }
+    }
+    {
+        let op = amf_encode::AmfEncode;
+        if op.name().to_lowercase() == lowered {
+            return Some("amf_encode");
+        }
+    }
+    {
+        let op = analyse_hash::AnalyseHash;
+        if op.name().to_lowercase() == lowered {
+            return Some("analyse_hash");
+        }
+    }
+    {
+        let op = analyse_uuid::AnalyseUUID;
+        if op.name().to_lowercase() == lowered {
+            return Some("analyse_uuid");
+        }
+    }
+    {
+        let op = and::AndOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("and");
+        }
+    }
+    {
+        let op = argon2::Argon2;
+        if op.name().to_lowercase() == lowered {
+            return Some("argon2");
+        }
+    }
+    {
+        let op = argon2_compare::Argon2Compare;
+        if op.name().to_lowercase() == lowered {
+            return Some("argon2_compare");
+        }
+    }
+    {
+        let op = atbash_cipher::AtbashCipher;
+        if op.name().to_lowercase() == lowered {
+            return Some("atbash_cipher");
+        }
+    }
+    {
+        let op = avro_to_json::AvroToJSON;
+        if op.name().to_lowercase() == lowered {
+            return Some("avro_to_json");
+        }
+    }
+    {
+        let op = bacon_cipher_decode::BaconCipherDecode;
+        if op.name().to_lowercase() == lowered {
+            return Some("bacon_cipher_decode");
+        }
+    }
+    {
+        let op = bacon_cipher_encode::BaconCipherEncode;
+        if op.name().to_lowercase() == lowered {
+            return Some("bacon_cipher_encode");
+        }
+    }
+    {
+        let op = bcrypt::Bcrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("bcrypt");
+        }
+    }
+    {
+        let op = bcrypt_compare::BcryptCompare;
+        if op.name().to_lowercase() == lowered {
+            return Some("bcrypt_compare");
+        }
+    }
+    {
+        let op = bcrypt_parse::BcryptParse;
+        if op.name().to_lowercase() == lowered {
+            return Some("bcrypt_parse");
+        }
+    }
+    {
+        let op = bifid_cipher_decode::BifidCipherDecode;
+        if op.name().to_lowercase() == lowered {
+            return Some("bifid_cipher_decode");
+        }
+    }
+    {
+        let op = bifid_cipher_encode::BifidCipherEncode;
+        if op.name().to_lowercase() == lowered {
+            return Some("bifid_cipher_encode");
+        }
+    }
+    {
+        let op = bit_shift_left::BitShiftLeft;
+        if op.name().to_lowercase() == lowered {
+            return Some("bit_shift_left");
+        }
+    }
+    {
+        let op = bit_shift_right::BitShiftRight;
+        if op.name().to_lowercase() == lowered {
+            return Some("bit_shift_right");
+        }
+    }
+    {
+        let op = blake2b::BLAKE2b;
+        if op.name().to_lowercase() == lowered {
+            return Some("blake2b");
+        }
+    }
+    {
+        let op = blake2s::BLAKE2s;
+        if op.name().to_lowercase() == lowered {
+            return Some("blake2s");
+        }
+    }
+    {
+        let op = blake3::BLAKE3;
+        if op.name().to_lowercase() == lowered {
+            return Some("blake3");
+        }
+    }
+    {
+        let op = blowfish_decrypt::BlowfishDecrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("blowfish_decrypt");
+        }
+    }
+    {
+        let op = blowfish_encrypt::BlowfishEncrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("blowfish_encrypt");
+        }
+    }
+    {
+        let op = blur_image::BlurImage;
+        if op.name().to_lowercase() == lowered {
+            return Some("blur_image");
+        }
+    }
+    {
+        let op = bombe::Bombe;
+        if op.name().to_lowercase() == lowered {
+            return Some("bombe");
+        }
+    }
+    {
+        let op = bson_deserialise::BsonDeserialise;
+        if op.name().to_lowercase() == lowered {
+            return Some("bson_deserialise");
+        }
+    }
+    {
+        let op = bson_serialise::BsonSerialise;
+        if op.name().to_lowercase() == lowered {
+            return Some("bson_serialise");
+        }
+    }
+    {
+        let op = bzip2_compress::Bzip2Compress;
+        if op.name().to_lowercase() == lowered {
+            return Some("bzip2_compress");
+        }
+    }
+    {
+        let op = bzip2_decompress::Bzip2Decompress;
+        if op.name().to_lowercase() == lowered {
+            return Some("bzip2_decompress");
+        }
+    }
+    {
+        let op = caesar_box_cipher::CaesarBoxCipher;
+        if op.name().to_lowercase() == lowered {
+            return Some("caesar_box_cipher");
+        }
+    }
+    {
+        let op = caret_mdecode::CaretMdecode;
+        if op.name().to_lowercase() == lowered {
+            return Some("caret_mdecode");
+        }
+    }
+    {
+        let op = cartesian_product::CartesianProduct;
+        if op.name().to_lowercase() == lowered {
+            return Some("cartesian_product");
+        }
+    }
+    {
+        let op = cbor_decode::CBORDecode;
+        if op.name().to_lowercase() == lowered {
+            return Some("cbor_decode");
+        }
+    }
+    {
+        let op = cbor_encode::CBOREncode;
+        if op.name().to_lowercase() == lowered {
+            return Some("cbor_encode");
+        }
+    }
+    {
+        let op = cetacean_cipher_decode::CetaceanCipherDecode;
+        if op.name().to_lowercase() == lowered {
+            return Some("cetacean_cipher_decode");
+        }
+    }
+    {
+        let op = cetacean_cipher_encode::CetaceanCipherEncode;
+        if op.name().to_lowercase() == lowered {
+            return Some("cetacean_cipher_encode");
+        }
+    }
+    {
+        let op = chacha::ChaCha;
+        if op.name().to_lowercase() == lowered {
+            return Some("chacha");
+        }
+    }
+    {
+        let op = change_ip_format::ChangeIPFormat;
+        if op.name().to_lowercase() == lowered {
+            return Some("change_ip_format");
+        }
+    }
+    {
+        let op = chi_square::ChiSquare;
+        if op.name().to_lowercase() == lowered {
+            return Some("chi_square");
+        }
+    }
+    {
+        let op = cipher_saber2_decrypt::CipherSaber2Decrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("cipher_saber2_decrypt");
+        }
+    }
+    {
+        let op = cipher_saber2_encrypt::CipherSaber2Encrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("cipher_saber2_encrypt");
+        }
+    }
+    {
+        let op = citrix_ctx1_decode::CitrixCtx1Decode;
+        if op.name().to_lowercase() == lowered {
+            return Some("citrix_ctx1_decode");
+        }
+    }
+    {
+        let op = citrix_ctx1_encode::CitrixCtx1Encode;
+        if op.name().to_lowercase() == lowered {
+            return Some("citrix_ctx1_encode");
+        }
+    }
+    {
+        let op = cmac::Cmac;
+        if op.name().to_lowercase() == lowered {
+            return Some("cmac");
+        }
+    }
+    {
+        let op = colossus::Colossus;
+        if op.name().to_lowercase() == lowered {
+            return Some("colossus");
+        }
+    }
+    {
+        let op = comment::CommentOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("comment");
+        }
+    }
+    {
+        let op = compare_ctph_hashes::CompareCTPHHashes;
+        if op.name().to_lowercase() == lowered {
+            return Some("compare_ctph_hashes");
+        }
+    }
+    {
+        let op = compare_ssdeep_hashes::CompareSSDEEPHashes;
+        if op.name().to_lowercase() == lowered {
+            return Some("compare_ssdeep_hashes");
+        }
+    }
+    {
+        let op = conditional_jump::ConditionalJump;
+        if op.name().to_lowercase() == lowered {
+            return Some("conditional_jump");
+        }
+    }
+    {
+        let op = contain_image::ContainImage;
+        if op.name().to_lowercase() == lowered {
+            return Some("contain_image");
+        }
+    }
+    {
+        let op = convert_area::ConvertArea;
+        if op.name().to_lowercase() == lowered {
+            return Some("convert_area");
+        }
+    }
+    {
+        let op = convert_coordinate_format::ConvertCoordinateFormat;
+        if op.name().to_lowercase() == lowered {
+            return Some("convert_coordinate_format");
+        }
+    }
+    {
+        let op = convert_data_units::ConvertDataUnits;
+        if op.name().to_lowercase() == lowered {
+            return Some("convert_data_units");
+        }
+    }
+    {
+        let op = convert_distance::ConvertDistance;
+        if op.name().to_lowercase() == lowered {
+            return Some("convert_distance");
+        }
+    }
+    {
+        let op = convert_image_format::ConvertImageFormat;
+        if op.name().to_lowercase() == lowered {
+            return Some("convert_image_format");
+        }
+    }
+    {
+        let op = convert_leet_speak::ConvertLeetSpeak;
+        if op.name().to_lowercase() == lowered {
+            return Some("convert_leet_speak");
+        }
+    }
+    {
+        let op = convert_mass::ConvertMass;
+        if op.name().to_lowercase() == lowered {
+            return Some("convert_mass");
+        }
+    }
+    {
+        let op = convert_speed::ConvertSpeed;
+        if op.name().to_lowercase() == lowered {
+            return Some("convert_speed");
+        }
+    }
+    {
+        let op = convert_to_nato_alphabet::ConvertToNATOAlphabet;
+        if op.name().to_lowercase() == lowered {
+            return Some("convert_to_nato_alphabet");
+        }
+    }
+    {
+        let op = count_occurrences::CountOccurrences;
+        if op.name().to_lowercase() == lowered {
+            return Some("count_occurrences");
+        }
+    }
+    {
+        let op = cover_image::CoverImage;
+        if op.name().to_lowercase() == lowered {
+            return Some("cover_image");
+        }
+    }
+    {
+        let op = crc32::CRC32;
+        if op.name().to_lowercase() == lowered {
+            return Some("crc32");
+        }
+    }
+    {
+        let op = crc_checksum::CrcChecksum;
+        if op.name().to_lowercase() == lowered {
+            return Some("crc_checksum");
+        }
+    }
+    {
+        let op = crop_image::CropImage;
+        if op.name().to_lowercase() == lowered {
+            return Some("crop_image");
+        }
+    }
+    {
+        let op = css_beautify::CssBeautify;
+        if op.name().to_lowercase() == lowered {
+            return Some("css_beautify");
+        }
+    }
+    {
+        let op = css_minify::CssMinify;
+        if op.name().to_lowercase() == lowered {
+            return Some("css_minify");
+        }
+    }
+    {
+        let op = css_selector::CssSelector;
+        if op.name().to_lowercase() == lowered {
+            return Some("css_selector");
+        }
+    }
+    {
+        let op = csv_to_json::CsvToJson;
+        if op.name().to_lowercase() == lowered {
+            return Some("csv_to_json");
+        }
+    }
+    {
+        let op = ctph::CTPH;
+        if op.name().to_lowercase() == lowered {
+            return Some("ctph");
+        }
+    }
+    {
+        let op = date_time_delta::DateTimeDelta;
+        if op.name().to_lowercase() == lowered {
+            return Some("date_time_delta");
+        }
+    }
+    {
+        let op = dechunk_http_response::DechunkHttpResponse;
+        if op.name().to_lowercase() == lowered {
+            return Some("dechunk_http_response");
+        }
+    }
+    {
+        let op = decode_netbios_name::DecodeNetBIOSName;
+        if op.name().to_lowercase() == lowered {
+            return Some("decode_netbios_name");
+        }
+    }
+    {
+        let op = decode_text::DecodeText;
+        if op.name().to_lowercase() == lowered {
+            return Some("decode_text");
+        }
+    }
+    {
+        let op = defang_ip_addresses::DefangIPAddresses;
+        if op.name().to_lowercase() == lowered {
+            return Some("defang_ip_addresses");
+        }
+    }
+    {
+        let op = defang_url::DefangURL;
+        if op.name().to_lowercase() == lowered {
+            return Some("defang_url");
+        }
+    }
+    {
+        let op = derive_evp_key::DeriveEvpKey;
+        if op.name().to_lowercase() == lowered {
+            return Some("derive_evp_key");
+        }
+    }
+    {
+        let op = derive_hkdf_key::DeriveHKDFKey;
+        if op.name().to_lowercase() == lowered {
+            return Some("derive_hkdf_key");
+        }
+    }
+    {
+        let op = derive_pbkdf2_key::DerivePBKDF2Key;
+        if op.name().to_lowercase() == lowered {
+            return Some("derive_pbkdf2_key");
+        }
+    }
+    {
+        let op = des_decrypt::DesDecrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("des_decrypt");
+        }
+    }
+    {
+        let op = des_encrypt::DesEncrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("des_encrypt");
+        }
+    }
+    {
+        let op = detect_file_type::DetectFileType;
+        if op.name().to_lowercase() == lowered {
+            return Some("detect_file_type");
+        }
+    }
+    {
+        let op = diff::Diff;
+        if op.name().to_lowercase() == lowered {
+            return Some("diff");
+        }
+    }
+    {
+        let op = disassemble_arm::DisassembleArm;
+        if op.name().to_lowercase() == lowered {
+            return Some("disassemble_arm");
+        }
+    }
+    {
+        let op = disassemble_x86::DisassembleX86;
+        if op.name().to_lowercase() == lowered {
+            return Some("disassemble_x86");
+        }
+    }
+    {
+        let op = dither_image::DitherImage;
+        if op.name().to_lowercase() == lowered {
+            return Some("dither_image");
+        }
+    }
+    {
+        let op = divide::Divide;
+        if op.name().to_lowercase() == lowered {
+            return Some("divide");
+        }
+    }
+    {
+        let op = dns_over_https::DnsOverHttps;
+        if op.name().to_lowercase() == lowered {
+            return Some("dns_over_https");
+        }
+    }
+    {
+        let op = drop_bytes::DropBytes;
+        if op.name().to_lowercase() == lowered {
+            return Some("drop_bytes");
+        }
+    }
+    {
+        let op = drop_nth_bytes::DropNthBytes;
+        if op.name().to_lowercase() == lowered {
+            return Some("drop_nth_bytes");
+        }
+    }
+    {
+        let op = ecdsa_sign::ECDSASign;
+        if op.name().to_lowercase() == lowered {
+            return Some("ecdsa_sign");
+        }
+    }
+    {
+        let op = ecdsa_signature_conversion::ECDSASignatureConversion;
+        if op.name().to_lowercase() == lowered {
+            return Some("ecdsa_signature_conversion");
+        }
+    }
+    {
+        let op = ecdsa_verify::ECDSAVerify;
+        if op.name().to_lowercase() == lowered {
+            return Some("ecdsa_verify");
+        }
+    }
+    {
+        let op = elf_info::ELFInfo;
+        if op.name().to_lowercase() == lowered {
+            return Some("elf_info");
+        }
+    }
+    {
+        let op = encode_netbios_name::EncodeNetBIOSName;
+        if op.name().to_lowercase() == lowered {
+            return Some("encode_netbios_name");
+        }
+    }
+    {
+        let op = encode_text::EncodeText;
+        if op.name().to_lowercase() == lowered {
+            return Some("encode_text");
+        }
+    }
+    {
+        let op = enigma::Enigma;
+        if op.name().to_lowercase() == lowered {
+            return Some("enigma");
+        }
+    }
+    {
+        let op = entropy::Entropy;
+        if op.name().to_lowercase() == lowered {
+            return Some("entropy");
+        }
+    }
+    {
+        let op = escape_string::EscapeString;
+        if op.name().to_lowercase() == lowered {
+            return Some("escape_string");
+        }
+    }
+    {
+        let op = escape_unicode_characters::EscapeUnicodeCharacters;
+        if op.name().to_lowercase() == lowered {
+            return Some("escape_unicode_characters");
+        }
+    }
+    {
+        let op = expand_alphabet_range::ExpandAlphabetRange;
+        if op.name().to_lowercase() == lowered {
+            return Some("expand_alphabet_range");
+        }
+    }
+    {
+        let op = extract_audio_metadata::ExtractAudioMetadata;
+        if op.name().to_lowercase() == lowered {
+            return Some("extract_audio_metadata");
+        }
+    }
+    {
+        let op = extract_dates::ExtractDates;
+        if op.name().to_lowercase() == lowered {
+            return Some("extract_dates");
+        }
+    }
+    {
+        let op = extract_domains::ExtractDomains;
+        if op.name().to_lowercase() == lowered {
+            return Some("extract_domains");
+        }
+    }
+    {
+        let op = extract_email_addresses::ExtractEmailAddresses;
+        if op.name().to_lowercase() == lowered {
+            return Some("extract_email_addresses");
+        }
+    }
+    {
+        let op = extract_exif::ExtractEXIF;
+        if op.name().to_lowercase() == lowered {
+            return Some("extract_exif");
+        }
+    }
+    {
+        let op = extract_file_paths::ExtractFilePaths;
+        if op.name().to_lowercase() == lowered {
+            return Some("extract_file_paths");
+        }
+    }
+    {
+        let op = extract_files::ExtractFiles;
+        if op.name().to_lowercase() == lowered {
+            return Some("extract_files");
+        }
+    }
+    {
+        let op = extract_hashes::ExtractHashes;
+        if op.name().to_lowercase() == lowered {
+            return Some("extract_hashes");
+        }
+    }
+    {
+        let op = extract_id3::ExtractID3;
+        if op.name().to_lowercase() == lowered {
+            return Some("extract_id3");
+        }
+    }
+    {
+        let op = extract_ip_addresses::ExtractIPAddresses;
+        if op.name().to_lowercase() == lowered {
+            return Some("extract_ip_addresses");
+        }
+    }
+    {
+        let op = extract_lsb::ExtractLSB;
+        if op.name().to_lowercase() == lowered {
+            return Some("extract_lsb");
+        }
+    }
+    {
+        let op = extract_mac_addresses::ExtractMACAddresses;
+        if op.name().to_lowercase() == lowered {
+            return Some("extract_mac_addresses");
+        }
+    }
+    {
+        let op = extract_rgba::ExtractRGBA;
+        if op.name().to_lowercase() == lowered {
+            return Some("extract_rgba");
+        }
+    }
+    {
+        let op = extract_urls::ExtractURLs;
+        if op.name().to_lowercase() == lowered {
+            return Some("extract_urls");
+        }
+    }
+    {
+        let op = fang_url::FangURL;
+        if op.name().to_lowercase() == lowered {
+            return Some("fang_url");
+        }
+    }
+    {
+        let op = fernet_decrypt::FernetDecrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("fernet_decrypt");
+        }
+    }
+    {
+        let op = fernet_encrypt::FernetEncrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("fernet_encrypt");
+        }
+    }
+    {
+        let op = file_tree::FileTree;
+        if op.name().to_lowercase() == lowered {
+            return Some("file_tree");
+        }
+    }
+    {
+        let op = filter::Filter;
+        if op.name().to_lowercase() == lowered {
+            return Some("filter");
+        }
+    }
+    {
+        let op = find_replace::FindReplace;
+        if op.name().to_lowercase() == lowered {
+            return Some("find_replace");
+        }
+    }
+    {
+        let op = flask_session_decode::FlaskSessionDecode;
+        if op.name().to_lowercase() == lowered {
+            return Some("flask_session_decode");
+        }
+    }
+    {
+        let op = flask_session_sign::FlaskSessionSign;
+        if op.name().to_lowercase() == lowered {
+            return Some("flask_session_sign");
+        }
+    }
+    {
+        let op = flask_session_verify::FlaskSessionVerify;
+        if op.name().to_lowercase() == lowered {
+            return Some("flask_session_verify");
+        }
+    }
+    {
+        let op = fletcher16_checksum::Fletcher16Checksum;
+        if op.name().to_lowercase() == lowered {
+            return Some("fletcher16_checksum");
+        }
+    }
+    {
+        let op = fletcher32_checksum::Fletcher32Checksum;
+        if op.name().to_lowercase() == lowered {
+            return Some("fletcher32_checksum");
+        }
+    }
+    {
+        let op = fletcher64_checksum::Fletcher64Checksum;
+        if op.name().to_lowercase() == lowered {
+            return Some("fletcher64_checksum");
+        }
+    }
+    {
+        let op = fletcher8_checksum::Fletcher8Checksum;
+        if op.name().to_lowercase() == lowered {
+            return Some("fletcher8_checksum");
+        }
+    }
+    {
+        let op = flip_image::FlipImage;
+        if op.name().to_lowercase() == lowered {
+            return Some("flip_image");
+        }
+    }
+    {
+        let op = fork::Fork;
+        if op.name().to_lowercase() == lowered {
+            return Some("fork");
+        }
+    }
+    {
+        let op = format_mac_addresses::FormatMACAddresses;
+        if op.name().to_lowercase() == lowered {
+            return Some("format_mac_addresses");
+        }
+    }
+    {
+        let op = frequency_distribution::FrequencyDistribution;
+        if op.name().to_lowercase() == lowered {
+            return Some("frequency_distribution");
+        }
+    }
+    {
+        let op = from_base::FromBase;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_base");
+        }
+    }
+    {
+        let op = from_base32::FromBase32;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_base32");
+        }
+    }
+    {
+        let op = from_base45::FromBase45;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_base45");
+        }
+    }
+    {
+        let op = from_base58::FromBase58;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_base58");
+        }
+    }
+    {
+        let op = from_base62::FromBase62;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_base62");
+        }
+    }
+    {
+        let op = from_base64::FromBase64;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_base64");
+        }
+    }
+    {
+        let op = from_base85::FromBase85;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_base85");
+        }
+    }
+    {
+        let op = from_base92::FromBase92;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_base92");
+        }
+    }
+    {
+        let op = from_bcd::FromBCD;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_bcd");
+        }
+    }
+    {
+        let op = from_bech32::FromBech32;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_bech32");
+        }
+    }
+    {
+        let op = from_binary::FromBinary;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_binary");
+        }
+    }
+    {
+        let op = from_braille::FromBraille;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_braille");
+        }
+    }
+    {
+        let op = from_case_insensitive_regex::FromCaseInsensitiveRegex;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_case_insensitive_regex");
+        }
+    }
+    {
+        let op = from_charcode::FromCharcode;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_charcode");
+        }
+    }
+    {
+        let op = from_decimal::FromDecimal;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_decimal");
+        }
+    }
+    {
+        let op = from_float::FromFloat;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_float");
+        }
+    }
+    {
+        let op = from_hex::FromHex;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_hex");
+        }
+    }
+    {
+        let op = from_hex_content::FromHexContent;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_hex_content");
+        }
+    }
+    {
+        let op = from_hexdump::FromHexdump;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_hexdump");
+        }
+    }
+    {
+        let op = from_html_entity::FromHTMLEntity;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_html_entity");
+        }
+    }
+    {
+        let op = from_message_pack::FromMessagePack;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_message_pack");
+        }
+    }
+    {
+        let op = from_modhex::FromModhex;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_modhex");
+        }
+    }
+    {
+        let op = from_morse_code::FromMorseCode;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_morse_code");
+        }
+    }
+    {
+        let op = from_octal::FromOctal;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_octal");
+        }
+    }
+    {
+        let op = from_punycode::FromPunycode;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_punycode");
+        }
+    }
+    {
+        let op = from_quoted_printable::FromQuotedPrintable;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_quoted_printable");
+        }
+    }
+    {
+        let op = from_unix_timestamp::FromUNIXTimestamp;
+        if op.name().to_lowercase() == lowered {
+            return Some("from_unix_timestamp");
+        }
+    }
+    {
+        let op = fuzzy_match::FuzzyMatch;
+        if op.name().to_lowercase() == lowered {
+            return Some("fuzzy_match");
+        }
+    }
+    {
+        let op = generate_all_checksums::GenerateAllChecksums;
+        if op.name().to_lowercase() == lowered {
+            return Some("generate_all_checksums");
+        }
+    }
+    {
+        let op = generate_all_hashes::GenerateAllHashes;
+        if op.name().to_lowercase() == lowered {
+            return Some("generate_all_hashes");
+        }
+    }
+    {
+        let op = generate_de_bruijn_sequence::GenerateDeBruijnSequence;
+        if op.name().to_lowercase() == lowered {
+            return Some("generate_de_bruijn_sequence");
+        }
+    }
+    {
+        let op = generate_ecdsa_key_pair::GenerateECDSAKeyPairOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("generate_ecdsa_key_pair");
+        }
+    }
+    {
+        let op = generate_hotp::GenerateHOTPOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("generate_hotp");
+        }
+    }
+    {
+        let op = generate_image::GenerateImageOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("generate_image");
+        }
+    }
+    {
+        let op = generate_lorem_ipsum::GenerateLoremIpsum;
+        if op.name().to_lowercase() == lowered {
+            return Some("generate_lorem_ipsum");
+        }
+    }
+    {
+        let op = generate_pgp_key_pair::GeneratePGPKeyPair;
+        if op.name().to_lowercase() == lowered {
+            return Some("generate_pgp_key_pair");
+        }
+    }
+    {
+        let op = generate_qr_code::GenerateQRCodeOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("generate_qr_code");
+        }
+    }
+    {
+        let op = generate_rsa_key_pair::GenerateRSAKeyPair;
+        if op.name().to_lowercase() == lowered {
+            return Some("generate_rsa_key_pair");
+        }
+    }
+    {
+        let op = generate_totp::GenerateTOTP;
+        if op.name().to_lowercase() == lowered {
+            return Some("generate_totp");
+        }
+    }
+    {
+        let op = generate_uuid::GenerateUUID;
+        if op.name().to_lowercase() == lowered {
+            return Some("generate_uuid");
+        }
+    }
+    {
+        let op = generic_code_beautify::GenericCodeBeautify;
+        if op.name().to_lowercase() == lowered {
+            return Some("generic_code_beautify");
+        }
+    }
+    {
+        let op = get_all_casings::GetAllCasings;
+        if op.name().to_lowercase() == lowered {
+            return Some("get_all_casings");
+        }
+    }
+    {
+        let op = get_time::GetTime;
+        if op.name().to_lowercase() == lowered {
+            return Some("get_time");
+        }
+    }
+    {
+        let op = gost_decrypt::GOSTDecryptOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("gost_decrypt");
+        }
+    }
+    {
+        let op = gost_encrypt::GostEncrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("gost_encrypt");
+        }
+    }
+    {
+        let op = gost_hash::GostHash;
+        if op.name().to_lowercase() == lowered {
+            return Some("gost_hash");
+        }
+    }
+    {
+        let op = gost_key_unwrap::GOSTKeyUnwrapOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("gost_key_unwrap");
+        }
+    }
+    {
+        let op = gost_key_wrap::GostKeyWrap;
+        if op.name().to_lowercase() == lowered {
+            return Some("gost_key_wrap");
+        }
+    }
+    {
+        let op = gost_sign::GostSign;
+        if op.name().to_lowercase() == lowered {
+            return Some("gost_sign");
+        }
+    }
+    {
+        let op = gost_verify::GOSTVerifyOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("gost_verify");
+        }
+    }
+    {
+        let op = group_ip_addresses::GroupIPAddresses;
+        if op.name().to_lowercase() == lowered {
+            return Some("group_ip_addresses");
+        }
+    }
+    {
+        let op = gunzip::Gunzip;
+        if op.name().to_lowercase() == lowered {
+            return Some("gunzip");
+        }
+    }
+    {
+        let op = gzip::Gzip;
+        if op.name().to_lowercase() == lowered {
+            return Some("gzip");
+        }
+    }
+    {
+        let op = hamming_distance::HammingDistance;
+        if op.name().to_lowercase() == lowered {
+            return Some("hamming_distance");
+        }
+    }
+    {
+        let op = has160::HAS160Op;
+        if op.name().to_lowercase() == lowered {
+            return Some("has160");
+        }
+    }
+    {
+        let op = hassh_client_fingerprint::HASSHClientFingerprint;
+        if op.name().to_lowercase() == lowered {
+            return Some("hassh_client_fingerprint");
+        }
+    }
+    {
+        let op = hassh_server_fingerprint::HASSHServerFingerprint;
+        if op.name().to_lowercase() == lowered {
+            return Some("hassh_server_fingerprint");
+        }
+    }
+    {
+        let op = haversine_distance::HaversineDistance;
+        if op.name().to_lowercase() == lowered {
+            return Some("haversine_distance");
+        }
+    }
+    {
+        let op = head::Head;
+        if op.name().to_lowercase() == lowered {
+            return Some("head");
+        }
+    }
+    {
+        let op = heatmap_chart::HeatmapChart;
+        if op.name().to_lowercase() == lowered {
+            return Some("heatmap_chart");
+        }
+    }
+    {
+        let op = hex_density_chart::HexDensityChartOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("hex_density_chart");
+        }
+    }
+    {
+        let op = hex_to_object_identifier::HexToObjectIdentifier;
+        if op.name().to_lowercase() == lowered {
+            return Some("hex_to_object_identifier");
+        }
+    }
+    {
+        let op = hex_to_pem::HexToPEM;
+        if op.name().to_lowercase() == lowered {
+            return Some("hex_to_pem");
+        }
+    }
+    {
+        let op = hmac::HMAC;
+        if op.name().to_lowercase() == lowered {
+            return Some("hmac");
+        }
+    }
+    {
+        let op = html_to_text::HTMLToText;
+        if op.name().to_lowercase() == lowered {
+            return Some("html_to_text");
+        }
+    }
+    {
+        let op = http_request::HTTPRequest;
+        if op.name().to_lowercase() == lowered {
+            return Some("http_request");
+        }
+    }
+    {
+        let op = image_brightness_contrast::ImageBrightnessContrast;
+        if op.name().to_lowercase() == lowered {
+            return Some("image_brightness_contrast");
+        }
+    }
+    {
+        let op = image_filter::ImageFilter;
+        if op.name().to_lowercase() == lowered {
+            return Some("image_filter");
+        }
+    }
+    {
+        let op = image_hue_saturation_lightness::ImageHueSaturationLightness;
+        if op.name().to_lowercase() == lowered {
+            return Some("image_hue_saturation_lightness");
+        }
+    }
+    {
+        let op = image_opacity::ImageOpacity;
+        if op.name().to_lowercase() == lowered {
+            return Some("image_opacity");
+        }
+    }
+    {
+        let op = index_of_coincidence::IndexOfCoincidence;
+        if op.name().to_lowercase() == lowered {
+            return Some("index_of_coincidence");
+        }
+    }
+    {
+        let op = invert_image::InvertImage;
+        if op.name().to_lowercase() == lowered {
+            return Some("invert_image");
+        }
+    }
+    {
+        let op = ipv6_transition_addresses::IPv6TransitionAddresses;
+        if op.name().to_lowercase() == lowered {
+            return Some("ipv6_transition_addresses");
+        }
+    }
+    {
+        let op = j_path_expression::JPathExpression;
+        if op.name().to_lowercase() == lowered {
+            return Some("j_path_expression");
+        }
+    }
+    {
+        let op = ja3_fingerprint::JA3Fingerprint;
+        if op.name().to_lowercase() == lowered {
+            return Some("ja3_fingerprint");
+        }
+    }
+    {
+        let op = ja3s_fingerprint::JA3SFingerprint;
+        if op.name().to_lowercase() == lowered {
+            return Some("ja3s_fingerprint");
+        }
+    }
+    {
+        let op = ja4_fingerprint::JA4Fingerprint;
+        if op.name().to_lowercase() == lowered {
+            return Some("ja4_fingerprint");
+        }
+    }
+    {
+        let op = ja4_server_fingerprint::JA4ServerFingerprint;
+        if op.name().to_lowercase() == lowered {
+            return Some("ja4_server_fingerprint");
+        }
+    }
+    {
+        let op = java_script_beautify::JavaScriptBeautify;
+        if op.name().to_lowercase() == lowered {
+            return Some("java_script_beautify");
+        }
+    }
+    {
+        let op = java_script_minify::JavaScriptMinify;
+        if op.name().to_lowercase() == lowered {
+            return Some("java_script_minify");
+        }
+    }
+    {
+        let op = java_script_parser::JavaScriptParser;
+        if op.name().to_lowercase() == lowered {
+            return Some("java_script_parser");
+        }
+    }
+    {
+        let op = jq::Jq;
+        if op.name().to_lowercase() == lowered {
+            return Some("jq");
+        }
+    }
+    {
+        let op = json_beautify::JSONBeautify;
+        if op.name().to_lowercase() == lowered {
+            return Some("json_beautify");
+        }
+    }
+    {
+        let op = json_minify::JSONMinify;
+        if op.name().to_lowercase() == lowered {
+            return Some("json_minify");
+        }
+    }
+    {
+        let op = json_to_csv::JSONToCSV;
+        if op.name().to_lowercase() == lowered {
+            return Some("json_to_csv");
+        }
+    }
+    {
+        let op = json_to_yaml::JSONToYAML;
+        if op.name().to_lowercase() == lowered {
+            return Some("json_to_yaml");
+        }
+    }
+    {
+        let op = jsonata::Jsonata;
+        if op.name().to_lowercase() == lowered {
+            return Some("jsonata");
+        }
+    }
+    {
+        let op = jump::Jump;
+        if op.name().to_lowercase() == lowered {
+            return Some("jump");
+        }
+    }
+    {
+        let op = jwk_to_pem::JWKToPem;
+        if op.name().to_lowercase() == lowered {
+            return Some("jwk_to_pem");
+        }
+    }
+    {
+        let op = jwt_decode::JWTDecode;
+        if op.name().to_lowercase() == lowered {
+            return Some("jwt_decode");
+        }
+    }
+    {
+        let op = jwt_sign::JWTSign;
+        if op.name().to_lowercase() == lowered {
+            return Some("jwt_sign");
+        }
+    }
+    {
+        let op = jwt_verify::JWTVerify;
+        if op.name().to_lowercase() == lowered {
+            return Some("jwt_verify");
+        }
+    }
+    {
+        let op = keccak::Keccak;
+        if op.name().to_lowercase() == lowered {
+            return Some("keccak");
+        }
+    }
+    {
+        let op = label::Label;
+        if op.name().to_lowercase() == lowered {
+            return Some("label");
+        }
+    }
+    {
+        let op = levenshtein_distance::LevenshteinDistance;
+        if op.name().to_lowercase() == lowered {
+            return Some("levenshtein_distance");
+        }
+    }
+    {
+        let op = lm_hash::LMHash;
+        if op.name().to_lowercase() == lowered {
+            return Some("lm_hash");
+        }
+    }
+    {
+        let op = lorenz::Lorenz;
+        if op.name().to_lowercase() == lowered {
+            return Some("lorenz");
+        }
+    }
+    {
+        let op = ls47_decrypt::LS47Decrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("ls47_decrypt");
+        }
+    }
+    {
+        let op = ls47_encrypt::LS47Encrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("ls47_encrypt");
+        }
+    }
+    {
+        let op = luhn_checksum::LuhnChecksum;
+        if op.name().to_lowercase() == lowered {
+            return Some("luhn_checksum");
+        }
+    }
+    {
+        let op = lz4_compress::LZ4Compress;
+        if op.name().to_lowercase() == lowered {
+            return Some("lz4_compress");
+        }
+    }
+    {
+        let op = lz4_decompress::LZ4Decompress;
+        if op.name().to_lowercase() == lowered {
+            return Some("lz4_decompress");
+        }
+    }
+    {
+        let op = lz_string_compress::LZStringCompress;
+        if op.name().to_lowercase() == lowered {
+            return Some("lz_string_compress");
+        }
+    }
+    {
+        let op = lz_string_decompress::LZStringDecompress;
+        if op.name().to_lowercase() == lowered {
+            return Some("lz_string_decompress");
+        }
+    }
+    {
+        let op = lzma_compress::LZMACompress;
+        if op.name().to_lowercase() == lowered {
+            return Some("lzma_compress");
+        }
+    }
+    {
+        let op = lzma_decompress::LZMADecompress;
+        if op.name().to_lowercase() == lowered {
+            return Some("lzma_decompress");
+        }
+    }
+    {
+        let op = lznt1_decompress::LZNT1Decompress;
+        if op.name().to_lowercase() == lowered {
+            return Some("lznt1_decompress");
+        }
+    }
+    {
+        let op = magic::Magic;
+        if op.name().to_lowercase() == lowered {
+            return Some("magic");
+        }
+    }
+    {
+        let op = md2::MD2;
+        if op.name().to_lowercase() == lowered {
+            return Some("md2");
+        }
+    }
+    {
+        let op = md4::MD4;
+        if op.name().to_lowercase() == lowered {
+            return Some("md4");
+        }
+    }
+    {
+        let op = md5::MD5;
+        if op.name().to_lowercase() == lowered {
+            return Some("md5");
+        }
+    }
+    {
+        let op = md6::MD6;
+        if op.name().to_lowercase() == lowered {
+            return Some("md6");
+        }
+    }
+    {
+        let op = mean::Mean;
+        if op.name().to_lowercase() == lowered {
+            return Some("mean");
+        }
+    }
+    {
+        let op = median::Median;
+        if op.name().to_lowercase() == lowered {
+            return Some("median");
+        }
+    }
+    {
+        let op = merge::Merge;
+        if op.name().to_lowercase() == lowered {
+            return Some("merge");
+        }
+    }
+    {
+        let op = microsoft_script_decoder::MicrosoftScriptDecoder;
+        if op.name().to_lowercase() == lowered {
+            return Some("microsoft_script_decoder");
+        }
+    }
+    {
+        let op = mime_decoding::MIMEDecoding;
+        if op.name().to_lowercase() == lowered {
+            return Some("mime_decoding");
+        }
+    }
+    {
+        let op = multiple_bombe::MultipleBombe;
+        if op.name().to_lowercase() == lowered {
+            return Some("multiple_bombe");
+        }
+    }
+    {
+        let op = multiply::Multiply;
+        if op.name().to_lowercase() == lowered {
+            return Some("multiply");
+        }
+    }
+    {
+        let op = murmur_hash3::MurmurHash3;
+        if op.name().to_lowercase() == lowered {
+            return Some("murmur_hash3");
+        }
+    }
+    {
+        let op = normalise_image::NormaliseImage;
+        if op.name().to_lowercase() == lowered {
+            return Some("normalise_image");
+        }
+    }
+    {
+        let op = normalise_unicode::NormaliseUnicode;
+        if op.name().to_lowercase() == lowered {
+            return Some("normalise_unicode");
+        }
+    }
+    {
+        let op = not::NOT;
+        if op.name().to_lowercase() == lowered {
+            return Some("not");
+        }
+    }
+    {
+        let op = nt_hash::NTHash;
+        if op.name().to_lowercase() == lowered {
+            return Some("nt_hash");
+        }
+    }
+    {
+        let op = numberwang::Numberwang;
+        if op.name().to_lowercase() == lowered {
+            return Some("numberwang");
+        }
+    }
+    {
+        let op = object_identifier_to_hex::ObjectIdentifierToHex;
+        if op.name().to_lowercase() == lowered {
+            return Some("object_identifier_to_hex");
+        }
+    }
+    {
+        let op = offset_checker::OffsetChecker;
+        if op.name().to_lowercase() == lowered {
+            return Some("offset_checker");
+        }
+    }
+    {
+        let op = optical_character_recognition::OpticalCharacterRecognition;
+        if op.name().to_lowercase() == lowered {
+            return Some("optical_character_recognition");
+        }
+    }
+    {
+        let op = or::OrOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("or");
+        }
+    }
+    {
+        let op = pad_lines::PadLines;
+        if op.name().to_lowercase() == lowered {
+            return Some("pad_lines");
+        }
+    }
+    {
+        let op = parity_bit::ParityBit;
+        if op.name().to_lowercase() == lowered {
+            return Some("parity_bit");
+        }
+    }
+    {
+        let op = parse_asn1_hex_string::ParseASN1HexString;
+        if op.name().to_lowercase() == lowered {
+            return Some("parse_asn1_hex_string");
+        }
+    }
+    {
+        let op = parse_colour_code::ParseColourCode;
+        if op.name().to_lowercase() == lowered {
+            return Some("parse_colour_code");
+        }
+    }
+    {
+        let op = parse_csr::ParseCSR;
+        if op.name().to_lowercase() == lowered {
+            return Some("parse_csr");
+        }
+    }
+    {
+        let op = parse_date_time::ParseDateTime;
+        if op.name().to_lowercase() == lowered {
+            return Some("parse_date_time");
+        }
+    }
+    {
+        let op = parse_ethernet_frame::ParseEthernetFrame;
+        if op.name().to_lowercase() == lowered {
+            return Some("parse_ethernet_frame");
+        }
+    }
+    {
+        let op = parse_ip_range::ParseIPRange;
+        if op.name().to_lowercase() == lowered {
+            return Some("parse_ip_range");
+        }
+    }
+    {
+        let op = parse_ipv4_header::ParseIPv4Header;
+        if op.name().to_lowercase() == lowered {
+            return Some("parse_ipv4_header");
+        }
+    }
+    {
+        let op = parse_ipv6_address::ParseIPv6Address;
+        if op.name().to_lowercase() == lowered {
+            return Some("parse_ipv6_address");
+        }
+    }
+    {
+        let op = parse_object_id_timestamp::ParseObjectIDTimestamp;
+        if op.name().to_lowercase() == lowered {
+            return Some("parse_object_id_timestamp");
+        }
+    }
+    {
+        let op = parse_qr_code::ParseQRCode;
+        if op.name().to_lowercase() == lowered {
+            return Some("parse_qr_code");
+        }
+    }
+    {
+        let op = parse_ssh_host_key::ParseSshHostKey;
+        if op.name().to_lowercase() == lowered {
+            return Some("parse_ssh_host_key");
+        }
+    }
+    {
+        let op = parse_tcp::ParseTcp;
+        if op.name().to_lowercase() == lowered {
+            return Some("parse_tcp");
+        }
+    }
+    {
+        let op = parse_tls_record::ParseTLSRecord;
+        if op.name().to_lowercase() == lowered {
+            return Some("parse_tls_record");
+        }
+    }
+    {
+        let op = parse_tlv::ParseTLV;
+        if op.name().to_lowercase() == lowered {
+            return Some("parse_tlv");
+        }
+    }
+    {
+        let op = parse_udp::ParseUDP;
+        if op.name().to_lowercase() == lowered {
+            return Some("parse_udp");
+        }
+    }
+    {
+        let op = parse_unix_file_permissions::ParseUNIXFilePermissions;
+        if op.name().to_lowercase() == lowered {
+            return Some("parse_unix_file_permissions");
+        }
+    }
+    {
+        let op = parse_uri::ParseURI;
+        if op.name().to_lowercase() == lowered {
+            return Some("parse_uri");
+        }
+    }
+    {
+        let op = parse_user_agent::ParseUserAgent;
+        if op.name().to_lowercase() == lowered {
+            return Some("parse_user_agent");
+        }
+    }
+    {
+        let op = parse_x509_certificate::ParseX509Certificate;
+        if op.name().to_lowercase() == lowered {
+            return Some("parse_x509_certificate");
+        }
+    }
+    {
+        let op = parse_x509_crl::ParseX509CRL;
+        if op.name().to_lowercase() == lowered {
+            return Some("parse_x509_crl");
+        }
+    }
+    {
+        let op = pem_to_hex::PEMToHex;
+        if op.name().to_lowercase() == lowered {
+            return Some("pem_to_hex");
+        }
+    }
+    {
+        let op = pem_to_jwk::PEMToJWK;
+        if op.name().to_lowercase() == lowered {
+            return Some("pem_to_jwk");
+        }
+    }
+    {
+        let op = pgp_decrypt::PGPDecrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("pgp_decrypt");
+        }
+    }
+    {
+        let op = pgp_decrypt_and_verify::PGPDecryptAndVerify;
+        if op.name().to_lowercase() == lowered {
+            return Some("pgp_decrypt_and_verify");
+        }
+    }
+    {
+        let op = pgp_encrypt::PGPEncrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("pgp_encrypt");
+        }
+    }
+    {
+        let op = pgp_encrypt_and_sign::PGPEncryptAndSign;
+        if op.name().to_lowercase() == lowered {
+            return Some("pgp_encrypt_and_sign");
+        }
+    }
+    {
+        let op = pgp_verify::PGPVerify;
+        if op.name().to_lowercase() == lowered {
+            return Some("pgp_verify");
+        }
+    }
+    {
+        let op = php_deserialize::PHPDeserialize;
+        if op.name().to_lowercase() == lowered {
+            return Some("php_deserialize");
+        }
+    }
+    {
+        let op = php_serialize::PHPSerialize;
+        if op.name().to_lowercase() == lowered {
+            return Some("php_serialize");
+        }
+    }
+    {
+        let op = play_media::PlayMedia;
+        if op.name().to_lowercase() == lowered {
+            return Some("play_media");
+        }
+    }
+    {
+        let op = plist_viewer::PLISTViewer;
+        if op.name().to_lowercase() == lowered {
+            return Some("plist_viewer");
+        }
+    }
+    {
+        let op = power_set::PowerSet;
+        if op.name().to_lowercase() == lowered {
+            return Some("power_set");
+        }
+    }
+    {
+        let op = protobuf_decode::ProtobufDecode;
+        if op.name().to_lowercase() == lowered {
+            return Some("protobuf_decode");
+        }
+    }
+    {
+        let op = protobuf_encode::ProtobufEncode;
+        if op.name().to_lowercase() == lowered {
+            return Some("protobuf_encode");
+        }
+    }
+    {
+        let op = pseudo_random_integer_generator::PseudoRandomIntegerGenerator;
+        if op.name().to_lowercase() == lowered {
+            return Some("pseudo_random_integer_generator");
+        }
+    }
+    {
+        let op = pseudo_random_number_generator::PseudoRandomNumberGenerator;
+        if op.name().to_lowercase() == lowered {
+            return Some("pseudo_random_number_generator");
+        }
+    }
+    {
+        let op = pub_key_from_cert::PubKeyFromCert;
+        if op.name().to_lowercase() == lowered {
+            return Some("pub_key_from_cert");
+        }
+    }
+    {
+        let op = pub_key_from_priv_key::PubKeyFromPrivKeyOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("pub_key_from_priv_key");
+        }
+    }
+    {
+        let op = rabbit::RabbitOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("rabbit");
+        }
+    }
+    {
+        let op = rail_fence_cipher_decode::RailFenceCipherDecode;
+        if op.name().to_lowercase() == lowered {
+            return Some("rail_fence_cipher_decode");
+        }
+    }
+    {
+        let op = rail_fence_cipher_encode::RailFenceCipherEncode;
+        if op.name().to_lowercase() == lowered {
+            return Some("rail_fence_cipher_encode");
+        }
+    }
+    {
+        let op = rake::RAKE;
+        if op.name().to_lowercase() == lowered {
+            return Some("rake");
+        }
+    }
+    {
+        let op = randomize_colour_palette::RandomizeColourPalette;
+        if op.name().to_lowercase() == lowered {
+            return Some("randomize_colour_palette");
+        }
+    }
+    {
+        let op = raw_deflate::RawDeflate;
+        if op.name().to_lowercase() == lowered {
+            return Some("raw_deflate");
+        }
+    }
+    {
+        let op = raw_inflate::RawInflate;
+        if op.name().to_lowercase() == lowered {
+            return Some("raw_inflate");
+        }
+    }
+    {
+        let op = rc2_decrypt::RC2Decrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("rc2_decrypt");
+        }
+    }
+    {
+        let op = rc2_encrypt::RC2Encrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("rc2_encrypt");
+        }
+    }
+    {
+        let op = rc4::RC4;
+        if op.name().to_lowercase() == lowered {
+            return Some("rc4");
+        }
+    }
+    {
+        let op = rc4_drop::RC4Drop;
+        if op.name().to_lowercase() == lowered {
+            return Some("rc4_drop");
+        }
+    }
+    {
+        let op = rc6_decrypt::RC6Decrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("rc6_decrypt");
+        }
+    }
+    {
+        let op = rc6_encrypt::RC6Encrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("rc6_encrypt");
+        }
+    }
+    {
+        let op = register::Register;
+        if op.name().to_lowercase() == lowered {
+            return Some("register");
+        }
+    }
+    {
+        let op = regular_expression::RegularExpressionOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("regular_expression");
+        }
+    }
+    {
+        let op = remove_diacritics::RemoveDiacritics;
+        if op.name().to_lowercase() == lowered {
+            return Some("remove_diacritics");
+        }
+    }
+    {
+        let op = remove_exif::RemoveEXIF;
+        if op.name().to_lowercase() == lowered {
+            return Some("remove_exif");
+        }
+    }
+    {
+        let op = remove_line_numbers::RemoveLineNumbers;
+        if op.name().to_lowercase() == lowered {
+            return Some("remove_line_numbers");
+        }
+    }
+    {
+        let op = remove_null_bytes::RemoveNullBytes;
+        if op.name().to_lowercase() == lowered {
+            return Some("remove_null_bytes");
+        }
+    }
+    {
+        let op = remove_whitespace::RemoveWhitespace;
+        if op.name().to_lowercase() == lowered {
+            return Some("remove_whitespace");
+        }
+    }
+    {
+        let op = render_image::RenderImageOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("render_image");
+        }
+    }
+    {
+        let op = render_markdown::RenderMarkdown;
+        if op.name().to_lowercase() == lowered {
+            return Some("render_markdown");
+        }
+    }
+    {
+        let op = resize_image::ResizeImage;
+        if op.name().to_lowercase() == lowered {
+            return Some("resize_image");
+        }
+    }
+    {
+        let op = return_op::ReturnOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("return_op");
+        }
+    }
+    {
+        let op = reverse::Reverse;
+        if op.name().to_lowercase() == lowered {
+            return Some("reverse");
+        }
+    }
+    {
+        let op = ripemd::RIPEMD;
+        if op.name().to_lowercase() == lowered {
+            return Some("ripemd");
+        }
+    }
+    {
+        let op = rison_decode::RisonDecode;
+        if op.name().to_lowercase() == lowered {
+            return Some("rison_decode");
+        }
+    }
+    {
+        let op = rison_encode::RisonEncode;
+        if op.name().to_lowercase() == lowered {
+            return Some("rison_encode");
+        }
+    }
+    {
+        let op = rot13::ROT13;
+        if op.name().to_lowercase() == lowered {
+            return Some("rot13");
+        }
+    }
+    {
+        let op = rot13_brute_force::ROT13BruteForce;
+        if op.name().to_lowercase() == lowered {
+            return Some("rot13_brute_force");
+        }
+    }
+    {
+        let op = rot47::ROT47;
+        if op.name().to_lowercase() == lowered {
+            return Some("rot47");
+        }
+    }
+    {
+        let op = rot47_brute_force::ROT47BruteForce;
+        if op.name().to_lowercase() == lowered {
+            return Some("rot47_brute_force");
+        }
+    }
+    {
+        let op = rot8000::ROT8000;
+        if op.name().to_lowercase() == lowered {
+            return Some("rot8000");
+        }
+    }
+    {
+        let op = rotate_image::RotateImage;
+        if op.name().to_lowercase() == lowered {
+            return Some("rotate_image");
+        }
+    }
+    {
+        let op = rotate_left::RotateLeft;
+        if op.name().to_lowercase() == lowered {
+            return Some("rotate_left");
+        }
+    }
+    {
+        let op = rotate_right::RotateRight;
+        if op.name().to_lowercase() == lowered {
+            return Some("rotate_right");
+        }
+    }
+    {
+        let op = rsa_decrypt::RSADecrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("rsa_decrypt");
+        }
+    }
+    {
+        let op = rsa_encrypt::RSAEncrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("rsa_encrypt");
+        }
+    }
+    {
+        let op = rsa_sign::RSASign;
+        if op.name().to_lowercase() == lowered {
+            return Some("rsa_sign");
+        }
+    }
+    {
+        let op = rsa_verify::RSAVerify;
+        if op.name().to_lowercase() == lowered {
+            return Some("rsa_verify");
+        }
+    }
+    {
+        let op = salsa20::Salsa20Op;
+        if op.name().to_lowercase() == lowered {
+            return Some("salsa20");
+        }
+    }
+    {
+        let op = scan_for_embedded_files::ScanForEmbeddedFiles;
+        if op.name().to_lowercase() == lowered {
+            return Some("scan_for_embedded_files");
+        }
+    }
+    {
+        let op = scatter_chart::ScatterChart;
+        if op.name().to_lowercase() == lowered {
+            return Some("scatter_chart");
+        }
+    }
+    {
+        let op = scrypt::ScryptOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("scrypt");
+        }
+    }
+    {
+        let op = series_chart::SeriesChart;
+        if op.name().to_lowercase() == lowered {
+            return Some("series_chart");
+        }
+    }
+    {
+        let op = set_difference::SetDifference;
+        if op.name().to_lowercase() == lowered {
+            return Some("set_difference");
+        }
+    }
+    {
+        let op = set_intersection::SetIntersection;
+        if op.name().to_lowercase() == lowered {
+            return Some("set_intersection");
+        }
+    }
+    {
+        let op = set_union::SetUnion;
+        if op.name().to_lowercase() == lowered {
+            return Some("set_union");
+        }
+    }
+    {
+        let op = sha0::SHA0;
+        if op.name().to_lowercase() == lowered {
+            return Some("sha0");
+        }
+    }
+    {
+        let op = sha1::SHA1;
+        if op.name().to_lowercase() == lowered {
+            return Some("sha1");
+        }
+    }
+    {
+        let op = sha2::SHA2;
+        if op.name().to_lowercase() == lowered {
+            return Some("sha2");
+        }
+    }
+    {
+        let op = sha3::SHA3;
+        if op.name().to_lowercase() == lowered {
+            return Some("sha3");
+        }
+    }
+    {
+        let op = shake::SHAKE;
+        if op.name().to_lowercase() == lowered {
+            return Some("shake");
+        }
+    }
+    {
+        let op = sharpen_image::SharpenImage;
+        if op.name().to_lowercase() == lowered {
+            return Some("sharpen_image");
+        }
+    }
+    {
+        let op = show_base64_offsets::ShowBase64Offsets;
+        if op.name().to_lowercase() == lowered {
+            return Some("show_base64_offsets");
+        }
+    }
+    {
+        let op = show_on_map::ShowOnMap;
+        if op.name().to_lowercase() == lowered {
+            return Some("show_on_map");
+        }
+    }
+    {
+        let op = shuffle::Shuffle;
+        if op.name().to_lowercase() == lowered {
+            return Some("shuffle");
+        }
+    }
+    {
+        let op = sigaba::SigabaOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("sigaba");
+        }
+    }
+    {
+        let op = sleep::Sleep;
+        if op.name().to_lowercase() == lowered {
+            return Some("sleep");
+        }
+    }
+    {
+        let op = sm2_decrypt::Sm2Decrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("sm2_decrypt");
+        }
+    }
+    {
+        let op = sm2_encrypt::Sm2Encrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("sm2_encrypt");
+        }
+    }
+    {
+        let op = sm3::SM3;
+        if op.name().to_lowercase() == lowered {
+            return Some("sm3");
+        }
+    }
+    {
+        let op = sm4_decrypt::Sm4Decrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("sm4_decrypt");
+        }
+    }
+    {
+        let op = sm4_encrypt::Sm4Encrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("sm4_encrypt");
+        }
+    }
+    {
+        let op = snefru::SNEFRU;
+        if op.name().to_lowercase() == lowered {
+            return Some("snefru");
+        }
+    }
+    {
+        let op = sort::Sort;
+        if op.name().to_lowercase() == lowered {
+            return Some("sort");
+        }
+    }
+    {
+        let op = split::Split;
+        if op.name().to_lowercase() == lowered {
+            return Some("split");
+        }
+    }
+    {
+        let op = split_colour_channels::SplitColourChannels;
+        if op.name().to_lowercase() == lowered {
+            return Some("split_colour_channels");
+        }
+    }
+    {
+        let op = sql_beautify::SQLBeautify;
+        if op.name().to_lowercase() == lowered {
+            return Some("sql_beautify");
+        }
+    }
+    {
+        let op = sql_minify::SQLMinify;
+        if op.name().to_lowercase() == lowered {
+            return Some("sql_minify");
+        }
+    }
+    {
+        let op = ssdeep::SSDEEP;
+        if op.name().to_lowercase() == lowered {
+            return Some("ssdeep");
+        }
+    }
+    {
+        let op = standard_deviation::StandardDeviation;
+        if op.name().to_lowercase() == lowered {
+            return Some("standard_deviation");
+        }
+    }
+    {
+        let op = streebog::Streebog;
+        if op.name().to_lowercase() == lowered {
+            return Some("streebog");
+        }
+    }
+    {
+        let op = strings::Strings;
+        if op.name().to_lowercase() == lowered {
+            return Some("strings");
+        }
+    }
+    {
+        let op = strip_html_tags::StripHTMLTags;
+        if op.name().to_lowercase() == lowered {
+            return Some("strip_html_tags");
+        }
+    }
+    {
+        let op = strip_http_headers::StripHTTPHeaders;
+        if op.name().to_lowercase() == lowered {
+            return Some("strip_http_headers");
+        }
+    }
+    {
+        let op = strip_ipv4_header::StripIPv4Header;
+        if op.name().to_lowercase() == lowered {
+            return Some("strip_ipv4_header");
+        }
+    }
+    {
+        let op = strip_tcp_header::StripTCPHeader;
+        if op.name().to_lowercase() == lowered {
+            return Some("strip_tcp_header");
+        }
+    }
+    {
+        let op = strip_udp_header::StripUDPHeader;
+        if op.name().to_lowercase() == lowered {
+            return Some("strip_udp_header");
+        }
+    }
+    {
+        let op = sub::SUB;
+        if op.name().to_lowercase() == lowered {
+            return Some("sub");
+        }
+    }
+    {
+        let op = subsection::Subsection;
+        if op.name().to_lowercase() == lowered {
+            return Some("subsection");
+        }
+    }
+    {
+        let op = substitute::Substitute;
+        if op.name().to_lowercase() == lowered {
+            return Some("substitute");
+        }
+    }
+    {
+        let op = subtract::Subtract;
+        if op.name().to_lowercase() == lowered {
+            return Some("subtract");
+        }
+    }
+    {
+        let op = sum::Sum;
+        if op.name().to_lowercase() == lowered {
+            return Some("sum");
+        }
+    }
+    {
+        let op = swap_case::SwapCase;
+        if op.name().to_lowercase() == lowered {
+            return Some("swap_case");
+        }
+    }
+    {
+        let op = swap_endianness::SwapEndianness;
+        if op.name().to_lowercase() == lowered {
+            return Some("swap_endianness");
+        }
+    }
+    {
+        let op = symmetric_difference::SymmetricDifference;
+        if op.name().to_lowercase() == lowered {
+            return Some("symmetric_difference");
+        }
+    }
+    {
+        let op = syntax_highlighter::SyntaxHighlighter;
+        if op.name().to_lowercase() == lowered {
+            return Some("syntax_highlighter");
+        }
+    }
+    {
+        let op = tail::Tail;
+        if op.name().to_lowercase() == lowered {
+            return Some("tail");
+        }
+    }
+    {
+        let op = take_bytes::TakeBytes;
+        if op.name().to_lowercase() == lowered {
+            return Some("take_bytes");
+        }
+    }
+    {
+        let op = take_nth_bytes::TakeNthBytes;
+        if op.name().to_lowercase() == lowered {
+            return Some("take_nth_bytes");
+        }
+    }
+    {
+        let op = tar::Tar;
+        if op.name().to_lowercase() == lowered {
+            return Some("tar");
+        }
+    }
+    {
+        let op = tcpip_checksum::TCPIPChecksum;
+        if op.name().to_lowercase() == lowered {
+            return Some("tcpip_checksum");
+        }
+    }
+    {
+        let op = template::Template;
+        if op.name().to_lowercase() == lowered {
+            return Some("template");
+        }
+    }
+    {
+        let op = text_encoding_brute_force::TextEncodingBruteForce;
+        if op.name().to_lowercase() == lowered {
+            return Some("text_encoding_brute_force");
+        }
+    }
+    {
+        let op = text_integer_converter::TextIntegerConverter;
+        if op.name().to_lowercase() == lowered {
+            return Some("text_integer_converter");
+        }
+    }
+    {
+        let op = to_base::ToBase;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_base");
+        }
+    }
+    {
+        let op = to_base32::ToBase32;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_base32");
+        }
+    }
+    {
+        let op = to_base45::ToBase45;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_base45");
+        }
+    }
+    {
+        let op = to_base58::ToBase58;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_base58");
+        }
+    }
+    {
+        let op = to_base62::ToBase62;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_base62");
+        }
+    }
+    {
+        let op = to_base64::ToBase64;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_base64");
+        }
+    }
+    {
+        let op = to_base85::ToBase85;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_base85");
+        }
+    }
+    {
+        let op = to_base92::ToBase92;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_base92");
+        }
+    }
+    {
+        let op = to_bcd::ToBCD;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_bcd");
+        }
+    }
+    {
+        let op = to_bech32::ToBech32;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_bech32");
+        }
+    }
+    {
+        let op = to_binary::ToBinary;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_binary");
+        }
+    }
+    {
+        let op = to_braille::ToBraille;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_braille");
+        }
+    }
+    {
+        let op = to_camel_case::ToCamelCase;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_camel_case");
+        }
+    }
+    {
+        let op = to_case_insensitive_regex::ToCaseInsensitiveRegex;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_case_insensitive_regex");
+        }
+    }
+    {
+        let op = to_charcode::ToCharcode;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_charcode");
+        }
+    }
+    {
+        let op = to_decimal::ToDecimal;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_decimal");
+        }
+    }
+    {
+        let op = to_float::ToFloat;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_float");
+        }
+    }
+    {
+        let op = to_hex::ToHex;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_hex");
+        }
+    }
+    {
+        let op = to_hex_content::ToHexContent;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_hex_content");
+        }
+    }
+    {
+        let op = to_hexdump::ToHexdump;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_hexdump");
+        }
+    }
+    {
+        let op = to_html_entity::ToHTMLEntity;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_html_entity");
+        }
+    }
+    {
+        let op = to_kebab_case::ToKebabCase;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_kebab_case");
+        }
+    }
+    {
+        let op = to_lower_case::ToLowerCase;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_lower_case");
+        }
+    }
+    {
+        let op = to_message_pack::ToMessagePack;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_message_pack");
+        }
+    }
+    {
+        let op = to_modhex::ToModhex;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_modhex");
+        }
+    }
+    {
+        let op = to_morse_code::ToMorseCode;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_morse_code");
+        }
+    }
+    {
+        let op = to_octal::ToOctal;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_octal");
+        }
+    }
+    {
+        let op = to_punycode::ToPunycode;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_punycode");
+        }
+    }
+    {
+        let op = to_quoted_printable::ToQuotedPrintable;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_quoted_printable");
+        }
+    }
+    {
+        let op = to_snake_case::ToSnakeCase;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_snake_case");
+        }
+    }
+    {
+        let op = to_table::ToTable;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_table");
+        }
+    }
+    {
+        let op = to_unix_timestamp::ToUNIXTimestamp;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_unix_timestamp");
+        }
+    }
+    {
+        let op = to_upper_case::ToUpperCase;
+        if op.name().to_lowercase() == lowered {
+            return Some("to_upper_case");
+        }
+    }
+    {
+        let op = translate_date_time_format::TranslateDateTimeFormat;
+        if op.name().to_lowercase() == lowered {
+            return Some("translate_date_time_format");
+        }
+    }
+    {
+        let op = triple_des_decrypt::TripleDESDecrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("triple_des_decrypt");
+        }
+    }
+    {
+        let op = triple_des_encrypt::TripleDESEncrypt;
+        if op.name().to_lowercase() == lowered {
+            return Some("triple_des_encrypt");
+        }
+    }
+    {
+        let op = typex::Typex;
+        if op.name().to_lowercase() == lowered {
+            return Some("typex");
+        }
+    }
+    {
+        let op = unescape_string::UnescapeString;
+        if op.name().to_lowercase() == lowered {
+            return Some("unescape_string");
+        }
+    }
+    {
+        let op = unescape_unicode_characters::UnescapeUnicodeCharacters;
+        if op.name().to_lowercase() == lowered {
+            return Some("unescape_unicode_characters");
+        }
+    }
+    {
+        let op = unicode_text_format::UnicodeTextFormat;
+        if op.name().to_lowercase() == lowered {
+            return Some("unicode_text_format");
+        }
+    }
+    {
+        let op = unique::Unique;
+        if op.name().to_lowercase() == lowered {
+            return Some("unique");
+        }
+    }
+    {
+        let op = unix_timestamp_to_windows_filetime::UNIXTimestampToWindowsFiletime;
+        if op.name().to_lowercase() == lowered {
+            return Some("unix_timestamp_to_windows_filetime");
+        }
+    }
+    {
+        let op = untar::Untar;
+        if op.name().to_lowercase() == lowered {
+            return Some("untar");
+        }
+    }
+    {
+        let op = unzip::Unzip;
+        if op.name().to_lowercase() == lowered {
+            return Some("unzip");
+        }
+    }
+    {
+        let op = url_decode::URLDecode;
+        if op.name().to_lowercase() == lowered {
+            return Some("url_decode");
+        }
+    }
+    {
+        let op = url_encode::URLEncode;
+        if op.name().to_lowercase() == lowered {
+            return Some("url_encode");
+        }
+    }
+    {
+        let op = varint_decode::VarIntDecode;
+        if op.name().to_lowercase() == lowered {
+            return Some("varint_decode");
+        }
+    }
+    {
+        let op = varint_encode::VarIntEncode;
+        if op.name().to_lowercase() == lowered {
+            return Some("varint_encode");
+        }
+    }
+    {
+        let op = view_bit_plane::ViewBitPlane;
+        if op.name().to_lowercase() == lowered {
+            return Some("view_bit_plane");
+        }
+    }
+    {
+        let op = vigenere_decode::VigenereDecodeOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("vigenere_decode");
+        }
+    }
+    {
+        let op = vigenere_encode::VigenereEncodeOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("vigenere_encode");
+        }
+    }
+    {
+        let op = whirlpool::WHIRLPOOL;
+        if op.name().to_lowercase() == lowered {
+            return Some("whirlpool");
+        }
+    }
+    {
+        let op = windows_filetime_to_unix_timestamp::WindowsFiletimeToUnixTimestampOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("windows_filetime_to_unix_timestamp");
+        }
+    }
+    {
+        let op = wrap::WrapOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("wrap");
+        }
+    }
+    {
+        let op = x_path_expression::XPathExpression;
+        if op.name().to_lowercase() == lowered {
+            return Some("x_path_expression");
+        }
+    }
+    {
+        let op = x_salsa20::XSalsa20Op;
+        if op.name().to_lowercase() == lowered {
+            return Some("x_salsa20");
+        }
+    }
+    {
+        let op = xkcd_random_number::XkcdRandomNumberOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("xkcd_random_number");
+        }
+    }
+    {
+        let op = xml_beautify::XMLBeautify;
+        if op.name().to_lowercase() == lowered {
+            return Some("xml_beautify");
+        }
+    }
+    {
+        let op = xml_minify::XMLMinify;
+        if op.name().to_lowercase() == lowered {
+            return Some("xml_minify");
+        }
+    }
+    {
+        let op = xor::XorOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("xor");
+        }
+    }
+    {
+        let op = xor_brute_force::XORBruteForce;
+        if op.name().to_lowercase() == lowered {
+            return Some("xor_brute_force");
+        }
+    }
+    {
+        let op = xor_checksum::XORChecksum;
+        if op.name().to_lowercase() == lowered {
+            return Some("xor_checksum");
+        }
+    }
+    {
+        let op = xxtea_decrypt::XxteaDecryptOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("xxtea_decrypt");
+        }
+    }
+    {
+        let op = xxtea_encrypt::XxteaEncryptOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("xxtea_encrypt");
+        }
+    }
+    {
+        let op = yaml_to_json::YAMLToJSON;
+        if op.name().to_lowercase() == lowered {
+            return Some("yaml_to_json");
+        }
+    }
+    {
+        let op = yara_rules::YARARules;
+        if op.name().to_lowercase() == lowered {
+            return Some("yara_rules");
+        }
+    }
+    {
+        let op = zip::ZipOp;
+        if op.name().to_lowercase() == lowered {
+            return Some("zip");
+        }
+    }
+    {
+        let op = zlib_deflate::ZlibDeflate;
+        if op.name().to_lowercase() == lowered {
+            return Some("zlib_deflate");
+        }
+    }
+    {
+        let op = zlib_inflate::ZlibInflate;
+        if op.name().to_lowercase() == lowered {
+            return Some("zlib_inflate");
         }
     }
     None

@@ -1,21 +1,88 @@
 # XOR Brute Force
 
+## Overview
+
 Enumerate all possible XOR solutions. Optionally enter a string that you expect to find in the plaintext to filter results (crib).
 
-- Input: `Bytes`
-- Output: `String`
-- CLI: `rxchef run "XOR Brute Force"`
+## Status
+
+| Field | Value |
+|---|---|
+| Implementation | `Partial` |
+| Parity | `Unknown` |
+| Availability | available |
+| Features | none |
+| Side effects | `[]` |
+| Deterministic | true |
+
+## Input
+
+Declared input type: `Bytes`.
+
+## Output
+
+Declared output type: `String`. Redirect stdout or use `--output-file` for exact binary bytes.
 
 ## Arguments
 
-| # | Argument | Default | Description |
-|---:|---|---|---|
-| 1 | Key length | `1` | Length of the XOR key in bytes (1..=2 recommended) |
-| 2 | Sample length | `100` | Number of bytes of input to process |
-| 3 | Sample offset | `0` | Byte offset to start sampling from |
-| 4 | Scheme | `Standard` | Standard, Input differential, or Output differential |
-| 5 | Null preserving | `false` | Do not XOR null bytes or bytes equal to the key |
-| 6 | Print key | `true` | Prefix each result with the key used |
-| 7 | Output as hex | `false` | Output results as hex instead of text |
-| 8 | Crib (known plaintext string) | `<empty>` | Filter results to those containing this string |
+| # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
+|---:|---|---|:---:|---|---|:---:|---|
+| 1 | Key length | `Integer` | no | `1` | — | no | Length of the XOR key in bytes (1..=2 recommended) |
+| 2 | Sample length | `Integer` | no | `100` | — | no | Number of bytes of input to process |
+| 3 | Sample offset | `Integer` | no | `0` | — | no | Byte offset to start sampling from |
+| 4 | Scheme | `String` | no | `Standard` | — | no | Standard, Input differential, or Output differential |
+| 5 | Null preserving | `Boolean` | no | `false` | — | no | Do not XOR null bytes or bytes equal to the key |
+| 6 | Print key | `Boolean` | no | `true` | — | no | Prefix each result with the key used |
+| 7 | Output as hex | `Boolean` | no | `false` | — | no | Output results as hex instead of text |
+| 8 | Crib (known plaintext string) | `String` | no | `<empty>` | — | no | Filter results to those containing this string |
 
+## How it works
+
+The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+
+## Implementation
+
+Source module: `src/operations/xor_brute_force.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+
+## Examples
+
+```console
+printf 'input' | rxchef run "XOR Brute Force"
+```
+
+For file or binary input use `rxchef run "XOR Brute Force" --input-file INPUT --output-file OUTPUT`.
+
+## Pipeline usage
+
+```console
+printf 'input' | rxchef pipe "XOR Brute Force" to_base64
+```
+
+## Error conditions
+
+Invalid input representations, invalid argument values, unavailable feature backends, and operation-specific processing failures return an error and a non-zero CLI status. Exact limitations are listed below when known.
+
+## CyberChef compatibility
+
+Parity status: `Unknown`. `Unknown` means compatibility has not been independently verified and must not be read as an exact-match claim.
+
+## Security considerations
+
+Side effects: `[]`. Treat parser inputs as untrusted and use execution limits for large data. Sensitive arguments are redacted by metadata-aware History output.
+
+## Testing
+
+The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+
+## Performance
+
+See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+
+## Limitations
+
+No verified limitation metadata is currently recorded; this is not a claim of perfect upstream parity.
+
+## References
+
+- [Operation quality matrix](../reference/operation-matrix.md)
+- [CLI run documentation](../cli/run.md)

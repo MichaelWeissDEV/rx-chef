@@ -4,7 +4,7 @@ This page explains how to install and build rxchef for local development or dire
 
 ## Requirements
 
-- Rust 1.75 or newer
+- Rust 1.96 or newer for the current release line
 - A C compiler for native dependencies such as `capstone` and `yara-x`
 - Git for cloning the repository
 
@@ -41,6 +41,14 @@ If you want to install the binary into your Cargo bin directory:
 
 ```bash
 cargo install --path crates/cli
+```
+
+Generate shell integration or a manual page from the installed binary:
+
+```console
+rxchef completions bash > rxchef.bash
+rxchef completions zsh > _rxchef
+rxchef manpage --output rxchef.1
 ```
 
 ## Development notes

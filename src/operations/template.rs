@@ -1,7 +1,6 @@
 /*
  * -----------------------------------------------------------------------------
  * Project:     rxchef
- * Version:     1.0.0
  * Author:      Michael Weiss
  * Source:      Ported from GCHQ's CyberChef (JavaScript)
  * License:     Apache-2.0

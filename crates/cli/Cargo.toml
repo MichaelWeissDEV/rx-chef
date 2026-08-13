@@ -1,10 +1,10 @@
 [package]
 name = "rxchef_cli"
-version = "0.0.1"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
 description = "Command-line interface for rxchef"
-license = "Apache-2.0"
-repository = "https://github.com/MichaelWeissDEV/rx-chef"
+license.workspace = true
+repository.workspace = true
 
 [[bin]]
 name = "rxchef"
@@ -12,8 +12,10 @@ path = "src/main.rs"
 
 [dependencies]
 clap         = { version = "4.5", features = ["derive"] }
-rxchef       = { version = "0.0.1", path = "../.." }
-rxchef_store = { version = "0.0.1", path = "../store" }
+clap_complete = "4.5"
+clap_mangen   = "0.2"
+rxchef       = { version = "0.1.0", path = "../.." }
+rxchef_store = { version = "0.1.0", path = "../store" }
 serde        = { version = "1", features = ["derive"] }
 serde_json   = "1"
 serde_yaml   = "0.9"

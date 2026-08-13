@@ -1,7 +1,6 @@
 /*
  * -----------------------------------------------------------------------------
  * Project:     rxchef
- * Version:     1.0.0
  * Author:      Michael Weiss
  * Source:      Ported from GCHQ's CyberChef (JavaScript)
  * License:     Apache-2.0
@@ -100,7 +99,7 @@ impl Operation for GenerateECDSAKeyPairOp {
             } else {
                 "Output Format".to_string()
             },
-            reason: "v0.0.1 supports P-256 with PEM or DER output".to_string(),
+            reason: "the current implementation supports P-256 with PEM or DER output".to_string(),
         })
     }
 }

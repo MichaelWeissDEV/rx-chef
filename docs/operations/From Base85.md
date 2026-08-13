@@ -1,5 +1,7 @@
 # From Base85
 
+## Overview
+
 Base85 (also called Ascii85) is a notation for encoding arbitrary byte data. It is usually more efficient than Base64.
 
 This operation decodes data from an ASCII string (with an alphabet of your choosing, presets included).
@@ -8,15 +10,80 @@ e.g. BOu!rD]j7BEbo7 becomes hello world
 
 Base85 is commonly used in Adobe's PostScript and PDF file formats.
 
-- Input: `String`
-- Output: `Bytes`
-- CLI: `rxchef run "From Base85"`
+## Status
+
+| Field | Value |
+|---|---|
+| Implementation | `Partial` |
+| Parity | `Unknown` |
+| Availability | available |
+| Features | none |
+| Side effects | `[]` |
+| Deterministic | true |
+
+## Input
+
+Declared input type: `String`.
+
+## Output
+
+Declared output type: `Bytes`. Redirect stdout or use `--output-file` for exact binary bytes.
 
 ## Arguments
 
-| # | Argument | Default | Description |
-|---:|---|---|---|
-| 1 | Alphabet | `!-u` | The Base85 alphabet |
-| 2 | Remove non-alphabet chars | `true` | Remove characters not in the alphabet before decoding |
-| 3 | All-zero group char | `z` | Character representing an all-zero group (default 'z') |
+| # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
+|---:|---|---|:---:|---|---|:---:|---|
+| 1 | Alphabet | `String` | no | `!-u` | — | no | The Base85 alphabet |
+| 2 | Remove non-alphabet chars | `Boolean` | no | `true` | — | no | Remove characters not in the alphabet before decoding |
+| 3 | All-zero group char | `String` | no | `z` | — | no | Character representing an all-zero group (default 'z') |
 
+## How it works
+
+The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+
+## Implementation
+
+Source module: `src/operations/from_base85.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+
+## Examples
+
+```console
+printf 'input' | rxchef run "From Base85"
+```
+
+For file or binary input use `rxchef run "From Base85" --input-file INPUT --output-file OUTPUT`.
+
+## Pipeline usage
+
+```console
+printf 'input' | rxchef pipe "From Base85" to_base64
+```
+
+## Error conditions
+
+Invalid input representations, invalid argument values, unavailable feature backends, and operation-specific processing failures return an error and a non-zero CLI status. Exact limitations are listed below when known.
+
+## CyberChef compatibility
+
+Parity status: `Unknown`. `Unknown` means compatibility has not been independently verified and must not be read as an exact-match claim.
+
+## Security considerations
+
+Side effects: `[]`. Treat parser inputs as untrusted and use execution limits for large data. Sensitive arguments are redacted by metadata-aware History output.
+
+## Testing
+
+The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+
+## Performance
+
+See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+
+## Limitations
+
+No verified limitation metadata is currently recorded; this is not a claim of perfect upstream parity.
+
+## References
+
+- [Operation quality matrix](../reference/operation-matrix.md)
+- [CLI run documentation](../cli/run.md)

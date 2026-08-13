@@ -35,8 +35,13 @@ struct ServeSession {
 
 impl ServeSession {
     fn start() -> Self {
+        Self::start_with(&[])
+    }
+
+    fn start_with(extra_args: &[&str]) -> Self {
         let mut child = Command::new(env!("CARGO_BIN_EXE_rxchef"))
             .args(["serve", "--stdio"])
+            .args(extra_args)
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
@@ -149,6 +154,20 @@ impl ServeSession {
     }
 }
 
+#[test]
+fn request_size_limit_is_enforced_and_connection_recovers() {
+    let mut session = ServeSession::start_with(&["--max-request-bytes", "128"]);
+    session.send_raw_line(&"x".repeat(129));
+    let response = session.recv();
+    assert_eq!(response["error"]["code"], -32004);
+
+    session.send(json!({"id": 1, "method": "ping"}));
+    assert_eq!(session.recv()["result"]["protocol_version"], 1);
+    let (status, stderr) = session.finish();
+    assert!(status.success());
+    assert!(stderr.is_empty(), "unexpected stderr: {stderr}");
+}
+
 fn request(id: i64, method: &str, params: Value) -> Value {
     json!({"id": id, "method": method, "params": params})
 }
@@ -161,9 +180,9 @@ fn ping_reports_server_name_version_and_protocol() {
     session.send(json!({"id": 1, "method": "ping"}));
     let response = session.recv();
     assert_eq!(response["result"]["name"], "rxchef");
-    // Root package version, read from Cargo.toml: `rxchef` = "0.0.1". This is
-    // what `env!("CARGO_PKG_VERSION")` resolves to inside src/integration.rs.
-    assert_eq!(response["result"]["version"], "0.0.1");
+    // The server version is derived from Cargo metadata, not a hand-maintained
+    // protocol constant.
+    assert_eq!(response["result"]["version"], env!("CARGO_PKG_VERSION"));
     assert_eq!(response["result"]["protocol_version"], 1);
 
     let (status, stderr) = session.finish();

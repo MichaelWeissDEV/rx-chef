@@ -1,7 +1,6 @@
 /*
  * -----------------------------------------------------------------------------
  * Project:     rxchef
- * Version:     1.0.0
  * Author:      Michael Weiss
  * Source:      Ported from GCHQ's CyberChef (JavaScript)
  * License:     Apache-2.0
@@ -68,7 +67,17 @@ impl Operation for HASSHClientFingerprint {
             "Hex" => {
                 let input_str = String::from_utf8(input)
                     .map_err(|_| OperationError::InvalidInput("Invalid UTF-8".to_string()))?;
-                let clean_input = input_str.replace(|c: char| !c.is_ascii_hexdigit(), "");
+                if input_str.chars().any(|character| {
+                    !character.is_ascii_hexdigit()
+                        && !character.is_ascii_whitespace()
+                        && !matches!(character, ':' | '-' | '_')
+                }) {
+                    return Err(OperationError::InvalidInput(
+                        "Invalid character in hex input".to_string(),
+                    ));
+                }
+                let clean_input =
+                    input_str.replace(|character: char| !character.is_ascii_hexdigit(), "");
                 hex::decode(clean_input)
                     .map_err(|e| OperationError::InvalidInput(format!("Invalid hex: {}", e)))?
             }

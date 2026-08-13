@@ -1,0 +1,26 @@
+# Representative regression catalog. Operations absent from this file carry an
+# explicit skip reason in docs/_generated/operation-quality.json.
+
+[[case]]
+operation = "To Base64"
+sizes = [1024, 1048576, 16777216]
+
+[[case]]
+operation = "SHA2"
+sizes = [1024, 1048576, 67108864]
+
+[[case]]
+operation = "Gzip Compress"
+datasets = ["small-text", "1MiB-repetitive", "1MiB-mixed-binary"]
+
+[[case]]
+operation = "AES Encrypt"
+sizes = [1048576]
+
+[[case]]
+operation = "Magic"
+sizes = [65536]
+
+[[case]]
+operation = "Scan"
+sizes = [1048576]

@@ -1,7 +1,6 @@
 /*
  * -----------------------------------------------------------------------------
  * Project:     rxchef
- * Version:     1.1.0
  * Author:      Michael Weiss
  * Source:      Ported from GCHQ's CyberChef (JavaScript)
  * License:     Apache-2.0
@@ -11,6 +10,68 @@
 
 use serde_json::Value as JsonValue;
 use std::fmt;
+
+/// Machine-readable argument value category.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ArgKind {
+    String,
+    Integer,
+    UnsignedInteger,
+    Float,
+    Boolean,
+    Bytes,
+    HexBytes,
+    Base64Bytes,
+    Enum,
+    Regex,
+    Path,
+    Url,
+}
+
+/// Whether an operation consumes input bytes.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum InputRequirement {
+    Required,
+    Optional,
+    Ignored,
+}
+
+/// Verification state of an operation implementation.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum OperationStatus {
+    Complete,
+    Partial,
+    Unsupported,
+    FeatureGated,
+    Experimental,
+}
+
+/// Compatibility level with upstream CyberChef behavior.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ParityStatus {
+    Exact,
+    Compatible,
+    IntentionalDifference,
+    Unknown,
+    NotApplicable,
+}
+
+/// Externally observable behavior an operation may perform.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum SideEffect {
+    Network,
+    FilesystemRead,
+    FilesystemWrite,
+    Random,
+    Time,
+    ExternalProcess,
+    NativeLibrary,
+}
 
 /**
  * @enum DataType
@@ -158,6 +219,7 @@ impl OperationData {
     /// Construct `OperationData` from raw bytes, attempting to parse into the
     /// declared `DataType`.  Falls back to `Bytes` if parsing fails, so this
     /// method is infallible.
+    #[deprecated(note = "use OperationData::from_raw_strict in execution paths")]
     pub fn from_raw(bytes: Vec<u8>, dtype: DataType) -> Self {
         match dtype {
             DataType::String | DataType::Html => String::from_utf8(bytes.clone())
@@ -175,6 +237,57 @@ impl OperationData {
             }
             DataType::Bytes | DataType::Binary => OperationData::Bytes(bytes),
         }
+    }
+
+    /// Construct typed data while enforcing the operation's declared output
+    /// contract.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`OperationError::ProcessingError`] when text, JSON, or numeric
+    /// output is not valid for the declared [`DataType`].
+    pub fn from_raw_strict(bytes: Vec<u8>, dtype: DataType) -> Result<Self, OperationError> {
+        match dtype {
+            DataType::String | DataType::Html => String::from_utf8(bytes)
+                .map(OperationData::Text)
+                .map_err(|error| {
+                    OperationError::ProcessingError(format!(
+                        "operation declared UTF-8 output but produced invalid UTF-8: {error}"
+                    ))
+                }),
+            DataType::Json => serde_json::from_slice(&bytes)
+                .map(OperationData::Json)
+                .map_err(|error| {
+                    OperationError::ProcessingError(format!(
+                        "operation declared JSON output but produced invalid JSON: {error}"
+                    ))
+                }),
+            DataType::Number => {
+                let text = String::from_utf8(bytes).map_err(|error| {
+                    OperationError::ProcessingError(format!(
+                        "operation declared numeric output but produced invalid UTF-8: {error}"
+                    ))
+                })?;
+                let number = text.trim().parse::<f64>().map_err(|error| {
+                    OperationError::ProcessingError(format!(
+                        "operation declared numeric output but produced a non-number: {error}"
+                    ))
+                })?;
+                if !number.is_finite() {
+                    return Err(OperationError::ProcessingError(
+                        "operation declared numeric output but produced a non-finite number".into(),
+                    ));
+                }
+                Ok(OperationData::Number(number))
+            }
+            DataType::Bytes | DataType::Binary => Ok(OperationData::Bytes(bytes)),
+        }
+    }
+
+    /// Validate raw bytes against a declared output type without changing the
+    /// original byte representation.
+    pub fn validate_raw(bytes: &[u8], dtype: DataType) -> Result<(), OperationError> {
+        Self::from_raw_strict(bytes.to_vec(), dtype).map(|_| ())
     }
 }
 
@@ -219,8 +332,8 @@ impl Utils {
      * @brief Convert an ArgValue to a byte vector.
      *
      * - Bytes returns the inner bytes.
-     * - Str attempts to decode hex (even-length hex digits) after removing
-     *   spaces/newlines; on failure it returns the UTF-8 bytes of the string.
+     * - Str uses UTF-8 text by default. `hex:`/`bytes:` and `base64:` prefixes
+     *   request explicit decoding; `text:` forces literal text.
      * - Num and Bool are converted to their string or single-byte forms.
      *
      * @param arg The argument value to convert.
@@ -230,22 +343,29 @@ impl Utils {
         match arg {
             ArgValue::Bytes(b) => Ok(b.clone()),
             ArgValue::Str(s) => {
-                let trimmed = s.trim();
-                if trimmed.is_empty() {
+                if s.is_empty() {
                     return Ok(Vec::new());
                 }
-                let cleaned = trimmed.replace([' ', '\n', '\r', '\t'], "");
-                if cleaned.len() % 2 == 0 && cleaned.chars().all(|c| c.is_ascii_hexdigit()) {
-                    match hex::decode(&cleaned) {
-                        Ok(v) => Ok(v),
-                        Err(e) => Err(OperationError::InvalidArgument {
-                            name: "Argument".to_string(),
-                            reason: format!("Invalid hex: {}", e),
-                        }),
-                    }
-                } else {
-                    Ok(s.as_bytes().to_vec())
+                if let Some(text) = s.strip_prefix("text:") {
+                    return Ok(text.as_bytes().to_vec());
                 }
+                if let Some(encoded) = s.strip_prefix("hex:").or_else(|| s.strip_prefix("bytes:")) {
+                    let cleaned = encoded.replace([' ', '\n', '\r', '\t'], "");
+                    return hex::decode(cleaned).map_err(|error| OperationError::InvalidArgument {
+                        name: "Argument".to_string(),
+                        reason: format!("invalid hex bytes: {error}"),
+                    });
+                }
+                if let Some(encoded) = s.strip_prefix("base64:") {
+                    use base64::{engine::general_purpose, Engine as _};
+                    return general_purpose::STANDARD.decode(encoded).map_err(|error| {
+                        OperationError::InvalidArgument {
+                            name: "Argument".to_string(),
+                            reason: format!("invalid Base64 bytes: {error}"),
+                        }
+                    });
+                }
+                Ok(s.as_bytes().to_vec())
             }
             ArgValue::Num(n) => Ok(n.to_string().into_bytes()),
             ArgValue::Bool(b) => Ok(vec![if *b { 1 } else { 0 }]),
@@ -275,26 +395,46 @@ impl ArgValue {
     }
 
     pub fn as_f64(&self) -> Option<f64> {
-        if let ArgValue::Num(n) = self {
-            Some(*n)
-        } else {
-            None
+        match self {
+            ArgValue::Num(number) if number.is_finite() => Some(*number),
+            ArgValue::Str(value) => value
+                .parse::<f64>()
+                .ok()
+                .filter(|number| number.is_finite()),
+            _ => None,
         }
     }
 
     pub fn as_usize(&self) -> Option<usize> {
-        self.as_f64().map(|n| n as usize)
+        let number = self.as_f64()?;
+        if !number.is_finite()
+            || number.fract() != 0.0
+            || number < 0.0
+            || number > usize::MAX as f64
+        {
+            return None;
+        }
+        Some(number as usize)
     }
 
     pub fn as_i64(&self) -> Option<i64> {
-        self.as_f64().map(|n| n as i64)
+        let number = self.as_f64()?;
+        if !number.is_finite()
+            || number.fract() != 0.0
+            || number < i64::MIN as f64
+            || number > i64::MAX as f64
+        {
+            return None;
+        }
+        Some(number as i64)
     }
 
     pub fn as_bool(&self) -> Option<bool> {
-        if let ArgValue::Bool(b) = self {
-            Some(*b)
-        } else {
-            None
+        match self {
+            ArgValue::Bool(value) => Some(*value),
+            ArgValue::Str(value) if value.eq_ignore_ascii_case("true") => Some(true),
+            ArgValue::Str(value) if value.eq_ignore_ascii_case("false") => Some(false),
+            _ => None,
         }
     }
 
@@ -404,6 +544,47 @@ pub trait Operation: Send + Sync {
         false
     }
 
+    /// Whether the operation consumes its input.
+    fn input_requirement(&self) -> InputRequirement {
+        InputRequirement::Required
+    }
+
+    /// Current verified implementation state. The conservative default is
+    /// `Partial`; individual operations are promoted only after their release
+    /// quality gates are mapped and checked.
+    fn status(&self) -> OperationStatus {
+        if self.is_broken() {
+            OperationStatus::FeatureGated
+        } else {
+            OperationStatus::Partial
+        }
+    }
+
+    /// Verified upstream compatibility state.
+    fn parity(&self) -> ParityStatus {
+        ParityStatus::Unknown
+    }
+
+    /// Side effects beyond transforming the supplied bytes.
+    fn side_effects(&self) -> &'static [SideEffect] {
+        &[]
+    }
+
+    /// Whether equal inputs and arguments produce equal outputs.
+    fn deterministic(&self) -> bool {
+        true
+    }
+
+    /// Cargo features required for availability.
+    fn feature_requirements(&self) -> &'static [&'static str] {
+        &[]
+    }
+
+    /// Known behavioral limitations suitable for generated documentation.
+    fn known_limitations(&self) -> &'static [&'static str] {
+        &[]
+    }
+
     /// Execute the operation with typed input/output, suitable for use in a [`Pipeline`].
     ///
     /// The default implementation coerces `input` to the type declared by
@@ -420,6 +601,47 @@ pub trait Operation: Send + Sync {
     ) -> Result<OperationData, OperationError> {
         let bytes = input.coerce_to(self.input_type())?.into_bytes()?;
         let output = self.run(bytes, args)?;
-        Ok(OperationData::from_raw(output, self.output_type()))
+        OperationData::from_raw_strict(output, self.output_type())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{ArgValue, DataType, OperationData};
+
+    #[test]
+    fn strict_raw_data_rejects_broken_type_contracts() {
+        assert!(OperationData::from_raw_strict(vec![0xff], DataType::String).is_err());
+        assert!(OperationData::from_raw_strict(b"not json".to_vec(), DataType::Json).is_err());
+        assert!(OperationData::from_raw_strict(b"NaN".to_vec(), DataType::Number).is_err());
+        assert!(OperationData::from_raw_strict(b"42.5".to_vec(), DataType::Number).is_ok());
+    }
+
+    #[test]
+    fn integer_conversions_are_checked() {
+        for number in [f64::NAN, f64::INFINITY, -1.0, 1.5] {
+            assert_eq!(ArgValue::Num(number).as_usize(), None);
+        }
+        assert_eq!(ArgValue::Num(42.0).as_usize(), Some(42));
+        assert_eq!(ArgValue::Num(1.5).as_i64(), None);
+        assert_eq!(ArgValue::Num(-1.0).as_i64(), Some(-1));
+    }
+
+    #[test]
+    fn byte_arguments_never_guess_hex_from_text() {
+        use super::Utils;
+
+        assert_eq!(
+            Utils::convert_to_byte_array(&ArgValue::Str("deadbeef".into())).unwrap(),
+            b"deadbeef"
+        );
+        assert_eq!(
+            Utils::convert_to_byte_array(&ArgValue::Str("hex:deadbeef".into())).unwrap(),
+            [0xde, 0xad, 0xbe, 0xef]
+        );
+        assert_eq!(
+            Utils::convert_to_byte_array(&ArgValue::Str("base64:SGk=".into())).unwrap(),
+            b"Hi"
+        );
     }
 }

@@ -9,8 +9,8 @@ CyberChef-style data transformations for the terminal, Rust applications, and
 editor integrations.
 
 rxchef provides one shared execution engine and operation registry across a
-native command-line interface, reusable Rust library, interactive TUI, C-compatible
-FFI, and persistent JSONL/JSON-RPC server. Its 478 registered operations cover
+native command-line interface, reusable Rust library, interactive TUI,
+experimental C-compatible FFI, and persistent JSONL/JSON-RPC server. Its 478 registered operations cover
 encoding, cryptography, hashing, compression, structured data, networking,
 forensics, image processing, and more.
 
@@ -31,8 +31,8 @@ forensics, image processing, and more.
   direct execution, and complete recipes.
 - **Persistent stdio server** designed for Neovim, editor plugins, and other
   local clients using JSONL or JSON-RPC 2.0.
-- **Reusable Rust library and C-compatible FFI** without a dependency on the
-  terminal interface.
+- **Reusable Rust library** without terminal assumptions, plus an explicitly
+  experimental C ABI.
 - **Magic and Scan workflows** for recursive decoding and streaming discovery
   across files, directories, memory dumps, captures, or piped input.
 - **Generated Read the Docs site** whose 478 operation pages are checked for
@@ -146,20 +146,14 @@ shutdown. The complete contract is documented in the
 The core crate can be embedded independently of the CLI:
 
 ```rust
-use rxchef::integration::{self, RecipeStep};
+use rxchef::{catalog, execute};
 
-let descriptor = integration::describe("to_base64")?;
-let result = integration::bake(
-    b"Hello".to_vec(),
-    &[RecipeStep {
-        op: "To Base64".into(),
-        args: vec![],
-    }],
-)?;
+let descriptor = catalog::describe("to_base64")?;
+let result = execute::run("To Base64", b"Hello".to_vec(), vec![])?;
 
 assert_eq!(descriptor.name, "To Base64");
-assert_eq!(result.output, "SGVsbG8=");
-# Ok::<(), String>(())
+assert_eq!(result.output, b"SGVsbG8=");
+# Ok::<(), Box<dyn std::error::Error>>(())
 ```
 
 Lower-level APIs expose typed operation values, direct registry lookup,
@@ -218,13 +212,15 @@ cargo test --workspace --all-features
 cargo clippy --workspace --all-targets -- \
   -D clippy::correctness -D clippy::suspicious
 cargo run -p xtask -- docs --check
+cargo xtask check-registry
+cargo xtask audit-operations
 cargo run --example generate_operation_docs -- --check
 mkdocs build --strict
 ```
 
-The current v0.0.1 workspace contains 478 operations and more than 1,800
-automated tests across operation behavior, pipelines, library integration, CLI
-semantics, storage, documentation, and the persistent stdio protocol.
+The current v0.1.0 workspace registers 478 operations. Quality evidence and
+remaining unknown parity are published in the generated operation matrix; the
+repository does not equate registration with complete verification.
 
 ## Contributing
 

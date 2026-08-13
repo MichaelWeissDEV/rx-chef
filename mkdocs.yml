@@ -80,6 +80,9 @@ nav:
       - Fuzzing: development/fuzzing.md
       - Release process: development/release-process.md
       - Current status: development/current-status.md
+      - Baseline: development/baseline.md
+      - Refactor log: development/refactor-log.md
+      - Final release report: development/final-release-report.md
 
 markdown_extensions:
   - toc:

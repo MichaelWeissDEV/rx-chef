@@ -3,7 +3,7 @@
  * Project:     rxchef
  * Author:      Michael Weiss
  * License:     Apache-2.0
- * Description: rxchef backend FFI
+ * Description: Experimental rxchef backend FFI (ABI stability is not guaranteed)
  * -----------------------------------------------------------------------------
  */
 
@@ -29,6 +29,16 @@ pub struct RxChefResult {
     pub length: usize,
     pub capacity: usize,
     pub error: *mut c_char,
+}
+
+fn error_result(message: impl Into<String>) -> *mut RxChefResult {
+    let message = message.into().replace('\0', "\\0");
+    Box::into_raw(Box::new(RxChefResult {
+        data: ptr::null_mut(),
+        length: 0,
+        capacity: 0,
+        error: CString::new(message).unwrap_or_default().into_raw(),
+    }))
 }
 
 #[derive(serde::Serialize)]
@@ -172,6 +182,9 @@ pub unsafe extern "C" fn rxchef_arg_str(s: *const c_char) -> *mut ArgValue {
  */
 #[no_mangle]
 pub extern "C" fn rxchef_arg_num(n: f64) -> *mut ArgValue {
+    if !n.is_finite() {
+        return ptr::null_mut();
+    }
     Box::into_raw(Box::new(ArgValue::Num(n)))
 }
 
@@ -226,10 +239,19 @@ pub unsafe extern "C" fn rxchef_run(
     num_args: usize,
 ) -> *mut RxChefResult {
     if op_name.is_null() {
-        return ptr::null_mut();
+        return error_result("op_name must not be NULL");
+    }
+    if input_data.is_null() && input_len > 0 {
+        return error_result("input_data must not be NULL when input_len is non-zero");
+    }
+    if args.is_null() && num_args > 0 {
+        return error_result("args must not be NULL when num_args is non-zero");
     }
 
-    let name = CStr::from_ptr(op_name).to_string_lossy();
+    let name = match CStr::from_ptr(op_name).to_str() {
+        Ok(name) => name,
+        Err(_) => return error_result("op_name must be valid UTF-8"),
+    };
     let canonical = runtime::resolve_operation_name(&name);
     let op = match canonical.as_deref().and_then(|n| get_operation(n)) {
         Some(o) => o,
@@ -246,14 +268,14 @@ pub unsafe extern "C" fn rxchef_run(
         }
     };
 
-    let input = if input_len > 0 && !input_data.is_null() {
+    let input = if input_len > 0 {
         slice::from_raw_parts(input_data, input_len).to_vec()
     } else {
         Vec::new()
     };
 
     let mut rust_args = Vec::with_capacity(num_args);
-    if !args.is_null() && num_args > 0 {
+    if num_args > 0 {
         let args_slice = slice::from_raw_parts(args, num_args);
         for &arg_ptr in args_slice {
             if !arg_ptr.is_null() {
@@ -291,6 +313,57 @@ pub unsafe extern "C" fn rxchef_run(
         error: out_err,
     });
     Box::into_raw(result)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    unsafe fn error_text(result: *mut RxChefResult) -> String {
+        let text = CStr::from_ptr((*result).error)
+            .to_string_lossy()
+            .into_owned();
+        rxchef_free_result(result);
+        text
+    }
+
+    #[test]
+    fn run_rejects_inconsistent_null_pointer_lengths() {
+        let operation = CString::new("To Base64").unwrap();
+        let result = unsafe { rxchef_run(operation.as_ptr(), ptr::null(), 1, ptr::null(), 0) };
+        assert!(unsafe { error_text(result) }.contains("input_data"));
+
+        let result = unsafe { rxchef_run(operation.as_ptr(), ptr::null(), 0, ptr::null(), 1) };
+        assert!(unsafe { error_text(result) }.contains("args"));
+    }
+
+    #[test]
+    fn run_returns_binary_with_explicit_ownership() {
+        let operation = CString::new("From Base64").unwrap();
+        let input = b"AAH/";
+        let result = unsafe {
+            rxchef_run(
+                operation.as_ptr(),
+                input.as_ptr(),
+                input.len(),
+                ptr::null(),
+                0,
+            )
+        };
+        assert!(!result.is_null());
+        assert!(unsafe { (*result).error.is_null() });
+        assert_eq!(
+            unsafe { slice::from_raw_parts((*result).data, (*result).length) },
+            [0, 1, 255]
+        );
+        unsafe { rxchef_free_result(result) };
+    }
+
+    #[test]
+    fn numeric_argument_rejects_non_finite_values() {
+        assert!(rxchef_arg_num(f64::NAN).is_null());
+        assert!(rxchef_arg_num(f64::INFINITY).is_null());
+    }
 }
 
 /// Frees an RxChefResult.

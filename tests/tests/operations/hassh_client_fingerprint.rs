@@ -5,6 +5,32 @@
 use rxchef::operations::hassh_client_fingerprint::HASSHClientFingerprint;
 use rxchef::Operation;
 
+fn packet_hex() -> String {
+    let lists = [
+        "curve25519-sha256",
+        "ssh-ed25519",
+        "aes128-ctr",
+        "aes128-ctr",
+        "hmac-sha2-256",
+        "hmac-sha2-256",
+        "none",
+        "none",
+    ];
+    let mut payload = vec![20];
+    payload.extend_from_slice(&[0; 16]);
+    for list in lists {
+        payload.extend_from_slice(&(list.len() as u32).to_be_bytes());
+        payload.extend_from_slice(list.as_bytes());
+    }
+    let padding = [0_u8; 4];
+    let packet_length = 1 + payload.len() + padding.len();
+    let mut packet = (packet_length as u32).to_be_bytes().to_vec();
+    packet.push(padding.len() as u8);
+    packet.extend_from_slice(&payload);
+    packet.extend_from_slice(&padding);
+    hex::encode(packet)
+}
+
 #[test]
 fn test_hassh_client_fingerprint_empty_input() {
     let op = HASSHClientFingerprint;
@@ -24,8 +50,7 @@ fn test_hassh_client_fingerprint_invalid_hex() {
         rxchef::operation::ArgValue::Str("Hash digest".to_string()),
     ];
     let result = op.run("ZZZ".as_bytes().to_vec(), &args);
-    // Should either return an error or succeed (depending on how invalid chars are handled)
-    assert!(result.is_ok() || result.is_err());
+    assert!(result.is_err());
 }
 
 #[test]
@@ -71,13 +96,9 @@ fn test_hassh_client_fingerprint_full_details() {
         rxchef::operation::ArgValue::Str("Hex".to_string()),
         rxchef::operation::ArgValue::Str("Full details".to_string()),
     ];
-    // Create a minimal valid SSH KEXINIT packet
-    // This is a simplified test - in reality you'd need a proper SSH packet
-    let packet = "0000003000140000000000000000000000000000";
-    let result = op.run(hex::decode(packet).unwrap(), &args);
-    // Should either succeed or fail gracefully
-    // The main thing is it shouldn't panic
-    assert!(result.is_ok() || result.is_err());
+    let result = String::from_utf8(op.run(packet_hex().into_bytes(), &args).unwrap()).unwrap();
+    assert!(result.contains("Hash digest:\ne97d07603350d1111ec2b64bf25413c9"));
+    assert!(result.contains("curve25519-sha256;aes128-ctr;hmac-sha2-256;none"));
 }
 
 #[test]
@@ -87,11 +108,8 @@ fn test_hassh_client_fingerprint_algorithms_string() {
         rxchef::operation::ArgValue::Str("Hex".to_string()),
         rxchef::operation::ArgValue::Str("HASSH algorithms string".to_string()),
     ];
-    // Create a minimal valid SSH KEXINIT packet
-    let packet = "0000003000140000000000000000000000000000";
-    let result = op.run(hex::decode(packet).unwrap(), &args);
-    // Should either succeed or fail gracefully
-    assert!(result.is_ok() || result.is_err());
+    let result = op.run(packet_hex().into_bytes(), &args).unwrap();
+    assert_eq!(result, b"curve25519-sha256;aes128-ctr;hmac-sha2-256;none");
 }
 
 #[test]

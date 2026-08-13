@@ -1,7 +1,6 @@
 /*
  * -----------------------------------------------------------------------------
  * Project:     rxchef
- * Version:     1.0.0
  * Author:      Michael Weiss
  * Source:      Ported from GCHQ's CyberChef (JavaScript)
  * License:     Apache-2.0
@@ -37,12 +36,7 @@ impl Operation for MD2 {
     }
 
     fn args_schema(&self) -> &'static [ArgSchema] {
-        static SCHEMA: &[ArgSchema] = &[ArgSchema {
-            name: "Rounds",
-            description: "Number of rounds (minimum 0)",
-            default_value: "18",
-        }];
-        SCHEMA
+        &[]
     }
 
     fn input_type(&self) -> DataType {
@@ -54,16 +48,7 @@ impl Operation for MD2 {
     }
 
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
-        let rounds = args.first().and_then(|a| a.as_usize()).unwrap_or(18);
-        if rounds == 0 {
-            return Err(OperationError::InvalidArgument {
-                name: "Rounds".to_string(),
-                reason: "Rounds must be greater than zero".to_string(),
-            });
-        }
-
-        // The md2 crate doesn't support variable rounds; it always performs 18 rounds
-        // We validate but don't use the rounds parameter
+        let _ = args;
         let mut hasher = Md2::new();
         hasher.update(&input);
         let digest = hasher.finalize();

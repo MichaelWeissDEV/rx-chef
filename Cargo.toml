@@ -1,11 +1,12 @@
 [package]
 name = "rxchef"
-version = "0.0.1"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+rust-version = "1.96"
 autobins = false
 description = "CyberChef ported to Rust - cryptographic, encoding, and data transformation operations"
-license = "Apache-2.0"
-repository = "https://github.com/MichaelWeissDEV/rx-chef"
+license.workspace = true
+repository.workspace = true
 readme = "README.md"
 keywords = ["cyberchef", "encoding", "cryptography", "forensics"]
 categories = ["command-line-utilities", "cryptography", "encoding"]
@@ -24,6 +25,12 @@ default-members = [
     "crates/cli",
     "crates/tui",
 ]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/MichaelWeissDEV/rx-chef"
 
 [lib]
 name = "rxchef"
@@ -164,6 +171,3 @@ tesseract-rs = { version = "0.4", optional = true, default-features = false, fea
 pgp = ["dep:sequoia-openpgp"]
 jsonata = ["dep:jaq-core", "dep:jaq-std", "dep:jaq-json"]
 tesseract = ["dep:tesseract-rs"]
-
-[build-dependencies]
-regex = "1"

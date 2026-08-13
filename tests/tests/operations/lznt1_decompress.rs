@@ -6,17 +6,24 @@ use rxchef::operations::lznt1_decompress::LZNT1Decompress;
 use rxchef::Operation;
 
 #[test]
-#[ignore]
 fn test_lznt1_decompress() {
     let op = LZNT1Decompress;
-    // "This is a test. This is a test." compressed with LZNT1
-    let input = vec![
-        0x19, 0xb0, 0x54, 0x68, 0x69, 0x73, 0x20, 0x69, 0x73, 0x20, 0x61, 0x20, 0x74, 0x65, 0x73,
-        0x74, 0x2e, 0x20, 0x02, 0x00, 0x0b, 0xf0, 0x74, 0x65, 0x73, 0x74, 0x2e,
-    ];
+    // A valid uncompressed LZNT1 chunk: signature 0b011 and size-minus-one.
+    let text = b"This is a test. This is a test.";
+    let header = 0x3000 | (text.len() as u16 - 1);
+    let mut input = header.to_le_bytes().to_vec();
+    input.extend_from_slice(text);
     let result = op.run(input, &[]).unwrap();
     assert_eq!(
         String::from_utf8_lossy(&result),
         "This is a test. This is a test."
     );
+}
+
+#[test]
+fn test_lznt1_rejects_token_before_any_literal() {
+    let op = LZNT1Decompress;
+    // Compressed chunk with flag bit 0 set and a back-reference token first.
+    let result = op.run(vec![0x02, 0xb0, 0x01, 0x00, 0x00], &[]);
+    assert!(result.is_err());
 }

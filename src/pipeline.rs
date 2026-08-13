@@ -1,7 +1,6 @@
 /*
  * -----------------------------------------------------------------------------
  * Project:     rxchef
- * Version:     1.1.0
  * Author:      Michael Weiss
  * License:     Apache-2.0
  * Description: Operation pipeline — chain any operations in any order.

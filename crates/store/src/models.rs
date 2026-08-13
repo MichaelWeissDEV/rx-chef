@@ -39,6 +39,8 @@ pub struct Variable {
     pub value: String,
     #[serde(default, skip_serializing_if = "String::is_empty")]
     pub description: String,
+    #[serde(default)]
+    pub secret: bool,
 }
 
 // ─── History ──────────────────────────────────────────────────────────────────
@@ -51,8 +53,14 @@ pub struct HistoryStep {
     /// First 300 characters of the output (UTF-8 lossy or hex for binary).
     pub output_preview: String,
     pub output_bytes: usize,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    pub duration_ms: f64,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<String>,
+}
+
+fn is_zero(value: &f64) -> bool {
+    *value == 0.0
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -77,10 +85,11 @@ pub fn bytes_preview(bytes: &[u8], max_chars: usize) -> String {
     match std::str::from_utf8(bytes) {
         Ok(s) => {
             let s = s.trim_end();
-            if s.len() <= max_chars {
+            if s.chars().count() <= max_chars {
                 s.replace('\n', "↵").replace('\r', "")
             } else {
-                format!("{}…", &s[..max_chars].replace('\n', "↵"))
+                let preview: String = s.chars().take(max_chars).collect();
+                format!("{}…", preview.replace('\n', "↵").replace('\r', ""))
             }
         }
         Err(_) => {
@@ -96,5 +105,15 @@ pub fn bytes_preview(bytes: &[u8], max_chars: usize) -> String {
                 hex
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::bytes_preview;
+
+    #[test]
+    fn utf8_preview_truncates_at_character_boundaries() {
+        assert_eq!(bytes_preview("Grüße 🌍".as_bytes(), 5), "Grüße…");
     }
 }

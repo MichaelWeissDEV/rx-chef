@@ -1,7 +1,6 @@
 /*
  * -----------------------------------------------------------------------------
  * Project:     rxchef
- * Version:     1.0.0
  * Author:      Michael Weiss
  * Source:      Ported from GCHQ's CyberChef (JavaScript)
  * License:     Apache-2.0
@@ -36,7 +35,8 @@ impl Operation for HMAC {
         static SCHEMA: &[ArgSchema] = &[
             ArgSchema {
                 name: "Key",
-                description: "The secret key (Hex, Base64, UTF8, or Latin1)",
+                description:
+                    "The secret key as UTF-8 text, or explicitly prefixed with hex:/0x or base64:",
                 default_value: "",
             },
             ArgSchema {
@@ -90,32 +90,23 @@ fn decode_key(key: &str) -> Result<Vec<u8>, OperationError> {
         return Ok(vec![]);
     }
 
-    if key.starts_with("0x") {
-        return hex::decode(&key[2..]).map_err(|e| OperationError::InvalidArgument {
+    if let Some(encoded) = key.strip_prefix("0x").or_else(|| key.strip_prefix("hex:")) {
+        return hex::decode(encoded).map_err(|e| OperationError::InvalidArgument {
             name: "Key".to_string(),
             reason: format!("Invalid hex: {}", e),
         });
     }
 
-    if is_valid_hex(key) {
-        return hex::decode(key).map_err(|e| OperationError::InvalidArgument {
-            name: "Key".to_string(),
-            reason: format!("Invalid hex: {}", e),
-        });
-    }
-
-    if let Ok(decoded) = data_encoding::BASE64.decode(key.as_bytes()) {
-        return Ok(decoded);
+    if let Some(encoded) = key.strip_prefix("base64:") {
+        return data_encoding::BASE64
+            .decode(encoded.as_bytes())
+            .map_err(|e| OperationError::InvalidArgument {
+                name: "Key".to_string(),
+                reason: format!("Invalid Base64: {}", e),
+            });
     }
 
     Ok(key.as_bytes().to_vec())
-}
-
-fn is_valid_hex(s: &str) -> bool {
-    if s.is_empty() || s.len() % 2 != 0 {
-        return false;
-    }
-    s.chars().all(|c| c.is_ascii_hexdigit())
 }
 
 fn compute_hmac(key: &[u8], hash_func: &str, input: &[u8]) -> Result<Vec<u8>, OperationError> {

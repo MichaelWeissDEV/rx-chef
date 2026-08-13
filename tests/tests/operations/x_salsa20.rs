@@ -15,8 +15,8 @@ fn test_xsalsa20_encryption() {
     let nonce = vec![0x02; 24];
     let input = b"Hello World!".to_vec();
     let args = [
-        ArgValue::Str(hex::encode(&key)),
-        ArgValue::Str(hex::encode(&nonce)),
+        ArgValue::Str(format!("hex:{}", hex::encode(&key))),
+        ArgValue::Str(format!("hex:{}", hex::encode(&nonce))),
         ArgValue::Num(0.0),
         ArgValue::Str("20".to_string()),
         ArgValue::Str("Raw".to_string()),
@@ -36,8 +36,8 @@ fn test_xsalsa_reduced_round_variants_round_trip_and_differ() {
     let mut ciphertexts = Vec::new();
     for rounds in ["8", "12", "20"] {
         let args = [
-            ArgValue::Str(hex::encode([0x11; 32])),
-            ArgValue::Str(hex::encode([0x22; 24])),
+            ArgValue::Str(format!("hex:{}", hex::encode([0x11; 32]))),
+            ArgValue::Str(format!("hex:{}", hex::encode([0x22; 24]))),
             ArgValue::Num(3.0),
             ArgValue::Str(rounds.to_string()),
             ArgValue::Str("Raw".to_string()),

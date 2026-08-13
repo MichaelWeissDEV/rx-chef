@@ -1,6 +1,6 @@
 # Performance results
 
-No hardware-independent numbers are published for v0.0.1. Throughput depends on
+No hardware-independent numbers are published for v0.1.0. Throughput depends on
 CPU features, operating system, Rust version, thermal state, and optional native
 libraries; a copied number would be more misleading than useful.
 

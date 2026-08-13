@@ -1,7 +1,6 @@
 /*
  * -----------------------------------------------------------------------------
  * Project:     rxchef
- * Version:     1.0.0
  * Author:      Michael Weiss
  * Source:      Ported from GCHQ's CyberChef (JavaScript)
  * License:     Apache-2.0
@@ -14,8 +13,7 @@ use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError}
 /// PGP Encrypt operation
 ///
 /// Encrypts a message using the recipient's PGP public key.
-/// This is a stub implementation - full PGP encryption requires key material
-/// at runtime and sequoia-openpgp integration.
+/// The implementation is available when the `pgp` feature is enabled.
 pub struct PGPEncrypt;
 
 impl Operation for PGPEncrypt {
@@ -51,6 +49,10 @@ impl Operation for PGPEncrypt {
 
     fn is_broken(&self) -> bool {
         !cfg!(feature = "pgp")
+    }
+
+    fn feature_requirements(&self) -> &'static [&'static str] {
+        &["pgp"]
     }
 
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {

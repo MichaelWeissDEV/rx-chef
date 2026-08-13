@@ -7,9 +7,8 @@ use rxchef::operations::rc6_decrypt::RC6Decrypt;
 use rxchef::Operation;
 
 #[test]
-fn test_rc6_decrypt_basic() {
+fn test_rc6_decrypt_rejects_short_ciphertext() {
     let op = RC6Decrypt;
-    // This is a dummy test just to ensure it runs
     let input = b"00".to_vec();
     let args = [
         ArgValue::Str("secret".to_string()),
@@ -21,5 +20,5 @@ fn test_rc6_decrypt_basic() {
         ArgValue::Str("32".to_string()),
         ArgValue::Str("20".to_string()),
     ];
-    let _ = op.run(input, &args);
+    assert!(op.run(input, &args).is_err());
 }

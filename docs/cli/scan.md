@@ -15,6 +15,10 @@ rxchef scan ./logs -r --decode
 - identify data that may be encoded,
 - and optionally hand results to the decode engine for deeper analysis.
 
+The scanner reads in 64 KiB chunks and retains at most `--max-token-size` bytes
+per token (default 1 MiB). `--max-findings` stops the complete multi-input scan
+after the configured number of results (default 10,000).
+
 ## Related pages
 
 - [Magic](magic.md)

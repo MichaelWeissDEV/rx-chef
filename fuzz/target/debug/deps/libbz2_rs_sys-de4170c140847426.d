@@ -1,0 +1,16 @@
+/Users/michaelweiss/space/decode/rxchef/fuzz/target/debug/deps/libbz2_rs_sys-de4170c140847426.d: /Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/lib.rs /Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/allocator.rs /Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/blocksort.rs /Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/bzlib.rs /Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/compress.rs /Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/crctable.rs /Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/decompress.rs /Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/huffman.rs /Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/randtable.rs
+
+/Users/michaelweiss/space/decode/rxchef/fuzz/target/debug/deps/liblibbz2_rs_sys-de4170c140847426.rmeta: /Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/lib.rs /Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/allocator.rs /Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/blocksort.rs /Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/bzlib.rs /Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/compress.rs /Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/crctable.rs /Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/decompress.rs /Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/huffman.rs /Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/randtable.rs
+
+/Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/lib.rs:
+/Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/allocator.rs:
+/Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/blocksort.rs:
+/Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/bzlib.rs:
+/Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/compress.rs:
+/Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/crctable.rs:
+/Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/decompress.rs:
+/Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/huffman.rs:
+/Users/michaelweiss/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libbz2-rs-sys-0.2.5/src/randtable.rs:
+
+# env-dep:CARGO_PKG_VERSION=0.2.5
+# env-dep:CARGO_PKG_VERSION_MAJOR=0

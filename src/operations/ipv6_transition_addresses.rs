@@ -1,7 +1,6 @@
 /*
  * -----------------------------------------------------------------------------
  * Project:     rxchef
- * Version:     1.0.0
  * Author:      Michael Weiss
  * Source:      Ported from GCHQ's CyberChef (JavaScript)
  * License:     Apache-2.0
@@ -178,20 +177,6 @@ fn mac_transition(input: &str, remove_headers: bool) -> String {
         output.push_str("EUI-64 Interface ID: ");
     }
 
-    let _mac_str = format!(
-        "{}{}:{}{}ff:fe{}:{}{}",
-        mac_parts[0],
-        mac_parts[1],
-        mac_parts[2],
-        "", // dummy
-        mac_parts[3],
-        mac_parts[4],
-        mac_parts[5]
-    );
-    // Wait, CyberChef does: const MAC = MACPARTS[0] + MACPARTS[1] + ":" + MACPARTS[2] + "ff:fe" + MACPARTS[3] + ":" + MACPARTS[4] + MACPARTS[5];
-    // MACPARTS[0] is first byte.
-    // So MAC starts with 4 hex chars, then ':', then 4 hex chars, then ':', then 4 hex chars.
-    // e.g. aabb:ccff:fedd:eeff
     let mac_val = format!(
         "{}{}:{}{}ff:fe{}:{}{}",
         mac_parts[0], mac_parts[1], mac_parts[2], "", mac_parts[3], mac_parts[4], mac_parts[5]

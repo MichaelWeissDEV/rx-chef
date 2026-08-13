@@ -114,6 +114,9 @@ Recursively detects and decodes candidate encodings.
 - `--depth N`: maximum decoding-chain depth (default 3);
 - `--crib REGEX`: favor candidates matching known plaintext;
 - `--intensive`: enable more aggressive decoders;
+- `--max-candidates N`: cap decoder attempts (default 256);
+- `--max-candidate-bytes N`: cap a candidate input/output (default 8 MiB);
+- `--max-total-decoded-bytes N`: cap accepted decoded data (default 32 MiB);
 - `--decode`: emit only the best candidate as pipe-friendly bytes;
 - `--hex`: hex-render the selected decode;
 - `--json`: emit ranked candidates as JSON.
@@ -126,6 +129,8 @@ Streams files or stdin and reports encoded/high-entropy tokens.
 
 - `-r, --recursive`: descend into directories;
 - `--min-len N`: minimum token length (default 16);
+- `--max-token-size N`: maximum retained bytes per token (default 1 MiB);
+- `--max-findings N`: stop the complete scan after N results (default 10,000);
 - `-d, --decode`: decode findings with Magic;
 - `--depth N`: Magic depth (default 3);
 - `--crib REGEX`: only retain matching decoded content and implies decoding;

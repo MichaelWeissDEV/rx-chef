@@ -150,27 +150,9 @@ fn test_hmac_unsupported_output_encoding_errors() {
     assert!(result.is_err());
 }
 
-// --- Discrepancy: ambiguous key-decoding heuristic ---
-//
-// `decode_key` in src/operations/hmac.rs has no explicit "key type" argument
-// (unlike upstream CyberChef, which has a separate Key-type dropdown). It
-// instead guesses the encoding: not "0x"-prefixed, not all-hex-digits, then
-// tries Base64, and only falls back to literal UTF-8 bytes if Base64
-// decoding fails.
-//
-// RFC 2202 test case 2 / RFC 4231 test case 2 use the literal ASCII key
-// "Jefe". That string also happens to be valid (unpadded 4-char) Base64, so
-// decode_key silently treats it as Base64 and decodes it into 3 raw bytes
-// (0x25 0xe7 0xde) instead of using the 4 literal ASCII bytes b"Jefe". The
-// resulting HMAC therefore does NOT match the published RFC vector.
-//
-// Verified independently with Python's hmac/hashlib (a trusted, spec
-// conformant implementation):
-//   literal key b"Jefe"            -> HMAC-MD5  = 750c783e6ab0b503eaa86e310a5db738
-//   base64-decoded "Jefe" (3 bytes)-> HMAC-MD5  = 36ca602fccab3887707dad9072d35b34
-// rxchef's HMAC op returns the second (wrong) value for key = "Jefe".
+// RFC 2202 case 2 also proves that an unprefixed key is literal text even when
+// its characters happen to form valid Base64.
 #[test]
-#[ignore = "known bug: decode_key() in src/operations/hmac.rs misinterprets the literal ASCII key \"Jefe\" (RFC 2202/4231 test case 2) as Base64 because it happens to be valid Base64; see comment above for details"]
 fn test_hmac_md5_rfc2202_case2_jefe_key() {
     assert_eq!(
         run("what do ya want for nothing?", "Jefe", "MD5", "Hex"),

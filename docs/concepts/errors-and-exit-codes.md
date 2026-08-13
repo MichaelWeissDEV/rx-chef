@@ -6,12 +6,19 @@ the default output safe to pipe into another process.
 | Exit code | Meaning |
 |---:|---|
 | `0` | The command completed successfully. |
-| `1` | Input, arguments, operation execution, storage, parsing, or I/O failed. |
 | `2` | `clap` rejected the command line (unknown command/flag, missing value, or conflict). |
+| `3` | A command-level input or lookup was invalid. |
+| `4` | Operation, recipe, Magic, or server execution failed. |
+| `5` | File, stream, project, history, variable, or store I/O failed. |
+| `6` | A requested compile-time feature or capability is unavailable. |
 
 Human-readable failures have the form `rxchef: MESSAGE`. With `run --json`,
 `pipe --json`, and `bake --json`, successful binary output uses a JSON envelope;
 process-level failures still use stderr and a non-zero exit status.
+
+These classes are stable for automation. Detailed messages may gain context and
+must not be parsed as a machine protocol; use `serve --stdio` for structured
+JSON-RPC errors.
 
 Operation errors are grouped into invalid input, invalid argument, and processing
 errors in the Rust API. Callers should display the complete message: it includes

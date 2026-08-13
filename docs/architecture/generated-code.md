@@ -2,6 +2,17 @@
 
 Some parts of rxchef rely on generated artifacts so the operation catalog and related metadata can be extended without manual duplication across multiple layers.
 
+The operation registry is generated explicitly:
+
+```console
+cargo xtask generate-registry
+cargo xtask check-registry
+```
+
+`check-registry` renders and formats a copy under `target/xtask` before comparing
+it byte-for-byte with `src/operations/mod.rs`. Normal Cargo builds never write
+to committed source files.
+
 ## Why generation exists
 
 The project contains many operations with similar metadata requirements:

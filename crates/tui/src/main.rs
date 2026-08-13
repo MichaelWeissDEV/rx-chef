@@ -45,8 +45,8 @@ use ratatui::{
     widgets::{Block, Borders, List, ListItem, ListState, Paragraph, Wrap},
     Frame, Terminal,
 };
-use rxchef::runtime;
-use rxchef_store::{self as store, Scope};
+use rxchef::{execution, runtime};
+use rxchef_store as store;
 
 // ─── Data model ──────────────────────────────────────────────────────────────
 
@@ -205,7 +205,9 @@ impl App {
         let mut current = self.input_text.as_bytes().to_vec();
 
         for step in &self.pipeline {
-            let result = runtime::run_operation(&step.op_name, current.clone(), &step.args);
+            let result = execution::run(&step.op_name, current.clone(), step.args.clone())
+                .map(|outcome| outcome.output)
+                .map_err(|error| error.to_string());
             match result {
                 Ok(output) => {
                     current = output.clone();
@@ -334,7 +336,7 @@ impl App {
                 .collect(),
             tags: vec![],
         };
-        match store::save_recipe(&recipe, Scope::Project) {
+        match store::save_recipe(&recipe, store::default_scope()) {
             Ok(path) => self.status = format!("Saved '{}' to {}.", name, path.display()),
             Err(e) => self.status = format!("Save failed: {}", e),
         }
@@ -349,6 +351,7 @@ impl App {
                     args: s.args.clone(),
                     output_preview: store::bytes_preview(&r.output, 200),
                     output_bytes: r.output.len(),
+                    duration_ms: 0.0,
                     error: r.error.clone(),
                 })
                 .collect();
@@ -1364,7 +1367,8 @@ fn run_noninteractive(args: &[String]) -> io::Result<()> {
             })
             .unwrap_or_default();
 
-        current = runtime::run_operation(op_name, current, &raw_args)
+        current = execution::run(op_name, current, raw_args)
+            .map(|outcome| outcome.output)
             .map_err(|e| io::Error::new(io::ErrorKind::Other, format!("step {}: {}", i + 1, e)))?;
     }
 

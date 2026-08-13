@@ -17,12 +17,17 @@ mod vars;
 
 pub use history::{append_history, clear_history, get_history, list_history, new_history_id};
 pub use models::{bytes_preview, HistoryEntry, HistoryStep, Recipe, RecipeStep, Variable};
-pub use paths::{global_dir, project_dir, Scope};
+pub use paths::{
+    default_scope, discover_project_dir, global_dir, init_project, project_dir, Scope,
+};
 pub use project::{load_project, save_project, Project, ProjectCheckpoint, ProjectData};
 pub use recipe::{
-    delete_recipe, export_recipe, import_recipe, list_recipes, load_recipe, save_recipe, RecipeMeta,
+    delete_recipe, export_recipe, import_recipe, list_recipes, load_recipe, load_recipe_file,
+    load_recipe_in_scope, load_recipe_resolved, save_recipe, RecipeMeta,
 };
-pub use vars::{expand_vars, get_var, list_vars, set_var, unset_var};
+pub use vars::{
+    expand_vars, get_var, list_vars, list_vars_with_scope, set_var, set_var_with_options, unset_var,
+};
 
 #[derive(Debug, thiserror::Error)]
 pub enum StoreError {

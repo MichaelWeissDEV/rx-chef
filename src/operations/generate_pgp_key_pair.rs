@@ -1,7 +1,6 @@
 /*
  * -----------------------------------------------------------------------------
  * Project:     rxchef
- * Version:     1.0.0
  * Author:      Michael Weiss
  * Source:      Ported from GCHQ's CyberChef (JavaScript)
  * License:     Apache-2.0
@@ -14,8 +13,7 @@ use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError}
 /// Generate PGP Key Pair operation
 ///
 /// Generates a new public/private PGP key pair. Supports RSA and ECC key types.
-/// This is a stub implementation - full PGP key generation requires
-/// sequoia-openpgp integration.
+/// The implementation is available when the `pgp` feature is enabled.
 pub struct GeneratePGPKeyPair;
 
 impl Operation for GeneratePGPKeyPair {
@@ -70,6 +68,10 @@ impl Operation for GeneratePGPKeyPair {
 
     fn is_broken(&self) -> bool {
         !cfg!(feature = "pgp")
+    }
+
+    fn feature_requirements(&self) -> &'static [&'static str] {
+        &["pgp"]
     }
 
     fn run(&self, _input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {

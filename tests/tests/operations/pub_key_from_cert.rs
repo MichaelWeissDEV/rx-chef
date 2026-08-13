@@ -6,9 +6,7 @@ use rxchef::operations::pub_key_from_cert::PubKeyFromCert;
 use rxchef::Operation;
 
 #[test]
-fn test_pub_key_from_cert_placeholder() {
-    // This test is hard to do without a valid cert DER.
-    // But we can test that it returns empty for empty input.
+fn test_pub_key_from_cert_empty_input() {
     let op = PubKeyFromCert;
     let result = op.run(vec![], &[]).unwrap();
     assert!(result.is_empty());

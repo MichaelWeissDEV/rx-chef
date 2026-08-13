@@ -10,8 +10,8 @@ use rxchef::Operation;
 fn test_salsa20_basic() {
     let op = Salsa20Op;
     let input = b"Hello World".to_vec();
-    let key = "000102030405060708090a0b0c0d0e0f".to_string(); // 16 bytes
-    let nonce = "0011223344556677".to_string(); // 8 bytes
+    let key = "hex:000102030405060708090a0b0c0d0e0f".to_string(); // 16 bytes
+    let nonce = "hex:0011223344556677".to_string(); // 8 bytes
     let args = [
         ArgValue::Str(key.clone()),
         ArgValue::Str(nonce.clone()),
@@ -29,8 +29,8 @@ fn test_salsa20_basic() {
 fn test_salsa20_hex_output() {
     let op = Salsa20Op;
     let input = b"Hello".to_vec();
-    let key = "000102030405060708090a0b0c0d0e0f".to_string();
-    let nonce = "0011223344556677".to_string();
+    let key = "hex:000102030405060708090a0b0c0d0e0f".to_string();
+    let nonce = "hex:0011223344556677".to_string();
     let args = [
         ArgValue::Str(key),
         ArgValue::Str(nonce),
@@ -48,7 +48,7 @@ fn test_salsa20_invalid_key() {
     let input = b"Hello".to_vec();
     let args = [
         ArgValue::Str("010203".to_string()), // Too short
-        ArgValue::Str("0011223344556677".to_string()),
+        ArgValue::Str("hex:0011223344556677".to_string()),
         ArgValue::Num(0.0),
         ArgValue::Str("20".to_string()),
         ArgValue::Str("Raw".to_string()),

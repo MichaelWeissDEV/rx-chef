@@ -2,7 +2,7 @@ use std::io::{BufRead, Write};
 
 use crate::{
     models::HistoryEntry,
-    paths::{ensure_dir, history_path},
+    paths::{atomic_write, ensure_dir, history_path},
     StoreError,
 };
 
@@ -13,10 +13,14 @@ pub fn append_history(entry: &HistoryEntry) -> Result<(), StoreError> {
     let path = history_path();
     ensure_dir(path.parent().unwrap())?;
     let line = serde_json::to_string(entry)?;
-    let mut file = std::fs::OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(&path)?;
+    let mut options = std::fs::OpenOptions::new();
+    options.create(true).append(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o600);
+    }
+    let mut file = options.open(&path)?;
     writeln!(file, "{}", line)?;
 
     // Rotate if needed
@@ -109,14 +113,12 @@ fn list_history_all() -> Result<Vec<HistoryEntry>, StoreError> {
 /// Uses write-to-temp + atomic rename for safety.
 fn rotate_history(entries: &[HistoryEntry]) -> Result<(), StoreError> {
     let path = history_path();
-    let tmp = path.with_extension("tmp");
-    let mut file = std::fs::File::create(&tmp)?;
+    let mut contents = Vec::new();
     for entry in entries {
         let line = serde_json::to_string(entry)?;
-        writeln!(file, "{}", line)?;
+        writeln!(contents, "{}", line)?;
     }
-    file.flush()?;
-    std::fs::rename(&tmp, &path)?;
+    atomic_write(&path, &contents, true)?;
     Ok(())
 }
 

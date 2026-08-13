@@ -64,9 +64,6 @@ pub fn save_project(project: &Project, path: &Path) -> Result<(), StoreError> {
     } else {
         serde_json::to_string_pretty(project)?
     };
-    if let Some(parent) = path.parent() {
-        fs::create_dir_all(parent)?;
-    }
-    fs::write(path, content)?;
+    crate::paths::atomic_write(path, content.as_bytes(), false)?;
     Ok(())
 }

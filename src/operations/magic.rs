@@ -1,7 +1,6 @@
 /*
  * -----------------------------------------------------------------------------
  * Project:     rxchef
- * Version:     1.0.0
  * Author:      Michael Weiss
  * Source:      Ported from GCHQ's CyberChef (JavaScript)
  * License:     Apache-2.0
@@ -85,6 +84,7 @@ impl Operation for Magic {
             crib,
             intensive,
             max_results: 20,
+            ..MagicOptions::default()
         };
         let results = run_magic(&input, &opts);
         serde_json::to_vec(&results).map_err(|e| OperationError::ProcessingError(e.to_string()))

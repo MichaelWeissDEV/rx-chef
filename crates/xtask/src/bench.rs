@@ -17,10 +17,11 @@
 //! to produce numbers under a debug build.
 
 use std::time::Instant;
+use std::{env, fs, path::PathBuf, process::Command};
 
-use rxchef::magic::{MagicOptions, magic};
+use rxchef::magic::{magic, MagicOptions};
 use rxchef::runtime;
-use rxchef::scan::{ScanOptions, scan_bytes};
+use rxchef::scan::{scan_bytes, ScanOptions};
 
 /// One warmup-then-sample measurement of a single operation.
 struct Measurement {
@@ -60,6 +61,14 @@ impl Measurement {
 
     fn max_ns(&self) -> f64 {
         self.sorted_ns().last().copied().unwrap_or(0.0)
+    }
+
+    fn p95_ns(&self) -> f64 {
+        let sorted = self.sorted_ns();
+        let index = ((sorted.len() as f64 * 0.95).ceil() as usize)
+            .saturating_sub(1)
+            .min(sorted.len().saturating_sub(1));
+        sorted.get(index).copied().unwrap_or(0.0)
     }
 
     fn throughput_mib_s(&self) -> f64 {
@@ -359,26 +368,121 @@ fn print_human(measurements: &[Measurement]) {
 }
 
 fn print_json(measurements: &[Measurement]) {
-    let mut entries = Vec::new();
-    for m in measurements {
-        entries.push(serde_json::json!({
-            "name": m.name,
-            "category": m.category,
-            "input_bytes": m.input_bytes,
-            "warmup_iters": m.warmup_iters,
-            "sample_iters": m.sample_iters,
-            "median_ns": m.median_ns(),
-            "min_ns": m.min_ns(),
-            "max_ns": m.max_ns(),
-            "mad_ns": m.mad_ns(),
-            "throughput_mib_s": m.throughput_mib_s(),
-        }));
-    }
     let root = serde_json::json!({
         "debug_assertions": cfg!(debug_assertions),
-        "results": entries,
+        "results": measurement_values(measurements),
     });
     println!("{}", serde_json::to_string_pretty(&root).unwrap());
+}
+
+fn measurement_values(measurements: &[Measurement]) -> Vec<serde_json::Value> {
+    measurements
+        .iter()
+        .map(|m| {
+            serde_json::json!({
+                "name": m.name,
+                "operation": m.name,
+                "category": m.category,
+                "case": format!("{}-bytes", m.input_bytes),
+                "input_bytes": m.input_bytes,
+                "warmup_iters": m.warmup_iters,
+                "sample_iters": m.sample_iters,
+                "median_ns": m.median_ns(),
+                "p95_ns": m.p95_ns(),
+                "min_ns": m.min_ns(),
+                "max_ns": m.max_ns(),
+                "mad_ns": m.mad_ns(),
+                "throughput_mib_s": m.throughput_mib_s(),
+                "throughput_bytes_per_sec": m.throughput_mib_s() * 1024.0 * 1024.0,
+            })
+        })
+        .collect()
+}
+
+/// Public `cargo xtask bench-docs` entry point. It relaunches this task in a
+/// release profile so the documented command cannot accidentally record debug
+/// timings.
+pub fn run_docs(args: &[String]) -> Result<(), String> {
+    let mode = if args.iter().any(|arg| arg == "--full") {
+        "--full"
+    } else {
+        "--quick"
+    };
+    if !cfg!(debug_assertions) {
+        return run_docs_internal(&[mode.to_string()]);
+    }
+    let root =
+        PathBuf::from(env::var("CARGO_MANIFEST_DIR").map_err(|e| e.to_string())?).join("../..");
+    let cargo = env::var_os("CARGO").unwrap_or_else(|| "cargo".into());
+    let status = Command::new(cargo)
+        .current_dir(root)
+        .args([
+            "run",
+            "--release",
+            "-p",
+            "xtask",
+            "--",
+            "bench-docs-internal",
+            mode,
+        ])
+        .status()
+        .map_err(|e| e.to_string())?;
+    if status.success() {
+        Ok(())
+    } else {
+        Err("release benchmark process failed".into())
+    }
+}
+
+pub fn run_docs_internal(args: &[String]) -> Result<(), String> {
+    if cfg!(debug_assertions) {
+        return Err("benchmark documentation must run in release mode".into());
+    }
+    let mode = if args.iter().any(|arg| arg == "--full") {
+        "full"
+    } else {
+        "quick"
+    };
+    let measurements = build_cases()?;
+    let root =
+        PathBuf::from(env::var("CARGO_MANIFEST_DIR").map_err(|e| e.to_string())?).join("../..");
+    let output = root.join("docs/_generated/benchmarks.json");
+    fs::create_dir_all(output.parent().unwrap()).map_err(|e| e.to_string())?;
+    let document = serde_json::json!({
+        "schema_version": 1,
+        "commit": command_output("git", &["rev-parse", "HEAD"]),
+        "rustc": command_output("rustc", &["--version"]),
+        "os": env::consts::OS,
+        "arch": env::consts::ARCH,
+        "cpu": cpu_name(),
+        "profile": "release",
+        "suite": mode,
+        "disclaimer": "Reference measurement; hardware dependent; not a runtime guarantee.",
+        "results": measurement_values(&measurements),
+    });
+    let encoded = serde_json::to_string_pretty(&document).map_err(|e| e.to_string())?;
+    fs::write(&output, format!("{encoded}\n")).map_err(|e| e.to_string())?;
+    println!("wrote {}", output.display());
+    Ok(())
+}
+
+fn command_output(program: &str, args: &[&str]) -> String {
+    Command::new(program)
+        .args(args)
+        .output()
+        .ok()
+        .filter(|output| output.status.success())
+        .map(|output| String::from_utf8_lossy(&output.stdout).trim().to_string())
+        .filter(|output| !output.is_empty())
+        .unwrap_or_else(|| "not detected".to_string())
+}
+
+fn cpu_name() -> String {
+    if env::consts::OS == "macos" {
+        command_output("sysctl", &["-n", "machdep.cpu.brand_string"])
+    } else {
+        command_output("uname", &["-m"])
+    }
 }
 
 /// Entry point for `cargo run -p xtask -- bench [--json]`.

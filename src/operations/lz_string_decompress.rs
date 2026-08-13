@@ -1,7 +1,6 @@
 /*
  * -----------------------------------------------------------------------------
  * Project:     rxchef
- * Version:     1.1.0
  * Author:      Michael Weiss
  * Source:      Ported from GCHQ's CyberChef (JavaScript)
  * License:     Apache-2.0
@@ -77,31 +76,37 @@ impl Operation for LZStringDecompress {
 fn decompress_from_base64(input: &str) -> Option<String> {
     let key_str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
     let input = input.trim_end_matches('=');
-    decompress_generic(input.len(), 32, |idx| {
-        let c = input.chars().nth(idx)?;
-        key_str.find(c).map(|pos| pos as u32)
-    })
+    let values = input
+        .chars()
+        .map(|character| key_str.find(character).map(|position| position as u32))
+        .collect::<Option<Vec<_>>>()?;
+    decompress_generic(values.len(), 32, |index| values.get(index).copied())
 }
 
 fn decompress_from_utf16(input: &str) -> Option<String> {
-    decompress_generic(input.len(), 16384, |idx| {
-        input.chars().nth(idx).map(|c| (c as u32).wrapping_sub(32))
-    })
+    let values = input
+        .chars()
+        .map(|character| (character as u32).wrapping_sub(32))
+        .collect::<Vec<_>>();
+    decompress_generic(values.len(), 16384, |index| values.get(index).copied())
 }
 
 fn decompress_from_encoded_uri_component(input: &str) -> Option<String> {
     let input = input.replace(' ', "+");
     let key_str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$";
-    decompress_generic(input.len(), 32, |idx| {
-        let c = input.chars().nth(idx)?;
-        key_str.find(c).map(|pos| pos as u32)
-    })
+    let values = input
+        .chars()
+        .map(|character| key_str.find(character).map(|position| position as u32))
+        .collect::<Option<Vec<_>>>()?;
+    decompress_generic(values.len(), 32, |index| values.get(index).copied())
 }
 
 fn decompress(input: &str) -> Option<String> {
-    decompress_generic(input.len(), 32768, |idx| {
-        input.chars().nth(idx).map(|c| c as u32)
-    })
+    let values = input
+        .chars()
+        .map(|character| character as u32)
+        .collect::<Vec<_>>();
+    decompress_generic(values.len(), 32768, |index| values.get(index).copied())
 }
 
 fn decompress_generic<F>(length: usize, reset_value: u32, mut get_next_value: F) -> Option<String>
@@ -192,6 +197,11 @@ where
             return None;
         };
 
+        if result.len().saturating_add(entry.len()) > 64 * 1024 * 1024
+            || dictionary.len() >= 1_048_576
+        {
+            return None;
+        }
         result.push_str(&entry);
         dictionary.push(w.clone() + &entry.chars().next().unwrap().to_string());
         enlarge_in -= 1;

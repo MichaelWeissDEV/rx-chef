@@ -1,17 +1,28 @@
 use crate::{
-    operation::{ArgSchema, ArgValue, DataType},
+    operation::{
+        ArgKind, ArgSchema, ArgValue, DataType, InputRequirement, OperationStatus, ParityStatus,
+        SideEffect,
+    },
     operations,
 };
 
 #[derive(Debug, Clone)]
 pub struct OperationInfo {
     pub name: &'static str,
+    pub id: String,
     pub module: &'static str,
     pub description: &'static str,
     pub input_type: DataType,
     pub output_type: DataType,
     pub is_broken: bool,
     pub args: &'static [ArgSchema],
+    pub input_requirement: InputRequirement,
+    pub status: OperationStatus,
+    pub parity: ParityStatus,
+    pub side_effects: &'static [SideEffect],
+    pub deterministic: bool,
+    pub feature_requirements: &'static [&'static str],
+    pub known_limitations: &'static [&'static str],
 }
 
 pub fn operation_names(search: Option<&str>) -> Vec<String> {
@@ -42,13 +53,29 @@ pub fn operation_info(query: &str) -> Result<OperationInfo, String> {
 
     Ok(OperationInfo {
         name: operation.name(),
+        id: canonical_identifier(operation.name()),
         module: operation.module(),
         description: operation.description(),
         input_type: operation.input_type(),
         output_type: operation.output_type(),
         is_broken: operation.is_broken(),
         args: operation.args_schema(),
+        input_requirement: operation.input_requirement(),
+        status: operation.status(),
+        parity: operation.parity(),
+        side_effects: operation.side_effects(),
+        deterministic: operation.deterministic(),
+        feature_requirements: operation.feature_requirements(),
+        known_limitations: operation.known_limitations(),
     })
+}
+
+/// Source module identifier for audit and documentation tooling.
+pub fn operation_source(query: &str) -> Result<&'static str, String> {
+    let canonical_name =
+        resolve_operation_name(query).ok_or_else(|| not_found_message("operation", query))?;
+    operations::operation_source(&canonical_name)
+        .ok_or_else(|| format!("registry has no source module for '{canonical_name}'"))
 }
 
 pub fn run_operation(
@@ -60,14 +87,34 @@ pub fn run_operation(
         .ok_or_else(|| not_found_message("operation", operation_name))?;
     let operation = operations::get_operation(&canonical_name)
         .ok_or_else(|| not_found_message("operation", operation_name))?;
-    let parsed_args = raw_args
+    let schema = operation.args_schema();
+    if raw_args.len() > schema.len() {
+        return Err(format!(
+            "'{}' accepts {} argument(s), but {} were provided",
+            operation.name(),
+            schema.len(),
+            raw_args.len()
+        ));
+    }
+    let parsed_args = schema
         .iter()
-        .map(|arg| parse_operation_arg(arg))
+        .enumerate()
+        .map(|(index, argument)| {
+            let raw = raw_args
+                .get(index)
+                .map(String::as_str)
+                .unwrap_or(argument.default_value);
+            parse_schema_argument(raw, inferred_arg_kind(argument))
+                .map_err(|error| format!("argument '{}': {error}", argument.name))
+        })
         .collect::<Result<Vec<_>, _>>()?;
 
-    operation
+    let output = operation
         .run(input, &parsed_args)
-        .map_err(|error| error.to_string())
+        .map_err(|error| error.to_string())?;
+    crate::operation::OperationData::validate_raw(&output, operation.output_type())
+        .map_err(|error| error.to_string())?;
+    Ok(output)
 }
 
 pub fn resolve_named_args(
@@ -75,27 +122,40 @@ pub fn resolve_named_args(
     named: &[String],
     positional: &[String],
 ) -> Result<Vec<String>, String> {
-    if named.is_empty() {
-        return Ok(positional.to_vec());
-    }
     let info = operation_info(op_name)?;
     let schema_len = info.args.len();
-    let mut result: Vec<String> = positional.to_vec();
-    while result.len() < schema_len {
-        result.push(String::new());
+    if positional.len() > schema_len {
+        return Err(format!(
+            "'{}' accepts {} argument(s), but {} positional values were provided",
+            info.name,
+            schema_len,
+            positional.len()
+        ));
     }
+    let mut result: Vec<String> = info
+        .args
+        .iter()
+        .map(|argument| argument.default_value.to_string())
+        .collect();
+    for (index, value) in positional.iter().enumerate() {
+        result[index] = value.clone();
+    }
+    let mut assigned = std::collections::HashSet::new();
     for kv in named {
         let (name, value) = kv
             .split_once('=')
             .ok_or_else(|| format!("invalid --arg '{}': expected NAME=VALUE", kv))?;
-        let name_lower = name.to_lowercase();
+        let normalized_name = slugify(name);
         let idx = info
             .args
             .iter()
-            .position(|a| a.name.to_lowercase() == name_lower)
+            .position(|argument| slugify(argument.name) == normalized_name)
             .ok_or_else(|| format!("argument '{}' not found in '{}'", name, op_name))?;
-        while result.len() <= idx {
-            result.push(String::new());
+        if idx < positional.len() || !assigned.insert(idx) {
+            return Err(format!(
+                "argument '{}' was provided more than once for '{}'",
+                info.args[idx].name, info.name
+            ));
         }
         result[idx] = value.to_string();
     }
@@ -107,6 +167,12 @@ pub fn parse_operation_arg(raw: &str) -> Result<ArgValue, String> {
         let number = rest
             .parse::<f64>()
             .map_err(|error| format!("invalid numeric argument '{}': {}", raw, error))?;
+        if !number.is_finite() {
+            return Err(format!(
+                "invalid numeric argument '{}': must be finite",
+                raw
+            ));
+        }
         return Ok(ArgValue::Num(number));
     }
 
@@ -131,6 +197,94 @@ pub fn parse_operation_arg(raw: &str) -> Result<ArgValue, String> {
     }
 
     Ok(ArgValue::Str(raw.to_string()))
+}
+
+fn parse_schema_argument(raw: &str, kind: ArgKind) -> Result<ArgValue, String> {
+    if raw.starts_with("num:")
+        || raw.starts_with("bool:")
+        || raw.starts_with("hex:")
+        || raw.starts_with("bytes:")
+    {
+        return parse_operation_arg(raw);
+    }
+    match kind {
+        ArgKind::Boolean => match raw.to_ascii_lowercase().as_str() {
+            "true" | "false" => Ok(ArgValue::Str(raw.to_string())),
+            _ => Err(format!("expected boolean, got '{raw}'")),
+        },
+        ArgKind::Integer | ArgKind::UnsignedInteger => {
+            let number = raw
+                .parse::<i128>()
+                .map_err(|error| format!("expected integer: {error}"))?;
+            if kind == ArgKind::UnsignedInteger && number < 0 {
+                return Err("expected an unsigned integer".into());
+            }
+            const MAX_EXACT_F64_INTEGER: i128 = 9_007_199_254_740_992;
+            if !(-MAX_EXACT_F64_INTEGER..=MAX_EXACT_F64_INTEGER).contains(&number) {
+                return Err("integer is outside the exact legacy numeric range".into());
+            }
+            Ok(ArgValue::Str(raw.to_string()))
+        }
+        ArgKind::Float => {
+            let number = raw
+                .parse::<f64>()
+                .map_err(|error| format!("expected number: {error}"))?;
+            if !number.is_finite() {
+                return Err("number must be finite".into());
+            }
+            Ok(ArgValue::Str(raw.to_string()))
+        }
+        _ => Ok(ArgValue::Str(raw.to_string())),
+    }
+}
+
+/// Conservative kind inferred for legacy three-field argument schemas.
+/// Explicit per-operation metadata will replace these in verified batches.
+pub fn inferred_arg_kind(schema: &ArgSchema) -> ArgKind {
+    let name = schema.name.to_ascii_lowercase();
+    let default = schema.default_value.trim();
+    if matches!(default.to_ascii_lowercase().as_str(), "true" | "false") {
+        ArgKind::Boolean
+    } else if name.contains("regex") || name.contains("regular expression") || name == "pattern" {
+        ArgKind::Regex
+    } else if name.contains("url") || name.contains("uri") {
+        ArgKind::Url
+    } else if name.contains("path") || name.contains("file") || name.contains("directory") {
+        ArgKind::Path
+    } else if !default.is_empty() && default.parse::<i64>().is_ok() {
+        ArgKind::Integer
+    } else if !default.is_empty() && default.parse::<f64>().is_ok() {
+        ArgKind::Float
+    } else {
+        ArgKind::String
+    }
+}
+
+/// Conservative sensitivity marker shared by metadata and history redaction.
+pub fn is_sensitive_arg(schema: &ArgSchema) -> bool {
+    let name = schema.name.to_ascii_lowercase();
+    name.contains("password")
+        || name.contains("private key")
+        || name.contains("secret")
+        || name.contains("token")
+}
+
+/// Stable snake-case identifier used by registry and argument normalization.
+pub fn canonical_identifier(value: &str) -> String {
+    let mut output = String::new();
+    let mut separator = false;
+    for character in value.chars() {
+        if character.is_alphanumeric() {
+            if separator && !output.is_empty() {
+                output.push('_');
+            }
+            output.extend(character.to_lowercase());
+            separator = false;
+        } else {
+            separator = true;
+        }
+    }
+    output
 }
 
 pub fn data_type_name(data_type: DataType) -> &'static str {
@@ -203,7 +357,10 @@ fn slugify(s: &str) -> String {
 mod tests {
     use std::collections::HashSet;
 
-    use super::{operation_info, operation_names, parse_operation_arg, resolve_operation_name};
+    use super::{
+        canonical_identifier, operation_info, operation_names, parse_operation_arg,
+        resolve_named_args, resolve_operation_name,
+    };
     use crate::operation::ArgValue;
 
     #[test]
@@ -211,12 +368,18 @@ mod tests {
         let names = operation_names(None);
         assert!(!names.is_empty());
         let mut unique = HashSet::new();
+        let mut unique_ids = HashSet::new();
         for name in names {
             assert!(
                 unique.insert(name.clone()),
                 "duplicate operation name: {name}"
             );
             let info = operation_info(&name).unwrap();
+            assert!(
+                unique_ids.insert(info.id.clone()),
+                "duplicate normalized operation id: {}",
+                info.id
+            );
             assert!(!info.name.trim().is_empty(), "empty name for {name}");
             assert!(!info.module.trim().is_empty(), "empty module for {name}");
             assert!(
@@ -235,7 +398,7 @@ mod tests {
                     arg.name
                 );
                 assert!(
-                    arg_names.insert(arg.name.to_ascii_lowercase()),
+                    arg_names.insert(canonical_identifier(arg.name)),
                     "duplicate argument '{}' for {name}",
                     arg.name
                 );
@@ -259,5 +422,31 @@ mod tests {
         ));
         assert!(matches!(parse_operation_arg("hex:48 69"), Ok(ArgValue::Bytes(v)) if v == b"Hi"));
         assert!(matches!(parse_operation_arg("plain"), Ok(ArgValue::Str(v)) if v == "plain"));
+        assert!(parse_operation_arg("num:NaN").is_err());
+        assert!(parse_operation_arg("num:inf").is_err());
+    }
+
+    #[test]
+    fn named_arguments_reject_duplicates_and_fill_defaults() {
+        let args =
+            resolve_named_args("From Base64", &["Strict-mode=true".to_string()], &[]).unwrap();
+        assert_eq!(args, ["A-Za-z0-9+/=", "true", "true"]);
+
+        let duplicate = resolve_named_args(
+            "From Base64",
+            &[
+                "Strict mode=true".to_string(),
+                "strict_mode=false".to_string(),
+            ],
+            &[],
+        );
+        assert!(duplicate.is_err());
+
+        let positional_and_named = resolve_named_args(
+            "From Base64",
+            &["Alphabet=custom".to_string()],
+            &["standard".to_string()],
+        );
+        assert!(positional_and_named.is_err());
     }
 }

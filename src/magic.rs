@@ -23,7 +23,7 @@ use std::hash::{Hash, Hasher};
 use regex::Regex;
 use serde::Serialize;
 
-use crate::runtime;
+use crate::execution;
 
 /// One decode step in a recovered recipe.
 #[derive(Debug, Clone, Serialize, PartialEq)]
@@ -65,6 +65,12 @@ pub struct MagicOptions {
     pub intensive: bool,
     /// Maximum number of ranked matches to return.
     pub max_results: usize,
+    /// Maximum decoder attempts across the complete search tree.
+    pub max_candidates: usize,
+    /// Maximum input and output size of an individual candidate.
+    pub max_candidate_bytes: usize,
+    /// Maximum cumulative decoded bytes accepted across all candidates.
+    pub max_total_decoded_bytes: usize,
 }
 
 impl Default for MagicOptions {
@@ -74,6 +80,9 @@ impl Default for MagicOptions {
             crib: None,
             intensive: false,
             max_results: 20,
+            max_candidates: 256,
+            max_candidate_bytes: 8 << 20,
+            max_total_decoded_bytes: 32 << 20,
         }
     }
 }
@@ -95,7 +104,17 @@ pub fn magic(input: &[u8], opts: &MagicOptions) -> Vec<MagicMatch> {
     visited.insert(hash_bytes(input));
 
     let start = Metrics::of(input);
-    recurse(input, &start, &[], opts, 0, &mut visited, &mut matches);
+    let mut budget = MagicBudget::default();
+    recurse(
+        input,
+        &start,
+        &[],
+        opts,
+        0,
+        &mut budget,
+        &mut visited,
+        &mut matches,
+    );
 
     matches.sort_by(|a, b| {
         b.score
@@ -138,21 +157,47 @@ pub fn shannon_entropy(data: &[u8]) -> f64 {
 
 // ─── Recursion ─────────────────────────────────────────────────────────────────
 
+#[derive(Default)]
+struct MagicBudget {
+    candidates: usize,
+    total_decoded_bytes: usize,
+}
+
 fn recurse(
     data: &[u8],
     metrics: &Metrics,
     recipe: &[RecipeStep],
     opts: &MagicOptions,
     depth: usize,
+    budget: &mut MagicBudget,
     visited: &mut HashSet<u64>,
     out: &mut Vec<MagicMatch>,
 ) {
-    if depth >= opts.depth {
+    if depth >= opts.depth
+        || data.len() > opts.max_candidate_bytes
+        || budget.candidates >= opts.max_candidates
+    {
         return;
     }
     for cand in candidates(data, opts.intensive) {
-        let decoded = match runtime::run_operation(cand.op, data.to_vec(), &cand.args) {
-            Ok(d) => d,
+        if budget.candidates >= opts.max_candidates {
+            break;
+        }
+        budget.candidates += 1;
+        let decoded = match execution::execute(execution::ExecutionRequest {
+            input: data.to_vec(),
+            recipe: execution::Recipe::from(vec![execution::RecipeStep {
+                op: cand.op.to_string(),
+                args: cand.args.clone(),
+            }]),
+            variables: execution::VariableContext::default(),
+            options: execution::ExecutionOptions {
+                max_steps: 1,
+                max_output_bytes: Some(opts.max_candidate_bytes),
+                ..execution::ExecutionOptions::default()
+            },
+        }) {
+            Ok(outcome) => outcome.output,
             Err(_) => continue,
         };
         // Reject useless decodes: empty, unchanged, or already-seen output.
@@ -163,6 +208,14 @@ fn recurse(
         if !visited.insert(h) {
             continue;
         }
+        let Some(total_decoded_bytes) = budget.total_decoded_bytes.checked_add(decoded.len())
+        else {
+            return;
+        };
+        if total_decoded_bytes > opts.max_total_decoded_bytes {
+            return;
+        }
+        budget.total_decoded_bytes = total_decoded_bytes;
 
         let child = Metrics::of(&decoded);
         let matched_crib = opts
@@ -202,6 +255,7 @@ fn recurse(
                 &child_recipe,
                 opts,
                 depth + 1,
+                budget,
                 visited,
                 out,
             );
@@ -574,6 +628,28 @@ mod tests {
     #[test]
     fn empty_input_no_matches() {
         assert!(magic(b"", &MagicOptions::default()).is_empty());
+    }
+
+    #[test]
+    fn resource_budgets_stop_candidate_expansion() {
+        let input = b"U0dWc2JHOD0=";
+        let no_candidates = MagicOptions {
+            max_candidates: 0,
+            ..MagicOptions::default()
+        };
+        assert!(magic(input, &no_candidates).is_empty());
+
+        let too_small = MagicOptions {
+            max_candidate_bytes: input.len() - 1,
+            ..MagicOptions::default()
+        };
+        assert!(magic(input, &too_small).is_empty());
+
+        let no_decoded_budget = MagicOptions {
+            max_total_decoded_bytes: 0,
+            ..MagicOptions::default()
+        };
+        assert!(magic(input, &no_decoded_budget).is_empty());
     }
 
     #[test]

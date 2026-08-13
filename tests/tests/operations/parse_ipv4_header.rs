@@ -32,7 +32,7 @@ fn make_ipv4_header() -> Vec<u8> {
         0x00, 0x01, // identification
         0x40, 0x00, // flags / frag offset
         0x40, 0x06, // TTL=64, protocol=TCP
-        0x00, 0x00, // checksum placeholder
+        0x00, 0x00, // checksum is filled below
         0xc0, 0xa8, 0x00, 0x01, // src 192.168.0.1
         0xc0, 0xa8, 0x00, 0x02, // dst 192.168.0.2
     ];

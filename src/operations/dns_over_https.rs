@@ -1,7 +1,6 @@
 /*
  * -----------------------------------------------------------------------------
  * Project:     rxchef
- * Version:     1.0.0
  * Author:      Michael Weiss
  * Source:      Ported from GCHQ's CyberChef (JavaScript)
  * License:     Apache-2.0
@@ -9,7 +8,11 @@
  * -----------------------------------------------------------------------------
  */
 
+use std::{io::Read, time::Duration};
+
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
+
+const MAX_RESPONSE_BYTES: u64 = 8 * 1024 * 1024;
 
 /// DNS over HTTPS operation
 pub struct DnsOverHttps;
@@ -74,7 +77,7 @@ impl Operation for DnsOverHttps {
 
         let domain = String::from_utf8_lossy(&input);
         if domain.trim().is_empty() {
-            return Ok(Vec::new());
+            return Ok(b"{}".to_vec());
         }
 
         let mut url = url::Url::parse(resolver).map_err(|e| OperationError::InvalidArgument {
@@ -88,7 +91,12 @@ impl Operation for DnsOverHttps {
             .append_pair("cd", if disable_dnssec { "true" } else { "false" });
 
         // reqwest is expected to be available for making HTTP requests
-        let client = reqwest::blocking::Client::new();
+        let client = reqwest::blocking::Client::builder()
+            .connect_timeout(Duration::from_secs(3))
+            .timeout(Duration::from_secs(10))
+            .redirect(reqwest::redirect::Policy::limited(5))
+            .build()
+            .map_err(|error| OperationError::ProcessingError(error.to_string()))?;
         let response = client
             .get(url.clone())
             .header("Accept", "application/dns-json")
@@ -105,7 +113,25 @@ impl Operation for DnsOverHttps {
             )));
         }
 
-        let data: serde_json::Value = response.json().map_err(|e| {
+        if response
+            .content_length()
+            .is_some_and(|length| length > MAX_RESPONSE_BYTES)
+        {
+            return Err(OperationError::ProcessingError(
+                "DNS response exceeds the 8 MiB limit".to_string(),
+            ));
+        }
+        let mut body = Vec::new();
+        response
+            .take(MAX_RESPONSE_BYTES + 1)
+            .read_to_end(&mut body)
+            .map_err(|e| OperationError::ProcessingError(format!("Error reading response: {e}")))?;
+        if body.len() as u64 > MAX_RESPONSE_BYTES {
+            return Err(OperationError::ProcessingError(
+                "DNS response exceeds the 8 MiB limit".to_string(),
+            ));
+        }
+        let data: serde_json::Value = serde_json::from_slice(&body).map_err(|e| {
             OperationError::ProcessingError(format!("Error parsing JSON response: {}", e))
         })?;
 

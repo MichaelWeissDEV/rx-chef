@@ -7,7 +7,7 @@ use rxchef::operations::generate_ecdsa_key_pair::GenerateECDSAKeyPairOp;
 use rxchef::Operation;
 
 #[test]
-fn test_generate_ecdsa_key_pair_placeholder() {
+fn test_generate_ecdsa_key_pair_p256_pem_contains_both_keys() {
     let op = GenerateECDSAKeyPairOp;
     let args = [
         ArgValue::Str("P-256".to_string()),

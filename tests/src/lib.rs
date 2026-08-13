@@ -1,7 +1,6 @@
 /*
  * -----------------------------------------------------------------------------
  * Project:     rxchef
- * Version:     1.1.0
  * Author:      Michael Weiss
  * Source:      Ported from GCHQ's CyberChef (JavaScript)
  * License:     Apache-2.0
@@ -69,7 +68,10 @@ pub fn assert_op_text(op_name: &str, input: &str, args: &[ArgValue], expected: &
 ///
 /// # Usage
 ///
-/// ```ignore
+/// ```
+/// use cyberchef_rust_tests::op_test;
+/// use rxchef::operation::ArgValue;
+///
 /// op_test!(my_test_name,
 ///     op    = "To Hex",
 ///     input = "Hello",
@@ -108,7 +110,9 @@ macro_rules! op_test {
 ///
 /// # Usage
 ///
-/// ```ignore
+/// ```
+/// use cyberchef_rust_tests::recipe_test;
+///
 /// recipe_test!(my_roundtrip,
 ///     input = "Hello",
 ///     recipe = [{"op": "To Hex", "args": ["None", 0]}, {"op": "From Hex", "args": ["Auto"]}],

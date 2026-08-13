@@ -1,7 +1,6 @@
 /*
  * -----------------------------------------------------------------------------
  * Project:     rxchef
- * Version:     1.0.0
  * Author:      Michael Weiss
  * Source:      Ported from GCHQ's CyberChef (JavaScript)
  * License:     Apache-2.0
@@ -9,6 +8,9 @@
  * -----------------------------------------------------------------------------
  */
 
+pub mod catalog;
+pub mod execute;
+pub mod execution;
 pub mod ffi;
 pub mod integration;
 pub mod magic;
@@ -18,5 +20,8 @@ pub mod pipeline;
 pub mod runtime;
 pub mod scan;
 
-pub use operation::{ArgSchema, ArgValue, DataType, Operation, OperationData, OperationError};
+pub use operation::{
+    ArgKind, ArgSchema, ArgValue, DataType, InputRequirement, Operation, OperationData,
+    OperationError, OperationStatus, ParityStatus, SideEffect,
+};
 pub use pipeline::{Pipeline, PipelineError};

@@ -1,7 +1,6 @@
 /*
  * -----------------------------------------------------------------------------
  * Project:     rxchef
- * Version:     1.0.0
  * Author:      Michael Weiss
  * Source:      Ported from GCHQ's CyberChef (JavaScript)
  * License:     Apache-2.0
@@ -34,7 +33,7 @@ impl Operation for FangURL {
     fn args_schema(&self) -> &'static [ArgSchema] {
         static SCHEMA: &[ArgSchema] = &[
             ArgSchema {
-                name: "Restore [.]",
+                name: "Restore dots",
                 description: "Restore [.] to .",
                 default_value: "true",
             },
@@ -44,7 +43,7 @@ impl Operation for FangURL {
                 default_value: "true",
             },
             ArgSchema {
-                name: "Restore ://",
+                name: "Restore scheme separator",
                 description: "Restore [://] to ://",
                 default_value: "true",
             },
