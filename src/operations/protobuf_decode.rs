@@ -26,14 +26,14 @@ impl Operation for ProtobufDecode {
     }
 
     fn description(&self) -> &'static str {
-        "Decodes any Protobuf encoded data to a JSON representation of the data using the field number as the field key."
+        "Decodes Protobuf bytes to JSON. With a .proto schema, field names and declared types are used. Without a schema, wire fields are represented by numeric keys."
     }
 
     fn args_schema(&self) -> &'static [ArgSchema] {
         static SCHEMA: &[ArgSchema] = &[
             ArgSchema {
                 name: "Schema (.proto text)",
-                description: "Optional schema (not implemented in this version)",
+                description: "Optional .proto schema; the first top-level message is used",
                 default_value: "",
             },
             ArgSchema {
@@ -58,12 +58,25 @@ impl Operation for ProtobufDecode {
         DataType::Json
     }
 
-    fn run(&self, input: Vec<u8>, _args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
+    fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         if input.is_empty() {
             return Ok(b"{}".to_vec());
         }
 
-        let decoded = decode_protobuf(&input, 0).map_err(|e| OperationError::ProcessingError(e))?;
+        let schema = args.first().and_then(ArgValue::as_str).unwrap_or("");
+        if !schema.trim().is_empty() {
+            let descriptor = super::protobuf_schema::descriptor(schema)
+                .map_err(OperationError::ProcessingError)?;
+            let message = descriptor
+                .parse_from_bytes(&input)
+                .map_err(|error| OperationError::ProcessingError(error.to_string()))?;
+            let show_types = args.get(2).and_then(ArgValue::as_bool).unwrap_or(false);
+            let decoded = super::protobuf_schema::message_json(&*message, show_types);
+            return serde_json::to_vec_pretty(&decoded)
+                .map_err(|error| OperationError::ProcessingError(error.to_string()));
+        }
+
+        let decoded = decode_protobuf(&input, 0).map_err(OperationError::ProcessingError)?;
         serde_json::to_vec_pretty(&decoded)
             .map_err(|e| OperationError::ProcessingError(e.to_string()))
     }

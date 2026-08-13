@@ -88,7 +88,9 @@ fn test_colossus_json_structure() {
     assert!(parsed.get("printout").is_some());
     assert!(parsed.get("counters").is_some());
     assert!(parsed.get("runcount").is_some());
-    assert_eq!(parsed["runcount"], 1);
+    assert_eq!(parsed["runcount"], 5);
+    assert_eq!(parsed["counters"].as_array().unwrap().len(), 5);
+    assert!(parsed["printout"].as_str().unwrap().contains("H  00101"));
 }
 
 #[test]

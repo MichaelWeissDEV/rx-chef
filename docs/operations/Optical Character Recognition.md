@@ -1,8 +1,8 @@
 # Optical Character Recognition
 
-!!! warning "Experimental / known broken"
+!!! warning "Optional backend unavailable"
 
-    This operation is marked as broken in the runtime registry.
+    This operation is feature-gated and unavailable in the minimal documentation build. See the feature matrix for the required Cargo feature.
 
 Optical character recognition or optical character reader (OCR) is the mechanical or electronic 
         conversion of images of typed, handwritten or printed text into machine-encoded text.

@@ -1,23 +1,35 @@
-// Tests for the gost_verify operation.
-// Run only these tests:
-//   cargo test -p cyberchef-rust-tests --test operations gost_verify::
-
 use rxchef::operation::ArgValue;
-use rxchef::operations::gost_verify::GOSTVerifyOp;
+use rxchef::operations::{gost_sign::GostSign, gost_verify::GOSTVerifyOp};
 use rxchef::Operation;
 
 #[test]
-fn test_gost_verify_placeholder() {
-    let op = GOSTVerifyOp;
-    let args = [
-        ArgValue::Str("".to_string()),
-        ArgValue::Str("".to_string()),
-        ArgValue::Str("".to_string()),
-        ArgValue::Str("Raw".to_string()),
-        ArgValue::Str("GOST R 34.12 (Magma, 2015)".to_string()),
-        ArgValue::Str("E-TEST".to_string()),
+fn test_gost_verify_accepts_valid_and_rejects_invalid_mac() {
+    let key = ArgValue::Str("0123456789abcdef0123456789abcdef".into());
+    let iv = ArgValue::Str("12345678".into());
+    let message = b"authenticated message".to_vec();
+    let mac = GostSign
+        .run(
+            message.clone(),
+            &[
+                key.clone(),
+                iv.clone(),
+                ArgValue::Str("Raw".into()),
+                ArgValue::Str("Hex".into()),
+                ArgValue::Str("GOST R 34.12 (Magma, 2015)".into()),
+                ArgValue::Str("E-TEST".into()),
+                ArgValue::Str("32".into()),
+            ],
+        )
+        .unwrap();
+    let mut args = vec![
+        key,
+        iv,
+        ArgValue::Str(String::from_utf8(mac).unwrap()),
+        ArgValue::Str("Raw".into()),
+        ArgValue::Str("GOST R 34.12 (Magma, 2015)".into()),
+        ArgValue::Str("E-TEST".into()),
     ];
-    let result = op.run(vec![], &args).unwrap();
-    let result_str = String::from_utf8(result).unwrap();
-    assert!(result_str.contains("GOST Verify"));
+    assert_eq!(GOSTVerifyOp.run(message.clone(), &args).unwrap(), b"true");
+    args[2] = ArgValue::Str("00000000".into());
+    assert_eq!(GOSTVerifyOp.run(message, &args).unwrap(), b"false");
 }

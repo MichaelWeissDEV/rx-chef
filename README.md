@@ -50,9 +50,11 @@ cargo test --workspace
 
 This executes:
 
-- **1178 operation tests** — one test file per operation in `tests/tests/operations/`
+- **1749 operation tests** — one test file per operation in `tests/tests/operations/`
 - **12 pipeline integration tests** — roundtrips, type coercion, error propagation
-- **8 library unit tests** — pipeline engine internals
+- **34 library unit tests** — pipeline engine internals, flow control, and integration surfaces
+- **10 CLI behavior tests and 25 persistent-server conformance tests**
+- **5 store tests** — project/global persistence behavior
 - **1 doc-test** — pipeline API example
 
 Run tests for a single operation:
@@ -276,7 +278,7 @@ This is an early alpha and there is a lot to do. Contributions of any kind are w
 - Improving documentation and examples
 - Writing additional tests
 
-If you're unsure where to start, pick any operation from CyberChef that's missing or marked as broken and give it a try.
+If you're unsure where to start, improve an operation with another authoritative test vector or extend one of the documented integration surfaces.
 
 
 ## Attribution

@@ -1,24 +1,29 @@
-// Tests for the gost_key_unwrap operation.
-// Run only these tests:
-//   cargo test -p cyberchef-rust-tests --test operations gost_key_unwrap::
-
 use rxchef::operation::ArgValue;
-use rxchef::operations::gost_key_unwrap::GOSTKeyUnwrapOp;
+use rxchef::operations::{gost_key_unwrap::GOSTKeyUnwrapOp, gost_key_wrap::GostKeyWrap};
 use rxchef::Operation;
 
 #[test]
-fn test_gost_key_unwrap_placeholder() {
-    let op = GOSTKeyUnwrapOp;
-    let args = [
-        ArgValue::Str("".to_string()),
-        ArgValue::Str("".to_string()),
-        ArgValue::Str("Hex".to_string()),
-        ArgValue::Str("Raw".to_string()),
-        ArgValue::Str("GOST R 34.12 (Magma, 2015)".to_string()),
-        ArgValue::Str("E-TEST".to_string()),
-        ArgValue::Str("NO".to_string()),
-    ];
-    let result = op.run(vec![], &args).unwrap();
-    let result_str = String::from_utf8(result).unwrap();
-    assert!(result_str.contains("GOST Key Unwrap"));
+fn test_gost_key_wrap_roundtrip() {
+    for algorithm in [
+        "GOST R 34.12 (Magma, 2015)",
+        "GOST R 34.12 (Kuznyechik, 2015)",
+    ] {
+        let key = ArgValue::Str("0123456789abcdef0123456789abcdef".into());
+        let cek = b"abcdefghijklmnopqrstuvwxyz012345".to_vec();
+        let wrap_args = [
+            key,
+            ArgValue::Str("12345678".into()),
+            ArgValue::Str("Raw".into()),
+            ArgValue::Str("Hex".into()),
+            ArgValue::Str(algorithm.into()),
+            ArgValue::Str("E-TEST".into()),
+            ArgValue::Str("NO".into()),
+        ];
+        let wrapped = GostKeyWrap.run(cek.clone(), &wrap_args).unwrap();
+        let mut unwrap_args = wrap_args;
+        unwrap_args[2] = ArgValue::Str("Hex".into());
+        unwrap_args[3] = ArgValue::Str("Raw".into());
+        let unwrapped = GOSTKeyUnwrapOp.run(wrapped, &unwrap_args).unwrap();
+        assert_eq!(unwrapped, cek);
+    }
 }

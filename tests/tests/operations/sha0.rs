@@ -21,8 +21,16 @@ fn test_sha0_empty() {
     let input = b"".to_vec();
     let result = operation.run(input, &[]).unwrap();
     let output = String::from_utf8(result).unwrap();
-    // SHA0 hash of empty string (using SHA-1 implementation)
-    assert_eq!(output.len(), 40);
+    assert_eq!(output, "f96cea198ad1dd5617ac084a3d92c6107708c0ef");
+}
+
+#[test]
+fn test_sha0_abc_known_vector() {
+    let output = SHA0.run(b"abc".to_vec(), &[]).unwrap();
+    assert_eq!(
+        String::from_utf8(output).unwrap(),
+        "0164b8a914cd2a5e74c4f7ff082c4d97f1edf880"
+    );
 }
 #[test]
 fn test_sha0_binary() {

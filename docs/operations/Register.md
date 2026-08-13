@@ -1,6 +1,6 @@
 # Register
 
-Extract data from the input and store it in registers which can then be passed into subsequent operations as arguments. Regular expression capture groups are used to select the data to extract.<br><br>To use registers in arguments, refer to them using the notation <code>$Rn</code> where n is the register number, starting at 0.<br><br>In this implementation, acts as a passthrough (flow control requires recipe-level orchestration).
+Extract data from the input into recipe registers using regular expression capture groups. Refer to captures in later operation arguments as $R0, $R1, and so on. Register expansion is implemented by integration::bake and all CLI recipe frontends.
 
 - Input: `String`
 - Output: `String`

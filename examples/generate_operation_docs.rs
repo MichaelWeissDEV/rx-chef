@@ -64,7 +64,7 @@ fn render() -> Result<String, String> {
             let info = operation_info(&name)?;
             out.push_str(&format!("### {}\n\n", info.name));
             if info.is_broken {
-                out.push_str("!!! warning \"Experimental / known broken\"\n\n    This operation is marked as broken in the runtime registry.\n\n");
+                out.push_str("!!! warning \"Optional backend unavailable\"\n\n    This operation is feature-gated and unavailable in the minimal documentation build. See the feature matrix for the required Cargo feature.\n\n");
             }
             out.push_str(info.description.trim());
             out.push_str("\n\n");

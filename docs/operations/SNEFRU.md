@@ -1,6 +1,6 @@
 # SNEFRU
 
-SNEFRU is a cryptographic hash function invented by Ralph Merkle in 1990 while working at Xerox PARC. The function supports 128-bit and 256-bit output. The original design was shown to be insecure and was modified by increasing the number of iterations from two to eight.
+Computes the standardized 256-bit, 8-round SNEFRU hash. SNEFRU was designed by Ralph Merkle in 1990; the original shorter-round design is retained in the argument schema for recipe compatibility but rejected because it is cryptographically broken.
 
 - Input: `Bytes`
 - Output: `String`
@@ -10,6 +10,6 @@ SNEFRU is a cryptographic hash function invented by Ralph Merkle in 1990 while w
 
 | # | Argument | Default | Description |
 |---:|---|---|---|
-| 1 | Size | `128` | Output size in bits (32-480, step 32) |
-| 2 | Rounds | `8` | Number of rounds (2, 4, or 8) |
+| 1 | Size | `256` | Output size in bits (supported: 256) |
+| 2 | Rounds | `8` | Number of rounds (supported: 8) |
 

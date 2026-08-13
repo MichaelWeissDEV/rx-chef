@@ -69,7 +69,7 @@ impl Operation for ParseTLSRecord {
     }
 
     fn description(&self) -> &'static str {
-        "Parses one or more TLS records"
+        "Parses one or more TLS records into JSON, including content type, protocol version, declared length, truncation state, handshake type and exact payload bytes. Encrypted and handshake-specific payloads remain hex-encoded."
     }
 
     fn args_schema(&self) -> &'static [ArgSchema] {
@@ -198,9 +198,6 @@ fn parse_handshake(content: &[u8], mut record: Value) -> Value {
         return record;
     }
 
-    // Simplified: we'll just put the handshake value as hex for now,
-    // as porting all sub-parsers (ClientHello, etc.) is very extensive.
-    // However, I'll add a placeholder for them.
     match handshake_type_val {
         1 => {
             // Client Hello
@@ -209,7 +206,6 @@ fn parse_handshake(content: &[u8], mut record: Value) -> Value {
                 "handshakeValue".to_string(),
                 json!(format!("0x{}", hex::encode(handshake_content))),
             );
-            // In a full implementation, we'd call ClientHelloParser here
         }
         _ => {
             record.as_object_mut().unwrap().insert(

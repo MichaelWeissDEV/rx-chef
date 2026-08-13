@@ -31,3 +31,18 @@ fn test_minify_whitespace() {
     let output = String::from_utf8(result).unwrap();
     assert_eq!(output, "var x = 10;\nvar y = 20;");
 }
+
+#[test]
+fn test_minify_preserves_comment_markers_in_literals() {
+    let input = br#"
+        const url = "https://example.test/a//b"; // remove me
+        const template = `/* literal */`;
+        const pattern = /https?:\/\/[^/]+/g;
+    "#;
+    let output = JavaScriptMinify.run(input.to_vec(), &[]).unwrap();
+    let output = String::from_utf8(output).unwrap();
+    assert!(output.contains("https://example.test/a//b"));
+    assert!(output.contains("`/* literal */`"));
+    assert!(output.contains(r"/https?:\/\/[^/]+/g"));
+    assert!(!output.contains("remove me"));
+}

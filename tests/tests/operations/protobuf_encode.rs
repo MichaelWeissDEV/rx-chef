@@ -3,7 +3,7 @@
 //   cargo test -p cyberchef-rust-tests --test operations protobuf_encode::
 
 use rxchef::operations::protobuf_encode::ProtobufEncode;
-use rxchef::Operation;
+use rxchef::{ArgValue, Operation};
 
 #[test]
 fn test_protobuf_encode_basic() {
@@ -35,4 +35,40 @@ fn test_protobuf_encode_repeated() {
     // Field 1, wire type 0, value 2
     // 0x08, 0x01, 0x08, 0x02
     assert_eq!(result, vec![0x08, 0x01, 0x08, 0x02]);
+}
+
+#[test]
+fn test_protobuf_schema_round_trip_uses_names_and_types() {
+    use rxchef::operations::protobuf_decode::ProtobufDecode;
+
+    let schema = r#"
+        syntax = "proto3";
+        message Person {
+          string name = 1;
+          uint32 age = 2;
+          repeated string tags = 3;
+          bytes avatar = 4;
+        }
+    "#;
+    let encoded = ProtobufEncode
+        .run(
+            br#"{"name":"Ada","age":37,"tags":["math","code"],"avatar":"AAEC"}"#.to_vec(),
+            &[ArgValue::Str(schema.to_string())],
+        )
+        .unwrap();
+    let decoded = ProtobufDecode
+        .run(
+            encoded,
+            &[
+                ArgValue::Str(schema.to_string()),
+                ArgValue::Bool(false),
+                ArgValue::Bool(false),
+            ],
+        )
+        .unwrap();
+    let value: serde_json::Value = serde_json::from_slice(&decoded).unwrap();
+    assert_eq!(value["name"], "Ada");
+    assert_eq!(value["age"], 37);
+    assert_eq!(value["tags"], serde_json::json!(["math", "code"]));
+    assert_eq!(value["avatar"], "AAEC");
 }

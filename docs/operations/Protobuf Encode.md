@@ -1,6 +1,6 @@
 # Protobuf Encode
 
-Encodes a valid JSON object into a protobuf byte array. Note: This implementation currently only supports encoding based on numeric keys in the JSON input (field numbers) as runtime schema compilation is not supported.
+Encodes JSON into Protobuf bytes. With a .proto schema, JSON field names and types are resolved from the first top-level message. Without a schema, numeric JSON keys are interpreted as field numbers.
 
 - Input: `JSON`
 - Output: `Bytes`
@@ -10,5 +10,5 @@ Encodes a valid JSON object into a protobuf byte array. Note: This implementatio
 
 | # | Argument | Default | Description |
 |---:|---|---|---|
-| 1 | Schema (.proto text) | `<empty>` | Optional schema (not implemented in this version) |
+| 1 | Schema (.proto text) | `<empty>` | Optional .proto schema; the first top-level message is used |
 

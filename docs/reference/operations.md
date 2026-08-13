@@ -20,9 +20,10 @@ Arguments are positional in the order shown. Omitted arguments use their default
 - [Diff](#diff) (1 operations)
 - [Encodings](#encodings) (14 operations)
 - [Handlebars](#handlebars) (1 operations)
-- [Hashing](#hashing) (22 operations)
+- [Hashing](#hashing) (21 operations)
 - [Image](#image) (28 operations)
 - [Jq](#jq) (1 operations)
+- [Maps](#maps) (1 operations)
 - [Media](#media) (1 operations)
 - [OCR](#ocr) (1 operations)
 - [PGP](#pgp) (6 operations)
@@ -59,30 +60,12 @@ Emulation of the Bombe machine used at Bletchley Park to attack Enigma.
 
 ### Colossus
 
-Colossus emulation.
+Analyses an ITA2 teleprinter tape using the five parallel bit channels used by Colossus. The output contains a printable tape transcription, per-channel one-bit counters, and the number of tape characters processed.
 
 - Input: `String`
 - Output: `JSON`
 - CLI: `rxchef run "Colossus"`
-
-| # | Argument | Default | Description |
-|---:|---|---|---|
-| 1 | Input | `<empty>` | Input |
-| 2 | Pattern | `KH Pattern` | Pattern |
-| 3 | QBusZ | `<empty>` | QBusZ |
-| 4 | QBusX | `<empty>` | QBusX |
-| 5 | QBusPsi | `<empty>` | QBusPsi |
-| 6 | Limitation | `None` | Limitation |
-| 7 | K Rack Option | `Select Program` | K Rack Option |
-| 8 | Program to run | `<empty>` | Program to run |
-| 9 | K Rack: Conditional | `<empty>` | K Rack: Conditional |
-| 10 | R1-Q1 | `.` | R1-Q1 |
-| 11 | R1-Q2 | `.` | R1-Q2 |
-| 12 | R1-Q3 | `.` | R1-Q3 |
-| 13 | R1-Q4 | `.` | R1-Q4 |
-| 14 | R1-Q5 | `.` | R1-Q5 |
-| 15 | R1-Negate | `false` | R1-Negate |
-| 16 | R1-Counter | `1` | R1-Counter |
+- Arguments: none
 
 ### Enigma
 
@@ -123,7 +106,7 @@ The Lorenz SZ40/42 cipher attachment was a WW2 German rotor cipher machine.
 |---:|---|---|---|
 | 1 | Model | `SZ40` | SZ40, SZ42a, SZ42b |
 | 2 | Wheel Pattern | `KH Pattern` | KH, ZMUG, BREAM, etc. |
-| 3 | KT-Schalter | `false` |  |
+| 3 | KT-Schalter | `false` | Enable the SZ42a Klartext feedback switch |
 | 4 | Mode | `Send` | Send or Receive |
 | 5 | Input Type | `Plaintext` | Plaintext or ITA2 |
 | 6 | Output Type | `Plaintext` | Plaintext or ITA2 |
@@ -1221,7 +1204,7 @@ The Vigenere cipher is a method of encrypting alphabetic text by using a series 
 
 ### XSalsa20
 
-XSalsa20 is a variant of the Salsa20 stream cipher designed by Daniel J. Bernstein; XSalsa uses longer nonces.<br><br><b>Key:</b> XSalsa20 uses a key of 16 or 32 bytes (128 or 256 bits).<br><br><b>Nonce:</b> XSalsa20 uses a nonce of 24 bytes (192 bits).<br><br><b>Counter:</b> XSalsa uses a counter of 8 bytes (64 bits). The counter starts at zero at the start of the keystream, and is incremented at every 64 bytes.
+XSalsa is an extended-nonce Salsa stream cipher designed by Daniel J. Bernstein. It uses a 32-byte key, a 24-byte nonce, and a 64-bit block counter. The standard 20-round cipher and reduced-round XSalsa12 and XSalsa8 variants are supported.
 
 - Input: `String`
 - Output: `String`
@@ -1367,7 +1350,7 @@ Parses and pretty prints valid JavaScript code. Note: This implementation uses h
 
 ### JavaScript Minify
 
-Compresses JavaScript code. (Basic implementation using regex)
+Safely reduces JavaScript source by removing lexical comments, blank lines, and redundant horizontal whitespace while preserving quoted strings, template literals, escapes, and comment-like text inside them.
 
 - Input: `String`
 - Output: `String`
@@ -1376,7 +1359,7 @@ Compresses JavaScript code. (Basic implementation using regex)
 
 ### JavaScript Parser
 
-Returns an Abstract Syntax Tree for valid JavaScript code. (Placeholder implementation)
+Parses JavaScript and returns a SWC Abstract Syntax Tree as JSON. Optional source locations, byte ranges, tokens, comments, and recoverable parser errors can be included.
 
 - Input: `String`
 - Output: `String`
@@ -1392,9 +1375,9 @@ Returns an Abstract Syntax Tree for valid JavaScript code. (Placeholder implemen
 
 ### Jsonata Query
 
-!!! warning "Experimental / known broken"
+!!! warning "Optional backend unavailable"
 
-    This operation is marked as broken in the runtime registry.
+    This operation is feature-gated and unavailable in the minimal documentation build. See the feature matrix for the required Cargo feature.
 
 Query and transform JSON data using jaq. Jsonata is not natively available in Rust,
         so jaq is used as an alternative. Enable with: --features jsonata
@@ -1409,7 +1392,7 @@ Query and transform JSON data using jaq. Jsonata is not natively available in Ru
 
 ### Render Markdown
 
-Renders input Markdown as HTML. HTML rendering is disabled to avoid XSS. (Simplified port using Regex)
+Renders Markdown as safe HTML. Raw HTML is escaped, URLs can be linked automatically, fenced code blocks can be syntax-highlighted, and links can open in a new tab.
 
 - Input: `String`
 - Output: `HTML`
@@ -1418,7 +1401,7 @@ Renders input Markdown as HTML. HTML rendering is disabled to avoid XSS. (Simpli
 | # | Argument | Default | Description |
 |---:|---|---|---|
 | 1 | Autoconvert URLs to links | `false` | Autoconvert URLs to links |
-| 2 | Enable syntax highlighting | `true` | Enable syntax highlighting (Not supported in this port) |
+| 2 | Enable syntax highlighting | `true` | Highlight strings, numbers, comments, and common language keywords in fenced code blocks |
 | 3 | Open links in new tab. | `false` | Adds target="_blank" to links. |
 
 ### SQL Beautify
@@ -2508,11 +2491,11 @@ Provides a place to write comments within the flow of the recipe. This operation
 
 | # | Argument | Default | Description |
 |---:|---|---|---|
-| 1 |  | `<empty>` | Comment text |
+| 1 | Comment | `<empty>` | Comment text |
 
 ### Conditional Jump
 
-Conditionally jump forwards or backwards to the specified Label based on whether the data matches the specified regular expression. In this Rust implementation, it acts as a passthrough since flow control requires recipe-level orchestration.
+Conditionally jump forwards or backwards to a Label when the current data matches a regular expression. Backwards jumps are bounded by the configured maximum. Interpreted by integration::bake and all CLI recipe frontends.
 
 - Input: `String`
 - Output: `String`
@@ -2828,7 +2811,7 @@ Expand an alphabet range string into a list of the characters in that range.<br>
 
 ### Extract Files
 
-Performs file carving to attempt to extract files from the input.
+Carves PNG, JPEG, GIF, PDF, and ZIP signatures from binary input. Matching payloads are returned in a deterministic binary envelope with an ASCII file-type header before each payload.
 
 - Input: `Bytes`
 - Output: `Bytes`
@@ -2904,7 +2887,7 @@ Creates a file tree from a list of file paths (similar to the tree command in Li
 
 ### Fork
 
-Split the input data up based on the specified delimiter and run all subsequent operations on each branch separately. In this implementation, acts as a passthrough (flow control requires recipe-level orchestration).
+Split the input on the specified delimiter and run subsequent recipe operations on each branch separately until Merge. This flow-control operation is interpreted by integration::bake and all CLI recipe frontends.
 
 - Input: `String`
 - Output: `String`
@@ -3463,7 +3446,7 @@ Format a JSON object into YAML
 
 ### Jump
 
-Jump forwards or backwards to the specified Label. In this Rust implementation, it acts as a passthrough since flow control requires recipe-level orchestration.
+Jump forwards or backwards to a Label in a recipe. Backwards jumps are bounded by the configured maximum. Interpreted by integration::bake and all CLI recipe frontends.
 
 - Input: `String`
 - Output: `String`
@@ -3792,7 +3775,7 @@ Parses a TCP header and payload (if present).
 
 ### Parse TLS record
 
-Parses one or more TLS records
+Parses one or more TLS records into JSON, including content type, protocol version, declared length, truncation state, handshake type and exact payload bytes. Encrypted and handshake-specific payloads remain hex-encoded.
 
 - Input: `Bytes`
 - Output: `JSON`
@@ -4194,7 +4177,7 @@ Strips the UDP header from a UDP datagram, outputting the payload.
 
 ### Subsection
 
-Select a part of the input data using a regular expression (regex), and run all subsequent operations on each match separately. In this implementation, acts as a passthrough (flow control requires recipe-level orchestration).
+Select input sections using a regular expression and run subsequent recipe operations on every match until Merge. Non-matching bytes remain unchanged. Interpreted by integration::bake and all CLI recipe frontends.
 
 - Input: `String`
 - Output: `String`
@@ -5129,7 +5112,7 @@ The GOST hash function is based on the GOST block cipher.
 |---:|---|---|---|
 | 1 | Algorithm | `GOST 28147 (1994)` | The GOST hash algorithm version to use. |
 | 2 | Digest length | `256` | The length of the digest to produce (only for Streebog). |
-| 3 | sBox | `E-TEST` | The sBox to use (only for GOST 28147 (1994)). |
+| 3 | sBox | `E-TEST` | GOST94 parameter set: E-TEST/D-TEST (test) or CryptoPro/D-A |
 
 ### Keccak
 
@@ -5233,8 +5216,8 @@ The SHA-2 (Secure Hash Algorithm 2) hash functions were designed by the NSA. SHA
 | # | Argument | Default | Description |
 |---:|---|---|---|
 | 1 | Size | `256` | Output size (224, 256, 384, 512, 512/256, 512/224) |
-| 2 | Rounds | `64` | Number of rounds for 256/224 (minimum 16) |
-| 3 | Rounds | `160` | Number of rounds for 512/384/224/256 (minimum 32) |
+| 2 | Rounds (SHA-256) | `64` | Number of rounds for 256/224 (minimum 16) |
+| 3 | Rounds (SHA-512) | `160` | Number of rounds for 512/384/224/256 (minimum 32) |
 
 ### SHA3
 
@@ -5275,7 +5258,7 @@ SM3 is a cryptographic hash function used in the Chinese National Standard. SM3 
 
 ### SNEFRU
 
-SNEFRU is a cryptographic hash function invented by Ralph Merkle in 1990 while working at Xerox PARC. The function supports 128-bit and 256-bit output. The original design was shown to be insecure and was modified by increasing the number of iterations from two to eight.
+Computes the standardized 256-bit, 8-round SNEFRU hash. SNEFRU was designed by Ralph Merkle in 1990; the original shorter-round design is retained in the argument schema for recipe compatibility but rejected because it is cryptographically broken.
 
 - Input: `Bytes`
 - Output: `String`
@@ -5283,22 +5266,8 @@ SNEFRU is a cryptographic hash function invented by Ralph Merkle in 1990 while w
 
 | # | Argument | Default | Description |
 |---:|---|---|---|
-| 1 | Size | `128` | Output size in bits (32-480, step 32) |
-| 2 | Rounds | `8` | Number of rounds (2, 4, or 8) |
-
-### Show on map
-
-Displays co-ordinates on a slippy map.<br><br>Co-ordinates will be converted to decimal degrees before being shown on the map.<br><br>Supported formats:<ul><li>Degrees Minutes Seconds (DMS)</li><li>Degrees Decimal Minutes (DDM)</li><li>Decimal Degrees (DD)</li><li>Geohash</li><li>Military Grid Reference System (MGRS)</li><li>Ordnance Survey National Grid (OSNG)</li><li>Universal Transverse Mercator (UTM)</li></ul><br>This operation will not work offline.
-
-- Input: `String`
-- Output: `HTML`
-- CLI: `rxchef run "Show on map"`
-
-| # | Argument | Default | Description |
-|---:|---|---|---|
-| 1 | Zoom Level | `13` | Zoom level of the map (0-20) |
-| 2 | Input Format | `Auto` | Format of the input coordinates |
-| 3 | Input Delimiter | `Auto` | Delimiter separating the coordinates |
+| 1 | Size | `256` | Output size in bits (supported: 256) |
+| 2 | Rounds | `8` | Number of rounds (supported: 8) |
 
 ### Streebog
 
@@ -5432,7 +5401,7 @@ Crops an image to the specified region, or automatically crops edges.<br><br><b>
 
 ### Dither Image
 
-Apply a dither effect to an image.<br><br>Note: This implementation is currently a placeholder as the project lacks a native image processing library for decoding common formats like PNG or JPEG.
+Apply Floyd-Steinberg black-and-white dithering to a PNG, JPEG, GIF, BMP, TIFF, or WebP image. The result is encoded as PNG.
 
 - Input: `Bytes`
 - Output: `Bytes`
@@ -5720,6 +5689,23 @@ jq is a lightweight and flexible command-line JSON processor.
 | 2 | Raw | `false` | If true, the output will be raw strings instead of JSON |
 
 
+## Maps
+
+### Show on map
+
+Displays comma-separated coordinates on an OpenStreetMap slippy map. Decimal degrees (DD), degrees/decimal minutes (DDM), and degrees/minutes/seconds (DMS) with N/S/E/W suffixes are converted to decimal degrees. Map tiles require network access in the HTML viewer.
+
+- Input: `String`
+- Output: `HTML`
+- CLI: `rxchef run "Show on map"`
+
+| # | Argument | Default | Description |
+|---:|---|---|---|
+| 1 | Zoom Level | `13` | Zoom level of the map (0-20) |
+| 2 | Input Format | `Auto` | Format of the input coordinates |
+| 3 | Input Delimiter | `Auto` | Delimiter separating the coordinates |
+
+
 ## Media
 
 ### Extract Audio Metadata
@@ -5740,9 +5726,9 @@ Extract common audio metadata across MP3, WAV, FLAC, OGG, etc. Outputs normalize
 
 ### Optical Character Recognition
 
-!!! warning "Experimental / known broken"
+!!! warning "Optional backend unavailable"
 
-    This operation is marked as broken in the runtime registry.
+    This operation is feature-gated and unavailable in the minimal documentation build. See the feature matrix for the required Cargo feature.
 
 Optical character recognition or optical character reader (OCR) is the mechanical or electronic 
         conversion of images of typed, handwritten or printed text into machine-encoded text.
@@ -5767,6 +5753,10 @@ Optical character recognition or optical character reader (OCR) is the mechanica
 
 ### Generate PGP Key Pair
 
+!!! warning "Optional backend unavailable"
+
+    This operation is feature-gated and unavailable in the minimal documentation build. See the feature matrix for the required Cargo feature.
+
 Generates a new public/private PGP key pair. Supports RSA (1024/2048/4096) and ECC (256/384/521) key types. Arguments: key type, optional password, optional name, optional email.
 
 - Input: `String`
@@ -5775,12 +5765,16 @@ Generates a new public/private PGP key pair. Supports RSA (1024/2048/4096) and E
 
 | # | Argument | Default | Description |
 |---:|---|---|---|
-| 1 | Key type | `RSA-2048` | Key type and size: RSA-1024, RSA-2048, RSA-4096, ECC-256, ECC-384, ECC-521 |
+| 1 | Key type | `RSA-2048` | Key type and size: RSA-2048, RSA-4096, ECC-256, ECC-384, ECC-521 (RSA-1024 is rejected as insecure) |
 | 2 | Password (optional) | `<empty>` | Passphrase to protect the private key |
 | 3 | Name (optional) | `<empty>` | User name for the key identity |
 | 4 | Email (optional) | `<empty>` | User email for the key identity |
 
 ### PGP Decrypt
+
+!!! warning "Optional backend unavailable"
+
+    This operation is feature-gated and unavailable in the minimal documentation build. See the feature matrix for the required Cargo feature.
 
 Decrypts a PGP-encrypted message using the recipient's ASCII-armoured private key. Input: ASCII-armoured PGP message. Arguments: private key and optional passphrase.
 
@@ -5794,6 +5788,10 @@ Decrypts a PGP-encrypted message using the recipient's ASCII-armoured private ke
 | 2 | Private key passphrase | `<empty>` | Passphrase for the private key (leave blank if none) |
 
 ### PGP Decrypt and Verify
+
+!!! warning "Optional backend unavailable"
+
+    This operation is feature-gated and unavailable in the minimal documentation build. See the feature matrix for the required Cargo feature.
 
 Decrypts and verifies a PGP signed+encrypted message. Input: ASCII-armoured encrypted PGP message. Arguments: public key of signer, private key of recipient, optional passphrase.
 
@@ -5809,6 +5807,10 @@ Decrypts and verifies a PGP signed+encrypted message. Input: ASCII-armoured encr
 
 ### PGP Encrypt
 
+!!! warning "Optional backend unavailable"
+
+    This operation is feature-gated and unavailable in the minimal documentation build. See the feature matrix for the required Cargo feature.
+
 Encrypts a message using the recipient's ASCII-armoured PGP public key. Input: plaintext message. Arguments: recipient's public key.
 
 - Input: `String`
@@ -5820,6 +5822,10 @@ Encrypts a message using the recipient's ASCII-armoured PGP public key. Input: p
 | 1 | Public key of recipient | `<empty>` | ASCII-armoured PGP public key of the recipient |
 
 ### PGP Encrypt and Sign
+
+!!! warning "Optional backend unavailable"
+
+    This operation is feature-gated and unavailable in the minimal documentation build. See the feature matrix for the required Cargo feature.
 
 Encrypts a message to the recipient and signs it with the signer's private key. Input: cleartext to sign. Arguments: private key of signer, optional passphrase, public key of recipient.
 
@@ -5834,6 +5840,10 @@ Encrypts a message to the recipient and signs it with the signer's private key. 
 | 3 | Public key of recipient | `<empty>` | ASCII-armoured PGP public key of the recipient |
 
 ### PGP Verify
+
+!!! warning "Optional backend unavailable"
+
+    This operation is feature-gated and unavailable in the minimal documentation build. See the feature matrix for the required Cargo feature.
 
 Verifies a PGP clearsigned or signed+encrypted message using the signer's public key. Input: ASCII-armoured signed PGP message. Arguments: public key of the signer.
 
@@ -5850,7 +5860,7 @@ Verifies a PGP clearsigned or signed+encrypted message using the signer's public
 
 ### Protobuf Decode
 
-Decodes any Protobuf encoded data to a JSON representation of the data using the field number as the field key.
+Decodes Protobuf bytes to JSON. With a .proto schema, field names and declared types are used. Without a schema, wire fields are represented by numeric keys.
 
 - Input: `Bytes`
 - Output: `JSON`
@@ -5858,13 +5868,13 @@ Decodes any Protobuf encoded data to a JSON representation of the data using the
 
 | # | Argument | Default | Description |
 |---:|---|---|---|
-| 1 | Schema (.proto text) | `<empty>` | Optional schema (not implemented in this version) |
+| 1 | Schema (.proto text) | `<empty>` | Optional .proto schema; the first top-level message is used |
 | 2 | Show Unknown Fields | `false` | Show fields not in schema |
 | 3 | Show Types | `false` | Show type information |
 
 ### Protobuf Encode
 
-Encodes a valid JSON object into a protobuf byte array. Note: This implementation currently only supports encoding based on numeric keys in the JSON input (field numbers) as runtime schema compilation is not supported.
+Encodes JSON into Protobuf bytes. With a .proto schema, JSON field names and types are resolved from the first top-level message. Without a schema, numeric JSON keys are interpreted as field numbers.
 
 - Input: `JSON`
 - Output: `Bytes`
@@ -5872,7 +5882,7 @@ Encodes a valid JSON object into a protobuf byte array. Note: This implementatio
 
 | # | Argument | Default | Description |
 |---:|---|---|---|
-| 1 | Schema (.proto text) | `<empty>` | Optional schema (not implemented in this version) |
+| 1 | Schema (.proto text) | `<empty>` | Optional .proto schema; the first top-level message is used |
 
 
 ## PublicKey
@@ -5918,7 +5928,7 @@ Converts an object identifier (OID) into a hexadecimal string representing the D
 
 ### PEM to JWK
 
-Converts Keys in PEM format to a JSON Web Key format.
+Converts RSA PUBLIC KEY/PKCS#8 PUBLIC KEY PEM blocks and RSA X.509 certificate public keys to public JSON Web Keys (kty, n, e). Private and elliptic-curve keys are rejected explicitly.
 
 - Input: `String`
 - Output: `String`
@@ -6154,7 +6164,7 @@ Replaces all occurrences of the first string with the second. Supports regex, si
 
 ### Register
 
-Extract data from the input and store it in registers which can then be passed into subsequent operations as arguments. Regular expression capture groups are used to select the data to extract.<br><br>To use registers in arguments, refer to them using the notation <code>$Rn</code> where n is the register number, starting at 0.<br><br>In this implementation, acts as a passthrough (flow control requires recipe-level orchestration).
+Extract data from the input into recipe registers using regular expression capture groups. Refer to captures in later operation arguments as $R0, $R1, and so on. Register expansion is implemented by integration::bake and all CLI recipe frontends.
 
 - Input: `String`
 - Output: `String`

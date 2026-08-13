@@ -11,7 +11,8 @@
 
 use std::io::Cursor;
 
-use image::ImageFormat;
+use image::{ImageFormat, Rgba};
+use imageproc::geometric_transformations::{rotate_about_center, Interpolation};
 
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
 
@@ -65,30 +66,17 @@ impl Operation for RotateImage {
             90 | -270 => img.rotate90(),
             180 | -180 => img.rotate180(),
             270 | -90 => img.rotate270(),
+            _ if degrees.is_finite() => image::DynamicImage::ImageRgba8(rotate_about_center(
+                &img.to_rgba8(),
+                degrees.to_radians() as f32,
+                Interpolation::Bilinear,
+                Rgba([0, 0, 0, 0]),
+            )),
             _ => {
-                // For non-orthogonal rotations, we might need a more complex approach if we want to match Jimp exactly.
-                // However, Jimp's rotate(degrees) can be any angle.
-                // The `image` crate's `rotate90/180/270` are fast and lossless (in terms of pixels).
-                // For arbitrary angles, we'd need something like `imageproc::geometric_transformations::rotate_about_center`.
-                // But let's stick to orthogonal ones first or try to implement arbitrary if possible.
-                // CyberChef's default is 90.
-
-                // If we don't have a good arbitrary rotation in `image` without `imageproc` (or even with it, it's more complex),
-                // we might just support orthogonal for now or use a placeholder if it's too complex.
-                // Actually `image` doesn't have arbitrary rotation in the base crate.
-
-                if degrees % 90.0 == 0.0 {
-                    let d = (degrees as i64 % 360 + 360) % 360;
-                    match d {
-                        90 => img.rotate90(),
-                        180 => img.rotate180(),
-                        270 => img.rotate270(),
-                        0 => img,
-                        _ => return Err(OperationError::InvalidArgument { name: "Rotation amount (degrees)".to_string(), reason: "Only orthogonal rotations (0, 90, 180, 270) are currently supported in this port.".to_string() }),
-                    }
-                } else {
-                    return Err(OperationError::InvalidArgument { name: "Rotation amount (degrees)".to_string(), reason: "Only orthogonal rotations (0, 90, 180, 270) are currently supported in this port.".to_string() });
-                }
+                return Err(OperationError::InvalidArgument {
+                    name: "Rotation amount (degrees)".to_string(),
+                    reason: "Rotation must be a finite number".to_string(),
+                });
             }
         };
 

@@ -152,6 +152,21 @@ fn bake_accepts_inline_recipe_and_stdin() {
 }
 
 #[test]
+fn pipe_and_bake_share_flow_control_semantics() {
+    let output = rxchef(
+        &["pipe", r#"Fork,\n,|,false"#, "To Upper case", "Merge"],
+        Some(b"one\ntwo"),
+    );
+    assert_success(&output);
+    assert_eq!(output.stdout, b"ONE|TWO");
+
+    let recipe = r#"[{"op":"Subsection","args":["[0-9]+","true","true"]},{"op":"To Base64"},{"op":"Merge"}]"#;
+    let output = rxchef(&["bake", "--recipe-json", recipe], Some(b"a12b345c"));
+    assert_success(&output);
+    assert_eq!(output.stdout, b"aMTI=bMzQ1c");
+}
+
+#[test]
 fn stdio_server_handles_multiple_requests_in_one_process() {
     let requests = concat!(
         "{\"id\":1,\"method\":\"operations\"}\n",

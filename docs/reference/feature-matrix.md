@@ -2,18 +2,26 @@
 
 This page gives a high-level view of the project’s platform and feature coverage.
 
-## Current focus areas
+## Cargo features
 
-- command-line execution
-- operation registry and metadata
-- pipeline orchestration
-- recipe and state persistence
-- scan and magic decode capabilities
-- TUI and library access
+| Feature | Operation/dependency | Default | Notes |
+|---|---|---:|---|
+| `jsonata` | Jsonata Query via `jaq` | no | Pure Rust; enables real query execution. |
+| `pgp` | Six OpenPGP operations via Sequoia | no | RustCrypto backend; key generation, encrypt/decrypt, sign/verify, and combined round trips are tested. |
+| `tesseract` | Optical Character Recognition | no | Links a system Tesseract/Leptonica installation through `pkg-config`. |
 
-## Coverage notes
+All feature combinations compile in CI-compatible environments with the OCR
+system packages installed:
 
-rxchef is designed as a multi-surface project: the same operations are intended to work across the library, CLI, and TUI. The documentation should be read with that in mind.
+```console
+cargo check --workspace --all-targets --all-features
+```
+
+The core library, CLI pipelines, recipes, Magic, Scan, TUI, machine-readable
+registry, and stdio server are available without optional features. The runtime
+`broken` field means that an optional backend is unavailable in the current
+build. With `--all-features` and the documented native OCR libraries installed,
+all 478 registry entries are available; CI asserts this invariant.
 
 ## Related pages
 

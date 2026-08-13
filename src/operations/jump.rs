@@ -24,7 +24,7 @@ impl Operation for Jump {
     }
 
     fn description(&self) -> &'static str {
-        "Jump forwards or backwards to the specified Label. In this Rust implementation, it acts as a passthrough since flow control requires recipe-level orchestration."
+        "Jump forwards or backwards to a Label in a recipe. Backwards jumps are bounded by the configured maximum. Interpreted by integration::bake and all CLI recipe frontends."
     }
 
     fn args_schema(&self) -> &'static [ArgSchema] {
@@ -53,7 +53,7 @@ impl Operation for Jump {
     }
 
     fn run(&self, input: Vec<u8>, _args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
-        // Passthrough: full jump flow control requires recipe-level orchestration.
+        // A standalone operation has no recipe program counter to change.
         Ok(input)
     }
 }

@@ -11,9 +11,7 @@
 
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
 
-/// Subsection operation - flow control.
-/// In this Rust context, implemented as a passthrough since true flow control
-/// requires recipe-level orchestration that is beyond a single-operation scope.
+/// Subsection operation - interpreted by the shared recipe engine.
 pub struct Subsection;
 
 impl Operation for Subsection {
@@ -26,7 +24,7 @@ impl Operation for Subsection {
     }
 
     fn description(&self) -> &'static str {
-        "Select a part of the input data using a regular expression (regex), and run all subsequent operations on each match separately. In this implementation, acts as a passthrough (flow control requires recipe-level orchestration)."
+        "Select input sections using a regular expression and run subsequent recipe operations on every match until Merge. Non-matching bytes remain unchanged. Interpreted by integration::bake and all CLI recipe frontends."
     }
 
     fn args_schema(&self) -> &'static [ArgSchema] {
@@ -64,7 +62,7 @@ impl Operation for Subsection {
     }
 
     fn run(&self, input: Vec<u8>, _args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
-        // Passthrough: full subsection flow control requires recipe-level orchestration.
+        // A standalone operation has no following recipe to apply to matches.
         Ok(input)
     }
 }

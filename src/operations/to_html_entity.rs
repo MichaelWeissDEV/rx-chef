@@ -94,7 +94,8 @@ impl Operation for ToHTMLEntity {
                         output.push(c);
                     }
                 } else {
-                    if let Some(entity) = get_named_entity(code) {
+                    if is_special_entity(code) {
+                        let entity = get_named_entity(code).expect("special entity has a name");
                         output.push_str(entity);
                     } else if code > 255 {
                         output.push_str(&format!("&#{};", code));
@@ -110,7 +111,7 @@ impl Operation for ToHTMLEntity {
 }
 
 fn is_special_entity(code: u32) -> bool {
-    get_named_entity(code).is_some()
+    matches!(code, 34 | 38 | 39 | 60 | 62) || (code > 127 && get_named_entity(code).is_some())
 }
 
 fn get_named_entity(code: u32) -> Option<&'static str> {

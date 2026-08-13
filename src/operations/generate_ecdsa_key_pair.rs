@@ -90,23 +90,17 @@ impl Operation for GenerateECDSAKeyPairOp {
                     // Let's return hex of private key
                     return Ok(hex::encode(secret_key.to_bytes()).into_bytes());
                 }
-                "JWK" => {
-                    // Simple JWK-like placeholder or real JSON if possible
-                    let result = format!(
-                        "{{\"keys\": [ {{\"kty\":\"EC\",\"crv\":\"P-256\",\"x\":\"...\",\"y\":\"...\",\"d\":\"...\"}} ]}}"
-                    );
-                    return Ok(result.into_bytes());
-                }
                 _ => {}
             }
         }
 
-        // NOTE: Real ECDSA generation for other curves requires external crates.
-        let result = format!(
-            "[PLACEHOLDER] ECDSA Key Pair\nCurve: {}\nFormat: {}\n\n(Full implementation for this curve/format pending)",
-            curve_name, output_format
-        );
-
-        Ok(result.into_bytes())
+        Err(OperationError::InvalidArgument {
+            name: if curve_name != "P-256" {
+                "Elliptic Curve".to_string()
+            } else {
+                "Output Format".to_string()
+            },
+            reason: "v0.0.1 supports P-256 with PEM or DER output".to_string(),
+        })
     }
 }

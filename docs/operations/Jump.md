@@ -1,6 +1,6 @@
 # Jump
 
-Jump forwards or backwards to the specified Label. In this Rust implementation, it acts as a passthrough since flow control requires recipe-level orchestration.
+Jump forwards or backwards to a Label in a recipe. Backwards jumps are bounded by the configured maximum. Interpreted by integration::bake and all CLI recipe frontends.
 
 - Input: `String`
 - Output: `String`

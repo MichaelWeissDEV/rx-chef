@@ -1,19 +1,20 @@
-// Tests for the amf_encode operation.
-// Run only these tests:
-//   cargo test -p cyberchef-rust-tests --test operations amf_encode::
-
 use rxchef::operation::ArgValue;
-use rxchef::operations::amf_encode::AmfEncode;
+use rxchef::operations::{amf_decode::AmfDecode, amf_encode::AmfEncode};
 use rxchef::Operation;
 
 #[test]
-fn test_amf_encode_format_selection() {
-    let op = AmfEncode;
-    let input = b"test".to_vec();
-    let args = [ArgValue::Str("AMF0".to_string())];
-    let result = op.run(input.clone(), &args);
-    assert!(result.is_err());
-    let args = [ArgValue::Str("AMF3".to_string())];
-    let result = op.run(input, &args);
-    assert!(result.is_err());
+fn test_amf_roundtrip_both_formats() {
+    let input = br#"{"active":true,"items":[1,"two",null],"name":"rxchef"}"#;
+    for format in ["AMF0", "AMF3"] {
+        let args = [ArgValue::Str(format.into())];
+        let encoded = AmfEncode.run(input.to_vec(), &args).unwrap();
+        assert!(!encoded.is_empty());
+        let decoded = AmfDecode.run(encoded, &args).unwrap();
+        let decoded: serde_json::Value = serde_json::from_slice(&decoded).unwrap();
+        assert_eq!(decoded["active"], true);
+        assert_eq!(decoded["items"][0].as_f64(), Some(1.0));
+        assert_eq!(decoded["items"][1], "two");
+        assert!(decoded["items"][2].is_null());
+        assert_eq!(decoded["name"], "rxchef");
+    }
 }

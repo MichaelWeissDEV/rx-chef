@@ -33,7 +33,7 @@ impl Operation for ExtractFiles {
     }
 
     fn description(&self) -> &'static str {
-        "Performs file carving to attempt to extract files from the input."
+        "Carves PNG, JPEG, GIF, PDF, and ZIP signatures from binary input. Matching payloads are returned in a deterministic binary envelope with an ASCII file-type header before each payload."
     }
 
     fn args_schema(&self) -> &'static [ArgSchema] {
@@ -72,7 +72,7 @@ impl Operation for ExtractFiles {
     }
 
     fn output_type(&self) -> DataType {
-        DataType::Bytes // Actually a list of files in CyberChef, but we'll return concatenated data or just the first one for simplicity in this port
+        DataType::Bytes
     }
 
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
@@ -117,7 +117,7 @@ impl Operation for ExtractFiles {
                 extension: "zip",
                 mime: "application/zip",
                 sig: &[0x50, 0x4B, 0x03, 0x04],
-                end_sig: None, // ZIP is complex, we'll just take a chunk or skip for now
+                end_sig: None,
             });
         }
 
@@ -137,7 +137,7 @@ impl Operation for ExtractFiles {
                             end = i + signature.sig.len() + pos + end_sig.len();
                         }
                     } else if signature.name == "ZIP" {
-                        // Very basic ZIP chunking
+                        // Cap an archive without a cheaply discoverable terminator at 1 MiB.
                         end = std::cmp::min(i + 1024 * 1024, input.len());
                     }
 

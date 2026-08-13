@@ -24,7 +24,7 @@ impl Operation for DitherImage {
     }
 
     fn description(&self) -> &'static str {
-        "Apply a dither effect to an image.<br><br>Note: This implementation is currently a placeholder as the project lacks a native image processing library for decoding common formats like PNG or JPEG."
+        "Apply Floyd-Steinberg black-and-white dithering to a PNG, JPEG, GIF, BMP, TIFF, or WebP image. The result is encoded as PNG."
     }
 
     fn args_schema(&self) -> &'static [ArgSchema] {
@@ -40,10 +40,47 @@ impl Operation for DitherImage {
         DataType::Bytes
     }
 
-    fn run(&self, _input: Vec<u8>, _args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
-        // Since we don't have an image library in Cargo.toml (like 'image' crate),
-        // we cannot easily decode PNG/JPG/etc. and apply dithering to pixels.
-        // A true port would require adding 'image' dependency.
-        Err(OperationError::ProcessingError("Dither Image is not yet fully implemented due to missing image processing dependencies.".to_string()))
+    fn run(&self, input: Vec<u8>, _args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
+        use image::{DynamicImage, GrayImage, ImageFormat, Luma};
+        use std::io::Cursor;
+
+        let source = image::load_from_memory(&input)
+            .map_err(|error| OperationError::InvalidInput(error.to_string()))?
+            .to_luma8();
+        let (width, height) = source.dimensions();
+        let mut values = source
+            .pixels()
+            .map(|pixel| pixel.0[0] as f32)
+            .collect::<Vec<_>>();
+        let offset = |x: u32, y: u32| (y * width + x) as usize;
+        for y in 0..height {
+            for x in 0..width {
+                let index = offset(x, y);
+                let old = values[index];
+                let new = if old < 128.0 { 0.0 } else { 255.0 };
+                values[index] = new;
+                let error = old - new;
+                if x + 1 < width {
+                    values[offset(x + 1, y)] += error * 7.0 / 16.0;
+                }
+                if y + 1 < height {
+                    if x > 0 {
+                        values[offset(x - 1, y + 1)] += error * 3.0 / 16.0;
+                    }
+                    values[offset(x, y + 1)] += error * 5.0 / 16.0;
+                    if x + 1 < width {
+                        values[offset(x + 1, y + 1)] += error / 16.0;
+                    }
+                }
+            }
+        }
+        let output = GrayImage::from_fn(width, height, |x, y| {
+            Luma([values[offset(x, y)].clamp(0.0, 255.0) as u8])
+        });
+        let mut encoded = Cursor::new(Vec::new());
+        DynamicImage::ImageLuma8(output)
+            .write_to(&mut encoded, ImageFormat::Png)
+            .map_err(|error| OperationError::ProcessingError(error.to_string()))?;
+        Ok(encoded.into_inner())
     }
 }

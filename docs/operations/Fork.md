@@ -1,6 +1,6 @@
 # Fork
 
-Split the input data up based on the specified delimiter and run all subsequent operations on each branch separately. In this implementation, acts as a passthrough (flow control requires recipe-level orchestration).
+Split the input on the specified delimiter and run subsequent recipe operations on each branch separately until Merge. This flow-control operation is interpreted by integration::bake and all CLI recipe frontends.
 
 - Input: `String`
 - Output: `String`

@@ -23,5 +23,7 @@ fn test_multiple_bombe_basic() {
         ArgValue::Bool(true),
     ];
     let result = op.run(input, &args).unwrap();
-    assert!(result.len() > 0);
+    let result: serde_json::Value = serde_json::from_slice(&result).unwrap();
+    assert!(result["n_loops"].as_u64().unwrap() > 0);
+    assert!(result["bombe_runs"].is_array());
 }

@@ -47,3 +47,22 @@ fn test_render_markdown_links() {
     let result_str = String::from_utf8(result).unwrap();
     assert!(result_str.contains("<a href=\"https://google.com\"  target=\"_blank\">Google</a>"));
 }
+
+#[test]
+fn test_render_markdown_highlights_fenced_code() {
+    let result = RenderMarkdown
+        .run(
+            b"```rust\nlet answer = 42; // value\n```".to_vec(),
+            &[
+                ArgValue::Bool(false),
+                ArgValue::Bool(true),
+                ArgValue::Bool(false),
+            ],
+        )
+        .unwrap();
+    let html = String::from_utf8(result).unwrap();
+    assert!(html.contains("<pre><code class=\"language-rust\">"));
+    assert!(html.contains("rxchef-keyword\">let"));
+    assert!(html.contains("rxchef-number\">42"));
+    assert!(html.contains("rxchef-comment\">// value"));
+}

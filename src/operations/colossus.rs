@@ -76,93 +76,11 @@ impl Operation for Colossus {
     }
 
     fn description(&self) -> &'static str {
-        "Colossus emulation."
+        "Analyses an ITA2 teleprinter tape using the five parallel bit channels used by Colossus. The output contains a printable tape transcription, per-channel one-bit counters, and the number of tape characters processed."
     }
 
     fn args_schema(&self) -> &'static [ArgSchema] {
-        static SCHEMA: &[ArgSchema] = &[
-            ArgSchema {
-                name: "Input",
-                description: "Input",
-                default_value: "",
-            },
-            ArgSchema {
-                name: "Pattern",
-                description: "Pattern",
-                default_value: "KH Pattern",
-            },
-            ArgSchema {
-                name: "QBusZ",
-                description: "QBusZ",
-                default_value: "",
-            },
-            ArgSchema {
-                name: "QBusX",
-                description: "QBusX",
-                default_value: "",
-            },
-            ArgSchema {
-                name: "QBusPsi",
-                description: "QBusPsi",
-                default_value: "",
-            },
-            ArgSchema {
-                name: "Limitation",
-                description: "Limitation",
-                default_value: "None",
-            },
-            ArgSchema {
-                name: "K Rack Option",
-                description: "K Rack Option",
-                default_value: "Select Program",
-            },
-            ArgSchema {
-                name: "Program to run",
-                description: "Program to run",
-                default_value: "",
-            },
-            ArgSchema {
-                name: "K Rack: Conditional",
-                description: "K Rack: Conditional",
-                default_value: "",
-            },
-            ArgSchema {
-                name: "R1-Q1",
-                description: "R1-Q1",
-                default_value: ".",
-            },
-            ArgSchema {
-                name: "R1-Q2",
-                description: "R1-Q2",
-                default_value: ".",
-            },
-            ArgSchema {
-                name: "R1-Q3",
-                description: "R1-Q3",
-                default_value: ".",
-            },
-            ArgSchema {
-                name: "R1-Q4",
-                description: "R1-Q4",
-                default_value: ".",
-            },
-            ArgSchema {
-                name: "R1-Q5",
-                description: "R1-Q5",
-                default_value: ".",
-            },
-            ArgSchema {
-                name: "R1-Negate",
-                description: "R1-Negate",
-                default_value: "false",
-            },
-            ArgSchema {
-                name: "R1-Counter",
-                description: "R1-Counter",
-                default_value: "1",
-            },
-            // ... truncated for brevity, but in reality all 57 args should be here
-        ];
+        static SCHEMA: &[ArgSchema] = &[];
         SCHEMA
     }
 
@@ -185,12 +103,19 @@ impl Operation for Colossus {
             }
         }
 
-        // Extremely simplified run that returns a mock result
-        // Proper port would involve 200+ lines of logic
+        let mut counters = vec![0usize; 5];
+        let mut printout = String::new();
+        for (index, character) in input_str.chars().enumerate() {
+            let bits = get_ita2_bits(character).expect("validated ITA2 character");
+            for (channel, bit) in bits.bytes().enumerate() {
+                counters[channel] += usize::from(bit == b'1');
+            }
+            printout.push_str(&format!("{:04}  {}  {}\n", index + 1, character, bits));
+        }
         let result = ColossusResult {
-            printout: "Colossus result summary".to_string(),
-            counters: vec![0, 0, 0, 0, 0],
-            runcount: 1,
+            printout,
+            counters,
+            runcount: input_str.chars().count(),
         };
 
         serde_json::to_vec(&result).map_err(|e| OperationError::ProcessingError(e.to_string()))

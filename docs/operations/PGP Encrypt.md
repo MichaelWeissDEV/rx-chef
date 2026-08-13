@@ -1,5 +1,9 @@
 # PGP Encrypt
 
+!!! warning "Optional backend unavailable"
+
+    This operation is feature-gated and unavailable in the minimal documentation build. See the feature matrix for the required Cargo feature.
+
 Encrypts a message using the recipient's ASCII-armoured PGP public key. Input: plaintext message. Arguments: recipient's public key.
 
 - Input: `String`

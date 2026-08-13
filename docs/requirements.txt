@@ -1,1 +1,7 @@
+# Documentation build dependencies (Read the Docs installs these; see .readthedocs.yaml).
+#
+# Pygments is required by the `codehilite` Markdown extension enabled in
+# mkdocs.yml. It is not a hard dependency of mkdocs, so without it the build
+# still succeeds but every fenced code block renders unhighlighted.
 mkdocs==1.6.1
+Pygments==2.19.2

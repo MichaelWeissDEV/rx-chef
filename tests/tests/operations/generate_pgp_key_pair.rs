@@ -2,10 +2,11 @@
 // Run only these tests:
 //   cargo test -p cyberchef-rust-tests --test operations generate_pgp_key_pair::
 
-use rxchef::operations::generate_pgp_key_pair::GeneratePGPKeyPair;
-use rxchef::Operation;
+#[cfg(not(feature = "pgp"))]
+use rxchef::{operations::generate_pgp_key_pair::GeneratePGPKeyPair, Operation};
 
 #[test]
+#[cfg(not(feature = "pgp"))]
 fn test_generate_pgp_key_pair_always_errors() {
     let op = GeneratePGPKeyPair;
     let args = [
@@ -20,13 +21,14 @@ fn test_generate_pgp_key_pair_always_errors() {
     assert!(result.is_err());
     let error = result.unwrap_err();
     if let rxchef::operation::OperationError::ProcessingError(msg) = error {
-        assert!(msg.contains("sequoia-openpgp"));
+        assert!(msg.contains("--features pgp"));
     } else {
         panic!("Expected ProcessingError");
     }
 }
 
 #[test]
+#[cfg(not(feature = "pgp"))]
 fn test_generate_pgp_key_pair_different_args() {
     let op = GeneratePGPKeyPair;
     let args = [
@@ -42,6 +44,7 @@ fn test_generate_pgp_key_pair_different_args() {
 }
 
 #[test]
+#[cfg(not(feature = "pgp"))]
 fn test_generate_pgp_key_pair_empty_input() {
     let op = GeneratePGPKeyPair;
     let args = [

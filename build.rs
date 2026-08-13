@@ -14,6 +14,7 @@ use std::{
     fs::{self, File},
     io::{Read, Write},
     path::Path,
+    process::Command,
 };
 
 use regex::Regex;
@@ -86,7 +87,7 @@ fn main() {
     out.push_str(
         " * -----------------------------------------------------------------------------\n",
     );
-    out.push_str(" */\n\n#[allow(dead_code)]\n\n");
+    out.push_str(" */\n\n#[allow(dead_code)]\n");
     out.push_str("use crate::operation::Operation;\n\n");
 
     for path in entries {
@@ -154,4 +155,13 @@ fn main() {
     let dst = ops_dir.join("mod.rs");
     let mut f = File::create(&dst).expect("create mod.rs");
     f.write_all(out.as_bytes()).expect("write mod.rs");
+    drop(f);
+
+    let rustfmt = std::env::var_os("RUSTFMT").unwrap_or_else(|| "rustfmt".into());
+    let status = Command::new(rustfmt)
+        .args(["--edition", "2021"])
+        .arg(&dst)
+        .status()
+        .expect("run rustfmt for generated operations registry");
+    assert!(status.success(), "rustfmt failed for generated registry");
 }

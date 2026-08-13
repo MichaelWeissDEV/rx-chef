@@ -9,8 +9,6 @@
  * -----------------------------------------------------------------------------
  */
 
-use regex::Regex;
-
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
 
 /// JavaScript Minify operation
@@ -26,7 +24,7 @@ impl Operation for JavaScriptMinify {
     }
 
     fn description(&self) -> &'static str {
-        "Compresses JavaScript code. (Basic implementation using regex)"
+        "Safely reduces JavaScript source by removing lexical comments, blank lines, and redundant horizontal whitespace while preserving quoted strings, template literals, escapes, and comment-like text inside them."
     }
 
     fn args_schema(&self) -> &'static [ArgSchema] {
@@ -45,32 +43,130 @@ impl Operation for JavaScriptMinify {
         let input_str = String::from_utf8(input)
             .map_err(|e| OperationError::InvalidInput(format!("Invalid UTF-8: {}", e)))?;
 
-        // Basic minification using regex
-
-        // 1. Remove multi-line comments
-        let re_multi = Regex::new(r"(?s)/\*.*?\*/").unwrap();
-        let mut minified = re_multi.replace_all(&input_str, "").to_string();
-
-        // 2. Remove single-line comments
-        // Need to be careful not to remove comments inside strings, but this is a basic implementation.
-        let re_single = Regex::new(r"//.*").unwrap();
-        minified = re_single.replace_all(&minified, "").to_string();
-
-        // 3. Remove leading/trailing whitespace from each line and remove empty lines
-        let mut lines: Vec<String> = Vec::new();
-        for line in minified.lines() {
+        let without_comments = strip_comments(&input_str);
+        let mut lines = Vec::new();
+        for line in without_comments.lines() {
             let trimmed = line.trim();
             if !trimmed.is_empty() {
-                lines.push(trimmed.to_string());
+                lines.push(collapse_horizontal_whitespace(trimmed));
             }
         }
-        minified = lines.join("\n");
-
-        // 4. Remove excessive whitespace around operators (optional, but good for minification)
-        // This can be risky without a proper lexer, so let's stick to basic whitespace collapse for now.
-        let re_ws = Regex::new(r"[ \t]+").unwrap();
-        minified = re_ws.replace_all(&minified, " ").to_string();
-
-        Ok(minified.into_bytes())
+        Ok(lines.join("\n").into_bytes())
     }
+}
+
+fn strip_comments(source: &str) -> String {
+    let bytes = source.as_bytes();
+    let mut output = Vec::with_capacity(bytes.len());
+    let mut index = 0;
+    let mut quote = None;
+    let mut escaped = false;
+    while index < bytes.len() {
+        let byte = bytes[index];
+        if let Some(delimiter) = quote {
+            output.push(byte);
+            if escaped {
+                escaped = false;
+            } else if byte == b'\\' {
+                escaped = true;
+            } else if byte == delimiter {
+                quote = None;
+            }
+            index += 1;
+            continue;
+        }
+        if matches!(byte, b'\'' | b'"' | b'`') {
+            quote = Some(byte);
+            output.push(byte);
+            index += 1;
+        } else if byte == b'/'
+            && !matches!(bytes.get(index + 1), Some(b'/') | Some(b'*'))
+            && slash_starts_regex(&output)
+        {
+            output.push(byte);
+            index += 1;
+            let mut escaped = false;
+            let mut character_class = false;
+            while index < bytes.len() {
+                let current = bytes[index];
+                output.push(current);
+                index += 1;
+                if escaped {
+                    escaped = false;
+                } else if current == b'\\' {
+                    escaped = true;
+                } else if current == b'[' {
+                    character_class = true;
+                } else if current == b']' {
+                    character_class = false;
+                } else if current == b'/' && !character_class {
+                    while index < bytes.len() && bytes[index].is_ascii_alphabetic() {
+                        output.push(bytes[index]);
+                        index += 1;
+                    }
+                    break;
+                }
+            }
+        } else if byte == b'/' && bytes.get(index + 1) == Some(&b'/') {
+            index += 2;
+            while index < bytes.len() && bytes[index] != b'\n' {
+                index += 1;
+            }
+        } else if byte == b'/' && bytes.get(index + 1) == Some(&b'*') {
+            index += 2;
+            while index + 1 < bytes.len() && !(bytes[index] == b'*' && bytes[index + 1] == b'/') {
+                if bytes[index] == b'\n' {
+                    output.push(b'\n');
+                }
+                index += 1;
+            }
+            index = (index + 2).min(bytes.len());
+        } else {
+            output.push(byte);
+            index += 1;
+        }
+    }
+    String::from_utf8(output).expect("source started as UTF-8")
+}
+
+fn slash_starts_regex(output: &[u8]) -> bool {
+    match output.iter().rev().find(|byte| !byte.is_ascii_whitespace()) {
+        None => true,
+        Some(byte) => b"=([{,:;!&|?+-*%^~<>".contains(byte),
+    }
+}
+
+fn collapse_horizontal_whitespace(line: &str) -> String {
+    let mut output = String::with_capacity(line.len());
+    let mut whitespace = false;
+    let mut quote = None;
+    let mut escaped = false;
+    for character in line.chars() {
+        if let Some(delimiter) = quote {
+            output.push(character);
+            if escaped {
+                escaped = false;
+            } else if character == '\\' {
+                escaped = true;
+            } else if character == delimiter {
+                quote = None;
+            }
+        } else if matches!(character, '\'' | '"' | '`') {
+            if whitespace && !output.is_empty() {
+                output.push(' ');
+            }
+            whitespace = false;
+            quote = Some(character);
+            output.push(character);
+        } else if character == ' ' || character == '\t' {
+            whitespace = true;
+        } else {
+            if whitespace && !output.is_empty() {
+                output.push(' ');
+            }
+            whitespace = false;
+            output.push(character);
+        }
+    }
+    output
 }

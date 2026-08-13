@@ -7,7 +7,7 @@ use rxchef::operations::hex_density_chart::HexDensityChartOp;
 use rxchef::Operation;
 
 #[test]
-fn test_hex_density_chart_placeholder() {
+fn test_hex_density_chart_svg() {
     let op = HexDensityChartOp;
     let input = b"1,2\n3,4\n5,6".to_vec();
     let args = [
@@ -23,9 +23,10 @@ fn test_hex_density_chart_placeholder() {
         ArgValue::Str("#000000".to_string()),
         ArgValue::Bool(false),
     ];
-    let result = op.run(input, &args).unwrap();
-    let result_str = String::from_utf8(result).unwrap();
-    assert!(result_str.contains("X Axis"));
-    assert!(result_str.contains("Y Axis"));
-    assert!(result_str.contains("svg"));
+    assert!(!op.is_broken());
+    let output = String::from_utf8(op.run(input, &args).unwrap()).unwrap();
+    assert!(output.starts_with("<svg"));
+    assert!(output.contains("<polygon"));
+    assert!(output.contains("X Axis"));
+    assert!(output.contains("Y Axis"));
 }

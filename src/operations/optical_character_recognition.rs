@@ -82,15 +82,9 @@ impl Operation for OpticalCharacterRecognition {
 #[cfg(feature = "tesseract")]
 impl OpticalCharacterRecognition {
     fn run_tesseract(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
-        use image::DynamicImage;
-        use leptonica::Pix;
-        use tesseract::TessApi;
+        use tesseract_rs::TesseractAPI;
 
-        let show_confidence = args
-            .get(0)
-            .and_then(|a| a.as_str())
-            .map(|s| s.to_lowercase() == "true")
-            .unwrap_or(true);
+        let show_confidence = args.first().and_then(ArgValue::as_bool).unwrap_or(true);
 
         let _engine_mode = args.get(1).and_then(|a| a.as_str()).unwrap_or("LSTM only");
 
@@ -98,29 +92,14 @@ impl OpticalCharacterRecognition {
         let img = image::load_from_memory(&input)
             .map_err(|e| OperationError::InvalidInput(format!("Failed to load image: {}", e)))?;
 
-        // Convert to RGB8
-        let rgb = img.to_rgb8();
-        let (w, h) = rgb.dimensions();
+        let gray = img.to_luma8();
+        let (width, height) = gray.dimensions();
 
-        // Create Leptonica Pix image
-        let mut pix = Pix::create(w as i32, h as i32, 8, leptonica::ColorSpace::RGB);
-        for y in 0..h {
-            for x in 0..w {
-                let p = rgb.get_pixel(x, y);
-                let gray = (p[0] as u32 + p[1] as u32 + p[2] as u32) / 3;
-                unsafe {
-                    pix.set_pixel(x as i32, y as i32, gray as u32);
-                }
-            }
-        }
-
-        // Initialize Tesseract
-        let api = TessApi::new(None, "eng").map_err(|e| {
-            OperationError::ProcessingError(format!("Failed to initialize Tesseract: {}", e))
+        let api = TesseractAPI::new();
+        api.init("", "eng").map_err(|e| {
+            OperationError::ProcessingError(format!("Failed to initialize Tesseract: {e}"))
         })?;
-
-        // Set image for OCR
-        api.set_image_from_pix(&pix)
+        api.set_image(gray.as_raw(), width as i32, height as i32, 1, width as i32)
             .map_err(|e| OperationError::ProcessingError(format!("Failed to set image: {}", e)))?;
 
         // Get text
@@ -131,10 +110,10 @@ impl OpticalCharacterRecognition {
         let text = text.trim();
 
         if show_confidence {
-            let conf = api.mean_confidence().map_err(|e| {
+            let conf = api.mean_text_conf().map_err(|e| {
                 OperationError::ProcessingError(format!("Failed to get confidence: {}", e))
             })?;
-            Ok(format!("{}\n\nConfidence: {:.2}%", text, conf).into_bytes())
+            Ok(format!("{}\n\nConfidence: {}%", text, conf).into_bytes())
         } else {
             Ok(text.to_string().into_bytes())
         }

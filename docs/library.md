@@ -24,6 +24,13 @@ assert_eq!(result.output, "SGVsbG8=");
 
 `ExecutionResult` contains a lossy display string plus exact Base64 bytes. `serve_jsonl(reader, writer)` exposes the protocol without depending on the CLI crate, so Rust hosts can reuse it over any buffered I/O transport.
 
+`integration::bake` is the high-level recipe engine. In addition to arbitrary
+left-to-right operation chains, it interprets nested `Fork`/`Merge`,
+`Subsection`, registers (`$R0`, `$R1`, ...), labels, and bounded jumps. Use this
+API when library callers need the same control-flow behavior as CLI and plugin
+clients. The lower-level typed `Pipeline` below is intentionally a straight,
+in-process operation chain.
+
 ## Direct operation use
 
 ```rust

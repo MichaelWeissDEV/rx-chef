@@ -1,6 +1,6 @@
 # JavaScript Parser
 
-Returns an Abstract Syntax Tree for valid JavaScript code. (Placeholder implementation)
+Parses JavaScript and returns a SWC Abstract Syntax Tree as JSON. Optional source locations, byte ranges, tokens, comments, and recoverable parser errors can be included.
 
 - Input: `String`
 - Output: `String`

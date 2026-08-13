@@ -96,5 +96,76 @@ fn test_aes_encrypt_no_padding() {
         ArgValue::Str("".to_string()),              // AAD
     ];
     let result = op.run(input, &args);
-    assert!(result.is_ok() || result.is_err());
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_aes_all_advertised_modes_roundtrip() {
+    let key = ArgValue::Bytes(b"0123456789abcdef".to_vec());
+    let iv = ArgValue::Bytes(b"fedcba9876543210".to_vec());
+    for mode in ["CFB", "OFB", "CTR", "ECB"] {
+        let input = b"AES mode roundtrip with a partial final block".to_vec();
+        let encrypted = AesEncrypt
+            .run(
+                input.clone(),
+                &[
+                    key.clone(),
+                    iv.clone(),
+                    ArgValue::Str(mode.to_string()),
+                    ArgValue::Str("Raw".to_string()),
+                    ArgValue::Str("Raw".to_string()),
+                ],
+            )
+            .unwrap();
+        let decrypted = AesDecrypt
+            .run(
+                encrypted,
+                &[
+                    key.clone(),
+                    iv.clone(),
+                    ArgValue::Str(mode.to_string()),
+                    ArgValue::Str("Raw".to_string()),
+                    ArgValue::Str("Raw".to_string()),
+                ],
+            )
+            .unwrap();
+        assert_eq!(decrypted, input, "failed {mode} roundtrip");
+    }
+}
+
+#[test]
+fn test_aes_gcm_roundtrip_with_aad() {
+    let key = ArgValue::Bytes(b"0123456789abcdef".to_vec());
+    let iv = ArgValue::Bytes(b"unique nonce".to_vec());
+    let aad = ArgValue::Bytes(b"metadata".to_vec());
+    let plaintext = b"authenticated plaintext".to_vec();
+    let encrypted = AesEncrypt
+        .run(
+            plaintext.clone(),
+            &[
+                key.clone(),
+                iv.clone(),
+                ArgValue::Str("GCM".to_string()),
+                ArgValue::Str("Raw".to_string()),
+                ArgValue::Str("Raw".to_string()),
+                aad.clone(),
+            ],
+        )
+        .unwrap();
+    let split = encrypted.len() - 16;
+    let decrypted = AesDecrypt
+        .run(
+            encrypted[..split].to_vec(),
+            &[
+                key,
+                iv,
+                ArgValue::Str("GCM".to_string()),
+                ArgValue::Str("Raw".to_string()),
+                ArgValue::Str("Raw".to_string()),
+                ArgValue::Bytes(encrypted[split..].to_vec()),
+                aad,
+            ],
+        )
+        .unwrap();
+    assert_eq!(decrypted, plaintext);
 }

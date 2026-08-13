@@ -1,6 +1,6 @@
 # Dither Image
 
-Apply a dither effect to an image.<br><br>Note: This implementation is currently a placeholder as the project lacks a native image processing library for decoding common formats like PNG or JPEG.
+Apply Floyd-Steinberg black-and-white dithering to a PNG, JPEG, GIF, BMP, TIFF, or WebP image. The result is encoded as PNG.
 
 - Input: `Bytes`
 - Output: `Bytes`

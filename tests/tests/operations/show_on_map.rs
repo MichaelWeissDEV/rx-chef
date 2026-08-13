@@ -44,8 +44,5 @@ fn test_show_on_map_empty() {
         ArgValue::Str("Auto".to_string()),
         ArgValue::Str("Auto".to_string()),
     ];
-    let result = op.run(input, &args).unwrap();
-    let result_str = String::from_utf8(result).unwrap();
-    assert!(result_str.contains("0, 0"));
-    assert!(result_str.contains("setView([0, 0], 10)"));
+    assert!(op.run(input, &args).is_err());
 }

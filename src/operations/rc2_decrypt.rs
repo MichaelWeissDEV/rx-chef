@@ -70,12 +70,10 @@ fn rc2_expand_key(key: &[u8]) -> [u16; 64] {
     for i in key_len..128 {
         l[i] = PITABLE[((l[i - 1] as usize) + (l[i - key_len] as usize)) % 256];
     }
-    // Effective key bits = 8 * key_len
-    let t8 = key_len; // ceil(t1/8)
-    let tm = (255 % (2u32.pow(8 - (8 * key_len - 8 * key_len) as u32))) as u8;
-    let _ = tm;
-    // Mask: adjust for partial bits (simplified: use full bytes)
-    l[128 - t8] = PITABLE[(l[128 - t8] as usize) % 256];
+    // The operation uses all supplied key bits, so t8 is exactly key_len and
+    // the RFC 2268 partial-byte mask is 0xff.
+    let t8 = key_len;
+    l[128 - t8] = PITABLE[l[128 - t8] as usize];
     for i in (0..128 - t8).rev() {
         l[i] = PITABLE[(l[i + 1] as usize ^ l[i + t8] as usize) as usize];
     }

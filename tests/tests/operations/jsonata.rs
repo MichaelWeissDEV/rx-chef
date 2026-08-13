@@ -18,8 +18,25 @@ fn test_jsonata_is_broken() {
 fn test_jsonata_without_feature() {
     let op = Jsonata;
     let input = b"{\"a\": 1}".to_vec();
-    let args = [ArgValue::Str("a".to_string())];
+    let args = [ArgValue::Str(".a".to_string())];
     let result = op.run(input.clone(), &args);
     #[cfg(not(feature = "jsonata"))]
     assert!(result.is_err());
+
+    #[cfg(feature = "jsonata")]
+    assert_eq!(result.unwrap(), b"1");
+}
+
+#[cfg(feature = "jsonata")]
+#[test]
+fn test_jsonata_query_and_multiple_results() {
+    let op = Jsonata;
+    let result = op
+        .run(
+            br#"{"users":[{"name":"Ada"},{"name":"Linus"}]}"#.to_vec(),
+            &[ArgValue::Str(".users[].name".to_string())],
+        )
+        .unwrap();
+
+    assert_eq!(result, br#"["Ada","Linus"]"#);
 }

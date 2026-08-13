@@ -1,6 +1,6 @@
 # Extract Files
 
-Performs file carving to attempt to extract files from the input.
+Carves PNG, JPEG, GIF, PDF, and ZIP signatures from binary input. Matching payloads are returned in a deterministic binary envelope with an ASCII file-type header before each payload.
 
 - Input: `Bytes`
 - Output: `Bytes`

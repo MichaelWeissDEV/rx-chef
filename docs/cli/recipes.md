@@ -26,6 +26,37 @@ cat input.bin | rxchef recipe recipe.yaml --trace
 
 A bare JSON/YAML list of `{op, args}` steps is also accepted. Recipe step arguments use the same typed prefixes and variable expansion as inline pipelines.
 
+## Flow control and registers
+
+All recipe frontends use the same flow-aware library engine: `bake`, `pipe`,
+saved recipes, saved pipelines, projects, and the `bake` JSONL method. The
+following control operations therefore compose with every normal operation:
+
+- `Fork` splits binary input on its delimiter, executes steps independently
+  until the matching `Merge`, and joins branch results with the merge delimiter.
+- `Subsection` applies the enclosed steps only to regex matches and preserves
+  all surrounding bytes.
+- `Register` stores regex capture groups as `$R0`, `$R1`, ... for later step
+  arguments. Fork and subsection branches receive isolated register copies.
+- `Label`, `Jump`, and `Conditional Jump` support forward and bounded backward
+  control flow. Missing/duplicate labels and branch-crossing jumps are errors.
+
+Control blocks may be nested. Every `Fork` and `Subsection` must have a matching
+`Merge`. `Ignore errors` preserves the original branch or match when an enclosed
+operation fails. The engine also enforces a global execution limit as protection
+against accidental infinite loops in externally supplied recipes.
+
+```yaml
+- op: Fork
+  args: ["\\n", " | ", "false"]
+- op: To Upper case
+- op: To Base64
+- op: Merge
+```
+
+`rxchef run Fork` can only pass its input through because a single-operation
+call has no following block; use any recipe frontend for flow control.
+
 ## Saved pipelines
 
 Project-scope data is stored under `./.rxchef/`; global data is stored in the platform configuration directory. Project entries override same-named global entries when loading.

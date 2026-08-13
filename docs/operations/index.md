@@ -443,7 +443,6 @@ Arguments are positional in the order shown. Omitted arguments use their default
 - [SHAKE](SHAKE.md)
 - [SM3](SM3.md)
 - [SNEFRU](SNEFRU.md)
-- [Show on map](Show on map.md)
 - [Streebog](Streebog.md)
 - [Whirlpool](Whirlpool.md)
 
@@ -481,6 +480,10 @@ Arguments are positional in the order shown. Omitted arguments use their default
 ## Jq
 
 - [Jq](Jq.md)
+
+## Maps
+
+- [Show on map](Show on map.md)
 
 ## Media
 

@@ -7,22 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- Initial project documentation for license, contribution flow, and release notes.
-- Repository-level guidance for issues, pull requests, and code quality expectations.
-
-### Changed
-- Standardized project metadata around the Apache 2.0 license.
-
-## [1.1.0] - 2026-08-12
+## [0.0.1] - 2026-08-13
 
 ### Added
-- CLI, TUI, pipeline engine, and library surface for rxchef.
-- Expanded operation support and test coverage across codec and crypto workflows.
-- Documentation and examples for usage, recipes, and project architecture.
-
-### Changed
-- Improved command-line ergonomics and pipeline handling across the workspace.
+- Rust library, terminal CLI, TUI, operation registry, pipelines, recipes, and JSONL stdio server.
+- Machine-readable `operations`, `operation describe`, `run`, and `bake` interfaces.
+- Read the Docs documentation, generated operation reference, CI, and benchmark harness.
+- Persistent JSONL/JSON-RPC `serve --stdio` transport for editor and plugin clients.
+- Shared recipe flow control for Fork/Merge, Subsection, Register expansion, labels, and bounded jumps across library, CLI, projects, and stdio clients.
+- Real JSON query, XPath, QR-code generation/parsing, MD6, SNEFRU-256, SHA-0, HAS-160, SM2, GOST wrap/verify, AMF0/AMF3, Protobuf schemas, JavaScript AST parsing, hex-density charts, and all advertised AES modes.
+- Sequoia-backed OpenPGP key generation, encryption/decryption, signing/verification, and combined workflows behind the `pgp` feature.
+- XSalsa8/12/20, both Rabbit byte orders, portable bitmap text rendering, arbitrary-angle image rotation, and fenced-code Markdown highlighting.
 
 ### Fixed
-- Stability and correctness improvements across operation implementations and test coverage.
+- Optional `jsonata` and `pgp` features now compile against their current dependencies.
+- SNEFRU now computes standardized SNEFRU-256 instead of emitting a falsely labelled SHA-256 digest.
+- Removed successful placeholder output from cryptographic, analysis, image, Bombe, and Colossus compatibility operations.
+- Invalid map coordinates and unsupported cryptographic parameters now fail explicitly instead of producing misleading output.

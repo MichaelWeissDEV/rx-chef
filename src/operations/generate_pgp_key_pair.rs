@@ -38,7 +38,7 @@ impl Operation for GeneratePGPKeyPair {
             ArgSchema {
                 name: "Key type",
                 description:
-                    "Key type and size: RSA-1024, RSA-2048, RSA-4096, ECC-256, ECC-384, ECC-521",
+                    "Key type and size: RSA-2048, RSA-4096, ECC-256, ECC-384, ECC-521 (RSA-1024 is rejected as insecure)",
                 default_value: "RSA-2048",
             },
             ArgSchema {
@@ -68,11 +68,34 @@ impl Operation for GeneratePGPKeyPair {
         DataType::String
     }
 
-    fn run(&self, _input: Vec<u8>, _args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
-        Err(OperationError::ProcessingError(
-            "Generate PGP Key Pair requires sequoia-openpgp key generation at runtime. \
-             Full sequoia-openpgp integration not compiled in this build."
-                .to_string(),
-        ))
+    fn is_broken(&self) -> bool {
+        !cfg!(feature = "pgp")
+    }
+
+    fn run(&self, _input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
+        #[cfg(feature = "pgp")]
+        {
+            let key_type = args
+                .first()
+                .and_then(ArgValue::as_str)
+                .unwrap_or("RSA-2048");
+            let password = args.get(1).and_then(ArgValue::as_str).unwrap_or("");
+            let name = args.get(2).and_then(ArgValue::as_str).unwrap_or("");
+            let email = args.get(3).and_then(ArgValue::as_str).unwrap_or("");
+            let (public, private) = super::pgp::generate(key_type, password, name, email)
+                .map_err(|error| OperationError::ProcessingError(error.to_string()))?;
+            return serde_json::to_vec_pretty(&serde_json::json!({
+                "publicKey": String::from_utf8_lossy(&public),
+                "privateKey": String::from_utf8_lossy(&private)
+            }))
+            .map_err(|error| OperationError::ProcessingError(error.to_string()));
+        }
+        #[cfg(not(feature = "pgp"))]
+        {
+            let _ = args;
+            Err(OperationError::ProcessingError(
+                "Generate PGP Key Pair requires --features pgp".to_string(),
+            ))
+        }
     }
 }

@@ -1,2 +1,7 @@
 [alias]
 xtask = "run --package xtask --"
+
+[env]
+# yara-x otherwise tries to rewrite generated files inside Cargo's read-only
+# registry cache during clean builds.
+YRX_REGENERATE_MODULES_RS = "false"

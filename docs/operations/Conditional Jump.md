@@ -1,6 +1,6 @@
 # Conditional Jump
 
-Conditionally jump forwards or backwards to the specified Label based on whether the data matches the specified regular expression. In this Rust implementation, it acts as a passthrough since flow control requires recipe-level orchestration.
+Conditionally jump forwards or backwards to a Label when the current data matches a regular expression. Backwards jumps are bounded by the configured maximum. Interpreted by integration::bake and all CLI recipe frontends.
 
 - Input: `String`
 - Output: `String`

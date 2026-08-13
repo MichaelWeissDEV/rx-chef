@@ -56,6 +56,10 @@ impl Operation for PGPDecrypt {
         DataType::String
     }
 
+    fn is_broken(&self) -> bool {
+        !cfg!(feature = "pgp")
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let private_key = args.first().and_then(|v| v.as_str()).unwrap_or("");
         if private_key.is_empty() {
@@ -64,11 +68,16 @@ impl Operation for PGPDecrypt {
                 reason: "Enter the private key of the recipient.".to_string(),
             });
         }
-        let _ = input;
-        Err(OperationError::ProcessingError(
-            "PGP Decrypt requires PGP key material at runtime. \
-             Full sequoia-openpgp integration not compiled in this build."
-                .to_string(),
-        ))
+        let password = args.get(1).and_then(ArgValue::as_str).unwrap_or("");
+        #[cfg(feature = "pgp")]
+        return super::pgp::decrypt(&input, private_key, password, None)
+            .map_err(|error| OperationError::ProcessingError(error.to_string()));
+        #[cfg(not(feature = "pgp"))]
+        {
+            let _ = (input, password);
+            Err(OperationError::ProcessingError(
+                "PGP Decrypt requires --features pgp".to_string(),
+            ))
+        }
     }
 }

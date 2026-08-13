@@ -55,9 +55,36 @@ impl Operation for ToSnakeCase {
 }
 
 fn get_words(s: &str) -> Vec<String> {
-    let re =
-        Regex::new(r"[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+").unwrap();
-    re.find_iter(s).map(|m| m.as_str().to_string()).collect()
+    let mut words = Vec::new();
+    let mut current = String::new();
+    for character in s.chars() {
+        if !character.is_alphanumeric() {
+            if !current.is_empty() {
+                words.push(std::mem::take(&mut current));
+            }
+            continue;
+        }
+        if character.is_uppercase()
+            && current
+                .chars()
+                .last()
+                .is_some_and(|previous| previous.is_lowercase() || previous.is_numeric())
+        {
+            words.push(std::mem::take(&mut current));
+        } else if character.is_lowercase()
+            && current.chars().count() > 1
+            && current.chars().all(|value| value.is_uppercase())
+        {
+            let last = current.pop().unwrap();
+            words.push(std::mem::take(&mut current));
+            current.push(last);
+        }
+        current.push(character);
+    }
+    if !current.is_empty() {
+        words.push(current);
+    }
+    words
 }
 
 fn snake_case(s: &str) -> String {

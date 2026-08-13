@@ -49,23 +49,88 @@ impl Operation for AmfEncode {
     }
 
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
-        let _format = args.first().and_then(|a| a.as_str()).unwrap_or("AMF3");
-
-        // Parse the JSON input
-        let json_str = String::from_utf8_lossy(&input);
-        let _ = json_str;
-
-        // AMF encoding requires external crate (astronautlabs/amf)
-        // For now, return error indicating external dependency needed
-        // In a full implementation, use the amf crate to serialize:
-        // let handler = if format == "AMF0" { AMF0 } else { AMF3 };
-        // let output = handler.Value.any(json).serialize();
-        // return output.buffer;
-
-        Err(OperationError::ProcessingError(
-            "AMF encoding requires external amf crate not yet integrated. \
-             Use @astronautlabs/amf library in Node.js environment."
-                .to_string(),
-        ))
+        let format = args.first().and_then(ArgValue::as_str).unwrap_or("AMF3");
+        let json: serde_json::Value = serde_json::from_slice(&input)
+            .map_err(|error| OperationError::InvalidInput(error.to_string()))?;
+        let value = match format {
+            "AMF0" => amf::Value::Amf0(to_amf0(&json)?),
+            "AMF3" => amf::Value::Amf3(to_amf3(&json)?),
+            _ => {
+                return Err(OperationError::InvalidArgument {
+                    name: "Format".into(),
+                    reason: "Expected AMF0 or AMF3".into(),
+                })
+            }
+        };
+        let mut output = Vec::new();
+        value
+            .write_to(&mut output)
+            .map_err(|error| OperationError::ProcessingError(error.to_string()))?;
+        Ok(output)
     }
+}
+
+fn to_amf0(value: &serde_json::Value) -> Result<amf::Amf0Value, OperationError> {
+    use amf::Amf0Value as A;
+    Ok(match value {
+        serde_json::Value::Null => A::Null,
+        serde_json::Value::Bool(value) => A::Boolean(*value),
+        serde_json::Value::Number(value) => A::Number(value.as_f64().ok_or_else(|| {
+            OperationError::InvalidInput("AMF0 number is outside the f64 range".into())
+        })?),
+        serde_json::Value::String(value) => A::String(value.clone()),
+        serde_json::Value::Array(values) => A::Array {
+            entries: values.iter().map(to_amf0).collect::<Result<_, _>>()?,
+        },
+        serde_json::Value::Object(values) => A::Object {
+            class_name: None,
+            entries: values
+                .iter()
+                .map(|(key, value)| {
+                    Ok(amf::Pair {
+                        key: key.clone(),
+                        value: to_amf0(value)?,
+                    })
+                })
+                .collect::<Result<_, OperationError>>()?,
+        },
+    })
+}
+
+fn to_amf3(value: &serde_json::Value) -> Result<amf::Amf3Value, OperationError> {
+    use amf::Amf3Value as A;
+    Ok(match value {
+        serde_json::Value::Null => A::Null,
+        serde_json::Value::Bool(value) => A::Boolean(*value),
+        serde_json::Value::Number(value) => {
+            if let Some(integer) = value
+                .as_i64()
+                .filter(|value| (-268_435_456..=268_435_455).contains(value))
+            {
+                A::Integer(integer as i32)
+            } else {
+                A::Double(value.as_f64().ok_or_else(|| {
+                    OperationError::InvalidInput("AMF3 number is outside the f64 range".into())
+                })?)
+            }
+        }
+        serde_json::Value::String(value) => A::String(value.clone()),
+        serde_json::Value::Array(values) => A::Array {
+            assoc_entries: Vec::new(),
+            dense_entries: values.iter().map(to_amf3).collect::<Result<_, _>>()?,
+        },
+        serde_json::Value::Object(values) => A::Object {
+            class_name: None,
+            sealed_count: 0,
+            entries: values
+                .iter()
+                .map(|(key, value)| {
+                    Ok(amf::Pair {
+                        key: key.clone(),
+                        value: to_amf3(value)?,
+                    })
+                })
+                .collect::<Result<_, OperationError>>()?,
+        },
+    })
 }

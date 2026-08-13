@@ -64,7 +64,8 @@ impl Operation for FromBase85 {
         let all_zero_group_char = args
             .get(2)
             .and_then(|v| v.as_str())
-            .and_then(|s| s.chars().next());
+            .and_then(|s| s.chars().next())
+            .or(Some('z'));
 
         let alphabet = expand_alphabet(alphabet_arg);
         if alphabet.chars().count() != 85 {

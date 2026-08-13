@@ -1,10 +1,14 @@
 [package]
 name = "rxchef"
-version = "1.1.0"
+version = "0.0.1"
 edition = "2021"
-default-run = "rxchef"
+autobins = false
 description = "CyberChef ported to Rust - cryptographic, encoding, and data transformation operations"
 license = "Apache-2.0"
+repository = "https://github.com/MichaelWeissDEV/rx-chef"
+readme = "README.md"
+keywords = ["cyberchef", "encoding", "cryptography", "forensics"]
+categories = ["command-line-utilities", "cryptography", "encoding"]
 
 [workspace]
 members = [
@@ -12,8 +16,9 @@ members = [
     "crates/cli",
     "crates/tui",
     "crates/store",
-    "tests"
-, "crates/xtask"]
+    "tests",
+    "crates/xtask",
+]
 default-members = [
     ".",
     "crates/cli",
@@ -35,6 +40,7 @@ md-5       = "0.10"
 digest     = "0.11"
 hmac       = "0.12"
 aes        = "0.8"
+aes-gcm    = "0.10"
 cbc        = { version = "0.1", features = ["alloc"] }
 cfb-mode   = "0.8"
 ctr        = "0.9"
@@ -72,9 +78,12 @@ blake3 = "1"
 byteorder = "1.5.0"
 md2 = "0.11"
 md4 = "0.11"
+md6 = "2.0.3"
 ripemd = "0.1"
 sha3 = "0.10"
 whirlpool = "0.11"
+allthehashes = "0.1.2"
+amf = "1.0.0"
 apache-avro = { version = "0.21.0", features = ["derive"] }
 ciborium = "0.2.2"
 chacha20 = "0.10.0"
@@ -107,19 +116,26 @@ magma = "0.8.0"
 kuznyechik = "0.8.0"
 sm3 = "0.5.0"
 sm4 = "0.6.0"
+libsm = "0.6.1"
+subtle = "2.6"
+swc_common = "25.0.0"
+swc_ecma_ast = { version = "28.0.0", features = ["serde-impl"] }
+swc_ecma_parser = { version = "44.0.0", default-features = false }
 fernet = { version = "0.2.2", features = ["sha2", "hmac"] }
 capstone = "0.14.0"
-sequoia-openpgp = { version = "2.3.0", optional = true }
+sequoia-openpgp = { version = "2.3.0", optional = true, default-features = false, features = ["compression", "crypto-rust", "allow-experimental-crypto", "allow-variable-time-crypto"] }
 jaq-core = { version = "3.0.0", optional = true }
 jaq-std = { version = "3.0.0", optional = true }
+jaq-json = { version = "2.0.0", optional = true }
 protobuf = "3.7.2"
+protobuf-parse = "3.7.2"
+tempfile = "3.23.0"
 prost = "0.14.3"
 yara-x = "1.16.0"
 phf = "0.13.1"
 phf_codegen = "0.13.1"
 deku = "0.20.3"
 rc6 = "0.1.0"
-rabbit = "0.5.0"
 ssdeep = "0.7.0"
 tlv_parser = "0.10.0"
 ssh-key = "0.6.7"
@@ -133,17 +149,21 @@ scraper = "0.27.0"
 reqwest = { version = "0.13.3", features = ["blocking", "json"] }
 image = "0.25"
 imageproc = "0.25"
+qrcode = { version = "0.14.1", default-features = false }
+rqrr = { version = "0.10.1", default-features = false }
+sxd-document = "0.3.2"
+sxd-xpath = "0.4.2"
 rusttype = "0.9"
+font8x8 = "0.3"
 kamadak-exif = "0.6.1"
 lofty      = "0.24.0"
 ab_glyph   = "0.2"
-tesseract-rs = { version = "0.2", optional = true }
-leptonica-sys = { version = "0.3", optional = true }
+tesseract-rs = { version = "0.4", optional = true, default-features = false, features = ["use-system-tesseract"] }
 
 [features]
 pgp = ["dep:sequoia-openpgp"]
-jsonata = ["dep:jaq-core", "dep:jaq-std"]
-tesseract = ["dep:tesseract-rs", "dep:leptonica-sys"]
+jsonata = ["dep:jaq-core", "dep:jaq-std", "dep:jaq-json"]
+tesseract = ["dep:tesseract-rs"]
 
 [build-dependencies]
 regex = "1"

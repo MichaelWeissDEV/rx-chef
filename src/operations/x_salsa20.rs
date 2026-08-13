@@ -11,7 +11,7 @@
 
 use salsa20::{
     cipher::{KeyIvInit, StreamCipher, StreamCipherSeek},
-    XSalsa20,
+    XSalsa12, XSalsa20, XSalsa8,
 };
 
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError, Utils};
@@ -31,7 +31,7 @@ impl Operation for XSalsa20Op {
     }
 
     fn description(&self) -> &'static str {
-        "XSalsa20 is a variant of the Salsa20 stream cipher designed by Daniel J. Bernstein; XSalsa uses longer nonces.<br><br><b>Key:</b> XSalsa20 uses a key of 16 or 32 bytes (128 or 256 bits).<br><br><b>Nonce:</b> XSalsa20 uses a nonce of 24 bytes (192 bits).<br><br><b>Counter:</b> XSalsa uses a counter of 8 bytes (64 bits). The counter starts at zero at the start of the keystream, and is incremented at every 64 bytes."
+        "XSalsa is an extended-nonce Salsa stream cipher designed by Daniel J. Bernstein. It uses a 32-byte key, a 24-byte nonce, and a 64-bit block counter. The standard 20-round cipher and reduced-round XSalsa12 and XSalsa8 variants are supported."
     }
 
     fn args_schema(&self) -> &'static [ArgSchema] {
@@ -94,11 +94,11 @@ impl Operation for XSalsa20Op {
         let input_format = args.get(4).and_then(|a| a.as_str()).unwrap_or("Raw");
         let output_format = args.get(5).and_then(|a| a.as_str()).unwrap_or("Raw");
 
-        if key_bytes.len() != 16 && key_bytes.len() != 32 {
+        if key_bytes.len() != 32 {
             return Err(OperationError::InvalidArgument {
                 name: "Key".to_string(),
                 reason: format!(
-                    "Invalid key length: {} bytes. XSalsa20 uses a key of 16 or 32 bytes.",
+                    "Invalid key length: {} bytes. XSalsa uses a 32-byte key.",
                     key_bytes.len()
                 ),
             });
@@ -123,9 +123,6 @@ impl Operation for XSalsa20Op {
 
         let mut output_data = input_data;
 
-        // The salsa20 crate's XSalsa20 only supports 20 rounds by default in its type.
-        // If 12 or 8 rounds are requested, we'd need to manually implement HSalsa + Salsa12/8.
-        // For now, we'll support 20 rounds via the crate and return an error for others if not supported.
         match rounds {
             "20" => {
                 let mut cipher =
@@ -135,11 +132,21 @@ impl Operation for XSalsa20Op {
                 cipher.seek(counter * 64);
                 cipher.apply_keystream(&mut output_data);
             }
-            "12" | "8" => {
-                return Err(OperationError::InvalidArgument {
-                    name: "Rounds".to_string(),
-                    reason: format!("XSalsa20 with {} rounds is not yet implemented. Only 20 rounds are supported.", rounds),
-                });
+            "12" => {
+                let mut cipher =
+                    XSalsa12::new_from_slices(&key_bytes, &nonce_bytes).map_err(|e| {
+                        OperationError::ProcessingError(format!("Invalid key or nonce: {e}"))
+                    })?;
+                cipher.seek(counter * 64);
+                cipher.apply_keystream(&mut output_data);
+            }
+            "8" => {
+                let mut cipher =
+                    XSalsa8::new_from_slices(&key_bytes, &nonce_bytes).map_err(|e| {
+                        OperationError::ProcessingError(format!("Invalid key or nonce: {e}"))
+                    })?;
+                cipher.seek(counter * 64);
+                cipher.apply_keystream(&mut output_data);
             }
             _ => {
                 return Err(OperationError::InvalidArgument {

@@ -1,6 +1,6 @@
 # Subsection
 
-Select a part of the input data using a regular expression (regex), and run all subsequent operations on each match separately. In this implementation, acts as a passthrough (flow control requires recipe-level orchestration).
+Select input sections using a regular expression and run subsequent recipe operations on every match until Merge. Non-matching bytes remain unchanged. Interpreted by integration::bake and all CLI recipe frontends.
 
 - Input: `String`
 - Output: `String`

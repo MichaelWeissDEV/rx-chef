@@ -9,7 +9,7 @@
  * -----------------------------------------------------------------------------
  */
 
-use gost94::{digest::Digest as Gost94Digest, Gost94Test};
+use gost94::{digest::Digest as Gost94Digest, Gost94CryptoPro, Gost94Test};
 use streebog::{digest::Digest as StreebogDigest, Streebog256, Streebog512};
 
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
@@ -44,7 +44,7 @@ impl Operation for GostHash {
             },
             ArgSchema {
                 name: "sBox",
-                description: "The sBox to use (only for GOST 28147 (1994)).",
+                description: "GOST94 parameter set: E-TEST/D-TEST (test) or CryptoPro/D-A",
                 default_value: "E-TEST",
             },
         ];
@@ -68,14 +68,18 @@ impl Operation for GostHash {
         let sbox_name = args.get(2).and_then(|a| a.as_str()).unwrap_or("E-TEST");
 
         let result = if algorithm == "GOST 28147 (1994)" {
-            match sbox_name {
-                "E-TEST" => hex::encode(<Gost94Test as Gost94Digest>::digest(&input)),
-                "D-TEST" => hex::encode(<Gost94Test as Gost94Digest>::digest(&input)), // CyberChef's D-TEST might be different but gost94 crate has limited SBox support
-                _ => {
-                    // gost94 crate typically supports Gost94Cryptopro and Gost94Test.
-                    // For other S-boxes, it might be tricky without custom SBox implementation.
-                    // We'll fallback to Gost94Test for now as it's the most common.
+            match sbox_name.to_ascii_uppercase().as_str() {
+                "E-TEST" | "D-TEST" | "TEST" => {
                     hex::encode(<Gost94Test as Gost94Digest>::digest(&input))
+                }
+                "CRYPTOPRO" | "D-A" => {
+                    hex::encode(<Gost94CryptoPro as Gost94Digest>::digest(&input))
+                }
+                _ => {
+                    return Err(OperationError::InvalidArgument {
+                        name: "sBox".to_string(),
+                        reason: format!("unsupported GOST94 parameter set '{sbox_name}'"),
+                    })
                 }
             }
         } else {

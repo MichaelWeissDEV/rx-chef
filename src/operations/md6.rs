@@ -10,6 +10,22 @@
  */
 
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
+use std::ffi::c_int;
+
+#[link(name = "md6")]
+unsafe extern "C" {
+    fn md6_default_r(d: c_int, keylen: c_int) -> c_int;
+    fn md6_full_hash(
+        d: c_int,
+        data: *const u8,
+        databitlen: u64,
+        key: *const u8,
+        keylen: c_int,
+        levels: c_int,
+        rounds: c_int,
+        hashval: *mut u8,
+    ) -> c_int;
+}
 
 /// MD6 operation
 pub struct MD6;
@@ -56,22 +72,54 @@ impl Operation for MD6 {
         DataType::String
     }
 
-    fn run(&self, _input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
+    fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let size = args.first().and_then(|v| v.as_f64()).unwrap_or(256.0) as usize;
-        let _levels = args.get(1).and_then(|v| v.as_f64()).unwrap_or(64.0) as usize;
-        let _key = args.get(2).and_then(|v| v.as_str()).unwrap_or("");
+        let levels = args.get(1).and_then(|v| v.as_f64()).unwrap_or(64.0) as usize;
+        let key = args.get(2).and_then(|v| v.as_str()).unwrap_or("");
 
-        if size > 512 {
+        if !(1..=512).contains(&size) {
             return Err(OperationError::InvalidArgument {
                 name: "Size".to_string(),
-                reason: "Size must be between 0 and 512".to_string(),
+                reason: "Size must be between 1 and 512".to_string(),
+            });
+        }
+        if levels > 255 {
+            return Err(OperationError::InvalidArgument {
+                name: "Levels".to_string(),
+                reason: "Levels must be between 0 and 255".to_string(),
+            });
+        }
+        if key.len() > 64 {
+            return Err(OperationError::InvalidArgument {
+                name: "Key".to_string(),
+                reason: "Key must be at most 64 UTF-8 bytes".to_string(),
             });
         }
 
-        // MD6 implementation is complex. Since we cannot add dependencies,
-        // and a full implementation would be hundreds of lines, we provide a placeholder.
-        // In a real scenario, we would use an existing MD6 crate if available.
+        let mut digest = vec![0_u8; size.div_ceil(8)];
+        let key_bytes = key.as_bytes();
+        // SAFETY: all pointers refer to live slices for the duration of the call;
+        // lengths and the MD6 parameters have been validated above. The linked C
+        // implementation is the bundled MD6 reference implementation.
+        let status = unsafe {
+            let rounds = md6_default_r(size as c_int, key_bytes.len() as c_int);
+            md6_full_hash(
+                size as c_int,
+                input.as_ptr(),
+                (input.len() as u64) * 8,
+                key_bytes.as_ptr(),
+                key_bytes.len() as c_int,
+                levels as c_int,
+                rounds,
+                digest.as_mut_ptr(),
+            )
+        };
+        if status != 0 {
+            return Err(OperationError::ProcessingError(format!(
+                "MD6 reference implementation failed with status {status}"
+            )));
+        }
 
-        Err(OperationError::ProcessingError("MD6 implementation not available in this version of rxchef. Please use an external tool or add the md6 crate.".to_string()))
+        Ok(hex::encode(digest).into_bytes())
     }
 }

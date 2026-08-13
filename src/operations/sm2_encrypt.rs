@@ -10,6 +10,7 @@
  */
 
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
+use libsm::sm2::{encrypt::EncryptCtx, signature::SigCtx};
 
 /// SM2 Encrypt operation
 ///
@@ -63,7 +64,12 @@ impl Operation for Sm2Encrypt {
         DataType::String
     }
 
-    fn run(&self, _input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
+    fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
+        if input.is_empty() {
+            return Err(OperationError::InvalidInput(
+                "SM2 cannot encrypt an empty message".into(),
+            ));
+        }
         let public_key_x = args.first().and_then(|a| a.as_str()).unwrap_or("");
         let public_key_y = args.get(1).and_then(|a| a.as_str()).unwrap_or("");
 
@@ -81,8 +87,45 @@ impl Operation for Sm2Encrypt {
             });
         }
 
-        // SM2 is currently not supported as it requires a specialized library (e.g. libsm2 or custom implementation of the SM2 curve).
-        // The sm3 and sm4 crates are available in the project, but sm2 is not yet added to Cargo.toml.
-        Err(OperationError::ProcessingError("SM2 Encrypt is currently a placeholder and requires a specialized SM2 library not yet present in the dependencies.".to_string()))
+        let format = args.get(2).and_then(ArgValue::as_str).unwrap_or("C1C3C2");
+        if format != "C1C3C2" && format != "C1C2C3" {
+            return Err(OperationError::InvalidArgument {
+                name: "Output Format".into(),
+                reason: "Expected C1C3C2 or C1C2C3".into(),
+            });
+        }
+        if args
+            .get(3)
+            .and_then(ArgValue::as_str)
+            .unwrap_or("sm2p256v1")
+            != "sm2p256v1"
+        {
+            return Err(OperationError::InvalidArgument {
+                name: "Curve".into(),
+                reason: "Only sm2p256v1 is supported".into(),
+            });
+        }
+        let encoded = hex::decode(format!("04{public_key_x}{public_key_y}")).map_err(|error| {
+            OperationError::InvalidArgument {
+                name: "Public Key".into(),
+                reason: error.to_string(),
+            }
+        })?;
+        let public_key = SigCtx::new().load_pubkey(&encoded).map_err(|error| {
+            OperationError::InvalidArgument {
+                name: "Public Key".into(),
+                reason: error.to_string(),
+            }
+        })?;
+        let mut ciphertext = EncryptCtx::new(input.len(), public_key)
+            .encrypt(&input)
+            .map_err(|error| OperationError::ProcessingError(error.to_string()))?;
+        if format == "C1C3C2" {
+            let c3 = ciphertext.split_off(ciphertext.len() - 32);
+            let c2 = ciphertext.split_off(65);
+            ciphertext.extend_from_slice(&c3);
+            ciphertext.extend_from_slice(&c2);
+        }
+        Ok(hex::encode(ciphertext).into_bytes())
     }
 }

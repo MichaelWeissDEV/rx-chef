@@ -159,10 +159,10 @@ impl CropImage {
         let tolerance_val = (tolerance / 100.0 * 255.0) as u32;
 
         let is_similar = |p1: Rgba<u8>, p2: Rgba<u8>| {
-            let diff = (p1[0] as i32 - p2[0] as i32).abs() as u32
-                + (p1[1] as i32 - p2[1] as i32).abs() as u32
-                + (p1[2] as i32 - p2[2] as i32).abs() as u32
-                + (p1[3] as i32 - p2[3] as i32).abs() as u32;
+            let diff = (p1[0] as i32 - p2[0] as i32).unsigned_abs()
+                + (p1[1] as i32 - p2[1] as i32).unsigned_abs()
+                + (p1[2] as i32 - p2[2] as i32).unsigned_abs()
+                + (p1[3] as i32 - p2[3] as i32).unsigned_abs();
             diff <= tolerance_val * 4
         };
 

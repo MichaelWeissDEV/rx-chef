@@ -4,6 +4,8 @@ use std::env;
 use std::fs;
 use std::path::PathBuf;
 
+mod bench;
+
 fn markdown_escape(value: &str) -> String {
     value
         .replace('\\', "\\\\")
@@ -39,9 +41,14 @@ fn write_or_check(path: &std::path::Path, content: &str, check: bool) -> Result<
 
 fn main() -> Result<(), String> {
     let args: Vec<String> = env::args().collect();
-    if args.len() < 2 || args[1] != "docs" {
-        return Ok(());
+    match args.get(1).map(String::as_str) {
+        Some("docs") => cmd_docs(&args),
+        Some("bench") => bench::run(&args[2.min(args.len())..]),
+        _ => Ok(()),
     }
+}
+
+fn cmd_docs(args: &[String]) -> Result<(), String> {
     let check = args.iter().any(|arg| arg == "--check");
 
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
@@ -63,7 +70,7 @@ fn main() -> Result<(), String> {
         let mut out = String::new();
         out.push_str(&format!("# {}\n\n", info.name));
         if info.is_broken {
-            out.push_str("!!! warning \"Experimental / known broken\"\n\n    This operation is marked as broken in the runtime registry.\n\n");
+            out.push_str("!!! warning \"Optional backend unavailable\"\n\n    This operation is feature-gated and unavailable in the minimal documentation build. See the feature matrix for the required Cargo feature.\n\n");
         }
         out.push_str(info.description.trim());
         out.push_str("\n\n");

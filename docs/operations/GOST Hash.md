@@ -16,5 +16,5 @@ The GOST hash function is based on the GOST block cipher.
 |---:|---|---|---|
 | 1 | Algorithm | `GOST 28147 (1994)` | The GOST hash algorithm version to use. |
 | 2 | Digest length | `256` | The length of the digest to produce (only for Streebog). |
-| 3 | sBox | `E-TEST` | The sBox to use (only for GOST 28147 (1994)). |
+| 3 | sBox | `E-TEST` | GOST94 parameter set: E-TEST/D-TEST (test) or CryptoPro/D-A |
 

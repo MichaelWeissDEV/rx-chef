@@ -11,9 +11,8 @@
 
 use std::io::Cursor;
 
-use ab_glyph::{Font, FontArc, PxScale, ScaleFont};
+use font8x8::UnicodeFonts;
 use image::{DynamicImage, ImageFormat, Rgba};
-use imageproc::drawing::draw_text_mut;
 
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
 
@@ -104,10 +103,19 @@ impl Operation for AddTextToImage {
         let mut x_pos = args.get(3).and_then(|v| v.as_i64()).unwrap_or(0) as i32;
         let mut y_pos = args.get(4).and_then(|v| v.as_i64()).unwrap_or(0) as i32;
         let size = args.get(5).and_then(|v| v.as_f64()).unwrap_or(32.0) as f32;
-        let r = args.get(6).and_then(|v| v.as_i64()).unwrap_or(255) as u8;
-        let g = args.get(7).and_then(|v| v.as_i64()).unwrap_or(255) as u8;
-        let b = args.get(8).and_then(|v| v.as_i64()).unwrap_or(255) as u8;
-        let a = args.get(9).and_then(|v| v.as_i64()).unwrap_or(255) as u8;
+        if size <= 0.0 {
+            return Err(OperationError::InvalidArgument {
+                name: "Size".into(),
+                reason: "Font size must be positive".into(),
+            });
+        }
+        let channel = |index| {
+            args.get(index)
+                .and_then(ArgValue::as_i64)
+                .unwrap_or(255)
+                .clamp(0, 255) as u8
+        };
+        let colour = Rgba([channel(6), channel(7), channel(8), channel(9)]);
 
         if input.is_empty() {
             return Ok(input);
@@ -120,64 +128,45 @@ impl Operation for AddTextToImage {
         let mut img = image::load_from_memory(&input)
             .map_err(|e| OperationError::ProcessingError(format!("Failed to load image: {}", e)))?;
 
-        // Try to load a font. Using a hardcoded path for now or a placeholder.
-        // In a real scenario, we'd want a way to provide font data.
-        let font_data = std::fs::read("/Users/michaelweiss/space/decode/CyberChef/src/web/static/fonts/MaterialIcons-Regular.ttf").ok();
-
-        if let Some(data) = font_data {
-            let font = FontArc::try_from_vec(data).map_err(|e| {
-                OperationError::ProcessingError(format!("Failed to parse font: {}", e))
-            })?;
-            let scale = PxScale::from(size);
-            let scaled_font = font.as_scaled(scale);
-
-            let mut rgba_img = img.to_rgba8();
-
-            // Calculate alignments
-            let (width, height) = rgba_img.dimensions();
-
-            // Simple text width estimation
-            let ascent = scaled_font.ascent();
-            let descent = scaled_font.descent();
-            let text_height = (ascent - descent) as i32;
-
-            let mut text_width = 0.0;
-            let mut last_glyph_id = None;
-            for c in text.chars() {
-                let glyph_id = font.glyph_id(c);
-                if let Some(last_id) = last_glyph_id {
-                    text_width += scaled_font.kern(last_id, glyph_id);
-                }
-                text_width += scaled_font.h_advance(glyph_id);
-                last_glyph_id = Some(glyph_id);
-            }
-            let text_width_i32 = text_width as i32;
-
-            match h_align {
-                "Left" => x_pos = 0,
-                "Center" => x_pos = (width as i32 - text_width_i32) / 2,
-                "Right" => x_pos = width as i32 - text_width_i32,
-                _ => {}
-            }
-
-            match v_align {
-                "Top" => y_pos = 0,
-                "Middle" => y_pos = (height as i32 - text_height) / 2,
-                "Bottom" => y_pos = height as i32 - text_height,
-                _ => {}
-            }
-
-            draw_text_mut(
-                &mut rgba_img,
-                Rgba([r, g, b, a]),
-                x_pos,
-                y_pos,
-                scale,
-                &font,
-                text,
-            );
-            img = DynamicImage::ImageRgba8(rgba_img);
+        let scale = (size / 8.0).round().max(1.0) as i32;
+        let lines: Vec<_> = text.lines().collect();
+        let text_width = lines
+            .iter()
+            .map(|line| line.chars().count() as i32 * 9 * scale)
+            .max()
+            .unwrap_or(0);
+        let text_height = lines.len() as i32 * 9 * scale;
+        let mut rgba_img = img.to_rgba8();
+        let (width, height) = rgba_img.dimensions();
+        match h_align {
+            "Left" => x_pos = 0,
+            "Center" => x_pos = (width as i32 - text_width) / 2,
+            "Right" => x_pos = width as i32 - text_width,
+            _ => {}
         }
+        match v_align {
+            "Top" => y_pos = 0,
+            "Middle" => y_pos = (height as i32 - text_height) / 2,
+            "Bottom" => y_pos = height as i32 - text_height,
+            _ => {}
+        }
+        for (line_index, line) in lines.iter().enumerate() {
+            for (column, character) in line.chars().enumerate() {
+                let glyph = font8x8::BASIC_FONTS
+                    .get(character)
+                    .or_else(|| font8x8::BASIC_FONTS.get('?'))
+                    .unwrap();
+                draw_bitmap_glyph(
+                    &mut rgba_img,
+                    &glyph,
+                    x_pos + column as i32 * 9 * scale,
+                    y_pos + line_index as i32 * 9 * scale,
+                    scale,
+                    colour,
+                );
+            }
+        }
+        img = DynamicImage::ImageRgba8(rgba_img);
 
         let mut output = Vec::new();
         let mut cursor = Cursor::new(&mut output);
@@ -193,5 +182,32 @@ impl Operation for AddTextToImage {
         })?;
 
         Ok(output)
+    }
+}
+
+fn draw_bitmap_glyph(
+    image: &mut image::RgbaImage,
+    glyph: &[u8; 8],
+    x: i32,
+    y: i32,
+    scale: i32,
+    colour: Rgba<u8>,
+) {
+    for (row, bits) in glyph.iter().enumerate() {
+        for column in 0..8 {
+            if bits & (1 << column) == 0 {
+                continue;
+            }
+            for dy in 0..scale {
+                for dx in 0..scale {
+                    let px = x + column * scale + dx;
+                    let py = y + row as i32 * scale + dy;
+                    if px >= 0 && py >= 0 && px < image.width() as i32 && py < image.height() as i32
+                    {
+                        image.put_pixel(px as u32, py as u32, colour);
+                    }
+                }
+            }
+        }
     }
 }

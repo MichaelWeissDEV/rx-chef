@@ -1,7 +1,7 @@
-# Current Status (Baseline)
+# Current status for v0.0.1
 
 ## Workspace Configuration
-- **Version:** 1.1.0
+- **Version:** 0.0.1
 - **Workspace Crates:** `rxchef` (lib), `rxchef_cli`, `rxchef_tui`, `rxchef_store`, `cyberchef-rust-tests`
 - **Binaries:** `rxchef` (from `rxchef_cli`), though `Cargo.toml` specifies a default-run of `rxchef`.
 
@@ -12,16 +12,18 @@ Defined features in `rxchef`:
 - `tesseract` (depends on `tesseract-rs`, `leptonica-sys`)
 
 ## Build State
-- `cargo check --workspace --all-targets`: Succeeds after fixing a missing match block for `Command::History` and unused imports in `project.rs`.
-- `cargo clippy`: Encountered ~317 warnings/errors in the main `rxchef` lib (which were treated as errors due to `-D warnings`). Some unused imports and useless vector allocations exist.
+- `cargo check --workspace --all-targets --all-features`: passes.
+- `cargo clippy --workspace --all-targets -- -D clippy::correctness -D clippy::suspicious`: is the CI correctness gate. Style lints remain advisory for the initial release.
 
 ## Tests
-- `cargo test --workspace`: **Blocked** by environment constraints during initial analysis, but a test build passes. Cannot report test count or test failures at the moment.
+- `cargo test --workspace`: passes with 1,829 passing tests and 9 environment/fixture-dependent ignored tests.
+- `cargo test --workspace --all-features`: passes with 1,830 passing tests and 9 ignored tests (including the all-operations availability invariant).
+- All-feature registry conformance asserts that none of the 478 operations is marked broken.
 
-## Known Issues from Phase 0
-- **History Dispatcher:** Fixed. `Command::History` was missing in `crates/cli/src/main.rs`.
-- **Double Binaries:** Further inspection needed. `src/bin/rxchef.rs` may conflict with `crates/cli`.
-- **Tests Execution:** Environment restricts `cargo test` and `cargo test --workspace`.
+## Known limitations
+- Entries marked `broken` in a minimal build require the optional feature named in the feature matrix; they refuse to return placeholder results.
+- OCR requires the optional `tesseract` feature and system Tesseract/Leptonica libraries.
+- PGP is implemented and tested behind `--features pgp`.
 
 ## Environment
 - OS: MacOS

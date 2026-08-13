@@ -67,7 +67,7 @@ Use `input_base64` instead of `input` for exact binary bytes. Providing both is 
 }
 ```
 
-`operation` is accepted as an alias for `op`. An empty recipe passes input through unchanged. Step errors identify the one-based step and operation.
+`operation` is accepted as an alias for `op`. An empty recipe passes input through unchanged. Step errors identify the one-based step and operation. `bake` also executes nested `Fork`/`Merge` and `Subsection` blocks, expands `Register` captures in later arguments, and supports bounded `Jump` and `Conditional Jump` control flow. It is the same engine used by every CLI recipe frontend.
 
 ### `shutdown`
 

@@ -24,7 +24,7 @@ impl Operation for ConditionalJump {
     }
 
     fn description(&self) -> &'static str {
-        "Conditionally jump forwards or backwards to the specified Label based on whether the data matches the specified regular expression. In this Rust implementation, it acts as a passthrough since flow control requires recipe-level orchestration."
+        "Conditionally jump forwards or backwards to a Label when the current data matches a regular expression. Backwards jumps are bounded by the configured maximum. Interpreted by integration::bake and all CLI recipe frontends."
     }
 
     fn args_schema(&self) -> &'static [ArgSchema] {
@@ -63,7 +63,7 @@ impl Operation for ConditionalJump {
     }
 
     fn run(&self, input: Vec<u8>, _args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
-        // Passthrough: full conditional jump flow control requires recipe-level orchestration.
+        // A standalone operation has no recipe program counter to change.
         Ok(input)
     }
 }

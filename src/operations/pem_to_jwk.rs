@@ -29,7 +29,7 @@ impl Operation for PEMToJWK {
     }
 
     fn description(&self) -> &'static str {
-        "Converts Keys in PEM format to a JSON Web Key format."
+        "Converts RSA PUBLIC KEY/PKCS#8 PUBLIC KEY PEM blocks and RSA X.509 certificate public keys to public JSON Web Keys (kty, n, e). Private and elliptic-curve keys are rejected explicitly."
     }
 
     fn args_schema(&self) -> &'static [ArgSchema] {
@@ -67,12 +67,9 @@ impl Operation for PEMToJWK {
             } else if pem_type.contains("PUBLIC KEY") {
                 key_to_jwk(&data)?
             } else if pem_type.contains("PRIVATE KEY") {
-                // Private key parsing is more complex and depends on PKCS#1 or PKCS#8
-                // For now, let's try to support public key from private key if possible,
-                // but CyberChef says "Only PKCS#8 is supported" for RSA.
-                // We'll skip private for now or implement if easy.
                 return Err(OperationError::ProcessingError(
-                    "Private key to JWK not fully supported yet".to_string(),
+                    "Private-key JWK conversion is not part of this operation; provide the public key"
+                        .to_string(),
                 ));
             } else {
                 continue;
@@ -110,10 +107,9 @@ fn key_to_jwk(key_der: &[u8]) -> Result<Value, OperationError> {
 
     // EC: 1.2.840.10045.2.1
     if oid == "1.2.840.10045.2.1" {
-        // EC keys are more complex as we need the curve.
-        // For simplicity, we'll just say it's an EC key but we might not have the curve easily from OID here.
         return Err(OperationError::ProcessingError(
-            "EC keys to JWK support pending more robust OID handling".to_string(),
+            "EC public-key JWK conversion is not supported; this operation accepts RSA keys"
+                .to_string(),
         ));
     }
 

@@ -11,9 +11,7 @@
 
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
 
-/// Fork operation - flow control. In this Rust context, implemented as a
-/// passthrough since true fork/merge flow control requires recipe-level
-/// orchestration that is beyond a single-operation scope.
+/// Fork operation - interpreted by the shared recipe engine.
 pub struct Fork;
 
 impl Operation for Fork {
@@ -26,7 +24,7 @@ impl Operation for Fork {
     }
 
     fn description(&self) -> &'static str {
-        "Split the input data up based on the specified delimiter and run all subsequent operations on each branch separately. In this implementation, acts as a passthrough (flow control requires recipe-level orchestration)."
+        "Split the input on the specified delimiter and run subsequent recipe operations on each branch separately until Merge. This flow-control operation is interpreted by integration::bake and all CLI recipe frontends."
     }
 
     fn args_schema(&self) -> &'static [ArgSchema] {
@@ -59,7 +57,7 @@ impl Operation for Fork {
     }
 
     fn run(&self, input: Vec<u8>, _args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
-        // Passthrough: full fork/merge requires recipe-level orchestration.
+        // A standalone operation has no following recipe to fork.
         Ok(input)
     }
 }

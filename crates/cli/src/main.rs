@@ -1603,6 +1603,56 @@ fn run_steps(
     trace: bool,
     hex: bool,
 ) -> Result<RunResult, String> {
+    let is_flow_step = |name: &str| {
+        matches!(
+            name.chars()
+                .filter(|character| character.is_ascii_alphanumeric())
+                .flat_map(char::to_lowercase)
+                .collect::<String>()
+                .as_str(),
+            "fork" | "merge" | "subsection" | "register" | "label" | "jump" | "conditionaljump"
+        )
+    };
+    if steps.iter().any(|step| is_flow_step(&step.op)) {
+        let recipe = steps
+            .iter()
+            .map(|step| rxchef::integration::RecipeStep {
+                op: step.op.clone(),
+                args: step
+                    .args
+                    .iter()
+                    .map(|argument| store::expand_vars(argument, var_overrides))
+                    .collect(),
+            })
+            .collect::<Vec<_>>();
+        let final_output = rxchef::integration::bake(input, &recipe)?.into_bytes()?;
+        if trace {
+            eprintln!("── flow-controlled recipe: {} steps ──", steps.len());
+            let _ = write_output_raw(&final_output, hex, &mut io::stderr().lock());
+            eprintln!();
+        }
+        let last = recipe.len().saturating_sub(1);
+        let history_steps = recipe
+            .into_iter()
+            .enumerate()
+            .map(|(index, step)| store::HistoryStep {
+                op: step.op,
+                args: step.args,
+                output_preview: if index == last {
+                    store::bytes_preview(&final_output, 300)
+                } else {
+                    String::new()
+                },
+                output_bytes: if index == last { final_output.len() } else { 0 },
+                error: None,
+            })
+            .collect();
+        return Ok(RunResult {
+            final_output,
+            steps: history_steps,
+        });
+    }
+
     let mut current = input.clone();
     let mut all_bytes = vec![input];
     let mut history_steps = Vec::new();

@@ -25,8 +25,6 @@ fn test_generate_ecdsa_key_pair_p384() {
         ArgValue::Str("P-384".to_string()),
         ArgValue::Str("DER".to_string()),
     ];
-    let result = op.run(vec![], &args).unwrap();
-    let result_str = String::from_utf8(result).unwrap();
-    assert!(result_str.contains("P-384"));
-    assert!(result_str.contains("DER"));
+    let result = op.run(vec![], &args);
+    assert!(result.is_err());
 }

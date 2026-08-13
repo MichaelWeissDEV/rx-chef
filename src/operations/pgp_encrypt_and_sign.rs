@@ -62,6 +62,10 @@ impl Operation for PGPEncryptAndSign {
         DataType::String
     }
 
+    fn is_broken(&self) -> bool {
+        !cfg!(feature = "pgp")
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let private_key = args.first().and_then(|v| v.as_str()).unwrap_or("");
         let public_key = args.get(2).and_then(|v| v.as_str()).unwrap_or("");
@@ -77,11 +81,16 @@ impl Operation for PGPEncryptAndSign {
                 reason: "Enter the public key of the recipient.".to_string(),
             });
         }
-        let _ = input;
-        Err(OperationError::ProcessingError(
-            "PGP Encrypt and Sign requires PGP key material at runtime. \
-             Full sequoia-openpgp integration not compiled in this build."
-                .to_string(),
-        ))
+        let password = args.get(1).and_then(ArgValue::as_str).unwrap_or("");
+        #[cfg(feature = "pgp")]
+        return super::pgp::encrypt_and_sign(&input, private_key, password, public_key)
+            .map_err(|error| OperationError::ProcessingError(error.to_string()));
+        #[cfg(not(feature = "pgp"))]
+        {
+            let _ = (input, password);
+            Err(OperationError::ProcessingError(
+                "PGP Encrypt and Sign requires --features pgp".to_string(),
+            ))
+        }
     }
 }

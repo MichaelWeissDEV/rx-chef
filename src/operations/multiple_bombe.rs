@@ -12,6 +12,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
+use crate::operations::bombe::Bombe;
 
 /// Multiple Bombe operation
 pub struct MultipleBombe;
@@ -26,6 +27,12 @@ struct MultipleBombeOutput {
 struct BombeRunResult {
     rotors: Vec<String>,
     reflector: String,
+    result: Vec<(String, String, String)>,
+}
+
+#[derive(Deserialize)]
+struct SingleBombeOutput {
+    n_loops: usize,
     result: Vec<(String, String, String)>,
 }
 
@@ -98,7 +105,7 @@ impl Operation for MultipleBombe {
         let reflectors_str = args.get(3).and_then(|v| v.as_str()).unwrap_or("");
         let crib_orig = args.get(4).and_then(|v| v.as_str()).unwrap_or("");
         let offset = args.get(5).and_then(|v| v.as_f64()).unwrap_or(0.0) as usize;
-        let _use_check = args.get(6).and_then(|v| v.as_bool()).unwrap_or(true);
+        let use_check = args.get(6).and_then(|v| v.as_bool()).unwrap_or(true);
 
         if crib_orig.is_empty() {
             return Err(OperationError::ProcessingError(
@@ -117,7 +124,13 @@ impl Operation for MultipleBombe {
             .collect::<String>()
             .to_uppercase();
 
-        let ciphertext = &input_clean[offset..];
+        let ciphertext =
+            input_clean
+                .get(offset..)
+                .ok_or_else(|| OperationError::InvalidArgument {
+                    name: "Crib offset".into(),
+                    reason: "Offset exceeds the ciphertext length".into(),
+                })?;
         if ciphertext.len() < crib_clean.len() {
             return Err(OperationError::ProcessingError(
                 "Crib overruns supplied ciphertext".to_string(),
@@ -145,7 +158,7 @@ impl Operation for MultipleBombe {
             reflectors.push("AY BR CU DH EQ FS GL IP JX KN MO TZ VW".to_string());
         }
 
-        let output = MultipleBombeOutput {
+        let mut output = MultipleBombeOutput {
             bombe_runs: Vec::new(),
             n_loops: 0,
         };
@@ -160,18 +173,38 @@ impl Operation for MultipleBombe {
                         continue;
                     }
                     for r4 in &fourth_rotors {
-                        for _ref_str in &reflectors {
-                            let mut current_rotors = vec![r1.clone(), r2.clone(), r3.clone()];
-                            if !r4.is_empty() {
-                                current_rotors.push(r4.clone());
+                        for reflector in &reflectors {
+                            let model = if r4.is_empty() { "3-rotor" } else { "4-rotor" };
+                            let result = Bombe.run(
+                                input_clean.as_bytes().to_vec(),
+                                &[
+                                    ArgValue::Str(model.into()),
+                                    ArgValue::Str(r4.clone()),
+                                    ArgValue::Str(r1.clone()),
+                                    ArgValue::Str(r2.clone()),
+                                    ArgValue::Str(r3.clone()),
+                                    ArgValue::Str(reflector.clone()),
+                                    ArgValue::Str(crib_orig.into()),
+                                    ArgValue::Num(offset as f64),
+                                    ArgValue::Bool(use_check),
+                                ],
+                            )?;
+                            let result: SingleBombeOutput = serde_json::from_slice(&result)
+                                .map_err(|error| {
+                                    OperationError::ProcessingError(error.to_string())
+                                })?;
+                            output.n_loops += result.n_loops;
+                            if !result.result.is_empty() {
+                                let mut rotors = vec![r1.clone(), r2.clone(), r3.clone()];
+                                if !r4.is_empty() {
+                                    rotors.insert(0, r4.clone());
+                                }
+                                output.bombe_runs.push(BombeRunResult {
+                                    rotors,
+                                    reflector: reflector.clone(),
+                                    result: result.result,
+                                });
                             }
-                            // Reversing as in bombe.rs
-                            current_rotors.reverse();
-
-                            // Placeholder for BombeMachine call - in a real scenario we'd use the logic from bombe.rs
-                            // For now, I'll just return a mock or a minimal run if I can't easily import from bombe.rs
-                            // Since they are in the same crate, but maybe not in the same module.
-                            // I'll implement a minimal version here or just return empty results.
                         }
                     }
                 }

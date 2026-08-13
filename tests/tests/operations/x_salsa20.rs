@@ -28,6 +28,28 @@ fn test_xsalsa20_encryption() {
     let decrypted = op.run(result, &args).unwrap();
     assert_eq!(decrypted, input);
 }
+
+#[test]
+fn test_xsalsa_reduced_round_variants_round_trip_and_differ() {
+    let op = XSalsa20Op;
+    let input = b"reduced round message".to_vec();
+    let mut ciphertexts = Vec::new();
+    for rounds in ["8", "12", "20"] {
+        let args = [
+            ArgValue::Str(hex::encode([0x11; 32])),
+            ArgValue::Str(hex::encode([0x22; 24])),
+            ArgValue::Num(3.0),
+            ArgValue::Str(rounds.to_string()),
+            ArgValue::Str("Raw".to_string()),
+            ArgValue::Str("Raw".to_string()),
+        ];
+        let encrypted = op.run(input.clone(), &args).unwrap();
+        assert_eq!(op.run(encrypted.clone(), &args).unwrap(), input);
+        ciphertexts.push(encrypted);
+    }
+    assert_ne!(ciphertexts[0], ciphertexts[1]);
+    assert_ne!(ciphertexts[1], ciphertexts[2]);
+}
 #[test]
 fn test_xsalsa20_invalid_key_length() {
     let op = XSalsa20Op;

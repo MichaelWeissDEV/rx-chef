@@ -10,6 +10,7 @@
  */
 
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
+use libsm::sm2::{encrypt::DecryptCtx, signature::Seckey};
 
 /// SM2 Decrypt operation
 ///
@@ -58,7 +59,7 @@ impl Operation for Sm2Decrypt {
         DataType::Bytes
     }
 
-    fn run(&self, _input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
+    fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let private_key_hex = args.first().and_then(|a| a.as_str()).unwrap_or("");
 
         if private_key_hex.is_empty() {
@@ -77,8 +78,49 @@ impl Operation for Sm2Decrypt {
             });
         }
 
-        // SM2 is currently not supported as it requires a specialized library (e.g. libsm2 or custom implementation of the SM2 curve).
-        // The sm3 and sm4 crates are available in the project, but sm2 is not yet added to Cargo.toml.
-        Err(OperationError::ProcessingError("SM2 Decrypt is currently a placeholder and requires a specialized SM2 library not yet present in the dependencies.".to_string()))
+        let format = args.get(1).and_then(ArgValue::as_str).unwrap_or("C1C3C2");
+        if format != "C1C3C2" && format != "C1C2C3" {
+            return Err(OperationError::InvalidArgument {
+                name: "Input Format".into(),
+                reason: "Expected C1C3C2 or C1C2C3".into(),
+            });
+        }
+        if args
+            .get(2)
+            .and_then(ArgValue::as_str)
+            .unwrap_or("sm2p256v1")
+            != "sm2p256v1"
+        {
+            return Err(OperationError::InvalidArgument {
+                name: "Curve".into(),
+                reason: "Only sm2p256v1 is supported".into(),
+            });
+        }
+        let encoded = std::str::from_utf8(&input)
+            .map_err(|error| OperationError::InvalidInput(error.to_string()))?;
+        let mut ciphertext = hex::decode(encoded.trim())
+            .map_err(|error| OperationError::InvalidInput(error.to_string()))?;
+        if ciphertext.len() < 97 {
+            return Err(OperationError::InvalidInput(
+                "SM2 ciphertext must contain C1, C2, and C3".into(),
+            ));
+        }
+        if format == "C1C3C2" {
+            let c2 = ciphertext.split_off(97);
+            let c3 = ciphertext.split_off(65);
+            ciphertext.extend_from_slice(&c2);
+            ciphertext.extend_from_slice(&c3);
+        }
+        let message_length = ciphertext.len() - 97;
+        let private_key =
+            Seckey::from_bytes_be(&hex::decode(private_key_hex).map_err(|error| {
+                OperationError::InvalidArgument {
+                    name: "Private Key".into(),
+                    reason: error.to_string(),
+                }
+            })?);
+        DecryptCtx::new(message_length, private_key)
+            .decrypt(&ciphertext)
+            .map_err(|error| OperationError::ProcessingError(error.to_string()))
     }
 }

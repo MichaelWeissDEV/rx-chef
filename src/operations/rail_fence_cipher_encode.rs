@@ -82,7 +82,8 @@ impl Operation for RailFenceCipherEncode {
         let mut rows: Vec<String> = vec![String::new(); key];
 
         for pos in 0..plaintext.len() {
-            let row_idx = key - 1 - ((cycle / 2 - (pos + offset) % cycle) as i32).abs() as usize;
+            let row_idx =
+                key - 1 - ((cycle / 2 - (pos + offset) % cycle) as i32).unsigned_abs() as usize;
             if let Some(c) = plaintext.chars().nth(pos) {
                 rows[row_idx].push(c);
             }

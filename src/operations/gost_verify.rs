@@ -10,6 +10,8 @@
  */
 
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
+use crate::operations::gost_sign::GostSign;
+use subtle::ConstantTimeEq;
 
 /// GOST Verify operation
 pub struct GOSTVerifyOp;
@@ -71,18 +73,52 @@ impl Operation for GOSTVerifyOp {
         DataType::String
     }
 
-    fn run(&self, _input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
+    fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
+        let mac_value = args.get(2).and_then(ArgValue::as_str).unwrap_or("");
+        let mac = decode_mac(mac_value)?;
+        if mac.is_empty() {
+            return Err(OperationError::InvalidArgument {
+                name: "MAC".into(),
+                reason: "MAC must not be empty".into(),
+            });
+        }
         let algorithm = args
             .get(4)
-            .and_then(|a| a.as_str())
+            .and_then(ArgValue::as_str)
             .unwrap_or("GOST R 34.12 (Magma, 2015)");
+        let calculated = GostSign.run(
+            input,
+            &[
+                args.first()
+                    .cloned()
+                    .unwrap_or_else(|| ArgValue::Str(String::new())),
+                args.get(1)
+                    .cloned()
+                    .unwrap_or_else(|| ArgValue::Str(String::new())),
+                args.get(3)
+                    .cloned()
+                    .unwrap_or_else(|| ArgValue::Str("Raw".into())),
+                ArgValue::Str("Raw".into()),
+                ArgValue::Str(algorithm.into()),
+                args.get(5)
+                    .cloned()
+                    .unwrap_or_else(|| ArgValue::Str("E-TEST".into())),
+                ArgValue::Str((mac.len() * 8).to_string()),
+            ],
+        )?;
+        let verified = bool::from(calculated.as_slice().ct_eq(mac.as_slice()));
+        Ok(verified.to_string().into_bytes())
+    }
+}
 
-        // NOTE: Real GOST Verify requires MAC mode implementation.
-        let result = format!(
-            "[PLACEHOLDER] GOST Verify\nAlgorithm: {}\n(Full implementation requires MAC mode for GOST)",
-            algorithm
-        );
-
-        Ok(result.into_bytes())
+fn decode_mac(value: &str) -> Result<Vec<u8>, OperationError> {
+    let hex_value = value.strip_prefix("0x").unwrap_or(value);
+    if hex_value.len() % 2 == 0 && hex_value.bytes().all(|byte| byte.is_ascii_hexdigit()) {
+        hex::decode(hex_value).map_err(|error| OperationError::InvalidArgument {
+            name: "MAC".into(),
+            reason: error.to_string(),
+        })
+    } else {
+        Ok(value.as_bytes().to_vec())
     }
 }

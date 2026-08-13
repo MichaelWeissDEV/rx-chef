@@ -9,12 +9,6 @@
  * -----------------------------------------------------------------------------
  */
 
-// SNEFRU is a cryptographic hash function invented by Ralph Merkle in 1990
-// Since the snefru crate is not available, we implement a simplified version
-// using sha256 as a placeholder for the actual SNEFRU algorithm
-
-use sha2::{Digest, Sha256};
-
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
 
 /// SNEFRU operation
@@ -40,19 +34,19 @@ impl Operation for SNEFRU {
     }
 
     fn description(&self) -> &'static str {
-        "SNEFRU is a cryptographic hash function invented by Ralph Merkle in 1990 while working at Xerox PARC. The function supports 128-bit and 256-bit output. The original design was shown to be insecure and was modified by increasing the number of iterations from two to eight."
+        "Computes the standardized 256-bit, 8-round SNEFRU hash. SNEFRU was designed by Ralph Merkle in 1990; the original shorter-round design is retained in the argument schema for recipe compatibility but rejected because it is cryptographically broken."
     }
 
     fn args_schema(&self) -> &'static [ArgSchema] {
         static SCHEMA: &[ArgSchema] = &[
             ArgSchema {
                 name: "Size",
-                description: "Output size in bits (32-480, step 32)",
-                default_value: "128",
+                description: "Output size in bits (supported: 256)",
+                default_value: "256",
             },
             ArgSchema {
                 name: "Rounds",
-                description: "Number of rounds (2, 4, or 8)",
+                description: "Number of rounds (supported: 8)",
                 default_value: "8",
             },
         ];
@@ -68,38 +62,26 @@ impl Operation for SNEFRU {
     }
 
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
-        let size = args.first().and_then(|a| a.as_usize()).unwrap_or(128);
+        let size = args.first().and_then(|a| a.as_usize()).unwrap_or(256);
         let rounds = args.get(1).and_then(|a| a.as_usize()).unwrap_or(8);
 
-        // Validate size (must be multiple of 32, between 32 and 480)
-        if size < 32 || size > 480 || size % 32 != 0 {
+        if size != 256 {
             return Err(OperationError::InvalidArgument {
                 name: "Size".to_string(),
-                reason: "Size must be between 32 and 480, in steps of 32".to_string(),
+                reason: "Only the standardized 256-bit SNEFRU variant is supported".to_string(),
             });
         }
 
-        // Validate rounds
-        if rounds != 2 && rounds != 4 && rounds != 8 {
+        if rounds != 8 {
             return Err(OperationError::InvalidArgument {
                 name: "Rounds".to_string(),
-                reason: "Rounds must be 2, 4, or 8".to_string(),
+                reason: "Only the strengthened 8-round SNEFRU variant is supported".to_string(),
             });
         }
 
-        // For a proper SNEFRU implementation, we'd need to implement the full algorithm
-        // Since the snefru crate is not available, we use sha256 as a placeholder
-        // and truncate to the requested size
-
-        let mut hasher = Sha256::new();
-        hasher.update(input);
-        let digest = hasher.finalize();
-
-        // Convert to hex string and truncate to requested size
-        let output_hex = format!("{:x}", digest);
-        let chars_needed = size / 4; // 4 bits per hex char
-        let output = output_hex[..chars_needed].to_string();
-
-        Ok(output.into_bytes())
+        let digest = allthehashes::SNEFRU256
+            .hash(&input)
+            .ok_or_else(|| OperationError::ProcessingError("SNEFRU hashing failed".to_string()))?;
+        Ok(hex::encode(digest).into_bytes())
     }
 }

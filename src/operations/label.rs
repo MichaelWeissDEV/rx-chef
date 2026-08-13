@@ -45,7 +45,7 @@ impl Operation for Label {
     }
 
     fn run(&self, input: Vec<u8>, _args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
-        // Passthrough: full label flow control requires recipe-level orchestration.
+        // A standalone operation has no recipe program counter to mark.
         Ok(input)
     }
 }

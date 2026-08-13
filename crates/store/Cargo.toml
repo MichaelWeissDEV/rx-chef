@@ -1,9 +1,10 @@
 [package]
 name = "rxchef_store"
-version = "1.1.0"
+version = "0.0.1"
 edition = "2021"
 description = "Global and project store for rxchef (recipes, variables, history)"
 license = "Apache-2.0"
+repository = "https://github.com/MichaelWeissDEV/rx-chef"
 
 [dependencies]
 serde       = { version = "1", features = ["derive"] }

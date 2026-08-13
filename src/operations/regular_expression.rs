@@ -111,7 +111,7 @@ impl Operation for RegularExpressionOp {
             .case_insensitive(case_insensitive)
             .multi_line(multi_line)
             .dot_matches_new_line(dot_matches_new_line)
-            .unicode(unicode || true)
+            .unicode(unicode)
             .build()
             .map_err(|e| OperationError::InvalidArgument {
                 name: "Regex".to_string(),

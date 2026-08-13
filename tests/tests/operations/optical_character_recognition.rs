@@ -14,11 +14,10 @@ fn test_ocr_is_broken() {
     assert!(!op.is_broken());
 }
 #[test]
-fn test_ocr_without_feature() {
+fn test_ocr_rejects_invalid_image() {
     let op = OpticalCharacterRecognition;
     let input = vec![0u8];
     let args = vec![];
     let result = op.run(input, &args);
-    #[cfg(not(feature = "tesseract"))]
     assert!(result.is_err());
 }

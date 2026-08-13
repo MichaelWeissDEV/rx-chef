@@ -44,18 +44,39 @@ impl Operation for ParseQRCode {
         DataType::String
     }
 
-    fn run(&self, input: Vec<u8>, _args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
+    fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         if input.is_empty() {
             return Err(OperationError::InvalidInput("No input".to_string()));
         }
 
         // Validate that it's an image
-        let _img = image::load_from_memory(&input)
+        let image = image::load_from_memory(&input)
             .map_err(|e| OperationError::InvalidInput(format!("Invalid image: {}", e)))?;
-
-        // Placeholder: Rust lacks a built-in QR decoder in the current dependencies.
-        // In a real environment, we would use a crate like `rqrr`.
-
-        Err(OperationError::ProcessingError("QR code decoding is not implemented in this port due to missing dependencies (rqrr/qrcode).".to_string()))
+        let normalise = args.first().and_then(ArgValue::as_bool).unwrap_or(false);
+        let grayscale = if normalise {
+            image.adjust_contrast(25.0).to_luma8()
+        } else {
+            image.to_luma8()
+        };
+        let mut prepared = rqrr::PreparedImage::prepare_from_greyscale(
+            grayscale.width() as usize,
+            grayscale.height() as usize,
+            |x, y| grayscale.get_pixel(x as u32, y as u32).0[0],
+        );
+        let grids = prepared.detect_grids();
+        if grids.is_empty() {
+            return Err(OperationError::ProcessingError(
+                "No QR code found in image".to_string(),
+            ));
+        }
+        let decoded = grids
+            .iter()
+            .map(|grid| {
+                grid.decode()
+                    .map(|(_, content)| content)
+                    .map_err(|error| OperationError::ProcessingError(error.to_string()))
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        Ok(decoded.join("\n").into_bytes())
     }
 }

@@ -26,13 +26,13 @@ impl Operation for ProtobufEncode {
     }
 
     fn description(&self) -> &'static str {
-        "Encodes a valid JSON object into a protobuf byte array. Note: This implementation currently only supports encoding based on numeric keys in the JSON input (field numbers) as runtime schema compilation is not supported."
+        "Encodes JSON into Protobuf bytes. With a .proto schema, JSON field names and types are resolved from the first top-level message. Without a schema, numeric JSON keys are interpreted as field numbers."
     }
 
     fn args_schema(&self) -> &'static [ArgSchema] {
         static SCHEMA: &[ArgSchema] = &[ArgSchema {
             name: "Schema (.proto text)",
-            description: "Optional schema (not implemented in this version)",
+            description: "Optional .proto schema; the first top-level message is used",
             default_value: "",
         }];
         SCHEMA
@@ -46,7 +46,7 @@ impl Operation for ProtobufEncode {
         DataType::Bytes
     }
 
-    fn run(&self, input: Vec<u8>, _args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
+    fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         if input.is_empty() {
             return Ok(Vec::new());
         }
@@ -54,6 +54,17 @@ impl Operation for ProtobufEncode {
         let json_val: Value = serde_json::from_slice(&input).map_err(|e| {
             OperationError::InvalidInput(format!("Failed to parse input as JSON: {}", e))
         })?;
+
+        let schema = args.first().and_then(ArgValue::as_str).unwrap_or("");
+        if !schema.trim().is_empty() {
+            let descriptor = super::protobuf_schema::descriptor(schema)
+                .map_err(OperationError::ProcessingError)?;
+            let message = super::protobuf_schema::json_to_message(&json_val, descriptor)
+                .map_err(OperationError::ProcessingError)?;
+            return message
+                .write_to_bytes_dyn()
+                .map_err(|error| OperationError::ProcessingError(error.to_string()));
+        }
 
         let mut output = Vec::new();
         encode_protobuf_val(&json_val, &mut output).map_err(OperationError::ProcessingError)?;
