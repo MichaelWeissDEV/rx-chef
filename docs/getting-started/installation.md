@@ -40,7 +40,7 @@ or directly after building:
 If you want to install the binary into your Cargo bin directory:
 
 ```bash
-cargo install --path .
+cargo install --path crates/cli
 ```
 
 ## Development notes
@@ -61,3 +61,9 @@ If compilation fails, verify that:
 - you are working from the repository root and not from a nested crate.
 
 For the full development workflow, see [development/building.md](../development/building.md).
+
+## Project resources
+
+- [Published documentation](https://rx-chef.readthedocs.io/en/latest/)
+- [GitHub repository](https://github.com/MichaelWeissDEV/rx-chef)
+- [Issue tracker](https://github.com/MichaelWeissDEV/rx-chef/issues)

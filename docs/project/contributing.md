@@ -4,6 +4,10 @@ Thank you for your interest in contributing to rxchef.
 
 The project is maintained by Michael Weiss and is published under the Apache License 2.0.
 
+- [GitHub repository](https://github.com/MichaelWeissDEV/rx-chef)
+- [Issue tracker](https://github.com/MichaelWeissDEV/rx-chef/issues)
+- [Pull requests](https://github.com/MichaelWeissDEV/rx-chef/pulls)
+
 ## Ways to contribute
 
 There are many useful ways to help:

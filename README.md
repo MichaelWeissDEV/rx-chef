@@ -1,286 +1,244 @@
 # rxchef
 
-> **Early Alpha** — This project is in a very early stage of development.
+[![Documentation](https://readthedocs.org/projects/rx-chef/badge/?version=latest)](https://rx-chef.readthedocs.io/en/latest/)
+[![CI](https://github.com/MichaelWeissDEV/rx-chef/actions/workflows/ci.yml/badge.svg)](https://github.com/MichaelWeissDEV/rx-chef/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://github.com/MichaelWeissDEV/rx-chef/blob/master/LICENSE)
+[![Rust](https://img.shields.io/badge/Rust-stable-orange.svg?logo=rust)](https://www.rust-lang.org/)
 
-If you've ever used [CyberChef](https://github.com/gchq/CyberChef) and wished you could have the same power directly in your terminal, this is a first attempt at making that happen. CyberChef is an incredibly useful tool, and the goal of rxchef is to bring its operations to the command line as a native Rust library — fast, composable, and scriptable.
+CyberChef-style data transformations for the terminal, Rust applications, and
+editor integrations.
 
-This is a **work in progress**. Things may break, APIs may change, and not every operation behaves exactly like its JavaScript counterpart yet. Contributions, bug reports, and ideas are **very** welcome — feel free to open issues or pull requests.
+rxchef provides one shared execution engine and operation registry across a
+native command-line interface, reusable Rust library, interactive TUI, C-compatible
+FFI, and persistent JSONL/JSON-RPC server. Its 478 registered operations cover
+encoding, cryptography, hashing, compression, structured data, networking,
+forensics, image processing, and more.
 
-## Features
+**[Documentation](https://rx-chef.readthedocs.io/en/latest/)** ·
+**[CLI reference](https://rx-chef.readthedocs.io/en/latest/cli/reference/)** ·
+**[Operation catalog](https://rx-chef.readthedocs.io/en/latest/operations/)** ·
+**[Rust library](https://rx-chef.readthedocs.io/en/latest/library/)** ·
+**[GitHub repository](https://github.com/MichaelWeissDEV/rx-chef)**
 
-- **478 operations** ported from CyberChef (hashing, encryption, encoding, compression, parsing, and more)
-- Reusable Rust library (`rxchef`) for embedding in other projects
-- CLI with single operations, inline pipelines, recipe files, variables, and run history
-- Interactive TUI for building and running pipelines visually
-- FFI interface (C-compatible) for integration with other languages
-- Pipeline engine with automatic type coercion between steps
-- Persistent JSONL/JSON-RPC stdio server for Neovim and other editor plugins
-- **Magic** — a recursive detect-and-decode engine that peels back chained
-  encodings (e.g. double Base64 → plaintext) and ranks candidates by entropy,
-  printability and an optional known-plaintext crib
-- **Scan** — a streaming scanner that finds (and optionally decodes) encoded or
-  high-entropy strings across large files, whole directories, or piped stdin,
-  emitting newline-delimited JSON for `jq`/`grep` pipelines
+## Highlights
 
-## Requirements
+- **478 discoverable operations** with generated metadata and documentation.
+- **Unix-native CLI** with clean stdin/stdout behavior, binary input, files,
+  inline pipelines, JSON/YAML recipes, variables, projects, and run history.
+- **Composable recipe engine** supporting `Fork`/`Merge`, `Subsection`,
+  registers, labels, and bounded conditional or unconditional jumps.
+- **Machine-readable integration API** for operation discovery, descriptions,
+  direct execution, and complete recipes.
+- **Persistent stdio server** designed for Neovim, editor plugins, and other
+  local clients using JSONL or JSON-RPC 2.0.
+- **Reusable Rust library and C-compatible FFI** without a dependency on the
+  terminal interface.
+- **Magic and Scan workflows** for recursive decoding and streaming discovery
+  across files, directories, memory dumps, captures, or piped input.
+- **Generated Read the Docs site** whose 478 operation pages are checked for
+  freshness in CI.
 
-- Rust 1.75+ (edition 2021)
-- C compiler (for native dependencies like `yara-x`, `capstone`)
+## Installation
 
-## Build
+### Build and install the CLI from source
 
-```bash
-cargo build --release
+The project requires the stable Rust toolchain, Git, and a C build toolchain for
+native dependencies.
+
+```console
+git clone https://github.com/MichaelWeissDEV/rx-chef.git
+cd rx-chef
+cargo install --path crates/cli
+rxchef --version
 ```
 
-The release binaries are placed in `target/release/`:
+To build the complete workspace, including the TUI:
 
-| Binary | Description |
-|---|---|
-| `rxchef` | CLI (command-line interface) |
-| `rxchef_tui` | Interactive terminal UI |
-
-## Test
-
-Run the full test suite:
-
-```bash
-cargo test --workspace
+```console
+cargo build --release --workspace
+./target/release/rxchef --help
+./target/release/rxchef_tui
 ```
 
-This executes:
+Optional OpenPGP, JSON query, and OCR support is controlled through Cargo
+features. OCR additionally requires a system Tesseract/Leptonica installation.
+See the [installation guide](https://rx-chef.readthedocs.io/en/latest/getting-started/installation/)
+and [feature matrix](https://rx-chef.readthedocs.io/en/latest/reference/feature-matrix/)
+for platform-specific details.
 
-- **1749 operation tests** — one test file per operation in `tests/tests/operations/`
-- **12 pipeline integration tests** — roundtrips, type coercion, error propagation
-- **34 library unit tests** — pipeline engine internals, flow control, and integration surfaces
-- **10 CLI behavior tests and 25 persistent-server conformance tests**
-- **5 store tests** — project/global persistence behavior
-- **1 doc-test** — pipeline API example
+## Quick start
 
-Run tests for a single operation:
+Discover operations and inspect their argument schemas:
 
-```bash
-cargo test -p cyberchef-rust-tests --test operations aes_encrypt::
-```
-
-Run only pipeline tests:
-
-```bash
-cargo test -p cyberchef-rust-tests --test pipeline
-```
-
-## CLI Usage
-
-### Machine-readable integration
-
-```bash
+```console
+rxchef list base64
+rxchef info "From Base64"
 rxchef operations --json
 rxchef operation describe "From Base64" --json
-rxchef bake --recipe recipe.json --input "SGVsbG8="
-rxchef bake --recipe-json '[{"op":"From Base64"}]' --input "SGVsbG8="
+```
+
+Run a single operation using literal input, a file, or stdin:
+
+```console
+rxchef run "From Base64" --input "SGVsbG8="
+rxchef run "Detect File Type" --input-file sample.bin
+printf 'hello' | rxchef run "To Upper Case"
+```
+
+Chain any number of operations in a pipe-clean workflow:
+
+```console
+printf 'hello' | rxchef pipe "to_upper_case" "to_base64"
+rxchef pipe "to_hex,Space" "sha2,256" --input "Hello"
+```
+
+Operation names are normalized, so `to_hex`, `ToHex`, and `"To Hex"` resolve
+to the same registry entry. Typed arguments use prefixes such as `num:12.5`,
+`bool:true`, and `hex:48656c6c6f`.
+
+For the full command surface and shell-composition rules, read the
+[CLI documentation](https://rx-chef.readthedocs.io/en/latest/cli/).
+
+## Recipes and flow control
+
+Reproducible recipes can be supplied as JSON or YAML files, or directly as an
+inline JSON array:
+
+```console
+rxchef bake \
+  --recipe-json '[{"op":"To Upper Case"},{"op":"To Base64"}]' \
+  --input "Hello"
+
+printf 'one\ntwo' | rxchef pipe 'Fork,\n,|,false' 'To Upper Case' Merge
+```
+
+The same flow-aware recipe engine backs `bake`, inline pipes, saved recipes,
+projects, the Rust integration API, and plugin requests. See
+[recipes and flow control](https://rx-chef.readthedocs.io/en/latest/cli/recipes/)
+for nested forks, subsections, registers, labels, jumps, error handling, and
+binary-safe behavior.
+
+## Editor and plugin integration
+
+Start one long-lived process per client session:
+
+```console
 rxchef serve --stdio
 ```
 
-`serve --stdio` keeps one process open and supports `ping`, `operations`, `describe`, `run`, `bake`, and `shutdown`. Exact binary input/output uses Base64. See the [integration protocol](docs/cli/integration.md).
+Write one JSON request per line to stdin and read one compact JSON response per
+line from stdout:
 
-### List operations
-
-```bash
-cargo run -p rxchef_cli -- list
+```json
+{"id":1,"method":"operations"}
+{"id":2,"method":"describe","params":{"operation":"XOR"}}
+{"id":3,"method":"bake","params":{"input":"Hello","recipe":[{"op":"To Base64"}]}}
+{"id":4,"method":"shutdown"}
 ```
 
-Search by name:
+Exact binary values use Base64 result envelopes. The server supports compact
+JSONL requests and JSON-RPC 2.0, notifications, structured errors, and clean
+shutdown. The complete contract is documented in the
+[editor integration protocol](https://rx-chef.readthedocs.io/en/latest/cli/integration/).
 
-```bash
-cargo run -p rxchef_cli -- list hash
+## Rust library
+
+The core crate can be embedded independently of the CLI:
+
+```rust
+use rxchef::integration::{self, RecipeStep};
+
+let descriptor = integration::describe("to_base64")?;
+let result = integration::bake(
+    b"Hello".to_vec(),
+    &[RecipeStep {
+        op: "To Base64".into(),
+        args: vec![],
+    }],
+)?;
+
+assert_eq!(descriptor.name, "To Base64");
+assert_eq!(result.output, "SGVsbG8=");
+# Ok::<(), String>(())
 ```
 
-### Show operation details
+Lower-level APIs expose typed operation values, direct registry lookup,
+pipelines, Magic, scanning, and `serve_jsonl(reader, writer)`. See the
+[Rust library guide](https://rx-chef.readthedocs.io/en/latest/library/).
 
-```bash
-cargo run -p rxchef_cli -- info "AES Encrypt"
-```
+## Magic and streaming scan
 
-### Run a single operation
+Recursively identify and unwrap layered encodings:
 
-```bash
-cargo run -p rxchef_cli -- run "From Base64" --input "SGVsbG8="
-```
-
-Read from a file:
-
-```bash
-cargo run -p rxchef_cli -- run "Detect File Type" --input-file sample.bin
-```
-
-Pipe through stdin:
-
-```bash
-printf 'hello' | cargo run -p rxchef_cli -- run "To Upper Case"
-```
-
-Pass operation arguments:
-
-```bash
-cargo run -p rxchef_cli -- run "SHA2" --input "hello" "256"
-```
-
-Typed argument prefixes:
-
-- `num:12.5` — number
-- `bool:true` / `bool:false` — boolean
-- `hex:48656c6c6f` — raw bytes from hex
-
-### Run a pipeline
-
-```bash
-cargo run -p rxchef_cli -- pipe "to_hex,Space" "sha2,256" --input "Hello"
-```
-
-Operation names are normalized — `to_hex`, `ToHex`, and `"To Hex"` all resolve to the same operation.
-
-Use `--trace` to see output after each step:
-
-```bash
-cargo run -p rxchef_cli -- pipe "to_upper_case" "to_base64" --input "hello" --trace
-```
-
-### Saved pipelines
-
-```bash
-cargo run -p rxchef_cli -- pipeline new my-pipe
-cargo run -p rxchef_cli -- pipeline add my-pipe "to_hex" "Space"
-cargo run -p rxchef_cli -- pipeline add my-pipe "sha2" "256"
-cargo run -p rxchef_cli -- pipeline run my-pipe --input "Hello"
-cargo run -p rxchef_cli -- pipeline show my-pipe
-cargo run -p rxchef_cli -- pipeline export my-pipe --format yaml
-```
-
-### Variables
-
-```bash
-cargo run -p rxchef_cli -- var set KEY "secret123"
-cargo run -p rxchef_cli -- var list
-```
-
-Variables are expanded in pipeline arguments via `$KEY` syntax.
-
-### Magic (recursive detect + decode)
-
-`magic` recursively tries the operations that fit the input, decodes, and
-recurses — so layered encodings unwrap in one shot. Results are ranked best
-first (higher printability / lower entropy / crib match wins).
-
-```bash
-# Double Base64 → recovers "Hello" through both layers
-rxchef magic --input "U0dWc2JHOD0="
-
-# Print only the winning plaintext (raw, pipe-friendly)
+```console
 rxchef magic --input "U0dWc2JHOD0=" --decode
-
-# Rank decodes that contain a known string first
-rxchef magic --input "…" --crib "flag{"
-
-# Aggressive decoders (ROT13, Base58/85) and deeper chains
-rxchef magic --input "…" --intensive --depth 5
+rxchef magic --input "…" --crib "flag{" --intensive --depth 5
 ```
 
-Because `--decode` writes only the recovered bytes to stdout, `magic` composes
-like any other filter:
+Search large files, directories, or stdin without loading the entire input into
+memory:
 
-```bash
-echo -n "SGVsbG8gV29ybGQ=" | rxchef magic --decode | rxchef run "To Upper Case"
-```
-
-### Scan (find encoded strings in files and streams)
-
-`scan` walks files, directories (`-r`), or stdin, extracts candidate tokens,
-classifies them, and (with `--decode`) runs the Magic engine on each. It streams
-in chunks — a token that straddles a read boundary is stitched back together —
-so it handles GB-scale PCAPs and RAM dumps without loading them into memory.
-
-```bash
-# Find and decode encoded strings in a binary
+```console
 rxchef scan dump.bin --decode
-
-# Recurse a directory and emit NDJSON, one finding per line, for jq
-rxchef scan ./logs -r --decode --json | jq 'select(.kinds[]=="From Hex")'
-
-# Stream stdin and flag high-entropy blobs (possible keys / ciphertext)
+rxchef scan ./captures --recursive --json | jq 'select(.kinds[] == "From Hex")'
 cat memory.dump | rxchef scan --entropy 4.5
-
-# Only report findings whose decode matches a crib, across many files
-rxchef scan ./captures -r --crib "password"
-
-# Restrict to specific encodings
-rxchef scan dump.bin --kind base64,hex --min-len 24
 ```
 
-Data goes to stdout; progress and the finding count go to stderr, so pipelines
-stay clean.
+Machine output stays on stdout; diagnostics and counts use stderr. More details
+are available in the [Magic](https://rx-chef.readthedocs.io/en/latest/cli/magic/)
+and [Scan](https://rx-chef.readthedocs.io/en/latest/cli/scan/) guides.
 
-**Notes and current limitations:**
+## Documentation
 
-- Standard and URL-safe Base64, Base32, Hex, and JWT segments are all detected.
-  Run `magic` directly on a whole JWT (`header.payload.signature`) for a single
-  structured decode; `scan` catches the `eyJ…` header/payload segments as they
-  stream past and decodes each to JSON.
-- Memory stays bounded on huge inputs (chunked reads + a per-token size cap),
-  but `--decode` runs the full Magic engine on every candidate token, so on
-  multi-GB dumps prefer a first pass *without* `--decode` (or narrow with
-  `--kind` / `--min-len` / `--entropy`) and decode the interesting hits after.
+The complete documentation is published at
+**[rx-chef.readthedocs.io](https://rx-chef.readthedocs.io/en/latest/)** and
+includes:
 
-### Recipe files
+- installation and guided quick starts;
+- complete CLI behavior, input precedence, output formats, and exit codes;
+- recipes, saved pipelines, variables, projects, and persistence;
+- all 478 generated operation pages and their ordered argument schemas;
+- the Rust library, FFI, architecture, editor protocol, and security model;
+- testing, benchmarking, fuzzing, and release procedures.
 
-Run a JSON or YAML recipe:
+Build the exact Read the Docs site locally with:
 
-```bash
-cargo run -p rxchef_cli -- recipe recipe.json --input "Hello"
+```console
+python -m pip install -r docs/requirements.txt
+mkdocs build --strict
 ```
 
-## Library Usage
+## Development and verification
 
-```rust
-use rxchef::operations;
-
-fn main() {
-    let op = operations::get_operation("To Upper Case").unwrap();
-    let output = op.run(b"hello".to_vec(), &[]).unwrap();
-    assert_eq!(String::from_utf8(output).unwrap(), "HELLO");
-}
+```console
+cargo fmt --all --check
+cargo check --workspace --all-targets --all-features
+cargo test --workspace
+cargo test --workspace --all-features
+cargo clippy --workspace --all-targets -- \
+  -D clippy::correctness -D clippy::suspicious
+cargo run -p xtask -- docs --check
+cargo run --example generate_operation_docs -- --check
+mkdocs build --strict
 ```
 
-### Pipeline API
-
-```rust
-use rxchef::pipeline::Pipeline;
-use rxchef::operation::ArgValue;
-use rxchef::operations::get_operation;
-
-let result = Pipeline::new()
-    .then(get_operation("To Hex").unwrap(), vec![ArgValue::Str("None".into()), ArgValue::Num(0.0)])
-    .then(get_operation("From Hex").unwrap(), vec![ArgValue::Str("Auto".into())])
-    .run_text("Hello")
-    .unwrap();
-
-assert_eq!(result, "Hello");
-```
-
-
+The current v0.0.1 workspace contains 478 operations and more than 1,800
+automated tests across operation behavior, pipelines, library integration, CLI
+semantics, storage, documentation, and the persistent stdio protocol.
 
 ## Contributing
 
-This is an early alpha and there is a lot to do. Contributions of any kind are welcome:
+Bug reports, focused pull requests, authoritative test vectors, documentation
+improvements, and integration examples are welcome.
 
-- Bug reports and feature requests via issues
-- Fixing or improving existing operations
-- Adding missing CyberChef operations
-- Improving documentation and examples
-- Writing additional tests
+- [Open an issue](https://github.com/MichaelWeissDEV/rx-chef/issues)
+- [View pull requests](https://github.com/MichaelWeissDEV/rx-chef/pulls)
+- [Read the contribution guide](https://rx-chef.readthedocs.io/en/latest/project/contributing/)
+- [Review the project structure](https://rx-chef.readthedocs.io/en/latest/project/structure/)
 
-If you're unsure where to start, improve an operation with another authoritative test vector or extend one of the documented integration surfaces.
+## License and attribution
 
-
-## Attribution
-
-Ported from [CyberChef](https://github.com/gchq/CyberChef) by GCHQ, originally written in JavaScript.
+rxchef is licensed under the
+[Apache License 2.0](https://github.com/MichaelWeissDEV/rx-chef/blob/master/LICENSE).
+It ports and adapts operation behavior from
+[CyberChef](https://github.com/gchq/CyberChef), originally developed by GCHQ.

@@ -1,7 +1,10 @@
 site_name: rxchef
-site_url: https://rx-chef.readthedocs.io/
+site_url: https://rx-chef.readthedocs.io/en/latest/
 repo_url: https://github.com/MichaelWeissDEV/rx-chef
-site_description: CyberChef-style transformation operations in the terminal
+repo_name: MichaelWeissDEV/rx-chef
+edit_uri: edit/master/docs/
+site_author: Michael Weiss
+site_description: CyberChef-style data transformations for the terminal, Rust applications, and editor integrations
 
 theme:
   name: readthedocs

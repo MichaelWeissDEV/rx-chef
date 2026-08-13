@@ -1,26 +1,71 @@
-# rx-chef
+# rxchef documentation
 
-CyberChef operations in the terminal.
+rxchef brings CyberChef-style data transformations to the terminal, Rust
+applications, and editor integrations. A single execution engine and operation
+registry power the command-line interface, reusable library, interactive TUI,
+C-compatible FFI, and persistent JSONL/JSON-RPC server.
 
-Welcome to the **rx-chef** documentation. 
+[Get started](getting-started/installation.md){ .md-button }
+[Browse 478 operations](operations/index.md){ .md-button }
+[View the source on GitHub](https://github.com/MichaelWeissDEV/rx-chef){ .md-button }
 
-`rx-chef` is a cross-platform CLI tool that brings the power of CyberChef to your terminal. It allows you to run cryptographic, encoding, and data transformation operations directly from your command line, using Unix pipelines or reproducible JSON/YAML recipes.
+## What rxchef provides
 
-## Features
+- **478 registered operations** for encoding, cryptography, hashing,
+  compression, structured data, networking, forensics, and image processing.
+- **Unix-native command behavior** with stdin/stdout pipelines, files, exact
+  binary input, structured JSON output, and useful contextual errors.
+- **Reproducible JSON/YAML recipes** plus saved pipelines, variables, projects,
+  history, forks, subsections, registers, labels, and bounded jumps.
+- **Reusable Rust APIs** for discovery, direct execution, typed pipelines,
+  complete recipes, Magic, Scan, and the stdio protocol.
+- **Persistent editor integration** designed for Neovim and other local plugin
+  clients without a frontend-specific backend.
+- **Generated operation documentation** kept synchronized with runtime metadata
+  and checked in continuous integration.
 
-- Over 400 operations (Encoding, Cryptography, Hashing, Formatting, Networking, etc.)
-- Complete CLI with arguments and flags tailored to each operation
-- Reproducible recipes with YAML and JSON support
-- Pipelining with standard Unix tools (stdin/stdout)
-- CTF project state and variable management
-- Automated scanning and magical decoding of embedded secrets
-- Persistent JSONL/JSON-RPC stdio API for Neovim and other editor plugins
-- Reusable Rust integration API for operation discovery, execution, and recipes
+## Start here
 
-## Quick Links
+| Goal | Documentation |
+|---|---|
+| Install or build rxchef | [Installation](getting-started/installation.md) |
+| Run the first transformations | [Quickstart](getting-started/quickstart.md) |
+| Understand stdin, files, and stdout | [Input and output](concepts/input-output.md) |
+| Explore every CLI command | [CLI reference](cli/reference.md) |
+| Compose operations | [Pipelines](concepts/pipelines.md) and [recipes](cli/recipes.md) |
+| Integrate an editor or plugin | [Editor integration protocol](cli/integration.md) |
+| Embed rxchef in Rust | [Rust library](library.md) |
+| Find an operation and its arguments | [Operation catalog](operations/index.md) |
+| Understand optional backends | [Feature matrix](reference/feature-matrix.md) |
+| Contribute to the project | [Contributing](project/contributing.md) |
 
-- [Installation](getting-started/installation.md)
-- [Quickstart](getting-started/quickstart.md)
-- [Operations Reference](operations/index.md)
-- [Architecture](architecture/overview.md)
-- [Editor Integration Protocol](cli/integration.md)
+## Quick example
+
+```console
+# Decode Base64 using literal input
+rxchef run "From Base64" --input "SGVsbG8="
+
+# Compose transformations using stdin/stdout
+printf 'hello' | rxchef pipe "To Upper Case" "To Base64"
+
+# Inspect the machine-readable operation registry
+rxchef operations --json
+
+# Start a persistent process for an editor plugin
+rxchef serve --stdio
+```
+
+Operation names are normalized, so human-readable names and shell-friendly
+aliases such as `To Base64`, `to_base64`, and `tobase64` resolve through the
+same registry.
+
+## Project links
+
+- [GitHub repository](https://github.com/MichaelWeissDEV/rx-chef)
+- [Issue tracker](https://github.com/MichaelWeissDEV/rx-chef/issues)
+- [Pull requests](https://github.com/MichaelWeissDEV/rx-chef/pulls)
+- [Apache 2.0 license](https://github.com/MichaelWeissDEV/rx-chef/blob/master/LICENSE)
+- [CyberChef upstream project](https://github.com/gchq/CyberChef)
+
+Every documentation page includes a repository link in the header and an edit
+link for proposing changes to its source file.
