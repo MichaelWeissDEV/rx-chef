@@ -98,6 +98,7 @@ Plugins must decode `output_base64` when exact bytes matter. `output` is UTF-8-l
 | `-32603` | Internal serialization/registry failure |
 | `-32001` | Unknown operation during describe |
 | `-32002` | Operation or recipe execution failure |
+| `-32004` | Request line exceeds `--max-request-bytes` |
 
 Protocol errors do not stop the server.
 

@@ -11,9 +11,9 @@ This page gives a high-level view of the project’s platform and feature covera
 | `tesseract` | Optical Character Recognition | no | Links a system Tesseract/Leptonica installation through `pkg-config`. |
 | `disassembly` | ARM/x86 disassembly via Capstone | no | Keeps Capstone out of the normal encoding/text installation. |
 | `yara` | YARA Rules via yara-x | no | Keeps the large YARA/Wasmtime dependency graph optional. |
-| `full` | All optional operation backends | no | Convenience group for Linux release verification. |
+| `full` | All optional operation backends | no | Convenience group for comprehensive builds on hosts with the required native libraries. |
 
-All features are checked in the Linux x86_64 release container with the OCR
+All features can be checked in the Linux x86_64 release container with the OCR
 system packages installed:
 
 ```console
@@ -26,10 +26,9 @@ registry, and stdio server are available without optional features. Runtime
 current build; `implementation_status` is independent. With `--all-features`
 and the documented native OCR libraries installed,
 all 478 registry entries are expected to be available; the local Docker release
-gate asserts this invariant.
-
-The verified platform for this release is Linux x86_64. macOS and Windows are
-not verified in this release process.
+gate asserts this invariant. Linux, macOS, and Windows use the same metadata and
+runtime contracts. See [Platform support](../getting-started/platforms.md) for
+container, cross-build, and native-host commands.
 
 ## Related pages
 

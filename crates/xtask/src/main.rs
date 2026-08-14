@@ -92,10 +92,11 @@ fn cmd_docs(args: &[String]) -> Result<(), String> {
         out.push_str(info.description.trim());
         out.push_str("\n\n## Status\n\n");
         out.push_str(&format!(
-            "| Field | Value |\n|---|---|\n| Implementation | `{:?}` |\n| Parity | `{:?}` |\n| Availability | {} |\n| Features | {} |\n| Side effects | `{:?}` |\n| Deterministic | {} |\n\n",
+            "| Field | Value |\n|---|---|\n| Implementation | `{:?}` |\n| Parity | `{:?}` |\n| Availability | {} |\n| Input requirement | `{:?}` |\n| Features | {} |\n| Side effects | `{:?}` |\n| Deterministic | {} |\n\n",
             info.implementation_status,
             info.parity,
             format!("{:?}", info.availability),
+            info.input_requirement,
             if info.feature_requirements.is_empty() { "none".into() } else { info.feature_requirements.join(", ") },
             info.side_effects,
             info.deterministic,
@@ -130,17 +131,36 @@ fn cmd_docs(args: &[String]) -> Result<(), String> {
             out.push('\n');
         }
         let escaped_name = info.name.replace('"', "\\\"");
+        let command_line = match info.input_requirement {
+            rxchef::operation::InputRequirement::Required => format!(
+                "This operation requires input. Supply literal UTF-8 with `--input`, exact bytes with `--input-file`, or pipe bytes on stdin.\n\n```console\nrxchef run \"{escaped_name}\" --input-file input.bin --output-file output.bin\n```"
+            ),
+            rxchef::operation::InputRequirement::Optional => format!(
+                "Input is optional. Omit all input selectors to use the operation's no-input behavior, or provide text, a file, or stdin explicitly.\n\n```console\nrxchef run \"{escaped_name}\" --input-file input.bin --output-file output.bin\n```"
+            ),
+            rxchef::operation::InputRequirement::Ignored => format!(
+                "This operation does not consume pipeline input. Its result is produced from its arguments and runtime state.\n\n```console\nrxchef run \"{escaped_name}\"\n```"
+            ),
+        };
         let evidence = verification
             .get(&info.id)
             .ok_or_else(|| format!("missing verification evidence for {}", info.name))?;
-        let testing = format!(
-            "Correctness:\n{}\n\nKnown-answer:\n{}\n\nDifferential:\n{}\n\nProperty:\n{}\n\nFuzz:\n{}",
-            evidence_lines(evidence, "correctness"),
-            evidence_lines(evidence, "known_answer"),
-            evidence_lines(evidence, "differential"),
-            evidence_lines(evidence, "property"),
-            evidence_lines(evidence, "fuzz"),
-        );
+        let mut testing = Vec::new();
+        for (label, field) in [
+            ("Correctness tests", "correctness"),
+            ("Known-answer tests", "known_answer"),
+            ("Differential tests", "differential"),
+            ("Property tests", "property"),
+            ("Fuzz targets", "fuzz"),
+        ] {
+            if evidence[field]
+                .as_array()
+                .is_some_and(|entries| !entries.is_empty())
+            {
+                testing.push(format!("{label}:\n{}", evidence_lines(evidence, field)));
+            }
+        }
+        let testing = testing.join("\n\n");
         let performance = if evidence["benchmark"]
             .as_array()
             .is_some_and(|items| !items.is_empty())
@@ -148,26 +168,33 @@ fn cmd_docs(args: &[String]) -> Result<(), String> {
             format!("Benchmark evidence:\n{}\n\nSee [benchmark results](../performance/results.md) for measured environment and statistics.", evidence_lines(evidence, "benchmark"))
         } else {
             format!(
-                "Not measured. Reason: {}",
+                "Excluded from the committed representative benchmark set: {}",
                 evidence["benchmark_skip_reason"]
                     .as_str()
                     .unwrap_or("no reviewed benchmark rationale recorded")
             )
         };
+        let limitations = if info.known_limitations.is_empty() {
+            String::new()
+        } else {
+            format!(
+                "\n\n## Known limitations\n\n- {}",
+                info.known_limitations.join("\n- ")
+            )
+        };
         out.push_str(&format!(
-            "## How it works\n\n{}\n\n## Implementation\n\nThe implementation is in `src/operations/{}.rs` and declares `{}` input and `{}` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.\n\n## Examples\n\n```console\nprintf 'input' | rxchef run \"{}\"\n```\n\nFor file or binary input use `rxchef run \"{}\" --input-file INPUT --output-file OUTPUT`.\n\n## Pipeline usage\n\n```console\nprintf 'input' | rxchef pipe \"{}\" to_base64\n```\n\n## Error conditions\n\nInvalid input representations, invalid argument values, unavailable feature backends, and operation-specific processing failures return an error and a non-zero CLI status. Exact limitations are listed below when known.\n\n## CyberChef compatibility\n\nParity status: `{:?}`. `Unknown` means compatibility has not been independently verified and must not be read as an exact-match claim.\n\n## Security considerations\n\nSide effects: `{:?}`. Treat parser inputs as untrusted and use execution limits for large data. Sensitive arguments are redacted by metadata-aware History output.\n\n## Testing\n\n{}\n\n## Performance\n\n{}\n\n## Limitations\n\n{}\n\n## References\n\n- [Operation quality matrix](../reference/operation-matrix.md)\n- [CLI run documentation](../cli/run.md)\n",
-            info.description.trim(),
+            "## Implementation\n\nThe implementation is in `src/operations/{}.rs` and declares `{}` input and `{}` output. The operation module owns conversion and domain-error rules; registry resolution, argument validation, input-requirement enforcement, tracing, and output validation are performed by `rxchef::execution`.\n\n## Command-line use\n\n{}\n\nArguments may be supplied positionally in the table order or by name with repeatable `--arg NAME=VALUE`. Omitted optional arguments use the documented defaults.\n\n## Pipeline use\n\nPlace the operation anywhere a `{}` value is valid. Its `{}` result becomes the next step's input. Compact syntax uses the operation name followed by comma-separated arguments; JSON/YAML recipes use an `op` field and an `args` array.\n\n## Error conditions\n\nSchema violations are rejected before the operation runs. Malformed input, unsupported parameter combinations, unavailable optional backends, and domain processing failures produce structured errors and a non-zero CLI status; partial output is never reported as success.\n\n## CyberChef compatibility\n\nParity status: `{:?}`. `Unknown` records an unassessed compatibility claim; it does not imply equality or incompatibility.\n\n## Security considerations\n\nDeclared side effects: `{:?}`. Treat parser inputs as untrusted and apply execution limits to large data. Arguments marked sensitive in the schema are redacted from metadata-aware History displays.\n\n## Testing evidence\n\n{}\n\n## Performance classification\n\n{}{}\n\n## References\n\n- [Operation quality matrix](../reference/operation-matrix.md)\n- [Operation arguments](../concepts/operation-arguments.md)\n- [CLI run documentation](../cli/run.md)\n",
             rxchef::runtime::operation_source(info.name)?,
             data_type_name(info.input_type),
             data_type_name(info.output_type),
-            escaped_name,
-            escaped_name,
-            escaped_name,
+            command_line,
+            data_type_name(info.input_type),
+            data_type_name(info.output_type),
             info.parity,
             info.side_effects,
             testing,
             performance,
-            if info.known_limitations.is_empty() { "No verified limitation metadata is currently recorded; this is not a claim of perfect upstream parity.".to_string() } else { info.known_limitations.join("\n- ") },
+            limitations,
         ));
 
         let file_name = format!("{}.md", name.replace('/', "_"));

@@ -1,7 +1,0 @@
-rm: conftest.dSYM: is a directory
-rm: conftest.dSYM: is a directory
-rm: conftest.dSYM: is a directory
-rm: conftest.dSYM: is a directory
-ld: warning: -bind_at_load is deprecated on macOS
-ld: warning: object file (/Users/michaelweiss/space/decode/rxchef/fuzz/target/debug/build/libfuzzy-sys-16e2659d905a1b91/out/.libs/libfuzzy.a[2](fuzzy.o)) was built for newer 'macOS' version (26.4) than being linked (26.0)
-ld: warning: object file (/Users/michaelweiss/space/decode/rxchef/fuzz/target/debug/build/libfuzzy-sys-16e2659d905a1b91/out/.libs/libfuzzy.a[4](find-file-size.o)) was built for newer 'macOS' version (26.4) than being linked (26.0)

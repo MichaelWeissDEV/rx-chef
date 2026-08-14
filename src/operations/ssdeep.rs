@@ -8,6 +8,8 @@
  * -----------------------------------------------------------------------------
  */
 
+use fuzzyhash::FuzzyHash;
+
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
 
 /// SSDEEP fuzzy hash operation
@@ -44,8 +46,6 @@ impl Operation for SSDEEP {
     }
 
     fn run(&self, input: Vec<u8>, _args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
-        let hash = ssdeep::hash(&input)
-            .map_err(|e| OperationError::InvalidInput(format!("SSDEEP hash error: {}", e)))?;
-        Ok(hash.into_bytes())
+        Ok(FuzzyHash::new(input).to_string().into_bytes())
     }
 }

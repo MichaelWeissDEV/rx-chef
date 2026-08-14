@@ -2,6 +2,7 @@
 // Run only these tests:
 //   cargo test -p cyberchef-rust-tests --test operations compare_ctph_hashes::
 
+use fuzzyhash::FuzzyHash;
 use rxchef::operation::ArgValue;
 use rxchef::operations::compare_ctph_hashes::CompareCTPHHashes;
 use rxchef::Operation;
@@ -11,7 +12,7 @@ fn test_compare_identical_hashes() {
     let op = CompareCTPHHashes;
     // Generate a real ssdeep hash and compare it with itself
     let data = vec![b'A'; 1024];
-    let hash = ssdeep::hash(&data).expect("hash should succeed");
+    let hash = FuzzyHash::new(&data).to_string();
     let input = format!("{}\n{}", hash, hash);
     let result = op
         .run(
@@ -30,8 +31,8 @@ fn test_compare_different_hashes() {
     let op = CompareCTPHHashes;
     let data1 = vec![b'A'; 1024];
     let data2 = vec![b'Z'; 1024];
-    let hash1 = ssdeep::hash(&data1).expect("hash should succeed");
-    let hash2 = ssdeep::hash(&data2).expect("hash should succeed");
+    let hash1 = FuzzyHash::new(&data1).to_string();
+    let hash2 = FuzzyHash::new(&data2).to_string();
     let input = format!("{}\n{}", hash1, hash2);
     let result = op
         .run(

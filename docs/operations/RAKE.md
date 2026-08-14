@@ -11,6 +11,7 @@ Rapid Keyword Extraction (RAKE)<br><br>RAKE is a domain-independent keyword extr
 | Implementation | `Partial` |
 | Parity | `Unknown` |
 | Availability | Available |
+| Input requirement | `Required` |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -31,66 +32,47 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 | 2 | Sentence Delimiter (Regex) | `Regex` | no | `\\.\\s\|\\n` | — | no | Sentence Delimiter (Regex) |
 | 3 | Stop Words | `String` | no | `i,me,my,myself,we,our,ours,ourselves,you,you're,you've,you'll,you'd,your,yours,yourself,yourselves,he,him,his,himself,she,she's,her,hers,herself,it,it's,its,itsef,they,them,their,theirs,themselves,what,which,who,whom,this,that,that'll,these,those,am,is,are,was,were,be,been,being,have,has,had,having,do,does',did,doing,a,an,the,and,but,if,or,because,as,until,while,of,at,by,for,with,about,against,between,into,through,during,before,after,above,below,to,from,up,down,in,out,on,off,over,under,again,further,then,once,here,there,when,where,why,how,all,any,both,each,few,more,most,other,some,such,no,nor,not,only,own,same,so,than,too,very,s,t,can,will,just,don,don't,should,should've,now,d,ll,m,o,re,ve,y,ain,aren,aren't,couldn,couldn't,didn,didn't,doesn,doesn't,hadn,hadn't,hasn,hasn't,haven,haven't,isn,isn't,ma,mightn,mightn't,mustn,mustn't,needn,needn't,shan,shan't,shouldn,shouldn't,wasn,wasn't,weren,weren't,won,won't,wouldn,wouldn't` | — | no | Stop Words (comma separated) |
 
-## How it works
-
-Rapid Keyword Extraction (RAKE)<br><br>RAKE is a domain-independent keyword extraction algorithm in Natural Language Processing.<br><br>The list of stop words are from the NLTK python package
-
 ## Implementation
 
-The implementation is in `src/operations/rake.rs` and declares `String` input and `String` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
+The implementation is in `src/operations/rake.rs` and declares `String` input and `String` output. The operation module owns conversion and domain-error rules; registry resolution, argument validation, input-requirement enforcement, tracing, and output validation are performed by `rxchef::execution`.
 
-## Examples
+## Command-line use
 
-```console
-printf 'input' | rxchef run "RAKE"
-```
-
-For file or binary input use `rxchef run "RAKE" --input-file INPUT --output-file OUTPUT`.
-
-## Pipeline usage
+This operation requires input. Supply literal UTF-8 with `--input`, exact bytes with `--input-file`, or pipe bytes on stdin.
 
 ```console
-printf 'input' | rxchef pipe "RAKE" to_base64
+rxchef run "RAKE" --input-file input.bin --output-file output.bin
 ```
+
+Arguments may be supplied positionally in the table order or by name with repeatable `--arg NAME=VALUE`. Omitted optional arguments use the documented defaults.
+
+## Pipeline use
+
+Place the operation anywhere a `String` value is valid. Its `String` result becomes the next step's input. Compact syntax uses the operation name followed by comma-separated arguments; JSON/YAML recipes use an `op` field and an `args` array.
 
 ## Error conditions
 
-Invalid input representations, invalid argument values, unavailable feature backends, and operation-specific processing failures return an error and a non-zero CLI status. Exact limitations are listed below when known.
+Schema violations are rejected before the operation runs. Malformed input, unsupported parameter combinations, unavailable optional backends, and domain processing failures produce structured errors and a non-zero CLI status; partial output is never reported as success.
 
 ## CyberChef compatibility
 
-Parity status: `Unknown`. `Unknown` means compatibility has not been independently verified and must not be read as an exact-match claim.
+Parity status: `Unknown`. `Unknown` records an unassessed compatibility claim; it does not imply equality or incompatibility.
 
 ## Security considerations
 
-Side effects: `[]`. Treat parser inputs as untrusted and use execution limits for large data. Sensitive arguments are redacted by metadata-aware History output.
+Declared side effects: `[]`. Treat parser inputs as untrusted and apply execution limits to large data. Arguments marked sensitive in the schema are redacted from metadata-aware History displays.
 
-## Testing
+## Testing evidence
 
-Correctness:
+Correctness tests:
 - tests/tests/operations/rake.rs
 
-Known-answer:
-- none recorded
+## Performance classification
 
-Differential:
-- none recorded
-
-Property:
-- none recorded
-
-Fuzz:
-- none recorded
-
-## Performance
-
-Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
-
-## Limitations
-
-No verified limitation metadata is currently recorded; this is not a claim of perfect upstream parity.
+Excluded from the committed representative benchmark set: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## References
 
 - [Operation quality matrix](../reference/operation-matrix.md)
+- [Operation arguments](../concepts/operation-arguments.md)
 - [CLI run documentation](../cli/run.md)

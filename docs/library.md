@@ -2,6 +2,196 @@
 
 The `rxchef` crate exposes operation discovery, direct execution, typed values, pipelines, Magic, and scanning. Operations are stateless boxed trait objects and can be looked up by canonical name.
 
+## Choose the right API layer
+
+| Need | API |
+|---|---|
+| Stable operation descriptors | `rxchef::catalog` |
+| One operation with structured execution errors | `rxchef::execute::run` |
+| Complete recipe, variables, tracing, and limits | `rxchef::execute::bake` |
+| Serializable UI/server result envelope | `rxchef::integration` |
+| Typed in-process linear pipeline | `rxchef::Pipeline` |
+| Low-level metadata and argument parsing | `rxchef::runtime` |
+| Recursive decoder search | `rxchef::magic` |
+| Token/entropy scanning | `rxchef::scan` |
+| Direct operation trait objects | `rxchef::operations` |
+
+Applications should begin with `catalog` and `execute`. The lower layers are
+public for hosts that need typed composition or specialized policies, but they
+expose more internal concepts and require more decisions from the caller.
+
+The Store is a separate crate. Depending on `rxchef` does not create user files,
+discover `.rxchef`, or import CLI state.
+
+## Add the dependency
+
+From a checkout or workspace:
+
+```toml
+[dependencies]
+rxchef = { path = "../rxchef" }
+```
+
+Enable optional operation backends explicitly:
+
+```toml
+[dependencies]
+rxchef = { path = "../rxchef", features = ["pgp", "jsonata"] }
+```
+
+`full` enables all optional backends and may require native OCR libraries. A
+minimal embedder should select only the capabilities it exposes.
+
+## Stable catalog API
+
+List descriptors in stable name order and resolve normalized names:
+
+```rust
+use rxchef::catalog;
+
+let operations = catalog::operations()?;
+let base64 = catalog::describe("from-base64")?;
+
+assert_eq!(base64.name, "From Base64");
+assert!(operations.iter().any(|item| item.id == base64.id));
+# Ok::<(), rxchef::catalog::CatalogError>(())
+```
+
+An `OperationDescriptor` contains the complete argument schema plus input/output
+types, input requirement, implementation status, availability, features,
+platform targets, side effects, determinism, parity, limitations, and the
+documentation slug. Render forms directly from descriptors instead of copying
+argument lists into application code.
+
+Catalog errors distinguish “not found” from invalid registry metadata. Feature-
+disabled operations remain describable; check `availability` before presenting
+an execution action.
+
+## High-level single-operation execution
+
+```rust
+use rxchef::execute;
+
+let outcome = execute::run(
+    "XOR",
+    vec![0x00, 0xff, 0x41],
+    vec![
+        "hex:2a".into(),
+        "Standard".into(),
+        "false".into(),
+    ],
+)?;
+
+assert_eq!(outcome.output.len(), 3);
+# Ok::<(), execute::ExecutionError>(())
+```
+
+`execute::run` treats the supplied vector as present input even when it is empty.
+This is usually the desired Rust API behavior. Hosts that model “no input
+source” must construct an `ExecutionRequest` and set `input_supplied` explicitly.
+
+Arguments use the same string parser as CLI recipes. This makes configuration
+portable, while the lower typed `Pipeline` API avoids string parsing when the
+caller already owns typed values.
+
+## Complete execution request
+
+```rust
+use rxchef::execute::{
+    bake, ExecutionOptions, ExecutionRequest, RecipeStep, VariableContext,
+};
+
+let variables = VariableContext::new([
+    ("KEY".to_string(), "hex:2a".to_string()),
+]);
+
+let request = ExecutionRequest {
+    input: b"hello".to_vec(),
+    input_supplied: true,
+    recipe: vec![
+        RecipeStep {
+            op: "XOR".into(),
+            args: vec!["$KEY".into(), "Standard".into(), "false".into()],
+        },
+        RecipeStep {
+            op: "To Base64".into(),
+            args: vec![],
+        },
+    ]
+    .into(),
+    variables,
+    options: ExecutionOptions {
+        trace: true,
+        max_steps: 1_000,
+        max_output_bytes: Some(16 * 1024 * 1024),
+    },
+};
+
+let outcome = bake(request)?;
+assert_eq!(outcome.trace.len(), 2);
+assert!(!outcome.output.is_empty());
+# Ok::<(), rxchef::execute::ExecutionError>(())
+```
+
+The recipe is validated before execution. `max_steps` counts control-flow and
+repeated branch/jump work, not only the source array length. `max_output_bytes`
+applies to intermediate as well as final results.
+
+Trace entries contain operation identity, byte counts, duration, and status.
+They deliberately do not retain payloads or arguments, which keeps secrets and
+large intermediate data out of diagnostics.
+
+## Missing versus empty input
+
+The two states are modeled explicitly:
+
+```rust
+use rxchef::execute::{
+    bake, ExecutionOptions, ExecutionRequest, RecipeStep, VariableContext,
+};
+
+let request = ExecutionRequest {
+    input: Vec::new(),
+    input_supplied: false,
+    recipe: vec![RecipeStep {
+        op: "From Base64".into(),
+        args: vec![],
+    }]
+    .into(),
+    variables: VariableContext::default(),
+    options: ExecutionOptions::default(),
+};
+
+assert!(bake(request).is_err());
+```
+
+Set `input_supplied: true` with the same empty vector to represent an explicitly
+empty file or body. Required-input operations accept the latter and reject the
+former.
+
+## Structured execution errors
+
+Match variants rather than parsing `Display` text:
+
+```rust
+use rxchef::execute::ExecutionError;
+
+fn classify(error: &ExecutionError) -> &'static str {
+    match error {
+        ExecutionError::InvalidRecipe(_) => "recipe",
+        ExecutionError::Step { .. } => "step",
+        ExecutionError::RuntimeStep { .. } => "runtime",
+        ExecutionError::StepLimitExceeded { .. } => "step-limit",
+        ExecutionError::OutputLimitExceeded { .. } => "output-limit",
+    }
+}
+```
+
+`RuntimeStep` retains a `runtime::RuntimeError` source with variants for unknown
+operations, feature/platform availability, invalid arguments, operation domain
+errors, and output validation. The one-based step index and operation name are
+available at the recipe error layer.
+
 ## Integration API
 
 Editor and plugin authors can use the same API that backs `operations`, `operation describe`, `bake`, and `serve --stdio`:

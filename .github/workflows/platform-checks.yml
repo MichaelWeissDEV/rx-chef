@@ -1,0 +1,58 @@
+name: Platform checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux-container:
+    name: Linux release container
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run the complete Linux release gate
+        run: ./scripts/release-check-linux.sh
+
+  windows-cross-container:
+    name: Windows GNU cross-build container
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cross-build Windows CLI and TUI
+        run: ./scripts/check-windows-cross.sh
+
+  native-portability:
+    name: Native ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the pinned Rust toolchain
+        run: |
+          rustup toolchain install 1.96.1 --profile minimal --component rustfmt,clippy
+          rustup default 1.96.1
+      - name: Install documentation dependencies
+        run: python -m pip install --disable-pip-version-check -r docs/requirements.txt
+      - name: Run the native portability gate
+        run: ./scripts/check-native-platform.sh

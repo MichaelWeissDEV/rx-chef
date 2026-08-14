@@ -1,6 +1,9 @@
 # Architecture overview
 
-rxchef is organized as a layered system that separates the reusable core logic from the CLI, TUI, and storage layers.
+rxchef is organized as a layered system that separates reusable transformation
+logic from CLI, TUI, protocol, FFI, and storage adapters. This page is the short
+map; [System design](system-design.md) follows requests, errors, bytes, control
+flow, persistence, and generated metadata through every layer.
 
 ## High-level structure
 

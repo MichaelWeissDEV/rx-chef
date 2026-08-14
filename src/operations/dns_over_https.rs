@@ -14,6 +14,48 @@ use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError}
 
 const MAX_RESPONSE_BYTES: u64 = 8 * 1024 * 1024;
 
+fn resolver_url(
+    resolver: &str,
+    domain: &str,
+    request_type: &str,
+    disable_dnssec: bool,
+) -> Result<url::Url, OperationError> {
+    let mut url = url::Url::parse(resolver).map_err(|e| OperationError::InvalidArgument {
+        name: "Resolver".to_string(),
+        reason: format!("Invalid Resolver URL: {}", e),
+    })?;
+    url.query_pairs_mut()
+        .append_pair("name", domain.trim())
+        .append_pair("type", request_type)
+        .append_pair("cd", if disable_dnssec { "true" } else { "false" });
+    Ok(url)
+}
+
+fn format_response(body: &[u8], just_answer: bool) -> Result<Vec<u8>, OperationError> {
+    let data: serde_json::Value = serde_json::from_slice(body).map_err(|e| {
+        OperationError::ProcessingError(format!("Error parsing JSON response: {}", e))
+    })?;
+
+    if just_answer {
+        let extracted = data
+            .get("Answer")
+            .and_then(|answers| answers.as_array())
+            .map(|answers| {
+                answers
+                    .iter()
+                    .filter_map(|answer| answer.get("data").cloned())
+                    .collect::<Vec<_>>()
+            })
+            .unwrap_or_default();
+        return serde_json::to_vec_pretty(&serde_json::Value::Array(extracted)).map_err(|e| {
+            OperationError::ProcessingError(format!("Error serializing response: {}", e))
+        });
+    }
+
+    serde_json::to_vec_pretty(&data)
+        .map_err(|e| OperationError::ProcessingError(format!("Error serializing response: {}", e)))
+}
+
 /// DNS over HTTPS operation
 pub struct DnsOverHttps;
 
@@ -104,15 +146,7 @@ impl Operation for DnsOverHttps {
             return Ok(b"{}".to_vec());
         }
 
-        let mut url = url::Url::parse(resolver).map_err(|e| OperationError::InvalidArgument {
-            name: "Resolver".to_string(),
-            reason: format!("Invalid Resolver URL: {}", e),
-        })?;
-
-        url.query_pairs_mut()
-            .append_pair("name", domain.trim())
-            .append_pair("type", request_type)
-            .append_pair("cd", if disable_dnssec { "true" } else { "false" });
+        let url = resolver_url(resolver, &domain, request_type, disable_dnssec)?;
 
         // reqwest is expected to be available for making HTTP requests
         let client = reqwest::blocking::Client::builder()
@@ -155,29 +189,50 @@ impl Operation for DnsOverHttps {
                 "DNS response exceeds the 8 MiB limit".to_string(),
             ));
         }
-        let data: serde_json::Value = serde_json::from_slice(&body).map_err(|e| {
-            OperationError::ProcessingError(format!("Error parsing JSON response: {}", e))
-        })?;
+        format_response(&body, just_answer)
+    }
+}
 
-        if just_answer {
-            if let Some(answers) = data.get("Answer").and_then(|a| a.as_array()) {
-                let mut extracted = Vec::new();
-                for answer in answers {
-                    if let Some(d) = answer.get("data") {
-                        extracted.push(d.clone());
-                    }
-                }
-                let extracted_json = serde_json::Value::Array(extracted);
-                return serde_json::to_vec_pretty(&extracted_json).map_err(|e| {
-                    OperationError::ProcessingError(format!("Error serializing response: {}", e))
-                });
-            } else {
-                return Ok(b"[]".to_vec());
-            }
-        }
+#[cfg(test)]
+mod tests {
+    use super::{format_response, resolver_url};
 
-        serde_json::to_vec_pretty(&data).map_err(|e| {
-            OperationError::ProcessingError(format!("Error serializing response: {}", e))
-        })
+    const RESPONSE: &[u8] =
+        br#"{"Status":0,"Answer":[{"name":"example.com.","type":1,"TTL":60,"data":"192.0.2.1"}]}"#;
+
+    #[test]
+    fn resolver_url_encodes_query_and_dnssec_flag() {
+        let url = resolver_url(
+            "https://resolver.example/dns-query",
+            "example.com",
+            "AAAA",
+            true,
+        )
+        .unwrap();
+        let pairs = url.query_pairs().collect::<Vec<_>>();
+        assert!(pairs
+            .iter()
+            .any(|pair| pair.0 == "name" && pair.1 == "example.com"));
+        assert!(pairs
+            .iter()
+            .any(|pair| pair.0 == "type" && pair.1 == "AAAA"));
+        assert!(pairs.iter().any(|pair| pair.0 == "cd" && pair.1 == "true"));
+    }
+
+    #[test]
+    fn response_formatter_preserves_document_or_extracts_answers() {
+        let complete: serde_json::Value =
+            serde_json::from_slice(&format_response(RESPONSE, false).unwrap()).unwrap();
+        assert_eq!(complete["Status"], 0);
+        assert_eq!(complete["Answer"][0]["name"], "example.com.");
+
+        let answers: serde_json::Value =
+            serde_json::from_slice(&format_response(RESPONSE, true).unwrap()).unwrap();
+        assert_eq!(answers, serde_json::json!(["192.0.2.1"]));
+    }
+
+    #[test]
+    fn response_formatter_rejects_invalid_json() {
+        assert!(format_response(b"not json", false).is_err());
     }
 }

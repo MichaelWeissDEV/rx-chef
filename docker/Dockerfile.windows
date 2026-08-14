@@ -1,0 +1,27 @@
+FROM debian:bookworm-slim
+
+ARG RUST_TOOLCHAIN=1.96.1
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PATH=/root/.cargo/bin:${PATH} \
+    CARGO_TERM_COLOR=always \
+    CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER=x86_64-w64-mingw32-gcc \
+    CC_x86_64_pc_windows_gnu=x86_64-w64-mingw32-gcc \
+    CXX_x86_64_pc_windows_gnu=x86_64-w64-mingw32-g++ \
+    AR_x86_64_pc_windows_gnu=x86_64-w64-mingw32-ar
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential ca-certificates clang cmake curl file git \
+        gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 llvm-dev pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+        | sh -s -- -y --profile minimal --default-toolchain "${RUST_TOOLCHAIN}" \
+    && rustup target add x86_64-pc-windows-gnu \
+    && rustup component add rustfmt
+
+COPY docker/windows-entrypoint.sh /usr/local/bin/rxchef-windows-entrypoint
+RUN chmod 0755 /usr/local/bin/rxchef-windows-entrypoint
+
+WORKDIR /src
+ENTRYPOINT ["/usr/local/bin/rxchef-windows-entrypoint"]

@@ -143,7 +143,7 @@ phf = "0.13.1"
 phf_codegen = "0.13.1"
 deku = "0.20.3"
 rc6 = "0.1.0"
-ssdeep = "0.7.0"
+fuzzyhash = "0.2.2"
 tlv_parser = "0.10.0"
 ssh-key = "0.6.7"
 der = { version = "0.8.0", features = ["alloc", "heapless"] }
@@ -166,6 +166,12 @@ kamadak-exif = "0.6.1"
 lofty      = "0.24.0"
 ab_glyph   = "0.2"
 tesseract-rs = { version = "0.4", optional = true, default-features = false, features = ["use-system-tesseract"] }
+
+# Fernet uses the OpenSSL crate. Native Unix builds use the system library,
+# while Windows builds use the vendored source so native and GNU cross-builds
+# do not depend on a separately installed Windows OpenSSL SDK.
+[target.'cfg(windows)'.dependencies]
+openssl = { version = "0.10.81", features = ["vendored"] }
 
 [features]
 default = []

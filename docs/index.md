@@ -24,18 +24,20 @@ C-compatible FFI, and persistent JSONL/JSON-RPC server.
 - **Generated operation documentation** kept synchronized with runtime metadata
   and checked by the local Linux release pipeline.
 
-The intended release platform is Linux x86_64 through the reproducible Docker
-release check. The original-tree Linux baseline passed; final verification of
-the current consolidated tree is still pending. macOS and Windows are not
-release-verified. The [current release report](development/final-linux-release-report.md)
-separates baseline and current-tree evidence.
+rxchef targets Linux, macOS, and Windows. Most of the code is portable Rust;
+optional native backends and terminal behavior are described explicitly in the
+installation and feature documentation. A reproducible Linux x86_64 container
+executes the complete local release pipeline, while native hosts can run the
+same Cargo, documentation, protocol, and smoke-test gates directly.
 
 ## Start here
 
 | Goal | Documentation |
 |---|---|
 | Install or build rxchef | [Installation](getting-started/installation.md) |
+| Build on Linux, macOS, or Windows | [Platform support](getting-started/platforms.md) |
 | Run the first transformations | [Quickstart](getting-started/quickstart.md) |
+| Learn the complete terminal workflow | [CLI handbook](cli/handbook.md) |
 | Understand stdin, files, and stdout | [Input and output](concepts/input-output.md) |
 | Explore every CLI command | [CLI reference](cli/reference.md) |
 | Compose operations | [Pipelines](concepts/pipelines.md) and [recipes](cli/recipes.md) |
@@ -43,6 +45,7 @@ separates baseline and current-tree evidence.
 | Embed rxchef in Rust | [Rust library](library.md) |
 | Find an operation and its arguments | [Operation catalog](operations/index.md) |
 | Understand optional backends | [Feature matrix](reference/feature-matrix.md) |
+| Understand internal component flow | [System design](architecture/system-design.md) |
 | Contribute to the project | [Contributing](project/contributing.md) |
 
 ## Quick example

@@ -15,6 +15,7 @@ forensics, image processing, and more.
 
 **[Documentation](https://rx-chef.readthedocs.io/en/latest/)** ·
 **[CLI reference](https://rx-chef.readthedocs.io/en/latest/cli/reference/)** ·
+**[CLI handbook](https://rx-chef.readthedocs.io/en/latest/cli/handbook/)** ·
 **[Operation catalog](https://rx-chef.readthedocs.io/en/latest/operations/)** ·
 **[Rust library](https://rx-chef.readthedocs.io/en/latest/library/)** ·
 **[GitHub repository](https://github.com/MichaelWeissDEV/rx-chef)**
@@ -39,13 +40,15 @@ forensics, image processing, and more.
 
 ## Release verification
 
-The intended release target is **Linux x86_64**, with a reproducible Docker
-gate at `./scripts/release-check-linux.sh`. The original-tree Linux baseline
-passed, but the current consolidated tree has not completed that final Docker
-gate and must not yet be described as release-verified. See the
-[current release report](docs/development/final-linux-release-report.md).
-macOS and Windows may work, but are not release-verified. GitHub Actions is not
-a release gate for this version.
+rxchef is written as a portable Rust application for Linux, macOS, and Windows.
+The repository includes a reproducible Linux x86_64 container gate at
+`./scripts/release-check-linux.sh`, a Windows GNU cross-build container, and
+native macOS and Windows jobs. The same gates are wired into the GitHub Actions
+platform matrix; they are also directly runnable before a local release.
+
+Platform setup, the Linux release container, Windows cross-build container, and
+native host gates are documented in the
+[platform guide](https://rx-chef.readthedocs.io/en/latest/getting-started/platforms/).
 
 ## Installation
 
@@ -108,7 +111,8 @@ to the same registry entry. Typed arguments use prefixes such as `num:12.5`,
 `bool:true`, and `hex:48656c6c6f`.
 
 For the full command surface and shell-composition rules, read the
-[CLI documentation](https://rx-chef.readthedocs.io/en/latest/cli/).
+[CLI handbook](https://rx-chef.readthedocs.io/en/latest/cli/handbook/) and
+[complete command reference](https://rx-chef.readthedocs.io/en/latest/cli/reference/).
 
 ## Recipes and flow control
 

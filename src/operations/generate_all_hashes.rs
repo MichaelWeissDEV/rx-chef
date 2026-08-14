@@ -10,6 +10,7 @@
 
 use blake2::{Blake2b512, Blake2s256};
 use digest::Digest as Digest11;
+use fuzzyhash::FuzzyHash;
 use md2::Md2;
 use md4::Md4;
 use md5::Md5;
@@ -120,10 +121,7 @@ impl Operation for GenerateAllHashes {
         hashes.push(("BLAKE2b-512", run_hash10::<Blake2b512>(&input)));
         hashes.push(("BLAKE2s-256", run_hash10::<Blake2s256>(&input)));
 
-        // SSDEEP is in Cargo.toml as a regular dependency
-        if let Ok(h) = ssdeep::hash(&input) {
-            hashes.push(("SSDEEP", h));
-        }
+        hashes.push(("SSDEEP", FuzzyHash::new(&input).to_string()));
 
         let mut output = String::new();
         for (name, digest) in hashes {

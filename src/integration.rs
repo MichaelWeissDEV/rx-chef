@@ -117,9 +117,9 @@ pub fn describe(operation: &str) -> Result<OperationDescriptor, String> {
             .map(|value| (*value).to_string())
             .collect(),
         platform_requirements: vec![
-            "Linux x86_64 verified".to_string(),
-            "macOS not release-verified".to_string(),
-            "Windows not release-verified".to_string(),
+            "Linux".to_string(),
+            "macOS".to_string(),
+            "Windows".to_string(),
         ],
         side_effects: info.side_effects.to_vec(),
         deterministic: info.deterministic,

@@ -13,6 +13,7 @@ nav:
   - Home: index.md
   - Getting Started:
       - Installation: getting-started/installation.md
+      - Platforms: getting-started/platforms.md
       - Quickstart: getting-started/quickstart.md
       - First Pipeline: getting-started/first-pipeline.md
   - Project:
@@ -22,6 +23,7 @@ nav:
       - Contributing: project/contributing.md
   - Architecture:
       - Overview: architecture/overview.md
+      - System design: architecture/system-design.md
       - Execution Engine: architecture/execution-engine.md
       - Operation Model: architecture/operation-model.md
       - Pipeline Engine: architecture/pipeline-engine.md
@@ -45,6 +47,9 @@ nav:
       - Variables: concepts/variables.md
   - CLI:
       - Overview: cli/index.md
+      - Handbook: cli/handbook.md
+      - Operation discovery: cli/discovery.md
+      - Bake: cli/bake.md
       - History: cli/history.md
       - Info: cli/info.md
       - List: cli/list.md
@@ -55,7 +60,9 @@ nav:
       - Project: cli/project.md
       - Recipe: cli/recipe.md
       - Recipe formats: cli/recipes.md
+      - Serve: cli/serve.md
       - Editor integration: cli/integration.md
+      - Shell integration: cli/shell-integration.md
       - Reference: cli/reference.md
       - Run: cli/run.md
       - Scan: cli/scan.md
@@ -79,12 +86,6 @@ nav:
       - Benchmarking: development/benchmarking.md
       - Fuzzing: development/fuzzing.md
       - Release process: development/release-process.md
-      - Current status: development/current-status.md
-      - Baseline: development/baseline.md
-      - Linux baseline: development/linux-baseline.md
-      - Refactor log: development/refactor-log.md
-      - Current Linux release report: development/final-linux-release-report.md
-      - Final release report: development/final-release-report.md
 
 markdown_extensions:
   - toc:
@@ -95,5 +96,4 @@ markdown_extensions:
   - attr_list
 
 not_in_nav: |
-  /installation.md
   /operations/*.md

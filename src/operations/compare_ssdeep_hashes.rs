@@ -8,7 +8,7 @@
  * -----------------------------------------------------------------------------
  */
 
-use ssdeep;
+use fuzzyhash::FuzzyHash;
 
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
 
@@ -70,7 +70,8 @@ impl Operation for CompareSSDEEPHashes {
             ));
         }
 
-        let similarity = ssdeep::compare(samples[0], samples[1]).unwrap_or(0); // ssdeep::compare returns an Option or Result depending on version, fallback to 0 or map error.
+        let similarity = FuzzyHash::compare(samples[0].trim(), samples[1].trim())
+            .map_err(|e| OperationError::InvalidInput(format!("SSDEEP compare error: {}", e)))?;
 
         Ok(similarity.to_string().into_bytes())
     }

@@ -16,7 +16,8 @@ output together with the commit, CPU model, operating system, and whether the
 machine was on battery power. The [methodology](methodology.md) explains the
 reported statistics and limitations.
 
-The machine-readable artifact is `benchmarks/results/linux-x86_64.json` only
-after the Linux release harness runs. Measurements made on another host are
-stored as `benchmarks/results/host-unverified.json` and are not Linux release
-evidence.
+Machine-readable results are written below `target/benchmarks/` and are build
+artifacts rather than versioned project files. To publish a result elsewhere,
+set `RXCHEF_BENCH_OUTPUT` to the collector's path. Every JSON document includes
+the commit, Rust version, operating system, architecture, CPU label, suite, and
+per-case sample statistics.

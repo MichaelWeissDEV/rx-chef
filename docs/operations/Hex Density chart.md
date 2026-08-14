@@ -11,6 +11,7 @@ Hex density charts are used in a similar way to scatter charts, however rather t
 | Implementation | `Partial` |
 | Parity | `Unknown` |
 | Availability | Available |
+| Input requirement | `Required` |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -39,66 +40,47 @@ Declared output type: `HTML`. Redirect stdout or use `--output-file` for exact b
 | 10 | Max colour value | `String` | no | `#000000` | — | no | Colour for high density |
 | 11 | Draw empty hexagons within data boundaries | `Boolean` | no | `false` | — | no | Whether to draw empty hexagons |
 
-## How it works
-
-Hex density charts are used in a similar way to scatter charts, however rather than rendering tens of thousands of points, it groups the points into a few hundred hexagons to show the distribution.
-
 ## Implementation
 
-The implementation is in `src/operations/hex_density_chart.rs` and declares `String` input and `HTML` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
+The implementation is in `src/operations/hex_density_chart.rs` and declares `String` input and `HTML` output. The operation module owns conversion and domain-error rules; registry resolution, argument validation, input-requirement enforcement, tracing, and output validation are performed by `rxchef::execution`.
 
-## Examples
+## Command-line use
 
-```console
-printf 'input' | rxchef run "Hex Density chart"
-```
-
-For file or binary input use `rxchef run "Hex Density chart" --input-file INPUT --output-file OUTPUT`.
-
-## Pipeline usage
+This operation requires input. Supply literal UTF-8 with `--input`, exact bytes with `--input-file`, or pipe bytes on stdin.
 
 ```console
-printf 'input' | rxchef pipe "Hex Density chart" to_base64
+rxchef run "Hex Density chart" --input-file input.bin --output-file output.bin
 ```
+
+Arguments may be supplied positionally in the table order or by name with repeatable `--arg NAME=VALUE`. Omitted optional arguments use the documented defaults.
+
+## Pipeline use
+
+Place the operation anywhere a `String` value is valid. Its `HTML` result becomes the next step's input. Compact syntax uses the operation name followed by comma-separated arguments; JSON/YAML recipes use an `op` field and an `args` array.
 
 ## Error conditions
 
-Invalid input representations, invalid argument values, unavailable feature backends, and operation-specific processing failures return an error and a non-zero CLI status. Exact limitations are listed below when known.
+Schema violations are rejected before the operation runs. Malformed input, unsupported parameter combinations, unavailable optional backends, and domain processing failures produce structured errors and a non-zero CLI status; partial output is never reported as success.
 
 ## CyberChef compatibility
 
-Parity status: `Unknown`. `Unknown` means compatibility has not been independently verified and must not be read as an exact-match claim.
+Parity status: `Unknown`. `Unknown` records an unassessed compatibility claim; it does not imply equality or incompatibility.
 
 ## Security considerations
 
-Side effects: `[]`. Treat parser inputs as untrusted and use execution limits for large data. Sensitive arguments are redacted by metadata-aware History output.
+Declared side effects: `[]`. Treat parser inputs as untrusted and apply execution limits to large data. Arguments marked sensitive in the schema are redacted from metadata-aware History displays.
 
-## Testing
+## Testing evidence
 
-Correctness:
+Correctness tests:
 - tests/tests/operations/hex_density_chart.rs
 
-Known-answer:
-- none recorded
+## Performance classification
 
-Differential:
-- none recorded
-
-Property:
-- none recorded
-
-Fuzz:
-- none recorded
-
-## Performance
-
-Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
-
-## Limitations
-
-No verified limitation metadata is currently recorded; this is not a claim of perfect upstream parity.
+Excluded from the committed representative benchmark set: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## References
 
 - [Operation quality matrix](../reference/operation-matrix.md)
+- [Operation arguments](../concepts/operation-arguments.md)
 - [CLI run documentation](../cli/run.md)

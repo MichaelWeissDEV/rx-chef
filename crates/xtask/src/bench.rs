@@ -501,13 +501,18 @@ pub fn run_docs_internal(args: &[String]) -> Result<(), String> {
     let measurements = build_cases(mode == "full")?;
     let root =
         PathBuf::from(env::var("CARGO_MANIFEST_DIR").map_err(|e| e.to_string())?).join("../..");
-    let output = root.join(
-        if env::consts::OS == "linux" && env::consts::ARCH == "x86_64" {
-            "benchmarks/results/linux-x86_64.json"
-        } else {
-            "benchmarks/results/host-unverified.json"
-        },
-    );
+    let output = env::var_os("RXCHEF_BENCH_OUTPUT")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| {
+            let target_dir = env::var_os("CARGO_TARGET_DIR")
+                .map(PathBuf::from)
+                .unwrap_or_else(|| root.join("target"));
+            target_dir.join(format!(
+                "benchmarks/{}-{}-{mode}.json",
+                env::consts::OS,
+                env::consts::ARCH
+            ))
+        });
     fs::create_dir_all(output.parent().unwrap()).map_err(|e| e.to_string())?;
     let document = serde_json::json!({
         "schema_version": 1,

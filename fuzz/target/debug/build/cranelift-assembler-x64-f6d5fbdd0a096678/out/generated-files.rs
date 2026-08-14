@@ -1,3 +1,0 @@
-vec![
-  "/Users/michaelweiss/space/decode/rxchef/fuzz/target/debug/build/cranelift-assembler-x64-f6d5fbdd0a096678/out/assembler.rs".into(),
-]

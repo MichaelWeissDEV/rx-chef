@@ -6,6 +6,16 @@ The canonical, version-specific syntax is always available from `rxchef COMMAND 
 
 Lists complete operation descriptors through the stable integration API. `--json` emits canonical name, module, description, types, broken flag, and the ordered argument schema for every operation. This is the recommended discovery command for editor plugins; `list --json` remains a compact name array.
 
+- `--search TEXT`: match names, stable identifiers, and descriptions.
+- `--module MODULE`: restrict results to one operation category.
+- `--status STATUS`: select `complete`, `partial`, `unsupported`,
+  `feature-gated`, or `experimental` entries.
+- `--all`: include operations unavailable in the active feature build.
+- `--json`: emit complete descriptors instead of the human listing.
+
+Filters combine with logical AND. Use `operations --all --json` when building a
+capability index: availability and implementation status are independent fields.
+
 ## `operation describe OPERATION`
 
 Resolves normalized names and returns one complete descriptor. Use `--json` for machine-readable output.
@@ -57,7 +67,11 @@ See [Pipelines and parsing](pipelines.md) for the complete STEP grammar.
 Runs a JSON/YAML path, saved name, or inline JSON array.
 
 - input: `--input`, `--input-file`, or stdin;
-- `--trace`, `--hex`, `--save`, and repeatable `--set KEY=VALUE` behave as for `pipe`.
+- `--trace`, `--save`, and repeatable `--set KEY=VALUE` behave as for `pipe`;
+- `--format auto|raw|text|hex|base64|json` and `--output-file PATH` use the
+  shared binary-safe output contract;
+- `--hex` and `--json` remain compatibility aliases for the corresponding
+  output formats.
 
 ## `bake`
 
@@ -67,7 +81,8 @@ Executes a recipe directly without importing it into persistent storage.
 - recipes may be step arrays or objects containing `steps` (also `pipeline`);
 - file recipes support JSON/YAML based on the extension;
 - input comes from `--input`, `--input-file`, or stdin;
-- `--hex` renders bytes and `--json` emits a binary-safe result envelope.
+- `--format` and `--output-file` use the same output contract as `run`;
+- `--hex` and `--json` are compatibility aliases.
 
 ## `pipeline`
 
@@ -77,26 +92,31 @@ Manages persistent named recipes.
 |---|---|
 | `list` | List merged scopes; `--global`/`--project` filter and `--json` structures output. |
 | `show NAME` | Print a recipe; `--format json\|yaml`, with `--json` as JSON shorthand. |
-| `new NAME` | Create an empty recipe; accepts `--description` and `--global`. |
+| `new NAME` | Create an empty recipe; accepts `--description`, `--project`, and `--global`. |
 | `add PIPELINE STEP [ARG...]` | Append a compact step plus optional additional arguments. |
 | `remove PIPELINE INDEX` | Remove a one-based step. |
 | `set PIPELINE STEP ARG VALUE` | Set by one-based argument index or schema name. |
 | `run NAME` | Run with `--input`/`--input-file`/stdin, `--trace`, `--hex`, `--save`, and `--set`. |
-| `delete NAME` | Delete in selected scope; prompts unless `--yes`. |
+| `delete NAME` | Delete in `--project` or `--global` scope; prompts unless `--yes`. |
 | `export NAME` | Write JSON/YAML to stdout or `--output FILE`. |
 | `import FILE` | Import JSON/YAML, optionally `--name NAME` and `--global`. |
 | `rename OLD NEW` | Rename in project or `--global` scope. |
 
-Mutating subcommands use project scope by default.
+Mutating subcommands accept explicit `--project` or `--global` scope. With
+neither flag, the nearest discovered project is used; outside a project, the
+global Store is used. Step and argument indexes are one-based.
 
 ## `var`
 
 | Subcommand | Behavior |
 |---|---|
-| `set NAME VALUE` | Store a project variable; accepts `--description` and `--global`. |
+| `set NAME [VALUE]` | Store a variable; accepts `--description`, `--project`, `--global`, `--secret`, or `--stdin`. Exactly one of `VALUE` and `--stdin` supplies the value. |
 | `get NAME` | Print the resolved value only. |
-| `list` | List merged values; accepts `--global`, `--project`, and `--json`. |
-| `unset NAME` | Remove from project or `--global` scope. |
+| `list` | List merged values; accepts `--global`, `--project`, and `--json`. Values remain hidden unless `--show-values`; secrets additionally require `--show-secrets`. |
+| `unset NAME` | Remove from `--project`, `--global`, or the default discovered scope. |
+
+`--secret` is redaction metadata, not encryption at rest. `--stdin` is the safe
+choice for values that should not appear in shell history or process arguments.
 
 ## `history`
 
@@ -104,7 +124,7 @@ Mutating subcommands use project scope by default.
 |---|---|
 | `list` | Show recent entries; `--limit N` defaults to 20 and `--json` structures output. |
 | `show ID` | Show metadata and per-step previews. |
-| `run ID` | Replay steps with required replacement `--input`/`--input-file`; accepts `--trace`. A preview is never input. |
+| `run ID` | Replay steps with replacement `--input`/`--input-file`; accepts `--trace`. Because executable input is not stored, an entry whose original run consumed input requires replacement bytes. A preview is never input. |
 | `clear` | Delete all history, prompting unless `--yes`. |
 
 ## `magic`
@@ -154,6 +174,10 @@ Loads a YAML/JSON project, resolves inline or relative file input, expands proje
 ## `serve --stdio`
 
 Starts the persistent newline-delimited JSON transport. It writes no greeting or log text to stdout. One request is read per line, responses are flushed immediately, and the process continues until EOF or `shutdown`. See the [protocol specification](integration.md).
+
+`--stdio` is required. `--max-request-bytes N` rejects an oversized line before
+JSON parsing and defaults to 1 MiB. This limit applies independently to every
+request, so a client may keep the same process alive after a protocol error.
 
 ## `completions SHELL`
 
