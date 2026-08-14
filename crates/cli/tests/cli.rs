@@ -183,6 +183,18 @@ fn completions_and_manpage_are_nonempty() {
 }
 
 #[test]
+fn interactive_mode_keeps_data_and_accepts_friendly_operation_names() {
+    let output = rxchef(
+        &["--interactive"],
+        Some(b"data Hello\ntobase64\nfrom Base64\nexit\n"),
+    );
+    assert_success(&output);
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("Executed pipeline:\n  To Base64\nResult:\nSGVsbG8="));
+    assert!(stdout.contains("Executed pipeline:\n  From Base64\nResult:\nHello"));
+}
+
+#[test]
 fn project_discovery_scope_and_secrets_are_safe() {
     let (root, home) = isolated_store();
     let project = root.join("workspace");

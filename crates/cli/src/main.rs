@@ -42,11 +42,19 @@ cat huge.pcap | rxchef scan --entropy 4.5 # stream stdin, flag high-entropy blob
 use std::{
     collections::HashMap,
     fs,
-    io::{self, BufReader, IsTerminal, Read, Write},
+    io::{self, BufRead, BufReader, IsTerminal, Read, Write},
     path::PathBuf,
 };
 
 use clap::{Args, CommandFactory, Parser, Subcommand, ValueEnum};
+use rustyline::{
+    completion::{Completer, Pair},
+    error::ReadlineError,
+    highlight::Highlighter,
+    hint::Hinter,
+    validate::Validator,
+    Context, Editor, Helper,
+};
 use rxchef::{execution, runtime};
 use rxchef_store::{self as store, Scope};
 
@@ -57,12 +65,14 @@ use rxchef_store::{self as store, Scope};
     name = "rxchef",
     version,
     about = "CyberChef operations in the terminal",
-    arg_required_else_help = true,
     after_help = "Use 'rxchef <command> --help' for details on each command."
 )]
 struct Cli {
+    /// Start the interactive rxchef shell.
+    #[arg(short = 'i', long)]
+    interactive: bool,
     #[command(subcommand)]
-    command: Command,
+    command: Option<Command>,
 }
 
 #[derive(Debug, Subcommand)]
@@ -733,7 +743,23 @@ fn main() {
 }
 
 fn run() -> Result<(), CliError> {
-    match Cli::parse().command {
+    let cli = Cli::parse();
+    if cli.interactive && cli.command.is_some() {
+        return Err(CliError::InvalidInput(
+            "--interactive cannot be combined with a subcommand".into(),
+        ));
+    }
+    if cli.interactive {
+        return cmd_interactive().map_err(CliError::Execution);
+    }
+    let Some(command) = cli.command else {
+        Cli::command()
+            .print_help()
+            .map_err(|e| CliError::StoreIo(e.to_string()))?;
+        println!();
+        return Ok(());
+    };
+    match command {
         Command::Operations(a) => cmd_operations(a).map_err(CliError::Execution),
         Command::Operation(a) => cmd_operation(a).map_err(CliError::InvalidInput),
         Command::List(a) => cmd_list(a).map_err(CliError::Execution),
@@ -764,6 +790,192 @@ fn run() -> Result<(), CliError> {
                 write_bytes(&mut io::stdout().lock(), &page).map_err(CliError::StoreIo)
             }
         }
+    }
+}
+
+// ─── Interactive shell ──────────────────────────────────────────────────────
+
+#[derive(Clone)]
+struct ReplHelper {
+    candidates: Vec<String>,
+}
+
+impl Helper for ReplHelper {}
+impl Hinter for ReplHelper {
+    type Hint = String;
+}
+impl Highlighter for ReplHelper {}
+impl Validator for ReplHelper {}
+
+impl Completer for ReplHelper {
+    type Candidate = Pair;
+
+    fn complete(
+        &self,
+        line: &str,
+        pos: usize,
+        _ctx: &Context<'_>,
+    ) -> rustyline::Result<(usize, Vec<Pair>)> {
+        let start = line[..pos]
+            .rfind(|character: char| character.is_whitespace() || character == '|')
+            .map_or(0, |index| index + 1);
+        let needle = line[start..pos].to_ascii_lowercase();
+        let matches = self
+            .candidates
+            .iter()
+            .filter(|candidate| candidate.to_ascii_lowercase().starts_with(&needle))
+            .map(|candidate| Pair {
+                display: candidate.clone(),
+                replacement: candidate.clone(),
+            })
+            .collect();
+        Ok((start, matches))
+    }
+}
+
+fn repl_candidates() -> Vec<String> {
+    let mut candidates = vec![
+        "help".into(),
+        "data".into(),
+        "show".into(),
+        "clear".into(),
+        "list".into(),
+        "exit".into(),
+        "quit".into(),
+    ];
+    for name in runtime::operation_names(None) {
+        candidates.push(runtime::canonical_identifier(&name));
+        candidates.push(
+            name.chars()
+                .filter(|character| character.is_alphanumeric())
+                .collect::<String>()
+                .to_ascii_lowercase(),
+        );
+    }
+    candidates.sort();
+    candidates.dedup();
+    candidates
+}
+
+fn cmd_interactive() -> Result<(), String> {
+    println!("rxchef interactive shell — type 'help' for commands, Tab completes names.");
+    let mut data = Vec::new();
+
+    if io::stdin().is_terminal() {
+        let mut editor = Editor::<ReplHelper, rustyline::history::DefaultHistory>::new()
+            .map_err(|error| error.to_string())?;
+        editor.set_helper(Some(ReplHelper {
+            candidates: repl_candidates(),
+        }));
+        loop {
+            match editor.readline("rxchef> ") {
+                Ok(line) => {
+                    let _ = editor.add_history_entry(line.as_str());
+                    match handle_repl_line(&line, &mut data) {
+                        Ok(false) => break,
+                        Ok(true) => {}
+                        Err(error) => eprintln!("rxchef: {error}"),
+                    }
+                }
+                Err(ReadlineError::Interrupted) => continue,
+                Err(ReadlineError::Eof) => break,
+                Err(error) => return Err(format!("interactive input failed: {error}")),
+            }
+        }
+    } else {
+        let stdin = io::stdin();
+        for line in stdin.lock().lines() {
+            match handle_repl_line(&line.map_err(|error| error.to_string())?, &mut data) {
+                Ok(false) => break,
+                Ok(true) => {}
+                Err(error) => eprintln!("rxchef: {error}"),
+            }
+        }
+    }
+    Ok(())
+}
+
+fn handle_repl_line(line: &str, data: &mut Vec<u8>) -> Result<bool, String> {
+    let line = line.trim();
+    if line.is_empty() {
+        return Ok(true);
+    }
+    match line.to_ascii_lowercase().as_str() {
+        "exit" | "quit" => return Ok(false),
+        "help" => {
+            println!("Commands:\n  data TEXT       set the current input\n  show            show current data\n  clear           clear current data\n  list            list operation names\n  OP [ARGS]       execute an operation\n  OP [ARGS] | OP  execute a pipeline\n  exit            leave the shell");
+            return Ok(true);
+        }
+        "show" => {
+            print_repl_result(data);
+            return Ok(true);
+        }
+        "clear" => {
+            data.clear();
+            println!("Current data cleared.");
+            return Ok(true);
+        }
+        "list" => {
+            for name in runtime::operation_names(None) {
+                println!("{:<28} {}", runtime::canonical_identifier(&name), name);
+            }
+            return Ok(true);
+        }
+        _ => {}
+    }
+    if line
+        .get(..4)
+        .is_some_and(|prefix| prefix.eq_ignore_ascii_case("data"))
+        && line
+            .get(4..)
+            .is_some_and(|rest| rest.starts_with(char::is_whitespace))
+    {
+        *data = line[4..].trim_start().as_bytes().to_vec();
+        println!("Current data set ({} byte(s)).", data.len());
+        return Ok(true);
+    }
+
+    let steps = parse_repl_pipeline(line)?;
+    let result = run_steps(&steps, data.clone(), true, &HashMap::new(), false, false)?;
+    *data = result.final_output;
+    println!("Executed pipeline:");
+    for step in &steps {
+        let canonical =
+            runtime::resolve_operation_name(&step.op).unwrap_or_else(|| step.op.clone());
+        if step.args.is_empty() {
+            println!("  {canonical}");
+        } else {
+            println!("  {canonical} ({})", step.args.join(", "));
+        }
+    }
+    println!("Result:");
+    print_repl_result(data);
+    Ok(true)
+}
+
+fn parse_repl_pipeline(line: &str) -> Result<Vec<Step>, String> {
+    line.split('|')
+        .map(|part| {
+            let words = shlex::split(part).ok_or_else(|| format!("invalid quoting in '{part}'"))?;
+            if words.is_empty() {
+                return Err("empty pipeline step".to_string());
+            }
+            let operation_word_count = (1..=words.len())
+                .rev()
+                .find(|count| runtime::resolve_operation_name(&words[..*count].join(" ")).is_some())
+                .ok_or_else(|| format!("operation '{}' was not found", words[0]))?;
+            Ok(Step {
+                op: words[..operation_word_count].join(" "),
+                args: words[operation_word_count..].to_vec(),
+            })
+        })
+        .collect()
+}
+
+fn print_repl_result(data: &[u8]) {
+    match std::str::from_utf8(data) {
+        Ok(text) => println!("{text}"),
+        Err(_) => println!("hex:{}", hex::encode(data)),
     }
 }
 
