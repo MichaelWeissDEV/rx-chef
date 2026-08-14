@@ -31,6 +31,12 @@ impl Operation for PlayMedia {
             name: "Input format",
             description: "Input format of the media",
             default_value: "Raw",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

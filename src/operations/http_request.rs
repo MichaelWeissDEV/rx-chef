@@ -39,26 +39,56 @@ impl Operation for HTTPRequest {
                 name: "Method",
                 description: "HTTP method",
                 default_value: "GET",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "URL",
                 description: "The URL to request",
                 default_value: "",
+                kind: crate::operation::ArgKind::Url,
+                required: true,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Headers",
                 description: "Request headers (Key: Value)",
                 default_value: "",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Mode",
                 description: "CORS mode (ignored in Rust)",
                 default_value: "Cross-Origin Resource Sharing",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Show response metadata",
                 description: "Include status and headers in output",
                 default_value: "false",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA
@@ -66,6 +96,10 @@ impl Operation for HTTPRequest {
 
     fn input_type(&self) -> DataType {
         DataType::String
+    }
+
+    fn input_requirement(&self) -> crate::operation::InputRequirement {
+        crate::operation::InputRequirement::Optional
     }
 
     fn output_type(&self) -> DataType {

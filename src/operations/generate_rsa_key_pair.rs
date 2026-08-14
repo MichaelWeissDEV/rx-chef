@@ -40,11 +40,23 @@ impl Operation for GenerateRSAKeyPair {
                 name: "RSA Key Length",
                 description: "RSA Key Length",
                 default_value: "2048",
+                kind: crate::operation::ArgKind::UnsignedInteger,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Output Format",
                 description: "Output Format",
                 default_value: "PEM",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA
@@ -52,6 +64,10 @@ impl Operation for GenerateRSAKeyPair {
 
     fn input_type(&self) -> DataType {
         DataType::String
+    }
+
+    fn input_requirement(&self) -> crate::operation::InputRequirement {
+        crate::operation::InputRequirement::Ignored
     }
 
     fn output_type(&self) -> DataType {

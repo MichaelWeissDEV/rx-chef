@@ -10,7 +10,7 @@ The MD6 (Message-Digest 6) algorithm is a cryptographic hash function. It uses a
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -27,17 +27,17 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Size | `Integer` | no | `256` | — | no | Hash size in bits (0-512) |
+| 1 | Size | `UnsignedInteger` | no | `256` | — | no | Hash size in bits (0-512) |
 | 2 | Levels | `Integer` | no | `64` | — | no | Number of levels in the Merkle tree |
-| 3 | Key | `String` | no | `<empty>` | — | no | Optional key |
+| 3 | Key | `Bytes` | yes | `<empty>` | — | yes | Optional key |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+The MD6 (Message-Digest 6) algorithm is a cryptographic hash function. It uses a Merkle tree-like structure to allow for immense parallel computation of hashes for very long inputs.
 
 ## Implementation
 
-Source module: `src/operations/md6.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/md6.rs` and declares `String` input and `String` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -67,11 +67,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/md6.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

@@ -35,11 +35,23 @@ impl Operation for ToHex {
                 name: "Delimiter",
                 description: "Delimiter between hex bytes (Space, Comma, Semi-colon, Colon, Line feed, CRLF, None, 0x with comma, \\x)",
                 default_value: "Space",
+                kind: crate::operation::ArgKind::Enum,
+                required: false,
+                choices: &["Space", "Comma", "Semi-colon", "Colon", "Line feed", "CRLF", "None", "0x with comma", "\\x"],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Bytes per line",
                 description: "Number of bytes per output line (0 = no wrapping)",
                 default_value: "0",
+                kind: crate::operation::ArgKind::UnsignedInteger,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

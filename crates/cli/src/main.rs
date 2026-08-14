@@ -688,20 +688,28 @@ impl CliError {
             Self::FeatureUnavailable(_) => 6,
         }
     }
+}
 
-    fn execution(message: String) -> Self {
-        let normalized = message.to_ascii_lowercase();
-        if normalized.contains("feature")
-            && (normalized.contains("unavailable") || normalized.contains("not enabled"))
-        {
-            Self::FeatureUnavailable(message)
-        } else if normalized.contains("cannot read")
-            || normalized.contains("failed to read")
-            || normalized.contains("cannot open")
-        {
-            Self::StoreIo(message)
-        } else {
-            Self::Execution(message)
+impl From<execution::ExecutionError> for CliError {
+    fn from(error: execution::ExecutionError) -> Self {
+        match &error {
+            execution::ExecutionError::RuntimeStep {
+                source: runtime::RuntimeError::Unavailable { .. },
+                ..
+            } => Self::FeatureUnavailable(error.to_string()),
+            _ => Self::Execution(error.to_string()),
+        }
+    }
+}
+
+impl From<rxchef::operation::OperationError> for CliError {
+    fn from(error: rxchef::operation::OperationError) -> Self {
+        match error {
+            rxchef::operation::OperationError::InvalidInput(message) => Self::InvalidInput(message),
+            rxchef::operation::OperationError::InvalidArgument { name, reason } => {
+                Self::InvalidInput(format!("invalid argument '{name}': {reason}"))
+            }
+            rxchef::operation::OperationError::ProcessingError(message) => Self::Execution(message),
         }
     }
 }
@@ -726,21 +734,21 @@ fn main() {
 
 fn run() -> Result<(), CliError> {
     match Cli::parse().command {
-        Command::Operations(a) => cmd_operations(a).map_err(CliError::execution),
+        Command::Operations(a) => cmd_operations(a).map_err(CliError::Execution),
         Command::Operation(a) => cmd_operation(a).map_err(CliError::InvalidInput),
-        Command::List(a) => cmd_list(a).map_err(CliError::execution),
+        Command::List(a) => cmd_list(a).map_err(CliError::Execution),
         Command::Info(a) => cmd_info(a).map_err(CliError::InvalidInput),
-        Command::Run(a) => cmd_run(a).map_err(CliError::execution),
-        Command::Pipe(a) => cmd_pipe(a).map_err(CliError::execution),
-        Command::Recipe(a) => cmd_recipe(a).map_err(CliError::execution),
-        Command::Bake(a) => cmd_bake(a).map_err(CliError::execution),
+        Command::Run(a) => cmd_run(a),
+        Command::Pipe(a) => cmd_pipe(a).map_err(CliError::Execution),
+        Command::Recipe(a) => cmd_recipe(a).map_err(CliError::Execution),
+        Command::Bake(a) => cmd_bake(a).map_err(CliError::Execution),
         Command::Pipeline(a) => cmd_pipeline(a).map_err(CliError::StoreIo),
         Command::Var(a) => cmd_var(a).map_err(CliError::StoreIo),
         Command::History(a) => cmd_history(a).map_err(CliError::StoreIo),
-        Command::Magic(a) => cmd_magic(a).map_err(CliError::execution),
+        Command::Magic(a) => cmd_magic(a).map_err(CliError::Execution),
         Command::Scan(a) => cmd_scan(a).map_err(CliError::StoreIo),
         Command::Project(a) => cmd_project(a).map_err(CliError::StoreIo),
-        Command::Serve(a) => cmd_serve(a).map_err(CliError::execution),
+        Command::Serve(a) => cmd_serve(a).map_err(CliError::Execution),
         Command::Completions { shell } => {
             clap_complete::generate(shell, &mut Cli::command(), "rxchef", &mut io::stdout());
             Ok(())
@@ -762,7 +770,7 @@ fn run() -> Result<(), CliError> {
 fn cmd_operations(a: OperationsArgs) -> Result<(), String> {
     let mut operations = rxchef::integration::operations()?;
     if !a.all {
-        operations.retain(|operation| operation.available);
+        operations.retain(|operation| operation.availability == rxchef::Availability::Available);
     }
     if let Some(search) = a.search {
         let search = search.to_ascii_lowercase();
@@ -776,19 +784,25 @@ fn cmd_operations(a: OperationsArgs) -> Result<(), String> {
         operations.retain(|operation| operation.module.eq_ignore_ascii_case(&module));
     }
     if let Some(status) = a.status {
-        let expected = match status.to_ascii_lowercase().replace('_', "-").as_str() {
-            "complete" => rxchef::OperationStatus::Complete,
-            "partial" => rxchef::OperationStatus::Partial,
-            "unsupported" => rxchef::OperationStatus::Unsupported,
-            "feature-gated" => rxchef::OperationStatus::FeatureGated,
-            "experimental" => rxchef::OperationStatus::Experimental,
-            _ => {
-                return Err(format!(
+        let normalized = status.to_ascii_lowercase().replace('_', "-");
+        if normalized == "feature-gated" {
+            operations.retain(|operation| {
+                operation.availability == rxchef::Availability::FeatureDisabled
+            });
+        } else {
+            let expected = match normalized.as_str() {
+                "complete" => rxchef::ImplementationStatus::Complete,
+                "partial" => rxchef::ImplementationStatus::Partial,
+                "unsupported" => rxchef::ImplementationStatus::Unsupported,
+                "experimental" => rxchef::ImplementationStatus::Experimental,
+                _ => {
+                    return Err(format!(
                     "unknown operation status '{status}'; expected complete, partial, unsupported, feature-gated, or experimental"
                 ));
-            }
-        };
-        operations.retain(|operation| operation.status == expected);
+                }
+            };
+            operations.retain(|operation| operation.implementation_status == expected);
+        }
     }
     let stdout = io::stdout();
     let mut out = stdout.lock();
@@ -802,7 +816,10 @@ fn cmd_operations(a: OperationsArgs) -> Result<(), String> {
             if let Err(error) = writeln!(
                 out,
                 "{:<28} {:<18} {:<14?} {}",
-                operation.name, operation.module, operation.status, operation.description
+                operation.name,
+                operation.module,
+                operation.implementation_status,
+                operation.description
             ) {
                 if error.kind() == io::ErrorKind::BrokenPipe {
                     return Ok(());
@@ -825,42 +842,7 @@ fn cmd_operation(a: OperationArgs) -> Result<(), String> {
                     serde_json::to_string_pretty(&descriptor).map_err(|error| error.to_string())?
                 );
             } else {
-                println!("Name:              {}", descriptor.name);
-                println!("ID:                {}", descriptor.id);
-                println!("Category:          {}", descriptor.module);
-                println!("Description:       {}", descriptor.description);
-                println!("Input type:        {}", descriptor.input_type);
-                println!("Input requirement: {:?}", descriptor.input_requirement);
-                println!("Output type:       {}", descriptor.output_type);
-                println!("Status:            {:?}", descriptor.status);
-                println!("Available:         {}", descriptor.available);
-                println!(
-                    "Features:          {}",
-                    if descriptor.feature_requirements.is_empty() {
-                        "none".to_string()
-                    } else {
-                        descriptor.feature_requirements.join(", ")
-                    }
-                );
-                println!("Side effects:      {:?}", descriptor.side_effects);
-                println!("Deterministic:     {}", descriptor.deterministic);
-                println!("CyberChef parity:  {:?}", descriptor.parity);
-                if descriptor.args.is_empty() {
-                    println!("Arguments:         none");
-                } else {
-                    println!("Arguments:");
-                    for argument in descriptor.args {
-                        println!(
-                            "  {} ({:?}, required={}, default={:?}, sensitive={})\n      {}",
-                            argument.name,
-                            argument.kind,
-                            argument.required,
-                            argument.default,
-                            argument.sensitive,
-                            argument.description
-                        );
-                    }
-                }
+                print_operation_descriptor(&descriptor);
             }
         }
     }
@@ -906,66 +888,69 @@ fn cmd_list(a: ListArgs) -> Result<(), String> {
 // ─── Info ─────────────────────────────────────────────────────────────────────
 
 fn cmd_info(a: InfoArgs) -> Result<(), String> {
-    let op = runtime::operation_info(&a.operation)?;
+    let descriptor = rxchef::integration::describe(&a.operation)?;
     if a.json {
-        let args: Vec<_> = op
-            .args
-            .iter()
-            .map(|x| {
-                serde_json::json!({
-                    "name": x.name, "description": x.description, "default": x.default_value
-                })
-            })
-            .collect();
         println!(
             "{}",
-            serde_json::to_string_pretty(&serde_json::json!({
-                "name": op.name, "module": op.module, "description": op.description,
-                "input_type": runtime::data_type_name(op.input_type),
-                "output_type": runtime::data_type_name(op.output_type),
-                "broken": op.is_broken, "args": args
-            }))
-            .unwrap()
+            serde_json::to_string_pretty(&descriptor).map_err(|error| error.to_string())?
         );
         return Ok(());
     }
-    println!("Name:        {}", op.name);
-    println!("Module:      {}", op.module);
-    println!("Description: {}", op.description);
+    print_operation_descriptor(&descriptor);
+    Ok(())
+}
+
+fn print_operation_descriptor(descriptor: &rxchef::integration::OperationDescriptor) {
+    println!("Name:              {}", descriptor.name);
+    println!("ID:                {}", descriptor.id);
+    println!("Category:          {}", descriptor.module);
+    println!("Description:       {}", descriptor.description);
+    println!("Input type:        {}", descriptor.input_type);
+    println!("Input requirement: {:?}", descriptor.input_requirement);
+    println!("Output type:       {}", descriptor.output_type);
+    println!("Implementation:    {:?}", descriptor.implementation_status);
+    println!("Availability:      {:?}", descriptor.availability);
     println!(
-        "I/O:         {} → {}",
-        runtime::data_type_name(op.input_type),
-        runtime::data_type_name(op.output_type)
+        "Features:          {}",
+        if descriptor.feature_requirements.is_empty() {
+            "none".to_string()
+        } else {
+            descriptor.feature_requirements.join(", ")
+        }
     );
-    if op.is_broken {
-        println!("Broken:      yes");
-    }
-    if op.args.is_empty() {
-        println!("Args:        none");
+    println!("Side effects:      {:?}", descriptor.side_effects);
+    println!("Deterministic:     {}", descriptor.deterministic);
+    println!("CyberChef parity:  {:?}", descriptor.parity);
+    if descriptor.args.is_empty() {
+        println!("Arguments:         none");
     } else {
-        println!("Args:");
-        for (i, a) in op.args.iter().enumerate() {
+        println!("Arguments:");
+        for argument in &descriptor.args {
             println!(
-                "  {}. {} [{}]  {}",
-                i + 1,
-                a.name,
-                runtime::display_default(a.default_value),
-                a.description
+                "  {} ({:?}, required={}, default={:?}, sensitive={})\n      {}",
+                argument.name,
+                argument.kind,
+                argument.required,
+                argument.default,
+                argument.sensitive,
+                argument.description
             );
         }
     }
-    Ok(())
 }
 
 // ─── Run ──────────────────────────────────────────────────────────────────────
 
-fn cmd_run(a: RunArgs) -> Result<(), String> {
-    let output_format = a.output.selected_format()?;
-    let input = load_input_from(a.input, a.input_file, &[])?;
-    let var_overrides = parse_set_vars(&a.set_vars)?;
-    let resolved = runtime::resolve_named_args(&a.operation, &a.named_args, &a.args)?;
+fn cmd_run(a: RunArgs) -> Result<(), CliError> {
+    let output_format = a.output.selected_format().map_err(CliError::InvalidInput)?;
+    let input = load_input_from(a.input, a.input_file, &[]).map_err(CliError::StoreIo)?;
+    let var_overrides = parse_set_vars(&a.set_vars).map_err(CliError::InvalidInput)?;
+    let resolved = runtime::resolve_named_args(&a.operation, &a.named_args, &a.args)
+        .map_err(CliError::Execution)?;
+    let input_supplied = input.supplied;
     let output = execution::execute(execution::ExecutionRequest {
         input: input.bytes,
+        input_supplied,
         recipe: vec![execution::RecipeStep {
             op: a.operation,
             args: resolved,
@@ -973,10 +958,10 @@ fn cmd_run(a: RunArgs) -> Result<(), String> {
         .into(),
         variables: execution_variables(&var_overrides),
         options: execution::ExecutionOptions::default(),
-    })
-    .map_err(|error| error.to_string())?
+    })?
     .output;
     write_formatted_output(&output, output_format, a.output.output_file.as_deref())
+        .map_err(CliError::StoreIo)
 }
 
 // ─── Pipe ─────────────────────────────────────────────────────────────────────
@@ -997,6 +982,7 @@ fn cmd_pipe(a: PipeArgs) -> Result<(), String> {
     let result = run_steps(
         &steps,
         input.bytes,
+        input.supplied,
         &var_overrides,
         a.trace && output_format != OutputFormat::Json,
         output_format == OutputFormat::Hex,
@@ -1036,6 +1022,7 @@ fn cmd_recipe(a: RecipeArgs) -> Result<(), String> {
     let result = run_steps(
         &steps,
         input.bytes,
+        input.supplied,
         &var_overrides,
         a.trace,
         output_format == OutputFormat::Hex,
@@ -1067,6 +1054,7 @@ fn load_recipe_arg(arg: &str) -> Result<store::Recipe, String> {
         let steps: Vec<store::RecipeStep> =
             serde_json::from_str(arg).map_err(|e| format!("invalid recipe JSON: {e}"))?;
         return Ok(store::Recipe {
+            version: store::RECIPE_VERSION,
             name: "inline".into(),
             description: String::new(),
             steps,
@@ -1081,17 +1069,27 @@ fn load_recipe_arg(arg: &str) -> Result<store::Recipe, String> {
 enum BakeRecipe {
     Steps(Vec<rxchef::integration::RecipeStep>),
     Document {
+        #[serde(default = "current_recipe_version")]
+        version: u32,
         #[serde(alias = "pipeline")]
         steps: Vec<rxchef::integration::RecipeStep>,
     },
 }
 
 impl BakeRecipe {
-    fn into_steps(self) -> Vec<rxchef::integration::RecipeStep> {
+    fn into_steps(self) -> Result<Vec<rxchef::integration::RecipeStep>, String> {
         match self {
-            Self::Steps(steps) | Self::Document { steps } => steps,
+            Self::Steps(steps) => Ok(steps),
+            Self::Document { version, steps } if version == 1 => Ok(steps),
+            Self::Document { version, .. } => Err(format!(
+                "unsupported recipe version {version}; supported version is 1"
+            )),
         }
     }
+}
+
+fn current_recipe_version() -> u32 {
+    1
 }
 
 fn cmd_bake(a: BakeArgs) -> Result<(), String> {
@@ -1114,8 +1112,9 @@ fn cmd_bake(a: BakeArgs) -> Result<(), String> {
     } else {
         serde_json::from_str(&content).map_err(|error| format!("invalid recipe JSON: {error}"))?
     };
-    let input = load_input_from(a.input, a.input_file, &[])?.bytes;
-    let result = rxchef::integration::bake(input, &recipe.into_steps())?;
+    let input = load_input_from(a.input, a.input_file, &[])?;
+    let result =
+        rxchef::integration::bake_with_input(input.bytes, input.supplied, &recipe.into_steps()?)?;
     write_formatted_output(
         &result.into_bytes()?,
         output_format,
@@ -1343,6 +1342,7 @@ fn cmd_pipeline(a: PipelineArgs) -> Result<(), String> {
             let result = run_steps(
                 &steps,
                 loaded_input.bytes.clone(),
+                loaded_input.supplied,
                 &var_overrides,
                 trace,
                 hex,
@@ -1663,7 +1663,7 @@ fn cmd_history(a: HistoryArgs) -> Result<(), String> {
                     args: s.args.clone(),
                 })
                 .collect();
-            let result = run_steps(&steps, input_bytes, &HashMap::new(), trace, false)?;
+            let result = run_steps(&steps, input_bytes, true, &HashMap::new(), trace, false)?;
             write_output(&result.final_output, false)?;
         }
 
@@ -1910,6 +1910,7 @@ struct RunResult {
 fn run_steps(
     steps: &[Step],
     input: Vec<u8>,
+    input_supplied: bool,
     var_overrides: &HashMap<String, String>,
     trace: bool,
     _hex: bool,
@@ -1923,6 +1924,7 @@ fn run_steps(
         .collect::<Vec<_>>();
     let outcome = execution::execute(execution::ExecutionRequest {
         input,
+        input_supplied,
         recipe: recipe.clone().into(),
         variables: execution_variables(var_overrides),
         options: execution::ExecutionOptions {
@@ -1987,24 +1989,7 @@ fn run_steps(
 }
 
 fn redact_sensitive_args(operation: &str, arguments: &[String]) -> Vec<String> {
-    let Ok(info) = runtime::operation_info(operation) else {
-        return arguments.to_vec();
-    };
-    arguments
-        .iter()
-        .enumerate()
-        .map(|(position, argument)| {
-            let sensitive = info
-                .args
-                .get(position)
-                .is_some_and(runtime::is_sensitive_arg);
-            if sensitive {
-                "<redacted>".into()
-            } else {
-                argument.clone()
-            }
-        })
-        .collect()
+    runtime::redact_sensitive_args(operation, arguments)
 }
 
 fn execution_variables(overrides: &HashMap<String, String>) -> execution::VariableContext {
@@ -2099,9 +2084,11 @@ fn split_step_fields(s: &str) -> Result<Vec<String>, String> {
 fn parse_set_vars(raw: &[String]) -> Result<HashMap<String, String>, String> {
     raw.iter()
         .map(|kv| {
-            let mut split = kv.splitn(2, '=');
-            let k = split.next().unwrap_or("").to_uppercase();
-            let v = split.next().unwrap_or("").to_string();
+            let (key, value) = kv
+                .split_once('=')
+                .ok_or_else(|| format!("invalid --set value '{}': expected KEY=value", kv))?;
+            let k = key.to_uppercase();
+            let v = value.to_string();
             if k.is_empty() {
                 Err(format!("invalid --set value '{}': expected KEY=value", kv))
             } else {
@@ -2115,6 +2102,7 @@ fn parse_set_vars(raw: &[String]) -> Result<HashMap<String, String>, String> {
 
 struct LoadedInput {
     bytes: Vec<u8>,
+    supplied: bool,
 }
 
 fn load_input_from(
@@ -2125,15 +2113,20 @@ fn load_input_from(
     if let Some(t) = text {
         return Ok(LoadedInput {
             bytes: t.into_bytes(),
+            supplied: true,
         });
     }
     if let Some(p) = file {
         let b = fs::read(&p).map_err(|e| format!("cannot read '{}': {}", p.display(), e))?;
-        return Ok(LoadedInput { bytes: b });
+        return Ok(LoadedInput {
+            bytes: b,
+            supplied: true,
+        });
     }
     if !trailing_args.is_empty() {
         return Ok(LoadedInput {
             bytes: trailing_args[0].as_bytes().to_vec(),
+            supplied: true,
         });
     }
     if !io::stdin().is_terminal() {
@@ -2141,9 +2134,15 @@ fn load_input_from(
         io::stdin()
             .read_to_end(&mut buf)
             .map_err(|e| format!("stdin read error: {e}"))?;
-        return Ok(LoadedInput { bytes: buf });
+        return Ok(LoadedInput {
+            bytes: buf,
+            supplied: true,
+        });
     }
-    Ok(LoadedInput { bytes: Vec::new() })
+    Ok(LoadedInput {
+        bytes: Vec::new(),
+        supplied: false,
+    })
 }
 
 // ─── Output ───────────────────────────────────────────────────────────────────
@@ -2346,13 +2345,16 @@ fn cmd_project(a: ProjectArgs) -> Result<(), String> {
             let project =
                 store::load_project(&file).map_err(|e| format!("Failed to load project: {}", e))?;
 
-            let input_bytes = match project.data {
-                Some(store::ProjectData::Inline { inline }) => inline.into_bytes(),
+            let (input_bytes, input_supplied) = match project.data {
+                Some(store::ProjectData::Inline { inline }) => (inline.into_bytes(), true),
                 Some(store::ProjectData::File { file: path }) => {
                     let base_dir = file.parent().unwrap_or(std::path::Path::new(""));
-                    std::fs::read(base_dir.join(path)).map_err(|e| e.to_string())?
+                    (
+                        std::fs::read(base_dir.join(path)).map_err(|e| e.to_string())?,
+                        true,
+                    )
                 }
-                None => Vec::new(),
+                None => (Vec::new(), false),
             };
 
             let steps: Vec<_> = project
@@ -2369,7 +2371,14 @@ fn cmd_project(a: ProjectArgs) -> Result<(), String> {
                 overrides.insert(k.clone(), v.clone());
             }
 
-            let result = run_steps(&steps, input_bytes.clone(), &overrides, trace, false)?;
+            let result = run_steps(
+                &steps,
+                input_bytes.clone(),
+                input_supplied,
+                &overrides,
+                trace,
+                false,
+            )?;
             write_output(&result.final_output, false)?;
 
             Ok(())
@@ -2412,6 +2421,13 @@ mod tests {
     fn variable_values_may_contain_equals() {
         let vars = parse_set_vars(&["TOKEN=a=b=c".into()]).unwrap();
         assert_eq!(vars["TOKEN"], "a=b=c");
+    }
+
+    #[test]
+    fn variable_overrides_require_key_value_separator() {
+        let error = parse_set_vars(&["KEY".to_string()]).unwrap_err();
+        assert!(error.contains("expected KEY=value"));
+        assert_eq!(parse_set_vars(&["KEY=".to_string()]).unwrap()["KEY"], "");
     }
 
     #[test]

@@ -39,6 +39,12 @@ impl Operation for CrcChecksum {
             name: "Algorithm",
             description: "CRC algorithm to use",
             default_value: "CRC-32",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

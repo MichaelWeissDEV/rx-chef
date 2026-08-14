@@ -10,7 +10,7 @@ The Luhn mod N algorithm using the english alphabet. The Luhn mod N algorithm is
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -27,15 +27,15 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Radix | `Integer` | no | `10` | — | no | The base/radix to use (must be even, 2-36) |
+| 1 | Radix | `UnsignedInteger` | no | `10` | — | no | The base/radix to use (must be even, 2-36) |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+The Luhn mod N algorithm using the english alphabet. The Luhn mod N algorithm is an extension to the Luhn algorithm (also known as mod 10 algorithm) that allows it to work with sequences of values in any even-numbered base.
 
 ## Implementation
 
-Source module: `src/operations/luhn_checksum.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/luhn_checksum.rs` and declares `String` input and `String` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -65,11 +65,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/luhn_checksum.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

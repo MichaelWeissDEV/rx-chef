@@ -32,11 +32,23 @@ impl Operation for ToHTMLEntity {
                 name: "Convert all characters",
                 description: "Convert all characters to HTML entities",
                 default_value: "false",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Convert to",
                 description: "The type of HTML entity to convert to",
                 default_value: "Named entities",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

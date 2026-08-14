@@ -5727,7 +5727,7 @@ Extract common audio metadata across MP3, WAV, FLAC, OGG, etc. Outputs normalize
 
     This operation is feature-gated and unavailable in the minimal documentation build. See the feature matrix for the required Cargo feature.
 
-Optical character recognition or optical character reader (OCR) is the mechanical or electronic 
+Optical character recognition or optical character reader (OCR) is the mechanical or electronic
         conversion of images of typed, handwritten or printed text into machine-encoded text.
 
 
@@ -6276,6 +6276,10 @@ Parse timestamp from MongoDB/BSON ObjectID hex string. The first 4 bytes of the 
 
 ### Disassemble ARM
 
+!!! warning "Optional backend unavailable"
+
+    This operation is feature-gated and unavailable in the minimal documentation build. See the feature matrix for the required Cargo feature.
+
 Disassembles ARM machine code into assembly language.<br><br>Supports ARM (32-bit), Thumb, and ARM64 (AArch64) architectures using the Capstone disassembly framework.<br><br>Input should be in hexadecimal.
 
 - Input: `String`
@@ -6292,6 +6296,10 @@ Disassembles ARM machine code into assembly language.<br><br>Supports ARM (32-bi
 | 6 | Show instruction position | `true` | Whether to show the address of each instruction. |
 
 ### Disassemble x86
+
+!!! warning "Optional backend unavailable"
+
+    This operation is feature-gated and unavailable in the minimal documentation build. See the feature matrix for the required Cargo feature.
 
 Disassembly is the process of translating machine language into assembly language.<br><br>This operation supports 64-bit, 32-bit and 16-bit code written for Intel or AMD x86 processors. It is particularly useful for reverse engineering shellcode.<br><br>Input should be in hexadecimal.
 
@@ -6360,6 +6368,10 @@ Attempts to identify and categorise information contained in a user-agent string
 ## Yara
 
 ### YARA Rules
+
+!!! warning "Optional backend unavailable"
+
+    This operation is feature-gated and unavailable in the minimal documentation build. See the feature matrix for the required Cargo feature.
 
 YARA is a tool developed at VirusTotal, primarily aimed at helping malware researchers to identify and classify malware samples. It matches based on rules specified by the user containing textual or binary patterns and a boolean expression. For help on writing rules, see the <a href='https://yara.readthedocs.io/en/latest/writingrules.html'>YARA documentation.</a>
 

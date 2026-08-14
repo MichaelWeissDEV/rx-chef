@@ -31,6 +31,12 @@ impl Operation for ParseQRCode {
             name: "Normalise image",
             description: "Attempts to normalise the image before parsing it to improve detection of a QR code.",
             default_value: "false",
+            kind: crate::operation::ArgKind::Boolean,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

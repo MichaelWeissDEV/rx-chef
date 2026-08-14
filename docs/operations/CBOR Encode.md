@@ -10,7 +10,7 @@ Concise Binary Object Representation (CBOR) is a binary data serialization forma
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -29,11 +29,11 @@ This operation has no arguments.
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+Concise Binary Object Representation (CBOR) is a binary data serialization format loosely based on JSON. Like JSON it allows the transmission of data objects that contain namevalue pairs, but in a more concise manner. This increases processing and transfer speeds at the cost of human readability. It is defined in IETF RFC 8949.
 
 ## Implementation
 
-Source module: `src/operations/cbor_encode.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/cbor_encode.rs` and declares `JSON` input and `Bytes` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -63,11 +63,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/cbor_encode.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

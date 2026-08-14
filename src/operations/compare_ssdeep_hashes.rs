@@ -40,6 +40,12 @@ impl Operation for CompareSSDEEPHashes {
             name: "Delimiter",
             description: "The delimiter separating the two samples",
             default_value: "Line feed",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }]
     }
 

@@ -31,6 +31,12 @@ impl Operation for FromHex {
             name: "Delimiter",
             description: "The hexadecimal delimiter",
             default_value: "Auto",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

@@ -36,6 +36,12 @@ impl Operation for SQLBeautify {
             name: "Indent string",
             description: "String used for indentation (e.g. tab or spaces)",
             default_value: "\\t",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

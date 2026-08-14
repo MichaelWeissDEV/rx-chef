@@ -35,11 +35,23 @@ impl Operation for ToHexContent {
                 description:
                     "Only special chars, Only special chars including spaces, or All chars",
                 default_value: "Only special chars",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Print spaces between bytes",
                 description: "Add spaces between hex bytes inside pipes",
                 default_value: "false",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

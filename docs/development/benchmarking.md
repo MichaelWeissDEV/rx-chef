@@ -5,8 +5,9 @@ their timings are not representative.
 
 For a documentation artifact use `cargo xtask bench-docs --quick` or
 `cargo xtask bench-docs --full`. The command relaunches itself with the release
-profile and writes environment-labelled JSON to
-`docs/_generated/benchmarks.json`. Results are reference measurements,
+profile and writes environment-labelled JSON to `benchmarks/results/`.
+Linux x86_64 writes `linux-x86_64.json`; other hosts write
+`host-unverified.json` and cannot overwrite Linux release evidence. Results are reference measurements,
 hardware-dependent, and never runtime guarantees. Until that command has run,
 the release documentation must say **Not measured**.
 

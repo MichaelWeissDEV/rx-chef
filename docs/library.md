@@ -85,20 +85,31 @@ let output = runtime::run_operation(
     &[],
 )?;
 assert_eq!(output, b"SGVsbG8=");
-# Ok::<(), String>(())
+# Ok::<(), rxchef::runtime::RuntimeError>(())
 ```
 
-`OperationInfo` exposes the same name, module, description, types, broken flag, and argument schema used to generate the [operation reference](reference/operations.md). `runtime::run_operation` also understands CLI typed prefixes.
+`OperationInfo` exposes implementation status and availability separately, plus
+the same name, module, description, types, input requirement, side effects,
+feature requirements, and explicit argument schema used by every frontend.
+`runtime::run_operation` returns the structured `RuntimeError` variants
+`UnknownOperation`, `Unavailable`, `InvalidArgument`, `Operation`, and
+`OutputValidation`; it also understands CLI typed prefixes.
 
 ## Implementing an operation
 
-Implement the `Operation` trait on a public unit struct in `src/operations/<module>.rs`. The build script discovers unit structs, regenerates the registry, and makes the operation available through `operation_names` and `get_operation`. Provide non-empty metadata and a test file with the same module filename under `tests/tests/operations/`.
+Implement the `Operation` trait on a public unit struct in
+`src/operations/<module>.rs`. Registry generation is an explicit developer
+action and never rewrites the source tree from `build.rs`. Provide complete
+metadata, explicit verification evidence, documentation, and a test module.
 
 After changes:
 
 ```console
 cargo fmt --all -- --check
 cargo test --workspace
-cargo run --example generate_operation_docs
-cargo run --example generate_operation_docs -- --check
+cargo xtask generate-registry
+cargo xtask check-registry
+cargo xtask audit-operations
+cargo xtask docs
+cargo xtask docs --check
 ```

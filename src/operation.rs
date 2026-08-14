@@ -29,6 +29,25 @@ pub enum ArgKind {
     Url,
 }
 
+/// Inclusive numeric limit for an operation argument.
+#[derive(Debug, Clone, Copy, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(untagged)]
+pub enum NumericBound {
+    Integer(i64),
+    Unsigned(u64),
+    Float(f64),
+}
+
+impl fmt::Display for NumericBound {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Integer(value) => value.fmt(formatter),
+            Self::Unsigned(value) => value.fmt(formatter),
+            Self::Float(value) => value.fmt(formatter),
+        }
+    }
+}
+
 /// Whether an operation consumes input bytes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -41,12 +60,20 @@ pub enum InputRequirement {
 /// Verification state of an operation implementation.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub enum OperationStatus {
+pub enum ImplementationStatus {
     Complete,
     Partial,
     Unsupported,
-    FeatureGated,
     Experimental,
+}
+
+/// Whether an implementation can run in the current build and platform.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Availability {
+    Available,
+    FeatureDisabled,
+    PlatformUnavailable,
 }
 
 /// Compatibility level with upstream CyberChef behavior.
@@ -77,7 +104,7 @@ pub enum SideEffect {
  * @enum DataType
  * @brief The data type flowing into or out of an operation.
  */
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DataType {
     String,
     Binary,
@@ -466,7 +493,13 @@ impl fmt::Display for ArgValue {
 pub struct ArgSchema {
     pub name: &'static str,
     pub description: &'static str,
+    pub kind: ArgKind,
+    pub required: bool,
     pub default_value: &'static str,
+    pub choices: &'static [&'static str],
+    pub minimum: Option<NumericBound>,
+    pub maximum: Option<NumericBound>,
+    pub sensitive: bool,
 }
 
 /**
@@ -552,11 +585,16 @@ pub trait Operation: Send + Sync {
     /// Current verified implementation state. The conservative default is
     /// `Partial`; individual operations are promoted only after their release
     /// quality gates are mapped and checked.
-    fn status(&self) -> OperationStatus {
+    fn implementation_status(&self) -> ImplementationStatus {
+        ImplementationStatus::Partial
+    }
+
+    /// Runtime availability is independent from implementation maturity.
+    fn availability(&self) -> Availability {
         if self.is_broken() {
-            OperationStatus::FeatureGated
+            Availability::FeatureDisabled
         } else {
-            OperationStatus::Partial
+            Availability::Available
         }
     }
 

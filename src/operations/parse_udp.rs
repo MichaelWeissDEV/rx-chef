@@ -35,6 +35,12 @@ impl Operation for ParseUDP {
             name: "Input format",
             description: "Format of the input data",
             default_value: "Hex",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

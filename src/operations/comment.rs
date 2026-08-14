@@ -34,6 +34,12 @@ impl Operation for CommentOp {
             name: "Comment",
             description: "Comment text",
             default_value: "",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

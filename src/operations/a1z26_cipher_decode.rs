@@ -35,11 +35,23 @@ impl Operation for A1Z26CipherDecode {
                 name: "Delimiter",
                 description: "Delimiter between numbers",
                 default_value: "Space",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Check format",
                 description: "Automatically detect delimiter from input format",
                 default_value: "true",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

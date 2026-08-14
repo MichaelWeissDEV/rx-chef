@@ -31,6 +31,12 @@ impl Operation for FromBase {
             name: "Radix",
             description: "The base of the input number (2-36)",
             default_value: "36",
+            kind: crate::operation::ArgKind::Integer,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

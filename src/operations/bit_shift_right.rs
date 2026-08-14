@@ -34,11 +34,23 @@ impl Operation for BitShiftRight {
                 name: "Amount",
                 description: "Amount to shift right",
                 default_value: "1",
+                kind: crate::operation::ArgKind::Integer,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Type",
                 description: "Shift type (Logical or Arithmetic)",
                 default_value: "Logical shift",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

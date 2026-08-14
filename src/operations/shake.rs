@@ -40,11 +40,23 @@ impl Operation for SHAKE {
                 name: "Capacity",
                 description: "Capacity (256 or 128)",
                 default_value: "256",
+                kind: crate::operation::ArgKind::Integer,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Size",
                 description: "Output size in bytes (minimum 1)",
                 default_value: "512",
+                kind: crate::operation::ArgKind::UnsignedInteger,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

@@ -32,11 +32,23 @@ impl Operation for MurmurHash3 {
                 name: "Seed",
                 description: "Positive integer only",
                 default_value: "0",
+                kind: crate::operation::ArgKind::Integer,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Convert to Signed",
                 description: "Whether to convert the output to a signed 32-bit integer",
                 default_value: "false",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

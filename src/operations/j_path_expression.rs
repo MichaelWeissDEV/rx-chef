@@ -34,11 +34,23 @@ impl Operation for JPathExpression {
                 name: "Query",
                 description: "The JPath query to run",
                 default_value: "",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Result delimiter",
                 description: "The delimiter to use between results",
                 default_value: "\\n",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

@@ -34,11 +34,23 @@ impl Operation for FileTree {
                 name: "File Path Delimiter",
                 description: "Delimiter between path components",
                 default_value: "/",
+                kind: crate::operation::ArgKind::Path,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Delimiter",
                 description: "Delimiter between entries",
                 default_value: "Line feed",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

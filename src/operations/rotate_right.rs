@@ -36,11 +36,23 @@ impl Operation for RotateRight {
                 name: "Amount",
                 description: "Number of bits to rotate right",
                 default_value: "1",
+                kind: crate::operation::ArgKind::Integer,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Carry through",
                 description: "If true, carry bits from one byte to the next across all bytes",
                 default_value: "false",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

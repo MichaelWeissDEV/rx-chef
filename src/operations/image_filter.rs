@@ -34,7 +34,13 @@ impl Operation for ImageFilter {
         static SCHEMA: &[ArgSchema] = &[ArgSchema {
             name: "Filter type",
             description: "The filter to apply.",
-            default_value: "Greyscale", // Options: Greyscale, Sepia
+            default_value: "Greyscale",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false, // Options: Greyscale, Sepia
         }];
         SCHEMA
     }

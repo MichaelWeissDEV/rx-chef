@@ -12,9 +12,9 @@ Generates a new public/private PGP key pair. Supports RSA (1024/2048/4096) and E
 
 | Field | Value |
 |---|---|
-| Implementation | `FeatureGated` |
+| Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | unavailable in this build |
+| Availability | FeatureDisabled |
 | Features | pgp |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -32,17 +32,17 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
 | 1 | Key type | `String` | no | `RSA-2048` | — | no | Key type and size: RSA-2048, RSA-4096, ECC-256, ECC-384, ECC-521 (RSA-1024 is rejected as insecure) |
-| 2 | Password (optional) | `String` | no | `<empty>` | — | yes | Passphrase to protect the private key |
+| 2 | Password (optional) | `Bytes` | no | `<empty>` | — | yes | Passphrase to protect the private key |
 | 3 | Name (optional) | `String` | no | `<empty>` | — | no | User name for the key identity |
 | 4 | Email (optional) | `String` | no | `<empty>` | — | no | User email for the key identity |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+Generates a new public/private PGP key pair. Supports RSA (1024/2048/4096) and ECC (256/384/521) key types. Arguments: key type, optional password, optional name, optional email.
 
 ## Implementation
 
-Source module: `src/operations/generate_pgp_key_pair.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/generate_pgp_key_pair.rs` and declares `String` input and `String` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -72,11 +72,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/generate_pgp_key_pair.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

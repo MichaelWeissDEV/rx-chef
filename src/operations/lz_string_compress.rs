@@ -244,6 +244,12 @@ impl Operation for LZStringCompress {
             name: "Compression Format",
             description: "default, UTF16, Base64",
             default_value: "default",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

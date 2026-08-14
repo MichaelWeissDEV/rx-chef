@@ -9,8 +9,8 @@ cargo check --manifest-path fuzz/Cargo.toml --bins
 ```
 
 Run a target with, for example,
-`cargo fuzz run --fuzz-dir fuzz execution_recipe`. CI compiles the targets but
-does not claim campaign duration or corpus coverage.
+`cargo fuzz run --fuzz-dir fuzz execution_recipe`. The local Linux release gate
+compiles the targets but does not claim campaign duration or corpus coverage.
 
 Future targets should cover archive/protocol parsers, compact pipeline syntax,
 image decoders, and binary format operations. Bound recursion, output size, and

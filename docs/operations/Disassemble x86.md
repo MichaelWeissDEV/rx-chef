@@ -1,5 +1,9 @@
 # Disassemble x86
 
+!!! warning "Optional backend unavailable"
+
+    This operation is feature-gated and unavailable in the minimal documentation build. See the feature matrix for the required Cargo feature.
+
 ## Overview
 
 Disassembly is the process of translating machine language into assembly language.<br><br>This operation supports 64-bit, 32-bit and 16-bit code written for Intel or AMD x86 processors. It is particularly useful for reverse engineering shellcode.<br><br>Input should be in hexadecimal.
@@ -10,8 +14,8 @@ Disassembly is the process of translating machine language into assembly languag
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
-| Features | none |
+| Availability | FeatureDisabled |
+| Features | disassembly |
 | Side effects | `[]` |
 | Deterministic | true |
 
@@ -27,7 +31,7 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Bit mode | `Integer` | no | `64` | — | no | The bit mode (64, 32, 16) |
+| 1 | Bit mode | `Enum` | no | `64` | 64, 32, 16 | no | The bit mode (64, 32, 16) |
 | 2 | Compatibility | `String` | no | `Full x86 architecture` | — | no | The compatibility mode (not all supported by Capstone) |
 | 3 | Code Segment (CS) | `Integer` | no | `0` | — | no | The code segment (not used by Capstone) |
 | 4 | Offset (IP) | `Integer` | no | `0` | — | no | The instruction pointer offset |
@@ -36,11 +40,11 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+Disassembly is the process of translating machine language into assembly language.<br><br>This operation supports 64-bit, 32-bit and 16-bit code written for Intel or AMD x86 processors. It is particularly useful for reverse engineering shellcode.<br><br>Input should be in hexadecimal.
 
 ## Implementation
 
-Source module: `src/operations/disassemble_x86.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/disassemble_x86.rs` and declares `String` input and `String` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -70,11 +74,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/disassemble_x86.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

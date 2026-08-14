@@ -31,6 +31,12 @@ impl Operation for XxteaDecryptOp {
             name: "Key",
             description: "Key for XXTEA decryption",
             default_value: "",
+            kind: crate::operation::ArgKind::Bytes,
+            required: true,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: true,
         }];
         SCHEMA
     }

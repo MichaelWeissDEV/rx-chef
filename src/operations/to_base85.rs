@@ -28,11 +28,23 @@ impl Operation for ToBase85 {
                 name: "Alphabet",
                 description: "The Base85 alphabet",
                 default_value: "!-u",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Include delimiter",
                 description: "Adds a <~ and ~> delimiter to the start and end of the data.",
                 default_value: "false",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

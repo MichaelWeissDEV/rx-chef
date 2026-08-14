@@ -10,7 +10,7 @@ This operation performs a password-based key derivation function (PBKDF) used ex
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -27,19 +27,19 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Passphrase | `String` | no | `<empty>` | — | no | The passphrase to derive the key from. |
-| 2 | Key size | `Integer` | no | `128` | — | no | The length of the key to generate in bits. |
-| 3 | Iterations | `Integer` | no | `1` | — | no | The number of times the hash function is applied. |
+| 1 | Passphrase | `Bytes` | yes | `<empty>` | — | yes | The passphrase to derive the key from. |
+| 2 | Key size | `UnsignedInteger` | no | `128` | — | no | The length of the key to generate in bits. |
+| 3 | Iterations | `UnsignedInteger` | no | `1` | — | no | The number of times the hash function is applied. |
 | 4 | Hashing function | `String` | no | `MD5` | — | no | The hash function to use. |
-| 5 | Salt | `String` | no | `<empty>` | — | no | The salt to use. If empty, a random salt will be generated. |
+| 5 | Salt | `Bytes` | no | `<empty>` | — | no | The salt to use. If empty, a random salt will be generated. |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+This operation performs a password-based key derivation function (PBKDF) used extensively in OpenSSL. In many applications of cryptography, user security is ultimately dependent on a password, and because a password usually can't be used directly as a cryptographic key, some processing is required.<br><br>A salt provides a large set of keys for any given password, and an iteration count increases the cost of producing keys from a password, thereby also increasing the difficulty of attack.<br><br>If you leave the salt argument empty, a random salt will be generated.
 
 ## Implementation
 
-Source module: `src/operations/derive_evp_key.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/derive_evp_key.rs` and declares `String` input and `String` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -69,11 +69,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/derive_evp_key.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

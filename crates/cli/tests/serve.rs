@@ -215,6 +215,8 @@ fn operations_returns_complete_ordered_descriptors() {
         "input_type",
         "output_type",
         "broken",
+        "implementation_status",
+        "availability",
         "args",
     ] {
         assert!(

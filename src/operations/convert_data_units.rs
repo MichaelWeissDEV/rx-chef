@@ -57,11 +57,23 @@ impl Operation for ConvertDataUnits {
                 name: "Input units",
                 description: "Input data unit",
                 default_value: "Bytes (B)",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Output units",
                 description: "Output data unit",
                 default_value: "Kilobytes (kB)",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         S

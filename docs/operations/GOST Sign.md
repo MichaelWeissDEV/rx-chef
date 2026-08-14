@@ -10,7 +10,7 @@ Sign a plaintext message (calculate MAC) using one of the GOST block ciphers.
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -27,21 +27,21 @@ Declared output type: `Bytes`. Redirect stdout or use `--output-file` for exact 
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Key | `String` | no | `<empty>` | — | no | The encryption key. |
-| 2 | IV | `String` | no | `<empty>` | — | no | The initialization vector. |
-| 3 | Input type | `String` | no | `Raw` | — | no | Input encoding (Raw, Hex) |
-| 4 | Output type | `String` | no | `Hex` | — | no | Output encoding (Hex, Raw) |
+| 1 | Key | `Bytes` | yes | `<empty>` | — | yes | The encryption key. |
+| 2 | IV | `Bytes` | no | `<empty>` | — | no | The initialization vector. |
+| 3 | Input type | `Enum` | no | `Raw` | Raw, Hex | no | Input encoding (Raw, Hex) |
+| 4 | Output type | `Enum` | no | `Hex` | Hex, Raw | no | Output encoding (Hex, Raw) |
 | 5 | Algorithm | `String` | no | `GOST 28147 (1989)` | — | no | The GOST algorithm to use. |
 | 6 | sBox | `String` | no | `E-TEST` | — | no | The sBox to use (only for GOST 28147 (1989)). |
-| 7 | MAC length | `Integer` | no | `32` | — | no | The length of the MAC in bits. |
+| 7 | MAC length | `UnsignedInteger` | no | `32` | — | no | The length of the MAC in bits. |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+Sign a plaintext message (calculate MAC) using one of the GOST block ciphers.
 
 ## Implementation
 
-Source module: `src/operations/gost_sign.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/gost_sign.rs` and declares `Bytes` input and `Bytes` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -71,11 +71,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/gost_sign.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

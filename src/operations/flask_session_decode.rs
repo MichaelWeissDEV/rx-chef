@@ -37,6 +37,12 @@ impl Operation for FlaskSessionDecode {
             name: "View Timestamp",
             description: "Include the timestamp in the output",
             default_value: "false",
+            kind: crate::operation::ArgKind::Boolean,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

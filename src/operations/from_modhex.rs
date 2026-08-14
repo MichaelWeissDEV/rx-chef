@@ -35,6 +35,12 @@ impl Operation for FromModhex {
             name: "Delimiter",
             description: "Delimiter between modhex pairs (None, Space, Comma, Semi-colon, Colon, Line feed, CRLF)",
             default_value: "None",
+            kind: crate::operation::ArgKind::Enum,
+            required: false,
+            choices: &["None", "Space", "Comma", "Semi-colon", "Colon", "Line feed", "CRLF"],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

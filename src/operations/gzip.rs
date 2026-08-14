@@ -48,11 +48,23 @@ impl Operation for Gzip {
                 description:
                     "Compression level: Dynamic, Best speed, Best compression, No compression",
                 default_value: "Dynamic",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Filename (optional)",
                 description: "Optional filename to embed in the gzip header",
                 default_value: "",
+                kind: crate::operation::ArgKind::Path,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

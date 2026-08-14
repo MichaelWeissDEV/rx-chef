@@ -10,7 +10,7 @@ Sign a plaintext message with a PEM encoded EC key.
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -27,17 +27,17 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | ECDSA Private Key (PEM) | `String` | no | `-----BEGIN EC PRIVATE KEY-----` | — | yes | The PEM encoded ECDSA private key |
+| 1 | ECDSA Private Key (PEM) | `Bytes` | no | `-----BEGIN EC PRIVATE KEY-----` | — | yes | The PEM encoded ECDSA private key |
 | 2 | Message Digest Algorithm | `String` | no | `SHA-256` | — | no | The hash algorithm to use |
 | 3 | Output Format | `String` | no | `ASN.1 HEX` | — | no | The format of the output signature |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+Sign a plaintext message with a PEM encoded EC key.
 
 ## Implementation
 
-Source module: `src/operations/ecdsa_sign.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/ecdsa_sign.rs` and declares `String` input and `String` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -67,11 +67,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/ecdsa_sign.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

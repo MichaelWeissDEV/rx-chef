@@ -47,11 +47,23 @@ impl Operation for JWTSign {
                 name: "Private/Secret Key",
                 description: "The secret key for HMAC signing",
                 default_value: "secret",
+                kind: crate::operation::ArgKind::Bytes,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: true,
             },
             ArgSchema {
                 name: "Signing algorithm",
                 description: "Algorithm: HS256, HS384, HS512, None",
                 default_value: "HS256",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

@@ -35,6 +35,12 @@ impl Operation for HexToPEM {
             name: "Header string",
             description: "PEM header/footer label (e.g. CERTIFICATE, RSA PRIVATE KEY)",
             default_value: "CERTIFICATE",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

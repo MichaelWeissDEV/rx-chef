@@ -42,11 +42,23 @@ impl Operation for ECDSASignatureConversion {
                 name: "Input Format",
                 description: "The format of the input signature",
                 default_value: "Auto",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Output Format",
                 description: "The desired output format",
                 default_value: "ASN.1 HEX",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

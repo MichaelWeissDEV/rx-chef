@@ -10,7 +10,7 @@ Verify the signature of a plaintext message using one of the GOST block ciphers.
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -27,8 +27,8 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Key | `String` | no | `<empty>` | — | no | The decryption key. |
-| 2 | IV | `String` | no | `<empty>` | — | no | The initialization vector. |
+| 1 | Key | `Bytes` | yes | `<empty>` | — | yes | The decryption key. |
+| 2 | IV | `Bytes` | no | `<empty>` | — | no | The initialization vector. |
 | 3 | MAC | `String` | no | `<empty>` | — | no | The signature/MAC to verify. |
 | 4 | Input type | `String` | no | `Raw` | — | no | Type of input data |
 | 5 | Algorithm | `String` | no | `GOST R 34.12 (Magma, 2015)` | — | no | GOST version |
@@ -36,11 +36,11 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+Verify the signature of a plaintext message using one of the GOST block ciphers. Enter the signature in the MAC field.
 
 ## Implementation
 
-Source module: `src/operations/gost_verify.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/gost_verify.rs` and declares `String` input and `String` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -70,11 +70,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/gost_verify.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

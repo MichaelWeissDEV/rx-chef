@@ -40,11 +40,23 @@ impl Operation for GenerateAllChecksums {
                 name: "Length (bits)",
                 description: "Length of the checksum in bits",
                 default_value: "All",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Include names",
                 description: "Include the name of the checksum algorithm in the output",
                 default_value: "true",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

@@ -54,11 +54,23 @@ impl Operation for Split {
                 name: "Split delimiter",
                 description: "Delimiter to split on (e.g. Comma, Line feed, or literal string)",
                 default_value: "Comma",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Join delimiter",
                 description: "Delimiter to rejoin with (e.g. Line feed, CRLF)",
                 default_value: "Line feed",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

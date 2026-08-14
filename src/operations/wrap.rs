@@ -33,6 +33,12 @@ impl Operation for WrapOp {
             name: "Line Width",
             description: "Number of characters per line",
             default_value: "64",
+            kind: crate::operation::ArgKind::UnsignedInteger,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

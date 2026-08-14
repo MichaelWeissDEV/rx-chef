@@ -35,6 +35,12 @@ impl Operation for CompareCTPHHashes {
             description:
                 "Delimiter between the two hashes (Line feed, CRLF, Space, Comma, Semi-colon)",
             default_value: "Line feed",
+            kind: crate::operation::ArgKind::Enum,
+            required: false,
+            choices: &["Line feed", "CRLF", "Space", "Comma", "Semi-colon"],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

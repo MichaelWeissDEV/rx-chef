@@ -45,8 +45,8 @@ pub struct OperationDescriptor {
     pub output_type: String,
     pub broken: bool,
     pub input_requirement: crate::operation::InputRequirement,
-    pub status: crate::operation::OperationStatus,
-    pub available: bool,
+    pub implementation_status: crate::operation::ImplementationStatus,
+    pub availability: crate::operation::Availability,
     pub feature_requirements: Vec<String>,
     pub platform_requirements: Vec<String>,
     pub side_effects: Vec<crate::operation::SideEffect>,
@@ -109,14 +109,18 @@ pub fn describe(operation: &str) -> Result<OperationDescriptor, String> {
         output_type: runtime::data_type_name(info.output_type).to_string(),
         broken: info.is_broken,
         input_requirement: info.input_requirement,
-        status: info.status,
-        available: !info.is_broken,
+        implementation_status: info.implementation_status,
+        availability: info.availability,
         feature_requirements: info
             .feature_requirements
             .iter()
             .map(|value| (*value).to_string())
             .collect(),
-        platform_requirements: Vec::new(),
+        platform_requirements: vec![
+            "Linux x86_64 verified".to_string(),
+            "macOS not release-verified".to_string(),
+            "Windows not release-verified".to_string(),
+        ],
         side_effects: info.side_effects.to_vec(),
         deterministic: info.deterministic,
         parity: info.parity,
@@ -133,12 +137,16 @@ pub fn describe(operation: &str) -> Result<OperationDescriptor, String> {
                 name: arg.name.to_string(),
                 description: arg.description.to_string(),
                 default: arg.default_value.to_string(),
-                kind: runtime::inferred_arg_kind(arg),
-                required: false,
-                choices: Vec::new(),
-                minimum: None,
-                maximum: None,
-                sensitive: runtime::is_sensitive_arg(arg),
+                kind: arg.kind,
+                required: arg.required,
+                choices: arg
+                    .choices
+                    .iter()
+                    .map(|choice| (*choice).to_string())
+                    .collect(),
+                minimum: arg.minimum.map(|bound| bound.to_string()),
+                maximum: arg.maximum.map(|bound| bound.to_string()),
+                sensitive: arg.sensitive,
             })
             .collect(),
     })
@@ -146,15 +154,45 @@ pub fn describe(operation: &str) -> Result<OperationDescriptor, String> {
 
 /// Execute a single operation through the shared execution engine.
 pub fn run(operation: &str, input: Vec<u8>, args: &[String]) -> Result<ExecutionResult, String> {
-    execution::run(operation, input, args.to_vec())
-        .map(|outcome| ExecutionResult::from_bytes(outcome.output))
-        .map_err(|error| error.to_string())
+    run_with_input(operation, input, true, args)
+}
+
+/// Execute while preserving whether an input source was present.
+pub fn run_with_input(
+    operation: &str,
+    input: Vec<u8>,
+    input_supplied: bool,
+    args: &[String],
+) -> Result<ExecutionResult, String> {
+    execution::execute(execution::ExecutionRequest {
+        input,
+        input_supplied,
+        recipe: vec![execution::RecipeStep {
+            op: operation.to_string(),
+            args: args.to_vec(),
+        }]
+        .into(),
+        variables: execution::VariableContext::default(),
+        options: execution::ExecutionOptions::default(),
+    })
+    .map(|outcome| ExecutionResult::from_bytes(outcome.output))
+    .map_err(|error| error.to_string())
 }
 
 /// Execute an arbitrary recipe through the shared execution engine.
 pub fn bake(input: Vec<u8>, recipe: &[RecipeStep]) -> Result<ExecutionResult, String> {
+    bake_with_input(input, true, recipe)
+}
+
+/// Execute a recipe while preserving whether an input source was present.
+pub fn bake_with_input(
+    input: Vec<u8>,
+    input_supplied: bool,
+    recipe: &[RecipeStep],
+) -> Result<ExecutionResult, String> {
     execution::execute(execution::ExecutionRequest {
         input,
+        input_supplied,
         recipe: recipe.to_vec().into(),
         variables: execution::VariableContext::default(),
         options: execution::ExecutionOptions::default(),
@@ -199,14 +237,18 @@ struct BakeParams {
     recipe: Vec<RecipeStep>,
 }
 
-fn decode_input(input: Option<String>, input_base64: Option<String>) -> Result<Vec<u8>, String> {
+fn decode_input(
+    input: Option<String>,
+    input_base64: Option<String>,
+) -> Result<(Vec<u8>, bool), String> {
     match (input, input_base64) {
         (Some(_), Some(_)) => Err("provide only one of input or input_base64".to_string()),
-        (Some(text), None) => Ok(text.into_bytes()),
+        (Some(text), None) => Ok((text.into_bytes(), true)),
         (None, Some(encoded)) => general_purpose::STANDARD
             .decode(encoded)
+            .map(|bytes| (bytes, true))
             .map_err(|error| format!("invalid input_base64: {error}")),
-        (None, None) => Ok(Vec::new()),
+        (None, None) => Ok((Vec::new(), false)),
     }
 }
 
@@ -255,9 +297,10 @@ pub fn handle_request(value: Value) -> Option<Value> {
         "run" => serde_json::from_value::<RunParams>(request.params)
             .map_err(|error| (-32602, error.to_string()))
             .and_then(|params| {
-                let input = decode_input(params.input, params.input_base64)
+                let (input, supplied) = decode_input(params.input, params.input_base64)
                     .map_err(|error| (-32602, error))?;
-                run(&params.operation, input, &params.args).map_err(|error| (-32002, error))
+                run_with_input(&params.operation, input, supplied, &params.args)
+                    .map_err(|error| (-32002, error))
             })
             .and_then(|value| {
                 serde_json::to_value(value).map_err(|error| (-32603, error.to_string()))
@@ -265,9 +308,9 @@ pub fn handle_request(value: Value) -> Option<Value> {
         "bake" => serde_json::from_value::<BakeParams>(request.params)
             .map_err(|error| (-32602, error.to_string()))
             .and_then(|params| {
-                let input = decode_input(params.input, params.input_base64)
+                let (input, supplied) = decode_input(params.input, params.input_base64)
                     .map_err(|error| (-32602, error))?;
-                bake(input, &params.recipe).map_err(|error| (-32002, error))
+                bake_with_input(input, supplied, &params.recipe).map_err(|error| (-32002, error))
             })
             .and_then(|value| {
                 serde_json::to_value(value).map_err(|error| (-32603, error.to_string()))

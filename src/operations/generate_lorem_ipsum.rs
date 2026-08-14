@@ -200,11 +200,23 @@ impl Operation for GenerateLoremIpsum {
                 name: "Length",
                 description: "Number of units to generate",
                 default_value: "3",
+                kind: crate::operation::ArgKind::UnsignedInteger,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Length in",
                 description: "Unit type: Paragraphs, Sentences, Words, Bytes",
                 default_value: "Paragraphs",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA
@@ -212,6 +224,10 @@ impl Operation for GenerateLoremIpsum {
 
     fn input_type(&self) -> DataType {
         DataType::String
+    }
+
+    fn input_requirement(&self) -> crate::operation::InputRequirement {
+        crate::operation::InputRequirement::Ignored
     }
 
     fn output_type(&self) -> DataType {

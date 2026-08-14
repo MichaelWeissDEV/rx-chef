@@ -33,6 +33,12 @@ impl Operation for BcryptCompare {
             name: "Hash",
             description: "Bcrypt hash to compare against",
             default_value: "",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

@@ -33,6 +33,12 @@ impl Operation for Sleep {
             name: "Time (ms)",
             description: "Number of milliseconds to sleep",
             default_value: "1000",
+            kind: crate::operation::ArgKind::Integer,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

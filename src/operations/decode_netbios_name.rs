@@ -31,6 +31,12 @@ impl Operation for DecodeNetBIOSName {
             name: "Offset",
             description: "The offset to use for decoding",
             default_value: "65",
+            kind: crate::operation::ArgKind::Integer,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

@@ -34,11 +34,23 @@ impl Operation for JSONBeautify {
                 name: "Indent string",
                 description: "String used for indentation (e.g. tab or spaces)",
                 default_value: "    ",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Sort Object Keys",
                 description: "Sort keys in JSON objects alphabetically",
                 default_value: "false",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

@@ -30,6 +30,12 @@ impl Operation for ExpandAlphabetRange {
             name: "Delimiter",
             description: "The delimiter to use between each character",
             default_value: "",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

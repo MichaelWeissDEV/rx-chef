@@ -32,11 +32,23 @@ impl Operation for ExtractRGBA {
                 name: "Delimiter",
                 description: "The delimiter between values.",
                 default_value: " ",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Include Alpha",
                 description: "Whether to include the alpha channel.",
                 default_value: "true",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

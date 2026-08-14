@@ -35,6 +35,12 @@ impl Operation for XMLBeautify {
             name: "Indent string",
             description: "The string to use for indentation",
             default_value: "\\t",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

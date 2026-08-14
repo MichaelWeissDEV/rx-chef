@@ -35,6 +35,12 @@ impl Operation for FromPunycode {
             name: "Internationalised domain name",
             description: "Treat input as a full IDN domain name (xn-- labels)",
             default_value: "false",
+            kind: crate::operation::ArgKind::Boolean,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

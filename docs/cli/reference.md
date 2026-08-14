@@ -33,8 +33,9 @@ Runs one operation. See [CLI quick start](index.md) for input selection and [Pip
 - `-f, --input-file PATH`: exact file bytes.
 - `--arg NAME=VALUE`: repeatable named operation argument.
 - `--set KEY=VALUE`: repeatable variable override.
-- `--hex`: render output bytes as hex.
-- `-j, --json`: emit an output envelope.
+- `--format auto|raw|text|hex|base64|json`: select rendering explicitly.
+- `--output-file PATH`: atomically write the result without duplicating it on stdout.
+- `--hex` and `-j, --json`: compatibility shorthands for formats.
 
 Remaining positional values are operation arguments; use `--input` for literal input.
 
@@ -44,8 +45,8 @@ Runs compact steps left-to-right. At least one step is required.
 
 - `-i, --input TEXT`, `-f, --input-file PATH`: select input.
 - `-t, --trace`: intermediate results (stderr, or JSON fields with `--json`).
-- `--hex`: hex output.
-- `-j, --json`: machine-readable final output.
+- `--format` and `--output-file`: the shared output contract.
+- `--hex` and `-j, --json`: compatibility shorthands.
 - `--save`: add the run to history.
 - `--set KEY=VALUE`: repeatable variable override.
 
@@ -103,7 +104,7 @@ Mutating subcommands use project scope by default.
 |---|---|
 | `list` | Show recent entries; `--limit N` defaults to 20 and `--json` structures output. |
 | `show ID` | Show metadata and per-step previews. |
-| `run ID` | Replay with preview input or replacement `--input`; accepts `--trace`. |
+| `run ID` | Replay steps with required replacement `--input`/`--input-file`; accepts `--trace`. A preview is never input. |
 | `clear` | Delete all history, prompting unless `--yes`. |
 
 ## `magic`
@@ -140,7 +141,11 @@ Streams files or stdin and reports encoded/high-entropy tokens.
 
 Findings go to stdout and the total goes to stderr. Without paths, scan reads stdin. Directories require `--recursive` to include nested directories.
 
-## `project run FILE`
+## `project`
+
+`project init` creates the explicit `.rxchef` store used by ancestor discovery.
+
+### `project run FILE`
 
 Loads a YAML/JSON project, resolves inline or relative file input, expands project variables, and executes its pipeline.
 
@@ -149,3 +154,13 @@ Loads a YAML/JSON project, resolves inline or relative file input, expands proje
 ## `serve --stdio`
 
 Starts the persistent newline-delimited JSON transport. It writes no greeting or log text to stdout. One request is read per line, responses are flushed immediately, and the process continues until EOF or `shutdown`. See the [protocol specification](integration.md).
+
+## `completions SHELL`
+
+Writes generated completion source for Bash, Zsh, Fish, Elvish, or PowerShell to
+stdout. Redirect it to the location required by that shell.
+
+## `manpage`
+
+Writes the generated roff man page to stdout, or atomically to `--output PATH`.
+Clap is the source of truth for both generated artifacts.

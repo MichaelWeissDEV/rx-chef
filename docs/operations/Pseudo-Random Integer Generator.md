@@ -10,7 +10,7 @@ A cryptographically-secure pseudo-random number generator (PRNG). Generates rand
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -31,15 +31,15 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 | 2 | Min Value | `Integer` | no | `0` | — | no | Minimum value (inclusive) |
 | 3 | Max Value | `Integer` | no | `99` | — | no | Maximum value (inclusive) |
 | 4 | Delimiter | `String` | no | `Space` | — | no | Delimiter between integers |
-| 5 | Output | `String` | no | `Decimal` | — | no | Output format (Raw, Hex, Decimal) |
+| 5 | Output | `Enum` | no | `Decimal` | Raw, Hex, Decimal | no | Output format (Raw, Hex, Decimal) |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+A cryptographically-secure pseudo-random number generator (PRNG). Generates random integers within a specified range. The supported range of integers is from -(2^53 - 1) to (2^53 - 1).
 
 ## Implementation
 
-Source module: `src/operations/pseudo_random_integer_generator.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/pseudo_random_integer_generator.rs` and declares `String` input and `String` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -69,11 +69,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/pseudo_random_integer_generator.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

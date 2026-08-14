@@ -33,6 +33,12 @@ impl Operation for AddOp {
             name: "Key",
             description: "Key to ADD with input",
             default_value: "",
+            kind: crate::operation::ArgKind::Bytes,
+            required: true,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: true,
         }];
         SCHEMA
     }

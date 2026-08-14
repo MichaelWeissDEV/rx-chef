@@ -35,6 +35,12 @@ impl Operation for PGPVerify {
             name: "Public key of signer",
             description: "ASCII-armoured PGP public key of the signer",
             default_value: "",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

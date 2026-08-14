@@ -31,6 +31,12 @@ impl Operation for CaesarBoxCipher {
             name: "Box Height",
             description: "Number of rows in the transposition box",
             default_value: "1",
+            kind: crate::operation::ArgKind::UnsignedInteger,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

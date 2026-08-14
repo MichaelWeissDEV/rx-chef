@@ -32,11 +32,23 @@ impl Operation for FromDecimal {
                 name: "Delimiter",
                 description: "The character code delimiter",
                 default_value: "Space",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Support signed values",
                 description: "Support negative values (signed 8-bit integers)",
                 default_value: "false",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

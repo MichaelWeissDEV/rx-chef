@@ -50,11 +50,23 @@ impl Operation for Head {
                 name: "Delimiter",
                 description: "Record delimiter: Line feed, CRLF, Comma, etc.",
                 default_value: "Line feed",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Number",
                 description: "Number of lines to take. Negative value = all but last n.",
                 default_value: "10",
+                kind: crate::operation::ArgKind::Integer,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

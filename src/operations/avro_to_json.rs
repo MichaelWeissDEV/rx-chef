@@ -34,6 +34,12 @@ impl Operation for AvroToJSON {
             name: "Force Valid JSON",
             description: "Wrap multiple records in an array to ensure valid JSON output",
             default_value: "true",
+            kind: crate::operation::ArgKind::Boolean,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

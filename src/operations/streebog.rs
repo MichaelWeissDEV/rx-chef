@@ -36,6 +36,12 @@ impl Operation for Streebog {
             name: "Digest length",
             description: "The length of the digest to produce.",
             default_value: "512",
+            kind: crate::operation::ArgKind::UnsignedInteger,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

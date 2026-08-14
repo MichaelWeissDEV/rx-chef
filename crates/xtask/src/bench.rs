@@ -195,7 +195,7 @@ const CODEC_SAMPLES: usize = 20;
 const ENGINE_WARMUP: usize = 3;
 const ENGINE_SAMPLES: usize = 10;
 
-fn build_cases() -> Result<Vec<Measurement>, String> {
+fn build_cases(full: bool) -> Result<Vec<Measurement>, String> {
     let mut out = Vec::new();
 
     // ── Codecs: 1 MiB of deterministic noise ────────────────────────────────
@@ -214,8 +214,48 @@ fn build_cases() -> Result<Vec<Measurement>, String> {
                 &["None".to_string(), "0".to_string()],
             )
             .map(|_| ())
+            .map_err(|error| error.to_string())
         },
     )?);
+
+    if full {
+        for (name, size) in [
+            ("To Base64 (1 KiB)", 1 << 10),
+            ("To Base64 (16 MiB)", 16 << 20),
+        ] {
+            let payload = deterministic_bytes(size, size as u64);
+            out.push(run_case(
+                name,
+                "codec",
+                payload.len(),
+                CODEC_WARMUP,
+                CODEC_SAMPLES,
+                || {
+                    runtime::run_operation("To Base64", payload.clone(), &[])
+                        .map(|_| ())
+                        .map_err(|error| error.to_string())
+                },
+            )?);
+        }
+        for (name, size) in [
+            ("SHA2-256 (1 KiB)", 1 << 10),
+            ("SHA2-256 (16 MiB)", 16 << 20),
+        ] {
+            let payload = deterministic_bytes(size, !(size as u64));
+            out.push(run_case(
+                name,
+                "hash",
+                payload.len(),
+                CODEC_WARMUP,
+                CODEC_SAMPLES,
+                || {
+                    runtime::run_operation("SHA2", payload.clone(), &[])
+                        .map(|_| ())
+                        .map_err(|error| error.to_string())
+                },
+            )?);
+        }
+    }
 
     out.push(run_case(
         "To Base64",
@@ -223,7 +263,11 @@ fn build_cases() -> Result<Vec<Measurement>, String> {
         codec_payload.len(),
         CODEC_WARMUP,
         CODEC_SAMPLES,
-        || runtime::run_operation("To Base64", codec_payload.clone(), &[]).map(|_| ()),
+        || {
+            runtime::run_operation("To Base64", codec_payload.clone(), &[])
+                .map(|_| ())
+                .map_err(|error| error.to_string())
+        },
     )?);
 
     // ── Hash: SHA2-256 over 1 MiB ────────────────────────────────────────────
@@ -233,7 +277,11 @@ fn build_cases() -> Result<Vec<Measurement>, String> {
         codec_payload.len(),
         CODEC_WARMUP,
         CODEC_SAMPLES,
-        || runtime::run_operation("SHA2", codec_payload.clone(), &[]).map(|_| ()),
+        || {
+            runtime::run_operation("SHA2", codec_payload.clone(), &[])
+                .map(|_| ())
+                .map_err(|error| error.to_string())
+        },
     )?);
 
     // ── Cipher: AES-256-CBC over 1 MiB ──────────────────────────────────────
@@ -258,6 +306,7 @@ fn build_cases() -> Result<Vec<Measurement>, String> {
                 ],
             )
             .map(|_| ())
+            .map_err(|error| error.to_string())
         },
     )?);
 
@@ -270,7 +319,11 @@ fn build_cases() -> Result<Vec<Measurement>, String> {
         gzip_payload.len(),
         CODEC_WARMUP,
         CODEC_SAMPLES,
-        || runtime::run_operation("Gzip", gzip_payload.clone(), &[]).map(|_| ()),
+        || {
+            runtime::run_operation("Gzip", gzip_payload.clone(), &[])
+                .map(|_| ())
+                .map_err(|error| error.to_string())
+        },
     )?);
 
     // ── Magic engine: a small layered payload (base64, then hex) at the
@@ -278,9 +331,11 @@ fn build_cases() -> Result<Vec<Measurement>, String> {
     //    candidate decode branches per byte, so its useful input sizes are
     //    much smaller than a raw codec's. ───────────────────────────────────
     let magic_secret = b"the quick brown fox jumps over the lazy dog 1234567890";
-    let magic_b64 = runtime::run_operation("To Base64", magic_secret.to_vec(), &[])?;
+    let magic_b64 = runtime::run_operation("To Base64", magic_secret.to_vec(), &[])
+        .map_err(|error| error.to_string())?;
     let magic_payload =
-        runtime::run_operation("To Hex", magic_b64, &["None".to_string(), "0".to_string()])?;
+        runtime::run_operation("To Hex", magic_b64, &["None".to_string(), "0".to_string()])
+            .map_err(|error| error.to_string())?;
     out.push(run_case(
         "Magic (depth 3, hex(base64(text)))",
         "engine",
@@ -443,18 +498,26 @@ pub fn run_docs_internal(args: &[String]) -> Result<(), String> {
     } else {
         "quick"
     };
-    let measurements = build_cases()?;
+    let measurements = build_cases(mode == "full")?;
     let root =
         PathBuf::from(env::var("CARGO_MANIFEST_DIR").map_err(|e| e.to_string())?).join("../..");
-    let output = root.join("docs/_generated/benchmarks.json");
+    let output = root.join(
+        if env::consts::OS == "linux" && env::consts::ARCH == "x86_64" {
+            "benchmarks/results/linux-x86_64.json"
+        } else {
+            "benchmarks/results/host-unverified.json"
+        },
+    );
     fs::create_dir_all(output.parent().unwrap()).map_err(|e| e.to_string())?;
     let document = serde_json::json!({
         "schema_version": 1,
-        "commit": command_output("git", &["rev-parse", "HEAD"]),
-        "rustc": command_output("rustc", &["--version"]),
-        "os": env::consts::OS,
-        "arch": env::consts::ARCH,
-        "cpu": cpu_name(),
+        "environment": {
+            "commit": command_output("git", &["rev-parse", "HEAD"]),
+            "rustc": command_output("rustc", &["--version"]),
+            "os": env::consts::OS,
+            "arch": env::consts::ARCH,
+            "cpu": cpu_name(),
+        },
         "profile": "release",
         "suite": mode,
         "disclaimer": "Reference measurement; hardware dependent; not a runtime guarantee.",
@@ -481,7 +544,14 @@ fn cpu_name() -> String {
     if env::consts::OS == "macos" {
         command_output("sysctl", &["-n", "machdep.cpu.brand_string"])
     } else {
-        command_output("uname", &["-m"])
+        fs::read_to_string("/proc/cpuinfo")
+            .ok()
+            .and_then(|contents| {
+                contents
+                    .lines()
+                    .find_map(|line| line.strip_prefix("model name\t: ").map(str::to_owned))
+            })
+            .unwrap_or_else(|| command_output("uname", &["-m"]))
     }
 }
 
@@ -499,7 +569,7 @@ pub fn run(args: &[String]) -> Result<(), String> {
 
     let json = args.iter().any(|a| a == "--json");
 
-    let measurements = build_cases()?;
+    let measurements = build_cases(args.iter().any(|argument| argument == "--full"))?;
 
     if json {
         print_json(&measurements);

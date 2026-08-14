@@ -31,6 +31,12 @@ impl Operation for Merge {
             name: "Merge All",
             description: "Consolidate all branches back into a single trunk.",
             default_value: "true",
+            kind: crate::operation::ArgKind::Boolean,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

@@ -33,6 +33,12 @@ impl Operation for FromUNIXTimestamp {
             name: "Units",
             description: "The unit of the timestamp",
             default_value: "Seconds (s)",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

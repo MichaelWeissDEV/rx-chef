@@ -10,7 +10,7 @@ Encrypts a message utilizing the SM2 standard. SM2 is a public-key cryptography 
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -27,18 +27,18 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Public Key X | `String` | no | `<empty>` | — | no | Public key component X in hex format (32 bytes) |
-| 2 | Public Key Y | `String` | no | `<empty>` | — | no | Public key component Y in hex format (32 bytes) |
+| 1 | Public Key X | `HexBytes` | no | `<empty>` | — | no | Public key component X in hex format (32 bytes) |
+| 2 | Public Key Y | `HexBytes` | no | `<empty>` | — | no | Public key component Y in hex format (32 bytes) |
 | 3 | Output Format | `String` | no | `C1C3C2` | — | no | The format of the output ciphertext (C1C3C2 or C1C2C3) |
 | 4 | Curve | `String` | no | `sm2p256v1` | — | no | The elliptic curve to use (sm2p256v1) |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+Encrypts a message utilizing the SM2 standard. SM2 is a public-key cryptography standard used in China.
 
 ## Implementation
 
-Source module: `src/operations/sm2_encrypt.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/sm2_encrypt.rs` and declares `Bytes` input and `String` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -68,11 +68,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/sm2_encrypt.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

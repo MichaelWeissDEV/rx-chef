@@ -31,6 +31,12 @@ impl Operation for SyntaxHighlighter {
             name: "Language",
             description: "Language to highlight",
             default_value: "auto detect",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

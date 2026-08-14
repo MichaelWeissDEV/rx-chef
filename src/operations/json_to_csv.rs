@@ -34,11 +34,23 @@ impl Operation for JSONToCSV {
                 name: "Cell delimiter",
                 description: "The character(s) to use to separate cells",
                 default_value: ",",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Row delimiter",
                 description: "The character(s) to use to separate rows",
                 default_value: "\\r\\n",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

@@ -34,12 +34,24 @@ impl Operation for LS47Decrypt {
                 name: "Password",
                 description: "The password used to derive the LS47 key",
                 default_value: "",
+                kind: crate::operation::ArgKind::Bytes,
+                required: true,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: true,
             },
             ArgSchema {
                 name: "Padding",
                 description:
                     "The number of padding characters to remove from the start of the output",
                 default_value: "10",
+                kind: crate::operation::ArgKind::Integer,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

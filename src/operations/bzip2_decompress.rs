@@ -35,6 +35,12 @@ impl Operation for Bzip2Decompress {
             name: "Use low-memory, slower decompression algorithm",
             description: "Use a slower algorithm that requires less memory",
             default_value: "false",
+            kind: crate::operation::ArgKind::Boolean,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

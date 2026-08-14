@@ -47,6 +47,12 @@ impl Operation for RawDeflate {
             description:
                 "Compression level: Dynamic (default), Best speed, Best compression, No compression",
             default_value: "Dynamic",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

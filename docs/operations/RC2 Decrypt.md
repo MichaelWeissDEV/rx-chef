@@ -10,7 +10,7 @@ RC2 (also known as ARC2) is a symmetric-key block cipher designed by Ron Rivest 
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -27,18 +27,18 @@ Declared output type: `Bytes`. Redirect stdout or use `--output-file` for exact 
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Key | `String` | no | `<empty>` | — | no | Decryption key as UTF-8 or hex (prefix 0x for hex) |
-| 2 | IV | `String` | no | `<empty>` | — | no | Initialization vector (8 bytes for CBC, empty for ECB) |
+| 1 | Key | `Bytes` | yes | `<empty>` | — | yes | Decryption key as UTF-8 or hex (prefix 0x for hex) |
+| 2 | IV | `Bytes` | no | `<empty>` | — | no | Initialization vector (8 bytes for CBC, empty for ECB) |
 | 3 | Input | `String` | no | `Hex` | — | no | Input encoding: Hex or Raw |
 | 4 | Output | `String` | no | `Raw` | — | no | Output encoding: Raw or Hex |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+RC2 (also known as ARC2) is a symmetric-key block cipher designed by Ron Rivest in 1987. Supports CBC mode (8-byte IV) or ECB mode (empty IV). Uses PKCS#7 padding.
 
 ## Implementation
 
-Source module: `src/operations/rc2_decrypt.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/rc2_decrypt.rs` and declares `Bytes` input and `Bytes` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -68,11 +68,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/rc2_decrypt.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

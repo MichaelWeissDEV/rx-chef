@@ -7,7 +7,7 @@ use std::{collections::HashMap, time::Duration, time::Instant};
 
 use serde::{Deserialize, Serialize};
 
-use crate::runtime;
+use crate::{operation::InputRequirement, runtime};
 
 /// Default maximum number of recipe steps executed, including loop iterations
 /// and steps executed inside flow-control branches.
@@ -136,6 +136,9 @@ impl Default for ExecutionOptions {
 pub struct ExecutionRequest {
     /// Exact input bytes.
     pub input: Vec<u8>,
+    /// Distinguishes an absent input source from an explicitly supplied empty
+    /// byte stream.
+    pub input_supplied: bool,
     /// Recipe to execute.
     pub recipe: Recipe,
     /// Values expanded in arguments before operation dispatch.
@@ -196,6 +199,14 @@ pub enum ExecutionError {
         /// Registry, argument, or operation error.
         message: String,
     },
+    /// A typed registry, argument, availability, or operation failure.
+    #[error("step {step_index} ({operation}): {source}")]
+    RuntimeStep {
+        step_index: usize,
+        operation: String,
+        #[source]
+        source: runtime::RuntimeError,
+    },
     /// The configured execution fuel was consumed.
     #[error("execution step limit exceeded ({limit})")]
     StepLimitExceeded {
@@ -219,6 +230,89 @@ fn flow_name(name: &str) -> String {
         .filter(|character| character.is_ascii_alphanumeric())
         .flat_map(char::to_lowercase)
         .collect()
+}
+
+fn validate_recipe(
+    recipe: &[RecipeStep],
+    variables: &VariableContext,
+) -> Result<(), ExecutionError> {
+    let mut labels = HashMap::new();
+    let mut branches = Vec::new();
+    for (index, step) in recipe.iter().enumerate() {
+        let kind = flow_name(&step.op);
+        match kind.as_str() {
+            "fork" | "subsection" => branches.push((index, step.op.as_str())),
+            "merge" => {
+                if branches.pop().is_none() {
+                    return Err(ExecutionError::InvalidRecipe(format!(
+                        "step {} (Merge): no matching Fork or Subsection",
+                        index + 1
+                    )));
+                }
+            }
+            "label" => {
+                let name = variables.expand(argument(step, 0, ""));
+                if name.is_empty() {
+                    return Err(ExecutionError::InvalidRecipe(format!(
+                        "step {} (Label): label name is empty",
+                        index + 1
+                    )));
+                }
+                if labels.insert(name.clone(), index).is_some() {
+                    return Err(ExecutionError::InvalidRecipe(format!(
+                        "step {} (Label): duplicate label '{name}'",
+                        index + 1
+                    )));
+                }
+            }
+            _ => {}
+        }
+        let args = step
+            .args
+            .iter()
+            .map(|value| variables.expand(value))
+            .collect::<Vec<_>>();
+        if !args.iter().any(|value| value.contains("$R")) {
+            runtime::validate_operation_args(&step.op, &args).map_err(|source| {
+                ExecutionError::RuntimeStep {
+                    step_index: index + 1,
+                    operation: step.op.clone(),
+                    source,
+                }
+            })?;
+        } else {
+            runtime::operation_info(&step.op).map_err(|message| ExecutionError::Step {
+                step_index: index + 1,
+                operation: step.op.clone(),
+                message,
+            })?;
+        }
+    }
+    if let Some((index, operation)) = branches.pop() {
+        return Err(ExecutionError::InvalidRecipe(format!(
+            "step {} ({operation}): missing matching Merge",
+            index + 1
+        )));
+    }
+    for (index, step) in recipe.iter().enumerate() {
+        let kind = flow_name(&step.op);
+        let label_index = match kind.as_str() {
+            "jump" => Some(0),
+            "conditionaljump" => Some(2),
+            _ => None,
+        };
+        if let Some(label_index) = label_index {
+            let label = variables.expand(argument(step, label_index, ""));
+            if !label.contains("$R") && !labels.contains_key(&label) {
+                return Err(ExecutionError::InvalidRecipe(format!(
+                    "step {} ({}): unknown label '{label}'",
+                    index + 1,
+                    step.op
+                )));
+            }
+        }
+    }
+    Ok(())
 }
 
 fn argument<'a>(step: &'a RecipeStep, index: usize, default: &'a str) -> &'a str {
@@ -314,6 +408,7 @@ struct Engine<'a> {
     options: &'a ExecutionOptions,
     labels: HashMap<String, usize>,
     executions: usize,
+    input_supplied: bool,
     trace: Vec<TraceEntry>,
 }
 
@@ -322,6 +417,7 @@ impl<'a> Engine<'a> {
         recipe: &'a [RecipeStep],
         variables: &'a VariableContext,
         options: &'a ExecutionOptions,
+        input_supplied: bool,
     ) -> Result<Self, ExecutionError> {
         let mut labels = HashMap::new();
         for (index, step) in recipe.iter().enumerate() {
@@ -347,6 +443,7 @@ impl<'a> Engine<'a> {
             options,
             labels,
             executions: 0,
+            input_supplied,
             trace: Vec::new(),
         })
     }
@@ -599,8 +696,20 @@ impl<'a> Engine<'a> {
                         .map(|value| expand_registers(&self.variables.expand(value), registers))
                         .collect::<Vec<_>>();
                     let operation_input = std::mem::take(&mut current);
-                    let output = runtime::run_operation(&step.op, operation_input, &args)
+                    let info = runtime::operation_info(&step.op)
                         .map_err(|error| self.step_error(index, error))?;
+                    if info.input_requirement == InputRequirement::Required && !self.input_supplied
+                    {
+                        return Err(self.step_error(index, "input source is required"));
+                    }
+                    let output = runtime::run_operation(&step.op, operation_input, &args).map_err(
+                        |source| ExecutionError::RuntimeStep {
+                            step_index: index + 1,
+                            operation: step.op.clone(),
+                            source,
+                        },
+                    )?;
+                    self.input_supplied = true;
                     pc += 1;
                     Some(output)
                 }
@@ -641,6 +750,7 @@ impl<'a> Engine<'a> {
 /// Returns [`ExecutionError`] when recipe validation, resource limits,
 /// operation lookup, argument parsing, or operation execution fails.
 pub fn execute(request: ExecutionRequest) -> Result<ExecutionOutcome, ExecutionError> {
+    validate_recipe(&request.recipe.steps, &request.variables)?;
     if request.options.max_steps == 0 && !request.recipe.steps.is_empty() {
         return Err(ExecutionError::StepLimitExceeded { limit: 0 });
     }
@@ -653,7 +763,12 @@ pub fn execute(request: ExecutionRequest) -> Result<ExecutionOutcome, ExecutionE
             });
         }
     }
-    let mut engine = Engine::new(&request.recipe.steps, &request.variables, &request.options)?;
+    let mut engine = Engine::new(
+        &request.recipe.steps,
+        &request.variables,
+        &request.options,
+        request.input_supplied,
+    )?;
     let output = engine.run_range(
         0,
         request.recipe.steps.len(),
@@ -678,6 +793,7 @@ pub fn run(
 ) -> Result<ExecutionOutcome, ExecutionError> {
     execute(ExecutionRequest {
         input,
+        input_supplied: true,
         recipe: Recipe::from(vec![RecipeStep {
             op: operation.into(),
             args,
@@ -695,6 +811,7 @@ mod tests {
     fn linear_and_flow_recipes_use_the_same_engine() {
         let linear = execute(ExecutionRequest {
             input: b"Hello".to_vec(),
+            input_supplied: true,
             recipe: vec![
                 RecipeStep {
                     op: "To Upper case".into(),
@@ -714,6 +831,7 @@ mod tests {
 
         let flow = execute(ExecutionRequest {
             input: b"one\ntwo".to_vec(),
+            input_supplied: true,
             recipe: vec![
                 RecipeStep {
                     op: "Fork".into(),
@@ -740,6 +858,7 @@ mod tests {
     fn step_and_output_limits_fail_structurally() {
         let request = ExecutionRequest {
             input: b"a".to_vec(),
+            input_supplied: true,
             recipe: vec![RecipeStep {
                 op: "To Base64".into(),
                 args: vec![],
@@ -758,6 +877,7 @@ mod tests {
 
         let request = ExecutionRequest {
             input: b"hello".to_vec(),
+            input_supplied: true,
             recipe: vec![RecipeStep {
                 op: "To Base64".into(),
                 args: vec![],
@@ -779,6 +899,7 @@ mod tests {
     fn trace_contains_sizes_but_no_payloads() {
         let outcome = execute(ExecutionRequest {
             input: b"secret".to_vec(),
+            input_supplied: true,
             recipe: vec![RecipeStep {
                 op: "To Base64".into(),
                 args: vec![],
@@ -794,5 +915,44 @@ mod tests {
         assert_eq!(outcome.trace.len(), 1);
         assert_eq!(outcome.trace[0].input_bytes, 6);
         assert_eq!(outcome.trace[0].output_bytes, 8);
+    }
+
+    #[test]
+    fn input_requirement_distinguishes_missing_from_explicit_empty() {
+        let recipe = Recipe::from(vec![RecipeStep {
+            op: "To Base64".into(),
+            args: vec![],
+        }]);
+        let missing = execute(ExecutionRequest {
+            input: Vec::new(),
+            input_supplied: false,
+            recipe: recipe.clone(),
+            variables: VariableContext::default(),
+            options: ExecutionOptions::default(),
+        });
+        assert!(matches!(missing, Err(ExecutionError::Step { .. })));
+
+        let empty = execute(ExecutionRequest {
+            input: Vec::new(),
+            input_supplied: true,
+            recipe,
+            variables: VariableContext::default(),
+            options: ExecutionOptions::default(),
+        })
+        .unwrap();
+        assert!(empty.output.is_empty());
+
+        let generated = execute(ExecutionRequest {
+            input: Vec::new(),
+            input_supplied: false,
+            recipe: Recipe::from(vec![RecipeStep {
+                op: "Generate UUID".into(),
+                args: vec![],
+            }]),
+            variables: VariableContext::default(),
+            options: ExecutionOptions::default(),
+        })
+        .unwrap();
+        assert!(!generated.output.is_empty());
     }
 }

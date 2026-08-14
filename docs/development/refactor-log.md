@@ -3,6 +3,10 @@
 This log records observed changes during the pre-1.0 release consolidation. It
 does not present planned work as completed work.
 
+Entries about GitHub Actions and cross-platform jobs are historical. The
+current release process verifies Linux x86_64 locally in Docker; macOS and
+Windows are not verified, and GitHub CI/CD is not a release gate.
+
 ## Phase A — baseline
 
 ### What changed

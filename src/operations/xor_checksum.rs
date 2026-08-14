@@ -38,6 +38,12 @@ impl Operation for XORChecksum {
             name: "Blocksize",
             description: "Number of bytes per block",
             default_value: "4",
+            kind: crate::operation::ArgKind::UnsignedInteger,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

@@ -40,6 +40,12 @@ impl Operation for Keccak {
             name: "Size",
             description: "Output size in bits: 512, 384, 256, or 224",
             default_value: "256",
+            kind: crate::operation::ArgKind::UnsignedInteger,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

@@ -40,6 +40,12 @@ impl Operation for SHA3 {
             name: "Size",
             description: "Output size in bits (512, 384, 256, or 224)",
             default_value: "256",
+            kind: crate::operation::ArgKind::Enum,
+            required: false,
+            choices: &["512", "384", "256", "224"],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

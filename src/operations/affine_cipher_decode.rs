@@ -36,11 +36,23 @@ impl Operation for AffineCipherDecode {
                 name: "a",
                 description: "Multiplier parameter (must be coprime to 26)",
                 default_value: "1",
+                kind: crate::operation::ArgKind::Integer,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "b",
                 description: "Shift parameter",
                 default_value: "0",
+                kind: crate::operation::ArgKind::Integer,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

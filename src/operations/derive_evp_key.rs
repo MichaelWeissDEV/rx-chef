@@ -41,26 +41,56 @@ impl Operation for DeriveEvpKey {
                 name: "Passphrase",
                 description: "The passphrase to derive the key from.",
                 default_value: "",
+                kind: crate::operation::ArgKind::Bytes,
+                required: true,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: true,
             },
             ArgSchema {
                 name: "Key size",
                 description: "The length of the key to generate in bits.",
                 default_value: "128",
+                kind: crate::operation::ArgKind::UnsignedInteger,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Iterations",
                 description: "The number of times the hash function is applied.",
                 default_value: "1",
+                kind: crate::operation::ArgKind::UnsignedInteger,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Hashing function",
                 description: "The hash function to use.",
                 default_value: "MD5",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Salt",
                 description: "The salt to use. If empty, a random salt will be generated.",
                 default_value: "",
+                kind: crate::operation::ArgKind::Bytes,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA
@@ -68,6 +98,10 @@ impl Operation for DeriveEvpKey {
 
     fn input_type(&self) -> DataType {
         DataType::String
+    }
+
+    fn input_requirement(&self) -> crate::operation::InputRequirement {
+        crate::operation::InputRequirement::Ignored
     }
 
     fn output_type(&self) -> DataType {

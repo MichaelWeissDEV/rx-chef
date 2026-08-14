@@ -290,9 +290,11 @@ mod detect_file_type;
 mod diff;
 
 #[path = "operations/disassemble_arm.rs"]
+#[cfg(feature = "disassembly")]
 mod disassemble_arm;
 
 #[path = "operations/disassemble_x86.rs"]
+#[cfg(feature = "disassembly")]
 mod disassemble_x86;
 
 #[path = "operations/dither_image.rs"]
@@ -1430,6 +1432,7 @@ mod xxtea_encrypt;
 mod yaml_to_json;
 
 #[path = "operations/yara_rules.rs"]
+#[cfg(feature = "yara")]
 mod yara_rules;
 
 #[path = "operations/zip.rs"]

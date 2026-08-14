@@ -10,7 +10,7 @@ Generates an image using the input as pixel values.
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -29,15 +29,15 @@ Declared output type: `Bytes`. Redirect stdout or use `--output-file` for exact 
 |---:|---|---|:---:|---|---|:---:|---|
 | 1 | Mode | `String` | no | `Greyscale` | — | no | Pixel representation mode |
 | 2 | Pixel Scale Factor | `Integer` | no | `8` | — | no | Scale factor for pixels |
-| 3 | Pixels per row | `Integer` | no | `64` | — | no | Width of the image in pixels |
+| 3 | Pixels per row | `UnsignedInteger` | no | `64` | — | no | Width of the image in pixels |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+Generates an image using the input as pixel values.
 
 ## Implementation
 
-Source module: `src/operations/generate_image.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/generate_image.rs` and declares `Bytes` input and `Bytes` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -67,11 +67,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/generate_image.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

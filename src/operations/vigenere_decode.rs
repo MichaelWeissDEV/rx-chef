@@ -31,6 +31,12 @@ impl Operation for VigenereDecodeOp {
             name: "Key",
             description: "Key for the Vigenre cipher (letters only)",
             default_value: "",
+            kind: crate::operation::ArgKind::Bytes,
+            required: true,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: true,
         }];
         SCHEMA
     }

@@ -10,7 +10,7 @@ Crops an image to the specified region, or automatically crops edges.<br><br><b>
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -29,8 +29,8 @@ Declared output type: `Bytes`. Redirect stdout or use `--output-file` for exact 
 |---:|---|---|:---:|---|---|:---:|---|
 | 1 | X Position | `Integer` | no | `0` | — | no | The x-coordinate of the top-left corner of the crop area |
 | 2 | Y Position | `Integer` | no | `0` | — | no | The y-coordinate of the top-left corner of the crop area |
-| 3 | Width | `Integer` | no | `10` | — | no | The width of the crop area |
-| 4 | Height | `Integer` | no | `10` | — | no | The height of the crop area |
+| 3 | Width | `UnsignedInteger` | no | `10` | — | no | The width of the crop area |
+| 4 | Height | `UnsignedInteger` | no | `10` | — | no | The height of the crop area |
 | 5 | Autocrop | `Boolean` | no | `false` | — | no | Whether to automatically crop borders |
 | 6 | Autocrop tolerance (%) | `Integer` | no | `2` | — | no | The tolerance for color difference when autocropping |
 | 7 | Only autocrop frames | `Boolean` | no | `true` | — | no | Only crop if all sides have the same border |
@@ -39,11 +39,11 @@ Declared output type: `Bytes`. Redirect stdout or use `--output-file` for exact 
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+Crops an image to the specified region, or automatically crops edges.<br><br><b><u>Autocrop</u></b><br>Automatically crops same-colour borders from the image.<br><br><u>Autocrop tolerance</u><br>A percentage value for the tolerance of colour difference between pixels.<br><br><u>Only autocrop frames</u><br>Only crop real frames (all sides must have the same border)<br><br><u>Symmetric autocrop</u><br>Force autocrop to be symmetric (top/bottom and left/right are cropped by the same amount)<br><br><u>Autocrop keep border</u><br>The number of pixels of border to leave around the image.
 
 ## Implementation
 
-Source module: `src/operations/crop_image.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/crop_image.rs` and declares `Bytes` input and `Bytes` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -73,11 +73,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/crop_image.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

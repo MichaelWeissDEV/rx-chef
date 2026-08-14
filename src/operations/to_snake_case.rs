@@ -29,6 +29,12 @@ impl Operation for ToSnakeCase {
             name: "Attempt to be context aware",
             description: "Attempt to nicely transform variable and function names.",
             default_value: "false",
+            kind: crate::operation::ArgKind::Boolean,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

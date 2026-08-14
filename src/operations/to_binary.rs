@@ -32,11 +32,23 @@ impl Operation for ToBinary {
                 name: "Delimiter",
                 description: "The delimiter between binary groups (Space, Comma, Semi-colon, Colon, Line feed, CRLF, None)",
                 default_value: "Space",
+                kind: crate::operation::ArgKind::Enum,
+                required: false,
+                choices: &["Space", "Comma", "Semi-colon", "Colon", "Line feed", "CRLF", "None"],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Byte Length",
                 description: "Number of bits per byte (default 8)",
                 default_value: "8",
+                kind: crate::operation::ArgKind::UnsignedInteger,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

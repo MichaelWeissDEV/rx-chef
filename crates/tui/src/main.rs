@@ -30,7 +30,7 @@ Keys (Edit mode): Tab/↑↓ next/prev arg, Enter confirm, Esc cancel
 Keys (Input mode): edit freely, Enter/Esc confirm
 */
 
-use std::io::{self, Write};
+use std::io;
 
 use crossterm::{
     event::{self, Event, KeyCode, KeyEvent, KeyModifiers},
@@ -79,8 +79,9 @@ impl StepResult {
         }
         match std::str::from_utf8(&self.output) {
             Ok(s) => {
-                if s.len() > 4096 {
-                    format!("{}… ({} bytes)", &s[..4096], self.output.len())
+                if s.chars().count() > 4096 {
+                    let preview: String = s.chars().take(4096).collect();
+                    format!("{}… ({} bytes)", preview, self.output.len())
                 } else {
                     s.to_string()
                 }
@@ -202,44 +203,58 @@ impl App {
 
     fn run_pipeline(&mut self) {
         self.results.clear();
-        let mut current = self.input_text.as_bytes().to_vec();
-
-        for step in &self.pipeline {
-            let result = execution::run(&step.op_name, current.clone(), step.args.clone())
-                .map(|outcome| outcome.output)
-                .map_err(|error| error.to_string());
-            match result {
-                Ok(output) => {
-                    current = output.clone();
-                    self.results.push(StepResult {
-                        output,
-                        error: None,
-                    });
-                }
-                Err(e) => {
-                    let msg = e.clone();
-                    self.results.push(StepResult {
-                        output: Vec::new(),
-                        error: Some(e),
-                    });
-                    self.status = format!("Pipeline error at step {}: {}", self.results.len(), msg);
-                    self.output_step_view = self.results.len().saturating_sub(1);
-                    return;
-                }
-            }
-        }
-
-        self.output_step_view = self.results.len().saturating_sub(1);
-        self.output_scroll = 0;
         if self.pipeline.is_empty() {
             self.status = "Pipeline is empty. Press (a) to add a step.".into();
-        } else {
-            self.status = format!(
-                "Pipeline ran OK — {} step(s), output {} bytes.",
-                self.pipeline.len(),
-                current.len()
-            );
+            return;
         }
+
+        let recipe = self
+            .pipeline
+            .iter()
+            .map(|step| execution::RecipeStep {
+                op: step.op_name.clone(),
+                args: step.args.clone(),
+            })
+            .collect::<Vec<_>>();
+        let result = execution::execute(execution::ExecutionRequest {
+            input: self.input_text.as_bytes().to_vec(),
+            input_supplied: true,
+            recipe: recipe.into(),
+            variables: execution::VariableContext::default(),
+            options: execution::ExecutionOptions {
+                trace: true,
+                ..execution::ExecutionOptions::default()
+            },
+        });
+        match result {
+            Ok(outcome) => {
+                self.results = outcome
+                    .trace
+                    .iter()
+                    .map(|_| StepResult {
+                        output: Vec::new(),
+                        error: None,
+                    })
+                    .collect();
+                if let Some(last) = self.results.last_mut() {
+                    last.output = outcome.output.clone();
+                }
+                self.status = format!(
+                    "Pipeline ran OK — {} execution(s), output {} bytes.",
+                    outcome.trace.len(),
+                    outcome.output.len()
+                );
+            }
+            Err(error) => {
+                self.results.push(StepResult {
+                    output: Vec::new(),
+                    error: Some(error.to_string()),
+                });
+                self.status = format!("Pipeline error: {error}");
+            }
+        }
+        self.output_step_view = self.results.len().saturating_sub(1);
+        self.output_scroll = 0;
     }
 
     fn start_add(&mut self) {
@@ -324,6 +339,7 @@ impl App {
 
     fn save_recipe(&mut self, name: &str) {
         let recipe = store::Recipe {
+            version: store::RECIPE_VERSION,
             name: name.to_string(),
             description: String::new(),
             steps: self
@@ -348,7 +364,7 @@ impl App {
                 .zip(self.results.iter())
                 .map(|(s, r)| store::HistoryStep {
                     op: s.op_name.clone(),
-                    args: s.args.clone(),
+                    args: runtime::redact_sensitive_args(&s.op_name, &s.args),
                     output_preview: store::bytes_preview(&r.output, 200),
                     output_bytes: r.output.len(),
                     duration_ms: 0.0,
@@ -385,6 +401,7 @@ impl App {
         } else if let Ok(json) = std::fs::read_to_string(name) {
             match serde_json::from_str::<store::Recipe>(&json).or_else(|_| {
                 serde_json::from_str::<Vec<store::RecipeStep>>(&json).map(|steps| store::Recipe {
+                    version: store::RECIPE_VERSION,
                     name: name.to_string(),
                     description: String::new(),
                     steps,
@@ -1273,10 +1290,17 @@ fn chrono_now_tui() -> String {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 fn main() -> io::Result<()> {
-    // Handle --input / --recipe arguments on the command line for non-interactive use
     let args: Vec<String> = std::env::args().collect();
     if args.len() > 1 {
-        return run_noninteractive(&args[1..]);
+        if matches!(args[1].as_str(), "--help" | "-h") {
+            println!("rxchef_tui — interactive pipeline builder");
+            println!("Run without arguments. For headless recipes use `rxchef bake`.");
+            return Ok(());
+        }
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "rxchef_tui is interactive; use `rxchef bake --recipe FILE` for headless execution",
+        ));
     }
 
     // Interactive TUI
@@ -1313,76 +1337,19 @@ fn main() -> io::Result<()> {
     Ok(())
 }
 
-/// Non-interactive mode: run a recipe and print output, then exit.
-fn run_noninteractive(args: &[String]) -> io::Result<()> {
-    let stdout = io::stdout();
-    let mut out = stdout.lock();
+#[cfg(test)]
+mod tests {
+    use super::StepResult;
 
-    if args.is_empty() {
-        writeln!(out, "Usage: rxchef_tui [--help]")?;
-        writeln!(out, "       rxchef_tui recipe.json < input.txt")?;
-        return Ok(());
-    }
-
-    if args[0] == "--help" || args[0] == "-h" {
-        writeln!(out, "rxchef_tui — interactive pipeline builder")?;
-        writeln!(out, "")?;
-        writeln!(out, "Interactive mode: rxchef_tui")?;
-        writeln!(out, "Recipe mode:      rxchef_tui recipe.json < input.txt")?;
-        return Ok(());
-    }
-
-    // Assume first arg is a recipe file
-    let recipe_path = &args[0];
-    let json = std::fs::read_to_string(recipe_path).map_err(|e| {
-        io::Error::new(
-            io::ErrorKind::Other,
-            format!("cannot read {}: {}", recipe_path, e),
-        )
-    })?;
-    let recipe: serde_json::Value = serde_json::from_str(&json)
-        .map_err(|e| io::Error::new(io::ErrorKind::Other, format!("invalid JSON: {}", e)))?;
-
-    let steps = recipe
-        .as_array()
-        .ok_or_else(|| io::Error::new(io::ErrorKind::Other, "recipe must be a JSON array"))?;
-
-    // Read input from stdin
-    let mut input = Vec::new();
-    io::stdin().read_to_end_noop(&mut input)?;
-
-    let mut current = input;
-    for (i, step) in steps.iter().enumerate() {
-        let op_name = step
-            .get("op")
-            .and_then(|v| v.as_str())
-            .ok_or_else(|| io::Error::new(io::ErrorKind::Other, "step missing 'op' field"))?;
-        let raw_args: Vec<String> = step
-            .get("args")
-            .and_then(|v| v.as_array())
-            .map(|a| {
-                a.iter()
-                    .map(|v| v.to_string().trim_matches('"').to_string())
-                    .collect()
-            })
-            .unwrap_or_default();
-
-        current = execution::run(op_name, current, raw_args)
-            .map(|outcome| outcome.output)
-            .map_err(|e| io::Error::new(io::ErrorKind::Other, format!("step {}: {}", i + 1, e)))?;
-    }
-
-    out.write_all(&current)?;
-    Ok(())
-}
-
-// Extension trait to make stdin readable
-trait ReadToEnd {
-    fn read_to_end_noop(&mut self, buf: &mut Vec<u8>) -> io::Result<usize>;
-}
-impl ReadToEnd for io::Stdin {
-    fn read_to_end_noop(&mut self, buf: &mut Vec<u8>) -> io::Result<usize> {
-        use io::Read;
-        self.read_to_end(buf)
+    #[test]
+    fn preview_is_unicode_safe_past_the_character_limit() {
+        for value in ["ä", "€", "日本語", "😀"] {
+            let text = value.repeat(5000);
+            let result = StepResult {
+                output: text.into_bytes(),
+                error: None,
+            };
+            assert!(result.display().contains('…'));
+        }
     }
 }

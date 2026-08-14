@@ -37,6 +37,12 @@ impl Operation for Median {
             name: "Delimiter",
             description: "Character that separates numbers in the input",
             default_value: "Line feed",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

@@ -10,7 +10,7 @@ Converts an octal byte string back into its raw value. e.g. '110 145 154 154 157
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -27,15 +27,15 @@ Declared output type: `Bytes`. Redirect stdout or use `--output-file` for exact 
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Delimiter | `String` | no | `Space` | — | no | Delimiter between octal values (Space, Comma, Semi-colon, Colon, Line feed, CRLF) |
+| 1 | Delimiter | `Enum` | no | `Space` | Space, Comma, Semi-colon, Colon, Line feed, CRLF | no | Delimiter between octal values (Space, Comma, Semi-colon, Colon, Line feed, CRLF) |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+Converts an octal byte string back into its raw value. e.g. '110 145 154 154 157' becomes 'Hello'.
 
 ## Implementation
 
-Source module: `src/operations/from_octal.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/from_octal.rs` and declares `String` input and `Bytes` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -65,11 +65,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/from_octal.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

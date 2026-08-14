@@ -135,13 +135,14 @@ fn load_file(path: &std::path::Path) -> Result<Recipe, StoreError> {
                 .unwrap_or("unnamed")
                 .to_string();
             return Ok(Recipe {
+                version: crate::models::RECIPE_VERSION,
                 name,
                 description: String::new(),
                 steps,
                 tags: Vec::new(),
             });
         }
-        Ok(serde_yaml::from_str(&content)?)
+        validate_version(serde_yaml::from_str(&content)?)
     } else {
         // Try named Recipe first, then CyberChef-style [{op:...}] array
         if content.trim_start().starts_with('[') {
@@ -152,14 +153,25 @@ fn load_file(path: &std::path::Path) -> Result<Recipe, StoreError> {
                 .unwrap_or("unnamed")
                 .to_string();
             return Ok(Recipe {
+                version: crate::models::RECIPE_VERSION,
                 name,
                 description: String::new(),
                 steps,
                 tags: Vec::new(),
             });
         }
-        Ok(serde_json::from_str(&content)?)
+        validate_version(serde_json::from_str(&content)?)
     }
+}
+
+fn validate_version(recipe: Recipe) -> Result<Recipe, StoreError> {
+    if recipe.version != crate::models::RECIPE_VERSION {
+        return Err(StoreError::UnsupportedRecipeVersion {
+            found: recipe.version,
+            supported: crate::models::RECIPE_VERSION,
+        });
+    }
+    Ok(recipe)
 }
 
 // ─── Save ─────────────────────────────────────────────────────────────────────
@@ -218,4 +230,26 @@ fn sanitize_name(name: &str) -> String {
         })
         .collect::<String>()
         .to_lowercase()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::validate_version;
+    use crate::models::{Recipe, RECIPE_VERSION};
+
+    #[test]
+    fn legacy_recipes_import_as_v1_and_exports_are_versioned() {
+        let legacy = r#"{"name":"legacy","steps":[]}"#;
+        let recipe: Recipe = serde_json::from_str(legacy).unwrap();
+        assert_eq!(recipe.version, RECIPE_VERSION);
+        let exported = serde_json::to_value(&recipe).unwrap();
+        assert_eq!(exported["version"], RECIPE_VERSION);
+    }
+
+    #[test]
+    fn unknown_recipe_versions_are_rejected() {
+        let mut recipe = Recipe::new("future");
+        recipe.version = RECIPE_VERSION + 1;
+        assert!(validate_version(recipe).is_err());
+    }
 }

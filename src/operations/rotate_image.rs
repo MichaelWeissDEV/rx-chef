@@ -36,6 +36,12 @@ impl Operation for RotateImage {
             name: "Rotation amount (degrees)",
             description: "Rotation amount in degrees",
             default_value: "90",
+            kind: crate::operation::ArgKind::Integer,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

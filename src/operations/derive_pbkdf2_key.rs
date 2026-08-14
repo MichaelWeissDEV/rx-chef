@@ -38,26 +38,56 @@ impl Operation for DerivePBKDF2Key {
                 name: "Passphrase",
                 description: "The passphrase to derive the key from",
                 default_value: "",
+                kind: crate::operation::ArgKind::Bytes,
+                required: true,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: true,
             },
             ArgSchema {
                 name: "Key size",
                 description: "The size of the derived key in bits",
                 default_value: "128",
+                kind: crate::operation::ArgKind::UnsignedInteger,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Iterations",
                 description: "The number of iterations to perform",
                 default_value: "1",
+                kind: crate::operation::ArgKind::UnsignedInteger,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Hashing function",
                 description: "The hashing function to use",
                 default_value: "SHA256",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Salt",
                 description: "The salt to use (if empty, a random one will be generated)",
                 default_value: "",
+                kind: crate::operation::ArgKind::Bytes,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA
@@ -65,6 +95,10 @@ impl Operation for DerivePBKDF2Key {
 
     fn input_type(&self) -> DataType {
         DataType::String
+    }
+
+    fn input_requirement(&self) -> crate::operation::InputRequirement {
+        crate::operation::InputRequirement::Ignored
     }
 
     fn output_type(&self) -> DataType {

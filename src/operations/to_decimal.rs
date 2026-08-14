@@ -35,11 +35,23 @@ impl Operation for ToDecimal {
                 name: "Delimiter",
                 description: "The delimiter between decimal values",
                 default_value: "Space",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Support signed values",
                 description: "Whether to treat bytes as signed (-128 to 127)",
                 default_value: "false",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

@@ -33,6 +33,12 @@ impl Operation for AddLineNumbers {
             name: "Offset",
             description: "Starting line number offset",
             default_value: "0",
+            kind: crate::operation::ArgKind::Integer,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

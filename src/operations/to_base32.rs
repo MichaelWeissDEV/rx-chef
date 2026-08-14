@@ -27,6 +27,12 @@ impl Operation for ToBase32 {
             name: "Alphabet",
             description: "The Base32 alphabet",
             default_value: "A-Z2-7=",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

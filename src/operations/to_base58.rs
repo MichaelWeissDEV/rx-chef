@@ -31,6 +31,12 @@ impl Operation for ToBase58 {
             name: "Alphabet",
             description: "The Base58 alphabet",
             default_value: "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

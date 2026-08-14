@@ -34,6 +34,12 @@ impl Operation for ToOctal {
             description:
                 "Delimiter between octal values (Space, Comma, Semi-colon, Colon, Line feed, CRLF)",
             default_value: "Space",
+            kind: crate::operation::ArgKind::Enum,
+            required: false,
+            choices: &["Space", "Comma", "Semi-colon", "Colon", "Line feed", "CRLF"],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

@@ -10,7 +10,7 @@ Compresses data using the PKZIP algorithm with the given filename.<br><br>No sup
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -29,18 +29,18 @@ Declared output type: `Bytes`. Redirect stdout or use `--output-file` for exact 
 |---:|---|---|:---:|---|---|:---:|---|
 | 1 | Filename | `Path` | no | `file.txt` | — | no | Name of the file to be zipped |
 | 2 | Comment | `String` | no | `<empty>` | — | no | Comment to add to the zip file |
-| 3 | Password | `String` | no | `<empty>` | — | yes | Password to protect the zip file (ZipCrypto) |
+| 3 | Password | `Bytes` | no | `<empty>` | — | yes | Password to protect the zip file (ZipCrypto) |
 | 4 | Compression method | `String` | no | `Deflate` | — | no | Method to use for compression |
 | 5 | Operating system | `String` | no | `Unix` | — | no | OS to set in the zip metadata |
-| 6 | Compression type | `String` | no | `Dynamic` | — | no | Compression level/type (Fixed, Dynamic, None) |
+| 6 | Compression type | `Enum` | no | `Dynamic` | Fixed, Dynamic, None | no | Compression level/type (Fixed, Dynamic, None) |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+Compresses data using the PKZIP algorithm with the given filename.<br><br>No support for multiple files at this time.
 
 ## Implementation
 
-Source module: `src/operations/zip.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/zip.rs` and declares `Bytes` input and `Bytes` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -70,11 +70,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/zip.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

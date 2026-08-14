@@ -36,6 +36,12 @@ impl Operation for SHA0 {
             name: "Rounds",
             description: "Number of rounds (minimum 16)",
             default_value: "80",
+            kind: crate::operation::ArgKind::UnsignedInteger,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

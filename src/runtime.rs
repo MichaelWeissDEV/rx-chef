@@ -1,10 +1,29 @@
 use crate::{
     operation::{
-        ArgKind, ArgSchema, ArgValue, DataType, InputRequirement, OperationStatus, ParityStatus,
-        SideEffect,
+        ArgKind, ArgSchema, ArgValue, Availability, DataType, ImplementationStatus,
+        InputRequirement, NumericBound, ParityStatus, SideEffect,
     },
     operations,
 };
+
+/// Structured failures produced by registry lookup, schema validation, and
+/// operation dispatch. Frontends use the variant, never message inspection,
+/// to select protocol errors and process exit codes.
+#[derive(Debug, thiserror::Error)]
+pub enum RuntimeError {
+    #[error("operation '{0}' was not found")]
+    UnknownOperation(String),
+    #[error(
+        "operation '{operation}' is unavailable in this build; requires feature(s): {features}"
+    )]
+    Unavailable { operation: String, features: String },
+    #[error("argument '{name}': {reason}")]
+    InvalidArgument { name: String, reason: String },
+    #[error("{0}")]
+    Operation(#[from] crate::operation::OperationError),
+    #[error("operation output violates its declared type: {0}")]
+    OutputValidation(String),
+}
 
 #[derive(Debug, Clone)]
 pub struct OperationInfo {
@@ -17,7 +36,8 @@ pub struct OperationInfo {
     pub is_broken: bool,
     pub args: &'static [ArgSchema],
     pub input_requirement: InputRequirement,
-    pub status: OperationStatus,
+    pub implementation_status: ImplementationStatus,
+    pub availability: Availability,
     pub parity: ParityStatus,
     pub side_effects: &'static [SideEffect],
     pub deterministic: bool,
@@ -61,7 +81,8 @@ pub fn operation_info(query: &str) -> Result<OperationInfo, String> {
         is_broken: operation.is_broken(),
         args: operation.args_schema(),
         input_requirement: operation.input_requirement(),
-        status: operation.status(),
+        implementation_status: operation.implementation_status(),
+        availability: operation.availability(),
         parity: operation.parity(),
         side_effects: operation.side_effects(),
         deterministic: operation.deterministic(),
@@ -82,39 +103,75 @@ pub fn run_operation(
     operation_name: &str,
     input: Vec<u8>,
     raw_args: &[String],
-) -> Result<Vec<u8>, String> {
+) -> Result<Vec<u8>, RuntimeError> {
     let canonical_name = resolve_operation_name(operation_name)
-        .ok_or_else(|| not_found_message("operation", operation_name))?;
+        .ok_or_else(|| RuntimeError::UnknownOperation(operation_name.to_string()))?;
     let operation = operations::get_operation(&canonical_name)
-        .ok_or_else(|| not_found_message("operation", operation_name))?;
-    let schema = operation.args_schema();
-    if raw_args.len() > schema.len() {
-        return Err(format!(
-            "'{}' accepts {} argument(s), but {} were provided",
-            operation.name(),
-            schema.len(),
-            raw_args.len()
-        ));
+        .ok_or_else(|| RuntimeError::UnknownOperation(operation_name.to_string()))?;
+    if operation.availability() != Availability::Available {
+        return Err(RuntimeError::Unavailable {
+            operation: operation.name().to_string(),
+            features: operation.feature_requirements().join(", "),
+        });
     }
-    let parsed_args = schema
-        .iter()
-        .enumerate()
-        .map(|(index, argument)| {
-            let raw = raw_args
-                .get(index)
-                .map(String::as_str)
-                .unwrap_or(argument.default_value);
-            parse_schema_argument(raw, inferred_arg_kind(argument))
-                .map_err(|error| format!("argument '{}': {error}", argument.name))
-        })
-        .collect::<Result<Vec<_>, _>>()?;
+    let parsed_args = validate_operation_args(operation_name, raw_args)?;
 
     let output = operation
         .run(input, &parsed_args)
-        .map_err(|error| error.to_string())?;
+        .map_err(RuntimeError::Operation)?;
     crate::operation::OperationData::validate_raw(&output, operation.output_type())
-        .map_err(|error| error.to_string())?;
+        .map_err(|error| RuntimeError::OutputValidation(error.to_string()))?;
     Ok(output)
+}
+
+/// Validate and parse ordered arguments without executing an operation.
+pub fn validate_operation_args(
+    operation_name: &str,
+    raw_args: &[String],
+) -> Result<Vec<ArgValue>, RuntimeError> {
+    let canonical_name = resolve_operation_name(operation_name)
+        .ok_or_else(|| RuntimeError::UnknownOperation(operation_name.to_string()))?;
+    let operation = operations::get_operation(&canonical_name)
+        .ok_or_else(|| RuntimeError::UnknownOperation(operation_name.to_string()))?;
+    let schema = operation.args_schema();
+    if raw_args.len() > schema.len() {
+        return Err(RuntimeError::InvalidArgument {
+            name: "arguments".into(),
+            reason: format!(
+                "'{}' accepts {} value(s), but {} were provided",
+                operation.name(),
+                schema.len(),
+                raw_args.len()
+            ),
+        });
+    }
+    schema
+        .iter()
+        .enumerate()
+        .map(|(index, argument)| {
+            let supplied = raw_args.get(index).map(String::as_str);
+            if supplied.is_none() && argument.required {
+                return Err(RuntimeError::InvalidArgument {
+                    name: argument.name.into(),
+                    reason: "value is required".into(),
+                });
+            }
+            let raw = supplied.unwrap_or(argument.default_value);
+            let value = parse_schema_argument(raw, argument.kind).map_err(|reason| {
+                RuntimeError::InvalidArgument {
+                    name: argument.name.into(),
+                    reason,
+                }
+            })?;
+            validate_schema_argument(raw, &value, argument).map_err(|reason| {
+                RuntimeError::InvalidArgument {
+                    name: argument.name.into(),
+                    reason,
+                }
+            })?;
+            Ok(value)
+        })
+        .collect::<Result<Vec<_>, _>>()
 }
 
 pub fn resolve_named_args(
@@ -160,6 +217,24 @@ pub fn resolve_named_args(
         result[idx] = value.to_string();
     }
     Ok(result)
+}
+
+/// Redact argument positions explicitly marked sensitive by operation metadata.
+pub fn redact_sensitive_args(operation: &str, arguments: &[String]) -> Vec<String> {
+    let Ok(info) = operation_info(operation) else {
+        return arguments.to_vec();
+    };
+    arguments
+        .iter()
+        .enumerate()
+        .map(|(position, argument)| {
+            if info.args.get(position).is_some_and(|arg| arg.sensitive) {
+                "<redacted>".to_string()
+            } else {
+                argument.clone()
+            }
+        })
+        .collect()
 }
 
 pub fn parse_operation_arg(raw: &str) -> Result<ArgValue, String> {
@@ -238,35 +313,39 @@ fn parse_schema_argument(raw: &str, kind: ArgKind) -> Result<ArgValue, String> {
     }
 }
 
-/// Conservative kind inferred for legacy three-field argument schemas.
-/// Explicit per-operation metadata will replace these in verified batches.
-pub fn inferred_arg_kind(schema: &ArgSchema) -> ArgKind {
-    let name = schema.name.to_ascii_lowercase();
-    let default = schema.default_value.trim();
-    if matches!(default.to_ascii_lowercase().as_str(), "true" | "false") {
-        ArgKind::Boolean
-    } else if name.contains("regex") || name.contains("regular expression") || name == "pattern" {
-        ArgKind::Regex
-    } else if name.contains("url") || name.contains("uri") {
-        ArgKind::Url
-    } else if name.contains("path") || name.contains("file") || name.contains("directory") {
-        ArgKind::Path
-    } else if !default.is_empty() && default.parse::<i64>().is_ok() {
-        ArgKind::Integer
-    } else if !default.is_empty() && default.parse::<f64>().is_ok() {
-        ArgKind::Float
-    } else {
-        ArgKind::String
+fn numeric_bound(bound: NumericBound) -> f64 {
+    match bound {
+        NumericBound::Integer(value) => value as f64,
+        NumericBound::Unsigned(value) => value as f64,
+        NumericBound::Float(value) => value,
     }
 }
 
-/// Conservative sensitivity marker shared by metadata and history redaction.
-pub fn is_sensitive_arg(schema: &ArgSchema) -> bool {
-    let name = schema.name.to_ascii_lowercase();
-    name.contains("password")
-        || name.contains("private key")
-        || name.contains("secret")
-        || name.contains("token")
+fn validate_schema_argument(raw: &str, value: &ArgValue, schema: &ArgSchema) -> Result<(), String> {
+    if !schema.choices.is_empty()
+        && !schema
+            .choices
+            .iter()
+            .any(|choice| choice.eq_ignore_ascii_case(raw))
+    {
+        return Err(format!("expected one of: {}", schema.choices.join(", ")));
+    }
+    if schema.minimum.is_some() || schema.maximum.is_some() {
+        let number = value
+            .as_f64()
+            .ok_or_else(|| "expected a finite numeric value".to_string())?;
+        if let Some(minimum) = schema.minimum {
+            if number < numeric_bound(minimum) {
+                return Err(format!("must be at least {minimum}"));
+            }
+        }
+        if let Some(maximum) = schema.maximum {
+            if number > numeric_bound(maximum) {
+                return Err(format!("must be at most {maximum}"));
+            }
+        }
+    }
+    Ok(())
 }
 
 /// Stable snake-case identifier used by registry and argument normalization.

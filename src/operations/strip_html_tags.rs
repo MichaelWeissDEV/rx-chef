@@ -37,11 +37,23 @@ impl Operation for StripHTMLTags {
                 name: "Remove indentation",
                 description: "Remove leading whitespace from lines",
                 default_value: "true",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Remove excess line breaks",
                 description: "Collapse multiple blank lines",
                 default_value: "true",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

@@ -35,6 +35,12 @@ impl Operation for A1Z26CipherEncode {
             name: "Delimiter",
             description: "Delimiter between numbers",
             default_value: "Space",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

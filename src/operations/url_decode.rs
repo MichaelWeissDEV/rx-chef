@@ -75,6 +75,12 @@ impl Operation for URLDecode {
             name: "Treat '+' as space",
             description: "Convert '+' characters to spaces in addition to %20",
             default_value: "true",
+            kind: crate::operation::ArgKind::Boolean,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

@@ -36,6 +36,12 @@ impl Operation for ParseX509Certificate {
             name: "Input format",
             description: "Input format of the certificate",
             default_value: "PEM",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

@@ -10,7 +10,7 @@ DES is a previously dominant algorithm for encryption, and was published as an o
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -27,19 +27,19 @@ Declared output type: `Bytes`. Redirect stdout or use `--output-file` for exact 
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Key | `String` | no | `<empty>` | — | no | Decryption key (8 bytes) |
-| 2 | IV | `String` | no | `<empty>` | — | no | Initialization Vector (8 bytes, optional, defaults to null) |
-| 3 | Mode | `String` | no | `CBC` | — | no | Cipher mode (CBC, CFB, OFB, CTR, ECB, CBC/NoPadding, ECB/NoPadding) |
-| 4 | Input | `String` | no | `Hex` | — | no | Input encoding (Hex, Raw) |
-| 5 | Output | `String` | no | `Raw` | — | no | Output encoding (Raw, Hex) |
+| 1 | Key | `Bytes` | yes | `<empty>` | — | yes | Decryption key (8 bytes) |
+| 2 | IV | `Bytes` | no | `<empty>` | — | no | Initialization Vector (8 bytes, optional, defaults to null) |
+| 3 | Mode | `Enum` | no | `CBC` | CBC, CFB, OFB, CTR, ECB, CBC/NoPadding, ECB/NoPadding | no | Cipher mode (CBC, CFB, OFB, CTR, ECB, CBC/NoPadding, ECB/NoPadding) |
+| 4 | Input | `Enum` | no | `Hex` | Hex, Raw | no | Input encoding (Hex, Raw) |
+| 5 | Output | `Enum` | no | `Raw` | Raw, Hex | no | Output encoding (Raw, Hex) |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+DES is a previously dominant algorithm for encryption, and was published as an official U.S. Federal Information Processing Standard (FIPS). It is now considered to be insecure due to its small key size.<br><br><b>Key:</b> DES uses a key length of 8 bytes (64 bits).<br><br><b>IV:</b> The Initialization Vector should be 8 bytes long. If not entered, it will default to 8 null bytes.<br><br><b>Padding:</b> In CBC and ECB mode, PKCS#7 padding will be used as a default.
 
 ## Implementation
 
-Source module: `src/operations/des_decrypt.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/des_decrypt.rs` and declares `Bytes` input and `Bytes` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -69,11 +69,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/des_decrypt.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

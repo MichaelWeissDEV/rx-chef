@@ -32,11 +32,23 @@ impl Operation for FrequencyDistribution {
                 name: "Show 0%s",
                 description: "Include bytes that do not appear in the input",
                 default_value: "true",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Show ASCII",
                 description: "Include ASCII character column",
                 default_value: "true",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

@@ -33,11 +33,23 @@ impl Operation for CssSelector {
                 name: "CSS selector",
                 description: "The CSS selector query.",
                 default_value: "",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Delimiter",
                 description: "The character(s) to delimit the output.",
                 default_value: "\\n",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ]
     }

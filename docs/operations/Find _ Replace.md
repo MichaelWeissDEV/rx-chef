@@ -10,7 +10,7 @@ Replaces all occurrences of the first string with the second. Supports regex, si
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -28,7 +28,7 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
 | 1 | Find | `String` | no | `<empty>` | — | no | The string or regex to find |
-| 2 | Find type | `String` | no | `Simple string` | — | no | Regex, Extended (\\n, \\t, \\x...), or Simple string |
+| 2 | Find type | `Enum` | no | `Simple string` | Simple string, Extended, Regex | no | Regex, Extended (\\n, \\t, \\x...), or Simple string |
 | 3 | Replace | `String` | no | `<empty>` | — | no | The replacement string |
 | 4 | Global match | `Boolean` | no | `true` | — | no | Replace all occurrences |
 | 5 | Case insensitive | `Boolean` | no | `false` | — | no | Ignore case when matching |
@@ -37,11 +37,11 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+Replaces all occurrences of the first string with the second. Supports regex, simple string, and extended string modes.
 
 ## Implementation
 
-Source module: `src/operations/find_replace.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/find_replace.rs` and declares `String` input and `String` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -71,11 +71,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/find_replace.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

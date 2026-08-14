@@ -35,6 +35,12 @@ impl Operation for AmfDecode {
             name: "Format",
             description: "AMF format (AMF0 or AMF3)",
             default_value: "AMF3",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

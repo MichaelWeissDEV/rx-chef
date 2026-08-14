@@ -10,7 +10,7 @@ RC6 is a symmetric key block cipher derived from RC5. It was designed by Ron Riv
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -27,22 +27,22 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Key | `String` | no | `<empty>` | — | no | Key |
-| 2 | IV | `String` | no | `<empty>` | — | no | IV |
+| 1 | Key | `Bytes` | yes | `<empty>` | — | yes | Key |
+| 2 | IV | `Bytes` | no | `<empty>` | — | no | IV |
 | 3 | Mode | `String` | no | `CBC` | — | no | Mode |
 | 4 | Input | `String` | no | `Raw` | — | no | Input format |
 | 5 | Output | `String` | no | `Hex` | — | no | Output format |
 | 6 | Padding | `String` | no | `PKCS5` | — | no | Padding scheme |
-| 7 | Word Size | `Integer` | no | `32` | — | no | Word size in bits (8-256) |
-| 8 | Rounds | `Integer` | no | `20` | — | no | Number of rounds (1-255) |
+| 7 | Word Size | `UnsignedInteger` | no | `32` | — | no | Word size in bits (8-256) |
+| 8 | Rounds | `UnsignedInteger` | no | `20` | — | no | Number of rounds (1-255) |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+RC6 is a symmetric key block cipher derived from RC5. It was designed by Ron Rivest, Matt Robshaw, Ray Sidney, and Yiqun Lisa Yin to meet the requirements of the AES competition, and was one of the five finalists.<br><br>RC6 is parameterised as RC6-w/r/b where w is word size in bits (any multiple of 8 from 8-256), r is the number of rounds (1-255), and b is the key length in bytes. The standard AES submission uses w=32, r=20. Common word sizes: 8, 16, 32 (standard), 64, 128.<br><br><b>IV:</b> The Initialisation Vector should be 4*w/8 bytes (e.g. 16 bytes for w=32). If not entered, it will default to null bytes.<br><br><b>Padding:</b> In CBC and ECB mode, the PKCS#7 padding scheme is used.
 
 ## Implementation
 
-Source module: `src/operations/rc6_encrypt.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/rc6_encrypt.rs` and declares `String` input and `String` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -72,11 +72,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/rc6_encrypt.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

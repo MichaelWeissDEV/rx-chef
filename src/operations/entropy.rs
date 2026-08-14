@@ -38,6 +38,12 @@ impl Operation for Entropy {
             description:
                 "Size of each chunk for scanning entropy. 0 means calculate for whole input.",
             default_value: "0",
+            kind: crate::operation::ArgKind::UnsignedInteger,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

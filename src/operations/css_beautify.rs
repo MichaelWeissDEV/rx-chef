@@ -35,6 +35,12 @@ impl Operation for CssBeautify {
             name: "Indent string",
             description: "String to use for each level of indentation",
             default_value: "    ",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

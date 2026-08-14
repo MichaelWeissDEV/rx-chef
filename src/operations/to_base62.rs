@@ -30,6 +30,12 @@ impl Operation for ToBase62 {
             name: "Alphabet",
             description: "The Base62 alphabet",
             default_value: "0-9A-Za-z",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

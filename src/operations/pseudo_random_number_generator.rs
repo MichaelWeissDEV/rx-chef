@@ -35,11 +35,23 @@ impl Operation for PseudoRandomNumberGenerator {
                 name: "Number of bytes",
                 description: "How many bytes to generate",
                 default_value: "32",
+                kind: crate::operation::ArgKind::UnsignedInteger,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Output as",
                 description: "Output format (Hex, Integer, Byte array, Raw)",
                 default_value: "Hex",
+                kind: crate::operation::ArgKind::Enum,
+                required: false,
+                choices: &["Hex", "Integer", "Byte array", "Raw"],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA
@@ -47,6 +59,10 @@ impl Operation for PseudoRandomNumberGenerator {
 
     fn input_type(&self) -> DataType {
         DataType::String
+    }
+
+    fn input_requirement(&self) -> crate::operation::InputRequirement {
+        crate::operation::InputRequirement::Ignored
     }
 
     fn output_type(&self) -> DataType {

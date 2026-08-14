@@ -1,15 +1,15 @@
 use rxchef::{
-    operation::OperationStatus,
+    operation::{ArgKind, Availability, NumericBound},
     runtime::{self, data_type_name},
 };
 use serde_json::{json, Value};
 use std::{
     collections::{BTreeSet, HashSet},
     env, fs,
-    path::{Path, PathBuf},
+    path::PathBuf,
 };
 
-const BENCHMARKED: &[&str] = &[
+const REPRESENTATIVE_BENCHMARKS: &[&str] = &[
     "to_hex",
     "to_base64",
     "sha2",
@@ -19,9 +19,63 @@ const BENCHMARKED: &[&str] = &[
     "scan",
 ];
 
+/// Create the initial explicit inventory. This command is deliberately
+/// conservative: it maps each operation to its existing dedicated test module,
+/// records only the representative benchmark catalog, and makes no KAT,
+/// differential, property, or fuzz claim. Reviewers add those claims manually.
+pub fn generate_manifest() -> Result<(), String> {
+    let root = workspace_root()?;
+    let mut operations = serde_json::Map::new();
+    for name in runtime::operation_names(None) {
+        let info = runtime::operation_info(&name)?;
+        let source_id = runtime::operation_source(&name)?;
+        let benchmark = REPRESENTATIVE_BENCHMARKS.contains(&info.id.as_str());
+        operations.insert(
+            info.id,
+            json!({
+                "correctness": [format!("tests/tests/operations/{source_id}.rs")],
+                "known_answer": [],
+                "differential": [],
+                "property": [],
+                "fuzz": [],
+                "benchmark": if benchmark { vec!["representative release benchmark"] } else { Vec::<&str>::new() },
+                "benchmark_skip_reason": if benchmark { Value::Null } else { json!("No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.") },
+            }),
+        );
+    }
+    let destination = root.join("verification/operations.json");
+    fs::create_dir_all(destination.parent().unwrap()).map_err(|e| e.to_string())?;
+    let document = json!({"schema_version": 1, "operations": operations});
+    fs::write(
+        &destination,
+        format!(
+            "{}\n",
+            serde_json::to_string_pretty(&document).map_err(|e| e.to_string())?
+        ),
+    )
+    .map_err(|e| e.to_string())?;
+    println!("wrote {}", destination.display());
+    Ok(())
+}
+
+fn workspace_root() -> Result<PathBuf, String> {
+    Ok(PathBuf::from(env::var("CARGO_MANIFEST_DIR").map_err(|e| e.to_string())?).join("../.."))
+}
+
 pub fn run() -> Result<(), String> {
-    let root =
-        PathBuf::from(env::var("CARGO_MANIFEST_DIR").map_err(|e| e.to_string())?).join("../..");
+    let root = workspace_root()?;
+    let manifest_path = root.join("verification/operations.json");
+    let manifest: Value = serde_json::from_str(
+        &fs::read_to_string(&manifest_path)
+            .map_err(|e| format!("cannot read {}: {e}", manifest_path.display()))?,
+    )
+    .map_err(|e| format!("invalid {}: {e}", manifest_path.display()))?;
+    if manifest["schema_version"] != 1 {
+        return Err("verification manifest schema_version must be 1".into());
+    }
+    let evidence = manifest["operations"]
+        .as_object()
+        .ok_or_else(|| "verification manifest operations must be an object".to_string())?;
     let names = runtime::operation_names(None);
     let mut errors = Vec::new();
     let mut seen_names = HashSet::new();
@@ -42,17 +96,74 @@ pub fn run() -> Result<(), String> {
         if info.description.trim().is_empty() {
             errors.push(format!("empty description: {}", info.name));
         }
-        if info.is_broken != (info.status == OperationStatus::FeatureGated) {
-            errors.push(format!(
-                "is_broken/feature-gated status mismatch: {}",
-                info.name
-            ));
+        if info.is_broken != (info.availability == Availability::FeatureDisabled) {
+            errors.push(format!("is_broken/availability mismatch: {}", info.name));
         }
-        if info.status == OperationStatus::FeatureGated && info.feature_requirements.is_empty() {
+        if info.availability == Availability::FeatureDisabled
+            && info.feature_requirements.is_empty()
+        {
             errors.push(format!(
                 "feature-gated operation without feature metadata: {}",
                 info.name
             ));
+        }
+
+        for argument in info.args {
+            if argument.name.trim().is_empty() || argument.description.trim().is_empty() {
+                errors.push(format!(
+                    "operation has undocumented arguments: {}",
+                    info.name
+                ));
+            }
+            if argument.kind == ArgKind::Enum && argument.choices.is_empty() {
+                errors.push(format!(
+                    "enum argument without choices: {} / {}",
+                    info.name, argument.name
+                ));
+            }
+            if argument.kind != ArgKind::Enum && !argument.choices.is_empty() {
+                errors.push(format!(
+                    "non-enum argument has choices: {} / {}",
+                    info.name, argument.name
+                ));
+            }
+            if !argument.choices.is_empty()
+                && !argument.default_value.is_empty()
+                && !argument
+                    .choices
+                    .iter()
+                    .any(|choice| choice.eq_ignore_ascii_case(argument.default_value))
+            {
+                errors.push(format!(
+                    "default is not an allowed choice: {} / {}",
+                    info.name, argument.name
+                ));
+            }
+            if argument.required && !argument.default_value.is_empty() {
+                errors.push(format!(
+                    "required argument also declares a default: {} / {}",
+                    info.name, argument.name
+                ));
+            }
+            if let (Some(minimum), Some(maximum)) = (argument.minimum, argument.maximum) {
+                if bound_value(minimum) > bound_value(maximum) {
+                    errors.push(format!(
+                        "invalid numeric bounds: {} / {}",
+                        info.name, argument.name
+                    ));
+                }
+            }
+            if (argument.minimum.is_some() || argument.maximum.is_some())
+                && !matches!(
+                    argument.kind,
+                    ArgKind::Integer | ArgKind::UnsignedInteger | ArgKind::Float
+                )
+            {
+                errors.push(format!(
+                    "non-numeric argument has numeric bounds: {} / {}",
+                    info.name, argument.name
+                ));
+            }
         }
 
         let source_id = runtime::operation_source(&name)?;
@@ -75,10 +186,32 @@ pub fn run() -> Result<(), String> {
             }
         }
 
-        let test = root.join(format!("tests/tests/operations/{source_id}.rs"));
-        let test_text = fs::read_to_string(&test).unwrap_or_default();
-        if test_text.is_empty() {
-            errors.push(format!("operation without test mapping: {}", info.name));
+        let Some(verification) = evidence.get(&info.id) else {
+            errors.push(format!(
+                "operation without verification evidence: {}",
+                info.name
+            ));
+            continue;
+        };
+        let correctness = string_array(verification, "correctness", &info.name, &mut errors);
+        let known_answer = string_array(verification, "known_answer", &info.name, &mut errors);
+        let differential = string_array(verification, "differential", &info.name, &mut errors);
+        let property = string_array(verification, "property", &info.name, &mut errors);
+        let fuzz = string_array(verification, "fuzz", &info.name, &mut errors);
+        let benchmark_entries = string_array(verification, "benchmark", &info.name, &mut errors);
+        if correctness.is_empty() {
+            errors.push(format!(
+                "operation without correctness evidence: {}",
+                info.name
+            ));
+        }
+        for mapping in &correctness {
+            if !root.join(mapping).is_file() {
+                errors.push(format!(
+                    "missing correctness evidence for {}: {mapping}",
+                    info.name
+                ));
+            }
         }
         let docs = root.join(format!(
             "docs/operations/{}.md",
@@ -87,21 +220,10 @@ pub fn run() -> Result<(), String> {
         if !docs.is_file() {
             errors.push(format!("operation without docs: {}", info.name));
         }
-        if info
-            .args
-            .iter()
-            .any(|arg| arg.name.trim().is_empty() || arg.description.trim().is_empty())
+        let benchmark_skip_reason = verification["benchmark_skip_reason"].as_str();
+        if benchmark_entries.is_empty()
+            && benchmark_skip_reason.is_none_or(|reason| reason.trim().is_empty())
         {
-            errors.push(format!(
-                "operation has undocumented arguments: {}",
-                info.name
-            ));
-        }
-
-        let benchmark = BENCHMARKED.contains(&info.id.as_str());
-        let benchmark_skip_reason =
-            (!benchmark).then_some("not selected for the representative benchmark catalog");
-        if !benchmark && benchmark_skip_reason.is_none() {
             errors.push(format!(
                 "operation without benchmark case or skip reason: {}",
                 info.name
@@ -113,22 +235,36 @@ pub fn run() -> Result<(), String> {
             "slug": info.id.replace('_', "-"),
             "id": info.id,
             "module": info.module,
-            "status": info.status,
+            "status": info.implementation_status,
+            "availability": info.availability,
             "feature": info.feature_requirements,
             "input": data_type_name(info.input_type),
             "output": data_type_name(info.output_type),
             "args_documented": info.args.iter().all(|arg| !arg.name.trim().is_empty() && !arg.description.trim().is_empty()),
-            "correctness_test": test_text.contains("#[test]"),
-            "known_answer_test": test_text.contains("assert_eq!"),
-            "differential_test": contains_any(&test_text, &["differential", "openssl", "upstream vector"]),
-            "property_test": contains_any(&test_text, &["proptest", "quickcheck", "property"]),
-            "test_mapping": relative(&root, &test),
-            "fuzz_target": has_fuzz_target(&root, &info.id),
-            "benchmark": benchmark,
+            "correctness_test": !correctness.is_empty(),
+            "known_answer_test": !known_answer.is_empty(),
+            "differential_test": !differential.is_empty(),
+            "property_test": !property.is_empty(),
+            "test_mapping": correctness,
+            "known_answer": known_answer,
+            "differential": differential,
+            "property": property,
+            "fuzz": fuzz,
+            "fuzz_target": !fuzz.is_empty(),
+            "benchmark": !benchmark_entries.is_empty(),
+            "benchmark_evidence": benchmark_entries,
             "benchmark_skip_reason": benchmark_skip_reason,
             "docs": docs.is_file(),
             "parity": info.parity,
         }));
+    }
+
+    for id in evidence.keys() {
+        if !seen_ids.contains(id) {
+            errors.push(format!(
+                "verification evidence references unknown operation id: {id}"
+            ));
+        }
     }
 
     if !errors.is_empty() {
@@ -157,31 +293,37 @@ pub fn run() -> Result<(), String> {
     Ok(())
 }
 
-fn contains_any(haystack: &str, needles: &[&str]) -> bool {
-    let haystack = haystack.to_ascii_lowercase();
-    needles.iter().any(|needle| haystack.contains(needle))
+fn bound_value(bound: NumericBound) -> f64 {
+    match bound {
+        NumericBound::Integer(value) => value as f64,
+        NumericBound::Unsigned(value) => value as f64,
+        NumericBound::Float(value) => value,
+    }
 }
 
-fn relative(root: &Path, path: &Path) -> String {
-    path.strip_prefix(root)
-        .unwrap_or(path)
-        .to_string_lossy()
-        .replace('\\', "/")
-}
-
-fn has_fuzz_target(root: &Path, id: &str) -> bool {
-    let directory = root.join("fuzz/fuzz_targets");
-    fs::read_dir(directory)
-        .into_iter()
-        .flatten()
-        .filter_map(Result::ok)
-        .any(|entry| {
-            entry
-                .file_name()
-                .to_string_lossy()
-                .to_ascii_lowercase()
-                .contains(id)
-        })
+fn string_array(
+    value: &Value,
+    field: &str,
+    operation: &str,
+    errors: &mut Vec<String>,
+) -> Vec<String> {
+    let Some(array) = value[field].as_array() else {
+        errors.push(format!(
+            "verification field '{field}' is not an array: {operation}"
+        ));
+        return Vec::new();
+    };
+    let mut output = Vec::with_capacity(array.len());
+    for entry in array {
+        if let Some(entry) = entry.as_str().filter(|entry| !entry.trim().is_empty()) {
+            output.push(entry.to_string());
+        } else {
+            errors.push(format!(
+                "verification field '{field}' has an invalid entry: {operation}"
+            ));
+        }
+    }
+    output
 }
 
 fn text_field<'a>(value: &'a Value, field: &str) -> &'a str {

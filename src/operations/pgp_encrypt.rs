@@ -35,6 +35,12 @@ impl Operation for PGPEncrypt {
             name: "Public key of recipient",
             description: "ASCII-armoured PGP public key of the recipient",
             default_value: "",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

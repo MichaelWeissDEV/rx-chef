@@ -35,6 +35,12 @@ impl Operation for LZMACompress {
                 name: "Compression Mode",
                 description: "Compression mode determines the speed and effectiveness of the compression: 1 is fastest and less effective, 9 is slowest and most effective",
                 default_value: "7",
+                kind: crate::operation::ArgKind::Integer,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             }
         ];
         SCHEMA

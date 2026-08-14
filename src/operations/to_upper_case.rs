@@ -55,6 +55,12 @@ impl Operation for ToUpperCase {
             name: "Scope",
             description: "All, Word, Sentence, or Paragraph",
             default_value: "All",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

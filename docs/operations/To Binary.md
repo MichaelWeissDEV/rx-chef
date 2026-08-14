@@ -10,7 +10,7 @@ Displays the input data as a binary string. e.g. 'Hi' becomes '01001000 01101001
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -27,16 +27,16 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Delimiter | `String` | no | `Space` | — | no | The delimiter between binary groups (Space, Comma, Semi-colon, Colon, Line feed, CRLF, None) |
-| 2 | Byte Length | `Integer` | no | `8` | — | no | Number of bits per byte (default 8) |
+| 1 | Delimiter | `Enum` | no | `Space` | Space, Comma, Semi-colon, Colon, Line feed, CRLF, None | no | The delimiter between binary groups (Space, Comma, Semi-colon, Colon, Line feed, CRLF, None) |
+| 2 | Byte Length | `UnsignedInteger` | no | `8` | — | no | Number of bits per byte (default 8) |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+Displays the input data as a binary string. e.g. 'Hi' becomes '01001000 01101001'
 
 ## Implementation
 
-Source module: `src/operations/to_binary.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/to_binary.rs` and declares `Bytes` input and `String` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -66,11 +66,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/to_binary.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

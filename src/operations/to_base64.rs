@@ -29,6 +29,12 @@ impl Operation for ToBase64 {
             name: "Alphabet",
             description: "The Base64 alphabet",
             default_value: "A-Za-z0-9+/=",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

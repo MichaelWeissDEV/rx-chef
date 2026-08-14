@@ -52,11 +52,23 @@ impl Operation for GenerateAllHashes {
                 name: "Length (bits)",
                 description: "Filter hashes by output length",
                 default_value: "All",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Include names",
                 description: "Include the name of the hash in the output",
                 default_value: "true",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

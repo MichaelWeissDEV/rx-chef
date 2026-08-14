@@ -34,6 +34,10 @@ impl Operation for XkcdRandomNumberOp {
         DataType::String
     }
 
+    fn input_requirement(&self) -> crate::operation::InputRequirement {
+        crate::operation::InputRequirement::Ignored
+    }
+
     fn output_type(&self) -> DataType {
         DataType::Number
     }

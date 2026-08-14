@@ -10,7 +10,7 @@ A simple Hashed Message Authenticaton Code (HMAC)-based key derivation function 
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -27,19 +27,19 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Salt | `String` | no | `<empty>` | — | no | The salt to use |
+| 1 | Salt | `Bytes` | no | `<empty>` | — | no | The salt to use |
 | 2 | Info | `String` | no | `<empty>` | — | no | The info to use |
-| 3 | Hashing function | `String` | no | `SHA256` | — | no | The hashing function to use (SHA1, SHA256, SHA384, SHA512) |
-| 4 | Extract mode | `String` | no | `with salt` | — | no | The extract mode (with salt, no salt, skip) |
+| 3 | Hashing function | `Enum` | no | `SHA256` | SHA1, SHA256, SHA384, SHA512 | no | The hashing function to use (SHA1, SHA256, SHA384, SHA512) |
+| 4 | Extract mode | `Enum` | no | `with salt` | with salt, no salt, skip | no | The extract mode (with salt, no salt, skip) |
 | 5 | L (number of output octets) | `Integer` | no | `16` | — | no | The number of output octets |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+A simple Hashed Message Authenticaton Code (HMAC)-based key derivation function (HKDF), defined in RFC5869.
 
 ## Implementation
 
-Source module: `src/operations/derive_hkdf_key.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/derive_hkdf_key.rs` and declares `Bytes` input and `String` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -69,11 +69,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/derive_hkdf_key.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

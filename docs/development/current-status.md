@@ -10,25 +10,37 @@ Defined features in `rxchef`:
 - `pgp` (depends on `sequoia-openpgp`)
 - `jsonata` (depends on `jaq-core`, `jaq-std`)
 - `tesseract` (depends on `tesseract-rs`, `leptonica-sys`)
+- `disassembly` (depends on `capstone`)
+- `yara` (depends on `yara-x`)
+- `full` (enables all optional operation backends)
 
 ## Build gates
 
-The repository defines build, test, all-feature, formatting, Clippy, generated
-artifact, documentation, install-smoke, Windows/macOS/Linux, and informational
-coverage jobs. Their live result is shown by the CI badge; this static page does
-not claim that a future or currently running workflow passed.
+The required release gate is the local, reproducible Linux x86_64 Docker pipeline:
+
+```console
+./scripts/release-check-linux.sh
+```
+
+The original-tree Linux baseline passed. The current consolidated tree has not
+completed the final Docker gate and is therefore not yet release-verified.
+GitHub Actions is not part of this release process. macOS and Windows are also
+not release-verified by this version.
 
 ## Verification
 
 - 478 operations are registered and inventoried.
-- The operation suite contains 1,750 executed tests and no ignored tests in the
-  release-consolidation measurement.
-- `docs/_generated/operation-quality.json` records KAT, differential, property,
-  fuzz, benchmark, docs, status, and parity evidence without upgrading unknowns.
+- The default operation suite contains 1,704 executed tests after moving
+  Capstone and YARA out of the default dependency graph; all-feature tests run
+  their feature-specific cases.
+- `verification/operations.json` is the explicit evidence source.
+  `docs/_generated/operation-quality.json` records only reviewed KAT,
+  differential, property, fuzz, benchmark, docs, status, and parity claims.
 - Optional-feature availability is checked separately from correctness/parity.
 
 ## Known limitations
-- Entries marked `broken` in a minimal build require the optional feature named in the feature matrix; they refuse to return placeholder results.
+- Entries marked `feature_disabled` in a minimal build require the optional
+  feature named in the feature matrix; they refuse to return placeholder results.
 - OCR requires the optional `tesseract` feature and system Tesseract/Leptonica libraries.
 - PGP is implemented and tested behind `--features pgp`.
 - The locked dependency graph currently contains upstream-yanked `spin 0.9.8`;

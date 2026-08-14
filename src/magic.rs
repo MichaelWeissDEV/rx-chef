@@ -186,6 +186,7 @@ fn recurse(
         budget.candidates += 1;
         let decoded = match execution::execute(execution::ExecutionRequest {
             input: data.to_vec(),
+            input_supplied: true,
             recipe: execution::Recipe::from(vec![execution::RecipeStep {
                 op: cand.op.to_string(),
                 args: cand.args.clone(),

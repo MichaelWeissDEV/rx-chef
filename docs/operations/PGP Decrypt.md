@@ -12,9 +12,9 @@ Decrypts a PGP-encrypted message using the recipient's ASCII-armoured private ke
 
 | Field | Value |
 |---|---|
-| Implementation | `FeatureGated` |
+| Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | unavailable in this build |
+| Availability | FeatureDisabled |
 | Features | pgp |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -31,16 +31,16 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Private key of recipient | `String` | no | `<empty>` | — | yes | ASCII-armoured PGP private key |
-| 2 | Private key passphrase | `String` | no | `<empty>` | — | yes | Passphrase for the private key (leave blank if none) |
+| 1 | Private key of recipient | `Bytes` | yes | `<empty>` | — | yes | ASCII-armoured PGP private key |
+| 2 | Private key passphrase | `Bytes` | yes | `<empty>` | — | yes | Passphrase for the private key (leave blank if none) |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+Decrypts a PGP-encrypted message using the recipient's ASCII-armoured private key. Input: ASCII-armoured PGP message. Arguments: private key and optional passphrase.
 
 ## Implementation
 
-Source module: `src/operations/pgp_decrypt.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/pgp_decrypt.rs` and declares `String` input and `String` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -70,11 +70,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/pgp_decrypt.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

@@ -35,6 +35,12 @@ impl Operation for EncodeText {
             name: "Encoding",
             description: "The character encoding to encode into.",
             default_value: "UTF-8 (65001)",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

@@ -33,6 +33,12 @@ impl Operation for NormaliseUnicode {
             name: "Normal Form",
             description: "Unicode Normalisation Form",
             default_value: "NFD",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

@@ -1,5 +1,11 @@
 use serde::{Deserialize, Serialize};
 
+pub const RECIPE_VERSION: u32 = 1;
+
+fn current_recipe_version() -> u32 {
+    RECIPE_VERSION
+}
+
 // ─── Recipe ───────────────────────────────────────────────────────────────────
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12,6 +18,8 @@ pub struct RecipeStep {
 /// A named, saved pipeline.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Recipe {
+    #[serde(default = "current_recipe_version")]
+    pub version: u32,
     pub name: String,
     #[serde(default, skip_serializing_if = "String::is_empty")]
     pub description: String,
@@ -23,6 +31,7 @@ pub struct Recipe {
 impl Recipe {
     pub fn new(name: impl Into<String>) -> Self {
         Recipe {
+            version: RECIPE_VERSION,
             name: name.into(),
             description: String::new(),
             steps: Vec::new(),

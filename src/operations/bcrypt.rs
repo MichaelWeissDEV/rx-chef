@@ -38,6 +38,12 @@ impl Operation for Bcrypt {
             name: "Rounds",
             description: "Number of rounds (10-31, default 10)",
             default_value: "10",
+            kind: crate::operation::ArgKind::UnsignedInteger,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

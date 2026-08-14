@@ -42,11 +42,23 @@ impl Operation for ConvertSpeed {
                 name: "Input units",
                 description: "Input speed unit",
                 default_value: "Metres per second (m/s)",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Output units",
                 description: "Output speed unit",
                 default_value: "Kilometres per hour (km/h)",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         S

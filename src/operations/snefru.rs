@@ -42,11 +42,23 @@ impl Operation for SNEFRU {
                 name: "Size",
                 description: "Output size in bits (supported: 256)",
                 default_value: "256",
+                kind: crate::operation::ArgKind::UnsignedInteger,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Rounds",
                 description: "Number of rounds (supported: 8)",
                 default_value: "8",
+                kind: crate::operation::ArgKind::UnsignedInteger,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

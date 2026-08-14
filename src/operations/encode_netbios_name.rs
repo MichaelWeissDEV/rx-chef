@@ -31,6 +31,12 @@ impl Operation for EncodeNetBIOSName {
             name: "Offset",
             description: "The offset value used for encoding",
             default_value: "65",
+            kind: crate::operation::ArgKind::Integer,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

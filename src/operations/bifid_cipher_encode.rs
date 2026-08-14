@@ -37,6 +37,12 @@ impl Operation for BifidCipherEncode {
             name: "Keyword",
             description: "The keyword to use for the Polybius square",
             default_value: "",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

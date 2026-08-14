@@ -36,11 +36,23 @@ impl Operation for PGPDecrypt {
                 name: "Private key of recipient",
                 description: "ASCII-armoured PGP private key",
                 default_value: "",
+                kind: crate::operation::ArgKind::Bytes,
+                required: true,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: true,
             },
             ArgSchema {
                 name: "Private key passphrase",
                 description: "Passphrase for the private key (leave blank if none)",
                 default_value: "",
+                kind: crate::operation::ArgKind::Bytes,
+                required: true,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: true,
             },
         ];
         SCHEMA

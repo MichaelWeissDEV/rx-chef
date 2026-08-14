@@ -46,11 +46,23 @@ impl Operation for ConvertMass {
                 name: "Input units",
                 description: "Input mass unit",
                 default_value: "Kilograms (kg)",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Output units",
                 description: "Output mass unit",
                 default_value: "Grams (g)",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         S

@@ -34,11 +34,23 @@ impl Operation for ParseASN1HexString {
                 name: "Starting index",
                 description: "Starting index in the byte array",
                 default_value: "0",
+                kind: crate::operation::ArgKind::Integer,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Truncate octet strings longer than",
                 description: "Truncate octet strings longer than this value",
                 default_value: "32",
+                kind: crate::operation::ArgKind::Integer,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

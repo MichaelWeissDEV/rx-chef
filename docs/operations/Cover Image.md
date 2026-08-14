@@ -10,7 +10,7 @@ Scales the image to the given width and height, keeping the aspect ratio. The im
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -27,19 +27,19 @@ Declared output type: `Bytes`. Redirect stdout or use `--output-file` for exact 
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Width | `Integer` | no | `100` | — | no | The width of the covered image |
-| 2 | Height | `Integer` | no | `100` | — | no | The height of the covered image |
+| 1 | Width | `UnsignedInteger` | no | `100` | — | no | The width of the covered image |
+| 2 | Height | `UnsignedInteger` | no | `100` | — | no | The height of the covered image |
 | 3 | Horizontal align | `String` | no | `Center` | — | no | The horizontal alignment of the image within the cover area |
 | 4 | Vertical align | `String` | no | `Middle` | — | no | The vertical alignment of the image within the cover area |
 | 5 | Resizing algorithm | `String` | no | `Bilinear` | — | no | The algorithm to use when resizing the image |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+Scales the image to the given width and height, keeping the aspect ratio. The image may be clipped.
 
 ## Implementation
 
-Source module: `src/operations/cover_image.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/cover_image.rs` and declares `Bytes` input and `Bytes` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -69,11 +69,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/cover_image.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

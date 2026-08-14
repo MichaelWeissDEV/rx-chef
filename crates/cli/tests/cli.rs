@@ -93,6 +93,16 @@ fn stable_exit_codes_distinguish_usage_input_execution_and_io() {
             .code(),
         Some(5)
     );
+    let disassembly = rxchef(&["run", "Disassemble x86"], Some(b"90"));
+    if rxchef::integration::describe("Disassemble x86")
+        .unwrap()
+        .availability
+        == rxchef::operation::Availability::FeatureDisabled
+    {
+        assert_eq!(disassembly.status.code(), Some(6));
+    } else {
+        assert_success(&disassembly);
+    }
 }
 
 #[test]
@@ -332,6 +342,31 @@ fn output_formats_and_output_file_obey_binary_contract() {
         [0x00, 0x01, 0x02, 0xff, 0xfe, 0xfd, 0x80, 0x00]
     );
     std::fs::remove_file(path).unwrap();
+
+    let empty = rxchef(&["run", "To Base64", "--input", ""], None);
+    assert_success(&empty);
+    assert!(empty.stdout.is_empty());
+
+    let large_input = vec![0x5a; 1024 * 1024];
+    let large = rxchef(&["run", "To Base64", "--format", "raw"], Some(&large_input));
+    assert_success(&large);
+    assert_eq!(large.stdout.len(), 1_398_104);
+
+    let missing_parent = std::env::temp_dir()
+        .join(format!("rxchef-missing-parent-{}", std::process::id()))
+        .join("output.bin");
+    let failed = rxchef(
+        &[
+            "run",
+            "From Base64",
+            "--output-file",
+            missing_parent.to_str().unwrap(),
+        ],
+        Some(encoded),
+    );
+    assert_eq!(failed.status.code(), Some(5));
+    assert!(failed.stdout.is_empty());
+    assert!(!missing_parent.exists());
 }
 
 #[test]
@@ -415,7 +450,8 @@ fn integration_commands_expose_complete_descriptors() {
     assert!(base64["args"].is_array());
     assert!(base64["description"].as_str().unwrap().len() > 10);
     assert_eq!(base64["id"], "from_base64");
-    assert_eq!(base64["status"], "partial");
+    assert_eq!(base64["implementation_status"], "partial");
+    assert_eq!(base64["availability"], "available");
     assert_eq!(base64["input_requirement"], "required");
     assert!(base64["deterministic"].as_bool().unwrap());
     assert_eq!(base64["args"][1]["kind"], "boolean");
@@ -436,11 +472,9 @@ fn integration_commands_expose_complete_descriptors() {
     assert_success(&filtered);
     let filtered: serde_json::Value = serde_json::from_slice(&filtered.stdout).unwrap();
     assert!(!filtered.as_array().unwrap().is_empty());
-    assert!(filtered
-        .as_array()
-        .unwrap()
-        .iter()
-        .all(|operation| { operation["module"] == "Default" && operation["status"] == "partial" }));
+    assert!(filtered.as_array().unwrap().iter().all(|operation| {
+        operation["module"] == "Default" && operation["implementation_status"] == "partial"
+    }));
 
     let output = rxchef(&["operation", "describe", "from_base64", "--json"], None);
     assert_success(&output);
@@ -514,6 +548,7 @@ fn library_cli_bake_pipe_and_server_produce_identical_flow_bytes() {
     ];
     let library = rxchef::execution::execute(rxchef::execution::ExecutionRequest {
         input: input.to_vec(),
+        input_supplied: true,
         recipe: steps.clone().into(),
         variables: rxchef::execution::VariableContext::default(),
         options: rxchef::execution::ExecutionOptions::default(),

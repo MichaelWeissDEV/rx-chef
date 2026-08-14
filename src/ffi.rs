@@ -14,6 +14,7 @@ use std::{
 };
 
 use crate::{
+    execution,
     operation::ArgValue,
     operations::{get_operation, operation_names},
     runtime,
@@ -39,6 +40,10 @@ fn error_result(message: impl Into<String>) -> *mut RxChefResult {
         capacity: 0,
         error: CString::new(message).unwrap_or_default().into_raw(),
     }))
+}
+
+fn ffi_boundary<T>(operation: impl FnOnce() -> T) -> Result<T, ()> {
+    std::panic::catch_unwind(std::panic::AssertUnwindSafe(operation)).map_err(|_| ())
 }
 
 #[derive(serde::Serialize)]
@@ -252,42 +257,43 @@ pub unsafe extern "C" fn rxchef_run(
         Ok(name) => name,
         Err(_) => return error_result("op_name must be valid UTF-8"),
     };
-    let canonical = runtime::resolve_operation_name(&name);
-    let op = match canonical.as_deref().and_then(|n| get_operation(n)) {
-        Some(o) => o,
-        None => {
-            let res = Box::new(RxChefResult {
-                data: ptr::null_mut(),
-                length: 0,
-                capacity: 0,
-                error: CString::new(format!("Operation '{}' not found", name))
-                    .unwrap_or_default()
-                    .into_raw(),
-            });
-            return Box::into_raw(res);
-        }
-    };
-
+    let input_supplied = !input_data.is_null();
     let input = if input_len > 0 {
         slice::from_raw_parts(input_data, input_len).to_vec()
     } else {
         Vec::new()
     };
 
-    let mut rust_args = Vec::with_capacity(num_args);
+    let mut raw_args = Vec::with_capacity(num_args);
     if num_args > 0 {
         let args_slice = slice::from_raw_parts(args, num_args);
         for &arg_ptr in args_slice {
-            if !arg_ptr.is_null() {
-                rust_args.push((*arg_ptr).clone());
-            } else {
-                rust_args.push(ArgValue::Str(String::new()));
+            if arg_ptr.is_null() {
+                return error_result("argument pointers must not be NULL");
             }
+            raw_args.push(match &*arg_ptr {
+                ArgValue::Str(value) => value.clone(),
+                ArgValue::Num(value) => format!("num:{value}"),
+                ArgValue::Bool(value) => format!("bool:{value}"),
+                ArgValue::Bytes(value) => format!("hex:{}", hex::encode(value)),
+            });
         }
     }
 
-    let run_result =
-        std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| op.run(input, &rust_args)));
+    let run_result = ffi_boundary(|| {
+        execution::execute(execution::ExecutionRequest {
+            input,
+            input_supplied,
+            recipe: vec![execution::RecipeStep {
+                op: name.to_string(),
+                args: raw_args,
+            }]
+            .into(),
+            variables: execution::VariableContext::default(),
+            options: execution::ExecutionOptions::default(),
+        })
+        .map(|outcome| outcome.output)
+    });
     let (out_data, out_len, out_cap, out_err) = match run_result {
         Ok(Ok(mut v)) => {
             let len = v.len();
@@ -320,6 +326,11 @@ mod tests {
     use super::*;
 
     unsafe fn error_text(result: *mut RxChefResult) -> String {
+        assert!(!result.is_null(), "FFI returned a NULL result object");
+        assert!(
+            !(*result).error.is_null(),
+            "FFI result unexpectedly succeeded"
+        );
         let text = CStr::from_ptr((*result).error)
             .to_string_lossy()
             .into_owned();
@@ -357,6 +368,78 @@ mod tests {
             [0, 1, 255]
         );
         unsafe { rxchef_free_result(result) };
+    }
+
+    #[test]
+    fn run_distinguishes_missing_from_explicit_empty_input() {
+        let operation = CString::new("To Base64").unwrap();
+        let missing = unsafe { rxchef_run(operation.as_ptr(), ptr::null(), 0, ptr::null(), 0) };
+        assert!(unsafe { error_text(missing) }.contains("input source is required"));
+
+        let sentinel = [0_u8; 1];
+        let empty = unsafe { rxchef_run(operation.as_ptr(), sentinel.as_ptr(), 0, ptr::null(), 0) };
+        assert!(unsafe { (*empty).error.is_null() });
+        assert_eq!(unsafe { (*empty).length }, 0);
+        unsafe { rxchef_free_result(empty) };
+    }
+
+    #[test]
+    fn run_reports_unknown_operation_invalid_arguments_and_operation_errors() {
+        let unknown = CString::new("Definitely Missing").unwrap();
+        let input = b"x";
+        let result = unsafe {
+            rxchef_run(
+                unknown.as_ptr(),
+                input.as_ptr(),
+                input.len(),
+                ptr::null(),
+                0,
+            )
+        };
+        assert!(unsafe { error_text(result) }.contains("was not found"));
+
+        let operation = CString::new("To Lower case").unwrap();
+        let argument = CString::new("unexpected").unwrap();
+        let argument = unsafe { rxchef_arg_str(argument.as_ptr()) };
+        let arguments = [argument];
+        let result = unsafe {
+            rxchef_run(
+                operation.as_ptr(),
+                input.as_ptr(),
+                input.len(),
+                arguments.as_ptr(),
+                arguments.len(),
+            )
+        };
+        assert!(unsafe { error_text(result) }.contains("accepts 0 value"));
+        unsafe { rxchef_free_arg(argument) };
+
+        let operation = CString::new("From Base64").unwrap();
+        let invalid = b"A";
+        let result = unsafe {
+            rxchef_run(
+                operation.as_ptr(),
+                invalid.as_ptr(),
+                invalid.len(),
+                ptr::null(),
+                0,
+            )
+        };
+        assert!(unsafe { error_text(result) }.contains("invalid input"));
+    }
+
+    #[test]
+    fn allocations_are_independent_and_panic_boundary_is_tested() {
+        let first = rxchef_list_operations();
+        let second = rxchef_list_operations();
+        assert!(!first.is_null());
+        assert!(!second.is_null());
+        assert_ne!(first, second);
+        unsafe {
+            rxchef_free_string(first);
+            rxchef_free_string(second);
+        }
+        assert!(ffi_boundary(|| panic!("forced FFI boundary test")).is_err());
     }
 
     #[test]

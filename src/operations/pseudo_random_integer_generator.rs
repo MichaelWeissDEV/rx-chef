@@ -34,26 +34,56 @@ impl Operation for PseudoRandomIntegerGenerator {
                 name: "Number of Integers",
                 description: "How many integers to generate",
                 default_value: "1",
+                kind: crate::operation::ArgKind::Integer,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Min Value",
                 description: "Minimum value (inclusive)",
                 default_value: "0",
+                kind: crate::operation::ArgKind::Integer,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Max Value",
                 description: "Maximum value (inclusive)",
                 default_value: "99",
+                kind: crate::operation::ArgKind::Integer,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Delimiter",
                 description: "Delimiter between integers",
                 default_value: "Space",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Output",
                 description: "Output format (Raw, Hex, Decimal)",
                 default_value: "Decimal",
+                kind: crate::operation::ArgKind::Enum,
+                required: false,
+                choices: &["Raw", "Hex", "Decimal"],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA
@@ -61,6 +91,10 @@ impl Operation for PseudoRandomIntegerGenerator {
 
     fn input_type(&self) -> DataType {
         DataType::String
+    }
+
+    fn input_requirement(&self) -> crate::operation::InputRequirement {
+        crate::operation::InputRequirement::Ignored
     }
 
     fn output_type(&self) -> DataType {

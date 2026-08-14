@@ -35,6 +35,12 @@ impl Operation for Argon2Compare {
             name: "Encoded hash",
             description: "The Argon2 hash to compare against",
             default_value: "",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

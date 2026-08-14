@@ -35,6 +35,12 @@ impl Operation for Tar {
             name: "Filename",
             description: "Name of the file to be packed",
             default_value: "file.txt",
+            kind: crate::operation::ArgKind::Path,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

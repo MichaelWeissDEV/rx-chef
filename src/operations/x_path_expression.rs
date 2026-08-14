@@ -34,11 +34,23 @@ impl Operation for XPathExpression {
                 name: "XPath",
                 description: "The XPath query",
                 default_value: "",
+                kind: crate::operation::ArgKind::Path,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Result delimiter",
                 description: "The delimiter to use between results",
                 default_value: "\\n",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

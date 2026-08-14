@@ -10,7 +10,7 @@ Extract common audio metadata across MP3, WAV, FLAC, OGG, etc. Outputs normalize
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -28,15 +28,15 @@ Declared output type: `JSON`. Redirect stdout or use `--output-file` for exact b
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
 | 1 | Filename (optional) | `Path` | no | `<empty>` | — | no | Filename |
-| 2 | Max embedded text bytes | `Integer` | no | `524288` | — | no | Max text bytes |
+| 2 | Max embedded text bytes | `UnsignedInteger` | no | `524288` | — | no | Max text bytes |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+Extract common audio metadata across MP3, WAV, FLAC, OGG, etc. Outputs normalized JSON.
 
 ## Implementation
 
-Source module: `src/operations/extract_audio_metadata.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/extract_audio_metadata.rs` and declares `Binary` input and `JSON` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -66,11 +66,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/extract_audio_metadata.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

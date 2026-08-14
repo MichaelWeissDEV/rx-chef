@@ -33,6 +33,12 @@ impl Operation for UnescapeUnicodeCharacters {
             name: "Prefix",
             description: "The prefix used for the unicode escape sequence",
             default_value: "\\u",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

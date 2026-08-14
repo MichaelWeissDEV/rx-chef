@@ -35,6 +35,12 @@ impl Operation for FlipImage {
             name: "Axis",
             description: "The axis to flip along",
             default_value: "Horizontal",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

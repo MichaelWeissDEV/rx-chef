@@ -32,11 +32,23 @@ impl Operation for FromBase45 {
                 name: "Alphabet",
                 description: "The Base45 alphabet",
                 default_value: "0-9A-Z $%*+-./:",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Remove non-alphabet chars",
                 description: "Remove characters not in the alphabet before decoding",
                 default_value: "true",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

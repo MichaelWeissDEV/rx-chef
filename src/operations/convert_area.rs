@@ -52,11 +52,23 @@ impl Operation for ConvertArea {
                 name: "Input units",
                 description: "Input area unit",
                 default_value: "Square metre (sq m)",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Output units",
                 description: "Output area unit",
                 default_value: "Square kilometre (sq km)",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         S

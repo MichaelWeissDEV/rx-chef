@@ -36,11 +36,23 @@ impl Operation for Bzip2Compress {
                 name: "Block size (100s of kb)",
                 description: "Block size for compression (1-9)",
                 default_value: "9",
+                kind: crate::operation::ArgKind::UnsignedInteger,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Work factor",
                 description: "Effort spent on difficult data (0-250, 30 is default)",
                 default_value: "30",
+                kind: crate::operation::ArgKind::Integer,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

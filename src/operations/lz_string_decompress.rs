@@ -31,6 +31,12 @@ impl Operation for LZStringDecompress {
             name: "Compression Format",
             description: "The format the data was compressed in.",
             default_value: "Standard",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

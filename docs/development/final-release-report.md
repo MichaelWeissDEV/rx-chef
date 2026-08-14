@@ -1,5 +1,12 @@
 # Final release report
 
+!!! warning "Superseded report"
+    This report describes an earlier macOS-hosted consolidation and is retained
+    only as historical evidence. It is not the current release verification.
+    The authoritative result for this task is
+    `final-linux-release-report.md`, generated only after the Linux x86_64
+    Docker release gate passes.
+
 ## Repository
 
 - Final working-tree base commit: `112a61d9e5f559405c0804bbea91e5bb2582c8f6`.
@@ -93,10 +100,11 @@ inventory, not inflated claims that every test is an independent standard KAT.
 
 ## Benchmarks
 
-Representative quick-suite measurements are in
-`docs/_generated/benchmarks.json`; cases are declared in
-`benchmarks/cases.toml`. Run `cargo xtask bench-docs quick` for the PR-sized set
-or `cargo xtask bench-docs full` for the release set. Results include commit,
+Representative quick-suite measurements were historically written to
+`docs/_generated/benchmarks.json`; current measurements live under
+`benchmarks/results/`. Cases are declared in `benchmarks/cases.toml`. Run
+`cargo xtask bench-docs --quick` for the small set or `cargo xtask bench-docs
+--full` for the expanded set. Results include commit,
 toolchain, OS, architecture, profile, median, and p95 and are reference values,
 not hardware-independent guarantees.
 
@@ -107,13 +115,13 @@ Build the site with `mkdocs build --strict`; check generated content with
 `cargo xtask docs --check` and
 `cargo run --example generate_operation_docs -- --check`.
 
-## CI
+## Historical CI configuration
 
-CI defines formatting, scoped Clippy correctness/suspicious lints, Unix
+At the time of this historical report, CI defined formatting, scoped Clippy correctness/suspicious lints, Unix
 workspace builds/tests, Windows Core/CLI/Store builds/tests, Linux all-feature
 tests, registry/audit/docs drift gates, strict MkDocs, fuzz-target compilation,
-an installed-binary smoke test, and informational coverage. The workflow was
-reviewed locally; this report does not claim a remote GitHub Actions run.
+an installed-binary smoke test, and informational coverage. Those build/test
+workflows have since been removed and are not a release gate.
 
 ## Known Limitations
 
@@ -123,7 +131,7 @@ reviewed locally; this report does not claim a remote GitHub Actions run.
   result is claimed in this local run.
 - The full benchmark profile and target-specific release archives were not
   produced on this single macOS host.
-- Windows behavior is represented by CI configuration, not a local Windows run.
+- Windows was not verified by the historical local run.
 - `crates/cli/src/main.rs` remains large; command behavior is consolidated, but
   further file-level decomposition is maintainability work.
 - The root lockfile still contains yanked upstream `spin 0.9.8`; the locked

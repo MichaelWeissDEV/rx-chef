@@ -31,6 +31,12 @@ impl Operation for Label {
             name: "Name",
             description: "The name of the label",
             default_value: "",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

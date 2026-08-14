@@ -36,11 +36,23 @@ impl Operation for BlurImage {
                 name: "Amount",
                 description: "The amount of blur to apply.",
                 default_value: "5",
+                kind: crate::operation::ArgKind::Integer,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Type",
                 description: "The type of blur to apply (Fast or Gaussian).",
                 default_value: "Fast",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

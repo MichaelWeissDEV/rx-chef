@@ -34,11 +34,23 @@ impl Operation for RailFenceCipherEncode {
                 name: "Key",
                 description: "Number of rails (must be >= 2)",
                 default_value: "2",
+                kind: crate::operation::ArgKind::Bytes,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: true,
             },
             ArgSchema {
                 name: "Offset",
                 description: "Offset value",
                 default_value: "0",
+                kind: crate::operation::ArgKind::Integer,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

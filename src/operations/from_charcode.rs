@@ -32,11 +32,23 @@ impl Operation for FromCharcode {
                 name: "Delimiter",
                 description: "The character code delimiter",
                 default_value: "Space",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Base",
                 description: "The numerical base of the codes",
                 default_value: "16",
+                kind: crate::operation::ArgKind::Integer,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

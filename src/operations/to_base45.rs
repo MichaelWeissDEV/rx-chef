@@ -27,6 +27,12 @@ impl Operation for ToBase45 {
             name: "Alphabet",
             description: "The Base45 alphabet",
             default_value: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

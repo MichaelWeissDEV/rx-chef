@@ -35,6 +35,12 @@ impl Operation for LuhnChecksum {
             name: "Radix",
             description: "The base/radix to use (must be even, 2-36)",
             default_value: "10",
+            kind: crate::operation::ArgKind::UnsignedInteger,
+            required: false,
+            choices: &[],
+            minimum: Some(crate::operation::NumericBound::Unsigned(2)),
+            maximum: Some(crate::operation::NumericBound::Unsigned(36)),
+            sensitive: false,
         }];
         SCHEMA
     }

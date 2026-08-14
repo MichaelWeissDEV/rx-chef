@@ -10,7 +10,7 @@ Carves PNG, JPEG, GIF, PDF, and ZIP signatures from binary input. Matching paylo
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -31,15 +31,15 @@ Declared output type: `Bytes`. Redirect stdout or use `--output-file` for exact 
 | 2 | Documents | `Boolean` | no | `true` | — | no | Extract documents |
 | 3 | Archives | `Boolean` | no | `true` | — | no | Extract archives |
 | 4 | Ignore failed extractions | `Boolean` | no | `true` | — | no | Ignore failed extractions |
-| 5 | Minimum File Size | `Path` | no | `100` | — | no | Minimum file size to extract |
+| 5 | Minimum File Size | `UnsignedInteger` | no | `100` | — | no | Minimum file size to extract |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+Carves PNG, JPEG, GIF, PDF, and ZIP signatures from binary input. Matching payloads are returned in a deterministic binary envelope with an ASCII file-type header before each payload.
 
 ## Implementation
 
-Source module: `src/operations/extract_files.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/extract_files.rs` and declares `Bytes` input and `Bytes` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -69,11 +69,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/extract_files.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

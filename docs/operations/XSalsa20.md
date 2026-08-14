@@ -10,7 +10,7 @@ XSalsa is an extended-nonce Salsa stream cipher designed by Daniel J. Bernstein.
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -27,20 +27,20 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Key | `String` | no | `<empty>` | — | no | Key to use for encryption/decryption |
-| 2 | Nonce | `String` | no | `<empty>` | — | no | Nonce to use |
-| 3 | Counter | `Integer` | no | `0` | — | no | Starting counter value |
-| 4 | Rounds | `Integer` | no | `20` | — | no | Number of rounds |
+| 1 | Key | `Bytes` | yes | `<empty>` | — | yes | Key to use for encryption/decryption |
+| 2 | Nonce | `Bytes` | no | `<empty>` | — | no | Nonce to use |
+| 3 | Counter | `UnsignedInteger` | no | `0` | — | no | Starting counter value |
+| 4 | Rounds | `UnsignedInteger` | no | `20` | — | no | Number of rounds |
 | 5 | Input | `String` | no | `Raw` | — | no | Input format |
 | 6 | Output | `String` | no | `Raw` | — | no | Output format |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+XSalsa is an extended-nonce Salsa stream cipher designed by Daniel J. Bernstein. It uses a 32-byte key, a 24-byte nonce, and a 64-bit block counter. The standard 20-round cipher and reduced-round XSalsa12 and XSalsa8 variants are supported.
 
 ## Implementation
 
-Source module: `src/operations/x_salsa20.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/x_salsa20.rs` and declares `String` input and `String` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -70,11 +70,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/x_salsa20.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

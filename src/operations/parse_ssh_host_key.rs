@@ -34,6 +34,12 @@ impl Operation for ParseSshHostKey {
             name: "Input Format",
             description: "The format of the input key",
             default_value: "Auto",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

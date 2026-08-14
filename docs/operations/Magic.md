@@ -10,7 +10,7 @@ The Magic operation attempts to detect various properties of the input data and 
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -27,18 +27,18 @@ Declared output type: `JSON`. Redirect stdout or use `--output-file` for exact b
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Depth | `Integer` | no | `3` | — | no | Maximum number of levels of recursion |
+| 1 | Depth | `UnsignedInteger` | no | `3` | — | no | Maximum number of levels of recursion |
 | 2 | Intensive mode | `Boolean` | no | `false` | — | no | Brute-force XOR, bit rotates, etc. |
 | 3 | Extensive language support | `Boolean` | no | `false` | — | no | Compare byte frequencies to a large number of languages |
 | 4 | Crib (known plaintext string or regex) | `Regex` | no | `<empty>` | — | no | Filter results by matching this string or regex |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+The Magic operation attempts to detect various properties of the input data and suggests which operations could help to make more sense of it.
 
 ## Implementation
 
-Source module: `src/operations/magic.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/magic.rs` and declares `Bytes` input and `JSON` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -68,11 +68,27 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/magic.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Benchmark evidence:
+- representative release benchmark
+
+See [benchmark results](../performance/results.md) for measured environment and statistics.
 
 ## Limitations
 

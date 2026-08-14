@@ -33,6 +33,12 @@ impl Operation for ConvertLeetSpeak {
             name: "Direction",
             description: "Direction: To Leet Speak or From Leet Speak",
             default_value: "To Leet Speak",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

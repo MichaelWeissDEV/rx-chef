@@ -34,11 +34,23 @@ impl Operation for IPv6TransitionAddresses {
                 name: "Ignore ranges",
                 description: "If checked, input ranges will be ignored.",
                 default_value: "true",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Remove headers",
                 description: "Remove headers to easily copy out results.",
                 default_value: "false",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

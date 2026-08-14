@@ -34,11 +34,23 @@ impl Operation for FromMorseCode {
                 name: "Letter delimiter",
                 description: "The delimiter between letters",
                 default_value: "Space",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Word delimiter",
                 description: "The delimiter between words",
                 default_value: "Line feed",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

@@ -33,6 +33,12 @@ impl Operation for RisonDecode {
             name: "Decode Option",
             description: "Decode, Decode Object, or Decode Array",
             default_value: "Decode",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

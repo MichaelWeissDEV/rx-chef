@@ -44,11 +44,23 @@ impl Operation for Cmac {
                 name: "Key",
                 description: "Encryption key (Hex, UTF8, Latin1, or Base64)",
                 default_value: "",
+                kind: crate::operation::ArgKind::Bytes,
+                required: true,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: true,
             },
             ArgSchema {
                 name: "Encryption algorithm",
                 description: "Encryption algorithm (AES)",
                 default_value: "AES",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

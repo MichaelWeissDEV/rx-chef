@@ -36,12 +36,22 @@ impl Operation for GetTime {
             description:
                 "Time unit: Nanoseconds (ns), Microseconds (us), Milliseconds (ms), Seconds (s)",
             default_value: "Milliseconds (ms)",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }
 
     fn input_type(&self) -> DataType {
         DataType::String
+    }
+
+    fn input_requirement(&self) -> crate::operation::InputRequirement {
+        crate::operation::InputRequirement::Ignored
     }
 
     fn output_type(&self) -> DataType {

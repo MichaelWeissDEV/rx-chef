@@ -39,11 +39,23 @@ impl Operation for WHIRLPOOL {
                 name: "Variant",
                 description: "Hash variant (Whirlpool only)",
                 default_value: "Whirlpool",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Rounds",
                 description: "Number of rounds (1-10)",
                 default_value: "10",
+                kind: crate::operation::ArgKind::UnsignedInteger,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

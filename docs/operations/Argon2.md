@@ -10,7 +10,7 @@ Argon2 is a key derivation function that was selected as the winner of the Passw
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -27,21 +27,21 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Salt | `String` | no | `somesalt` | — | no | Salt value |
-| 2 | Iterations | `Integer` | no | `3` | — | no | Number of iterations |
+| 1 | Salt | `Bytes` | no | `somesalt` | — | no | Salt value |
+| 2 | Iterations | `UnsignedInteger` | no | `3` | — | no | Number of iterations |
 | 3 | Memory (KiB) | `Integer` | no | `4096` | — | no | Memory usage in KiB |
 | 4 | Parallelism | `Integer` | no | `1` | — | no | Degree of parallelism |
-| 5 | Hash length (bytes) | `Integer` | no | `32` | — | no | Length of the hash in bytes |
-| 6 | Type | `String` | no | `Argon2i` | — | no | Argon2 type (Argon2i, Argon2d, Argon2id) |
-| 7 | Output format | `String` | no | `Encoded hash` | — | no | Output format (Encoded hash, Hex hash, Raw hash) |
+| 5 | Hash length (bytes) | `UnsignedInteger` | no | `32` | — | no | Length of the hash in bytes |
+| 6 | Type | `Enum` | no | `Argon2i` | Argon2i, Argon2d, Argon2id | no | Argon2 type (Argon2i, Argon2d, Argon2id) |
+| 7 | Output format | `Enum` | no | `Encoded hash` | Encoded hash, Hex hash, Raw hash | no | Output format (Encoded hash, Hex hash, Raw hash) |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+Argon2 is a key derivation function that was selected as the winner of the Password Hashing Competition in July 2015. It was designed by Alex Biryukov, Daniel Dinu, and Dmitry Khovratovich from the University of Luxembourg.
 
 ## Implementation
 
-Source module: `src/operations/argon2.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/argon2.rs` and declares `String` input and `String` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -71,11 +71,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/argon2.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

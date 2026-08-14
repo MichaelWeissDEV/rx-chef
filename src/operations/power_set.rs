@@ -33,6 +33,12 @@ impl Operation for PowerSet {
             name: "Item delimiter",
             description: "Delimiter between items",
             default_value: ",",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

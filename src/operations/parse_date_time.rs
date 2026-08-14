@@ -39,11 +39,23 @@ impl Operation for ParseDateTime {
                 name: "Input format string",
                 description: "strftime format string (e.g. %d/%m/%Y %H:%M:%S)",
                 default_value: "%d/%m/%Y %H:%M:%S",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Input timezone",
                 description: "Timezone name (currently UTC only)",
                 default_value: "UTC",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

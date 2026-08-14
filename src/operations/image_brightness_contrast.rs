@@ -36,11 +36,23 @@ impl Operation for ImageBrightnessContrast {
                 name: "Brightness",
                 description: "The amount to adjust the brightness by. (-100 to 100)",
                 default_value: "0",
+                kind: crate::operation::ArgKind::Integer,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Contrast",
                 description: "The amount to adjust the contrast by. (-100 to 100)",
                 default_value: "0",
+                kind: crate::operation::ArgKind::Integer,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

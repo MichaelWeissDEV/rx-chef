@@ -1,0 +1,8 @@
+version: 1
+name: release-smoke
+description: Linux release recipe smoke fixture
+steps:
+  - op: To Upper case
+    args: []
+  - op: To Base64
+    args: []

@@ -15,7 +15,16 @@ Important boundaries:
   local data boundary;
 - cryptographic operations expose primitives and do not design a secure protocol
   for the caller;
-- operations marked `broken` by `operations --json` must not be used for results.
+- randomness-producing operations use their documented backend; deterministic
+  pseudorandom generators must not be substituted for cryptographic randomness;
+- optional OCR and other native libraries extend the parser/ABI attack surface;
+- History stores only bounded previews and metadata, and redacts every argument
+  marked `sensitive`; previews are never replay input;
+- `serve --stdio` is a local child-process protocol, not an authenticated network
+  service; request lines are bounded and stdout is JSONL-only;
+- the experimental C ABI catches Rust panics, validates pointer/length pairs,
+  and requires callers to free each returned allocation exactly once;
+- operations whose `availability` is not `available` cannot execute in that build.
 
 For automation, use exact operation names, bounded input sizes, timeouts around
 the process, and `--json`/the stdio protocol rather than scraping human output.

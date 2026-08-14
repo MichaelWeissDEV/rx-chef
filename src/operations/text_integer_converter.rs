@@ -70,6 +70,12 @@ impl Operation for TextIntegerConverter {
             name: "Output format",
             description: "String, Decimal, or Hexadecimal",
             default_value: "String",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

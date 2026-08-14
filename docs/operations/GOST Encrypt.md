@@ -10,7 +10,7 @@ The GOST block cipher (Magma), defined in the standard GOST 28147-89 (RFC 5830),
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -27,10 +27,10 @@ Declared output type: `Bytes`. Redirect stdout or use `--output-file` for exact 
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Key | `String` | no | `<empty>` | — | no | The encryption key. |
-| 2 | IV | `String` | no | `<empty>` | — | no | The initialization vector. |
-| 3 | Input type | `String` | no | `Raw` | — | no | Input encoding (Raw, Hex) |
-| 4 | Output type | `String` | no | `Hex` | — | no | Output encoding (Hex, Raw) |
+| 1 | Key | `Bytes` | yes | `<empty>` | — | yes | The encryption key. |
+| 2 | IV | `Bytes` | no | `<empty>` | — | no | The initialization vector. |
+| 3 | Input type | `Enum` | no | `Raw` | Raw, Hex | no | Input encoding (Raw, Hex) |
+| 4 | Output type | `Enum` | no | `Hex` | Hex, Raw | no | Output encoding (Hex, Raw) |
 | 5 | Algorithm | `String` | no | `GOST 28147 (1989)` | — | no | The GOST algorithm to use. |
 | 6 | sBox | `String` | no | `E-TEST` | — | no | The sBox to use (only for GOST 28147 (1989)). |
 | 7 | Block mode | `String` | no | `ECB` | — | no | The block cipher mode to use. |
@@ -39,11 +39,11 @@ Declared output type: `Bytes`. Redirect stdout or use `--output-file` for exact 
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+The GOST block cipher (Magma), defined in the standard GOST 28147-89 (RFC 5830), is a Soviet and Russian government standard symmetric key block cipher with a block size of 64 bits. The original standard, published in 1989, did not give the cipher any name, but the most recent revision of the standard, GOST R 34.12-2015 (RFC 7801, RFC 8891), specifies that it may be referred to as Magma. The GOST hash function is based on this cipher. The new standard also specifies a new 128-bit block cipher called Kuznyechik.
 
 ## Implementation
 
-Source module: `src/operations/gost_encrypt.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/gost_encrypt.rs` and declares `Bytes` input and `Bytes` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -73,11 +73,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/gost_encrypt.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

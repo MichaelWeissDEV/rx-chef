@@ -33,6 +33,12 @@ impl Operation for CountOccurrences {
             name: "Search string",
             description: "The string to search for",
             default_value: "",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

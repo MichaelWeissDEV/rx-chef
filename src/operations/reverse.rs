@@ -32,6 +32,12 @@ impl Operation for Reverse {
             name: "By",
             description: "Byte, Character, or Line",
             default_value: "Character",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

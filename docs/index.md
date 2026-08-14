@@ -22,7 +22,13 @@ C-compatible FFI, and persistent JSONL/JSON-RPC server.
 - **Persistent editor integration** designed for Neovim and other local plugin
   clients without a frontend-specific backend.
 - **Generated operation documentation** kept synchronized with runtime metadata
-  and checked in continuous integration.
+  and checked by the local Linux release pipeline.
+
+The intended release platform is Linux x86_64 through the reproducible Docker
+release check. The original-tree Linux baseline passed; final verification of
+the current consolidated tree is still pending. macOS and Windows are not
+release-verified. The [current release report](development/final-linux-release-report.md)
+separates baseline and current-tree evidence.
 
 ## Start here
 

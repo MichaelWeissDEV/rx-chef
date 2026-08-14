@@ -62,11 +62,23 @@ impl Operation for GenerateDeBruijnSequence {
                 name: "Alphabet size (k)",
                 description: "Size of the alphabet (2-9)",
                 default_value: "2",
+                kind: crate::operation::ArgKind::UnsignedInteger,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Key length (n)",
                 description: "Length of each key (2 or more)",
                 default_value: "3",
+                kind: crate::operation::ArgKind::UnsignedInteger,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA
@@ -74,6 +86,10 @@ impl Operation for GenerateDeBruijnSequence {
 
     fn input_type(&self) -> DataType {
         DataType::String
+    }
+
+    fn input_requirement(&self) -> crate::operation::InputRequirement {
+        crate::operation::InputRequirement::Ignored
     }
 
     fn output_type(&self) -> DataType {

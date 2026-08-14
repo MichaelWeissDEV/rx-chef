@@ -35,6 +35,12 @@ impl Operation for OffsetChecker {
             name: "Sample delimiter",
             description: "String used to separate samples in the input",
             default_value: "\\n\\n",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

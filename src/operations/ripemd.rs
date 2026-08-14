@@ -38,6 +38,12 @@ impl Operation for RIPEMD {
             name: "Size",
             description: "Output size in bits (320, 256, 160, or 128)",
             default_value: "160",
+            kind: crate::operation::ArgKind::Enum,
+            required: false,
+            choices: &["320", "256", "160", "128"],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

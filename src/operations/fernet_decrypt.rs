@@ -36,6 +36,12 @@ impl Operation for FernetDecrypt {
             name: "Key",
             description: "Base64url-encoded 32-byte Fernet key",
             default_value: "",
+            kind: crate::operation::ArgKind::Bytes,
+            required: true,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: true,
         }];
         SCHEMA
     }

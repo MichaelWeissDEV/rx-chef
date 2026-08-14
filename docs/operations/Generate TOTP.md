@@ -12,7 +12,7 @@ Enter the secret as the input or leave it blank for a random secret to be genera
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -30,17 +30,19 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
 | 1 | Name | `String` | no | `<empty>` | — | no | The name of the account |
-| 2 | Code length | `Integer` | no | `6` | — | no | The number of digits in the generated code |
+| 2 | Code length | `UnsignedInteger` | no | `6` | — | no | The number of digits in the generated code |
 | 3 | Epoch offset (T0) | `Integer` | no | `0` | — | no | The epoch offset in seconds |
 | 4 | Interval (T1) | `Integer` | no | `30` | — | no | The time interval in seconds |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+The Time-based One-Time Password algorithm (TOTP) is an algorithm that computes a one-time password from a shared secret key and the current time. It has been adopted as Internet Engineering Task Force standard RFC 6238, is the cornerstone of Initiative For Open Authentication (OAUTH), and is used in a number of two-factor authentication systems. A TOTP is an HOTP where the counter is the current time.
+
+Enter the secret as the input or leave it blank for a random secret to be generated. T0 and T1 are in seconds.
 
 ## Implementation
 
-Source module: `src/operations/generate_totp.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/generate_totp.rs` and declares `Bytes` input and `String` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -70,11 +72,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/generate_totp.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

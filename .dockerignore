@@ -1,0 +1,8 @@
+.git
+target
+fuzz/target
+site
+.rxchef
+*.crate
+__pycache__
+*.py[cod]

@@ -43,11 +43,23 @@ impl Operation for SetUnion {
                 name: "Sample delimiter",
                 description: "Delimiter separating the two input sets",
                 default_value: "\\n\\n",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Item delimiter",
                 description: "Delimiter separating items within each set",
                 default_value: ",",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

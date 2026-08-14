@@ -33,6 +33,12 @@ impl Operation for ExtractDates {
             name: "Display total",
             description: "Display total found",
             default_value: "false",
+            kind: crate::operation::ArgKind::Boolean,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

@@ -10,7 +10,7 @@ Keyed-Hash Message Authentication Codes (HMAC) are a mechanism for message authe
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -27,17 +27,17 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Key | `String` | no | `<empty>` | — | no | The secret key as UTF-8 text, or explicitly prefixed with hex:/0x or base64: |
-| 2 | Hashing function | `String` | no | `SHA-256` | — | no | Hashing algorithm (MD5, SHA-1, SHA-256, SHA-384, SHA-512) |
-| 3 | Output encoding | `String` | no | `Hex` | — | no | Output encoding (Hex, Base64) |
+| 1 | Key | `Bytes` | yes | `<empty>` | — | yes | The secret key as UTF-8 text, or explicitly prefixed with hex:/0x or base64: |
+| 2 | Hashing function | `Enum` | no | `SHA-256` | MD5, SHA-1, SHA-256, SHA-384, SHA-512 | no | Hashing algorithm (MD5, SHA-1, SHA-256, SHA-384, SHA-512) |
+| 3 | Output encoding | `Enum` | no | `Hex` | Hex, Base64 | no | Output encoding (Hex, Base64) |
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+Keyed-Hash Message Authentication Codes (HMAC) are a mechanism for message authentication using cryptographic hash functions.
 
 ## Implementation
 
-Source module: `src/operations/hmac.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/hmac.rs` and declares `String` input and `String` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -67,11 +67,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/hmac.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

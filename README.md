@@ -1,7 +1,6 @@
 # rxchef
 
 [![Documentation](https://readthedocs.org/projects/rx-chef/badge/?version=latest)](https://rx-chef.readthedocs.io/en/latest/)
-[![CI](https://github.com/MichaelWeissDEV/rx-chef/actions/workflows/ci.yml/badge.svg)](https://github.com/MichaelWeissDEV/rx-chef/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://github.com/MichaelWeissDEV/rx-chef/blob/master/LICENSE)
 [![Rust](https://img.shields.io/badge/Rust-stable-orange.svg?logo=rust)](https://www.rust-lang.org/)
 
@@ -36,7 +35,17 @@ forensics, image processing, and more.
 - **Magic and Scan workflows** for recursive decoding and streaming discovery
   across files, directories, memory dumps, captures, or piped input.
 - **Generated Read the Docs site** whose 478 operation pages are checked for
-  freshness in CI.
+  freshness by the local release check.
+
+## Release verification
+
+The intended release target is **Linux x86_64**, with a reproducible Docker
+gate at `./scripts/release-check-linux.sh`. The original-tree Linux baseline
+passed, but the current consolidated tree has not completed that final Docker
+gate and must not yet be described as release-verified. See the
+[current release report](docs/development/final-linux-release-report.md).
+macOS and Windows may work, but are not release-verified. GitHub Actions is not
+a release gate for this version.
 
 ## Installation
 
@@ -60,8 +69,10 @@ cargo build --release --workspace
 ./target/release/rxchef_tui
 ```
 
-Optional OpenPGP, JSON query, and OCR support is controlled through Cargo
-features. OCR additionally requires a system Tesseract/Leptonica installation.
+Optional OpenPGP, JSON query, OCR, Capstone disassembly, and YARA support is
+controlled through Cargo features (`pgp`, `jsonata`, `tesseract`,
+`disassembly`, and `yara`; `full` enables all of them). OCR additionally
+requires a system Tesseract/Leptonica installation.
 See the [installation guide](https://rx-chef.readthedocs.io/en/latest/getting-started/installation/)
 and [feature matrix](https://rx-chef.readthedocs.io/en/latest/reference/feature-matrix/)
 for platform-specific details.

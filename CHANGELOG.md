@@ -14,7 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   atomic store writes, bounded History, shell completions, and manpage output.
 - Deterministic registry generation/checking, operation quality audit, complete
   generated operation pages, and environment-labelled benchmark artifacts.
-- Configurable JSONL request limits and expanded Windows/macOS/Linux CI.
+- Configurable JSONL request limits and a reproducible local Linux x86_64
+  Docker release check.
+- Explicit argument kinds, requirements, choices, bounds, and sensitivity for
+  every registered operation, plus a conservative verification manifest.
 - Bounded Magic candidate/byte budgets, bounded Scanner findings/tokens, and
   stable CLI failure classes with exit codes 2 through 6.
 
@@ -25,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unprefixed operation arguments are text; binary values require explicit
   `hex:`, `bytes:`, or `base64:` prefixes.
 - The C ABI is explicitly experimental and ships with `include/rxchef.h`.
+- Capstone, yara-x, OCR, PGP, and JSON query backends are optional feature
+  groups; unavailable operations remain discoverable with an explicit reason.
 
 ### Fixed
 
@@ -32,6 +37,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   slicing, scope-crossing pipeline mutations, recipe-load side effects, and
   unsafe History preview replay.
 - Removed all ignored operation tests and tautological success-or-error tests.
+- Removed GitHub build/test CI workflows from the current release definition;
+  macOS and Windows are not claimed as verified.
 
 ## [0.0.1] - 2026-08-13
 

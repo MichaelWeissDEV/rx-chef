@@ -38,11 +38,23 @@ impl Operation for ViewBitPlane {
                 name: "Colour",
                 description: "The colour channel to view",
                 default_value: "Red",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Bit",
                 description: "The bit to view",
                 default_value: "0",
+                kind: crate::operation::ArgKind::Integer,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

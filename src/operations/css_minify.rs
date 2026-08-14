@@ -35,6 +35,12 @@ impl Operation for CssMinify {
             name: "Preserve comments",
             description: "Keep CSS block comments in output",
             default_value: "false",
+            kind: crate::operation::ArgKind::Boolean,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

@@ -32,6 +32,12 @@ impl Operation for Jsonata {
             name: "Query",
             description: "The jaq query to run",
             default_value: ".",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

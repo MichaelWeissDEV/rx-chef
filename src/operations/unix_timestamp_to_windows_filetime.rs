@@ -35,11 +35,23 @@ impl Operation for UNIXTimestampToWindowsFiletime {
                 name: "Input units",
                 description: "Input units",
                 default_value: "Seconds (s)",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Output format",
                 description: "Output format",
                 default_value: "Decimal",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

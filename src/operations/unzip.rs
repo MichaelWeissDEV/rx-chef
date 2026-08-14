@@ -36,11 +36,23 @@ impl Operation for Unzip {
                 name: "Password",
                 description: "Password for encrypted zip files",
                 default_value: "",
+                kind: crate::operation::ArgKind::Bytes,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: true,
             },
             ArgSchema {
                 name: "Verify result",
                 description: "Verify result (ignored in this port)",
                 default_value: "false",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

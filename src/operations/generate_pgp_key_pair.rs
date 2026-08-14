@@ -38,21 +38,45 @@ impl Operation for GeneratePGPKeyPair {
                 description:
                     "Key type and size: RSA-2048, RSA-4096, ECC-256, ECC-384, ECC-521 (RSA-1024 is rejected as insecure)",
                 default_value: "RSA-2048",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Password (optional)",
                 description: "Passphrase to protect the private key",
                 default_value: "",
+                kind: crate::operation::ArgKind::Bytes,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: true,
             },
             ArgSchema {
                 name: "Name (optional)",
                 description: "User name for the key identity",
                 default_value: "",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Email (optional)",
                 description: "User email for the key identity",
                 default_value: "",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA
@@ -60,6 +84,10 @@ impl Operation for GeneratePGPKeyPair {
 
     fn input_type(&self) -> DataType {
         DataType::String
+    }
+
+    fn input_requirement(&self) -> crate::operation::InputRequirement {
+        crate::operation::InputRequirement::Ignored
     }
 
     fn output_type(&self) -> DataType {

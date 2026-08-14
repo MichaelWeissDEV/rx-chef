@@ -35,6 +35,12 @@ impl Operation for ImageOpacity {
             name: "Opacity (%)",
             description: "The opacity to set (0-100).",
             default_value: "100",
+            kind: crate::operation::ArgKind::Integer,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

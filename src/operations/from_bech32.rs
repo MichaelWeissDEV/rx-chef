@@ -32,11 +32,23 @@ impl Operation for FromBech32 {
                 name: "Encoding",
                 description: "The Bech32 encoding variant",
                 default_value: "Auto-detect",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Output Format",
                 description: "The format of the output",
                 default_value: "Raw",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

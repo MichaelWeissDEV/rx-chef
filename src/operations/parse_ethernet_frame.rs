@@ -35,11 +35,23 @@ impl Operation for ParseEthernetFrame {
                 name: "Input type",
                 description: "Raw bytes or Hex string",
                 default_value: "Hex",
+                kind: crate::operation::ArgKind::HexBytes,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Return type",
                 description: "Text output, Packet data, or Packet data (hex)",
                 default_value: "Text output",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

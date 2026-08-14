@@ -32,12 +32,24 @@ impl Operation for Jump {
                 name: "Label name",
                 description: "The name of the label to jump to",
                 default_value: "",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Maximum jumps (if jumping backwards)",
                 description:
                     "The maximum number of times to jump backwards to prevent infinite loops",
                 default_value: "10",
+                kind: crate::operation::ArgKind::Integer,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

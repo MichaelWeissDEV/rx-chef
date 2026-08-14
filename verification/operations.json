@@ -1,0 +1,5273 @@
+{
+  "schema_version": 1,
+  "operations": {
+    "a1z26_cipher_decode": {
+      "correctness": [
+        "tests/tests/operations/a1z26_cipher_decode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "a1z26_cipher_encode": {
+      "correctness": [
+        "tests/tests/operations/a1z26_cipher_encode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "add": {
+      "correctness": [
+        "tests/tests/operations/add.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "aes_decrypt": {
+      "correctness": [
+        "tests/tests/operations/aes_decrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "aes_encrypt": {
+      "correctness": [
+        "tests/tests/operations/aes_encrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [
+        "representative release benchmark"
+      ],
+      "benchmark_skip_reason": null
+    },
+    "aes_key_unwrap": {
+      "correctness": [
+        "tests/tests/operations/aes_key_unwrap.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "aes_key_wrap": {
+      "correctness": [
+        "tests/tests/operations/aes_key_wrap.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "amf_decode": {
+      "correctness": [
+        "tests/tests/operations/amf_decode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "amf_encode": {
+      "correctness": [
+        "tests/tests/operations/amf_encode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "and": {
+      "correctness": [
+        "tests/tests/operations/and.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "add_text_to_image": {
+      "correctness": [
+        "tests/tests/operations/add_text_to_image.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "add_line_numbers": {
+      "correctness": [
+        "tests/tests/operations/add_line_numbers.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "adler_32_checksum": {
+      "correctness": [
+        "tests/tests/operations/adler32_checksum.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "affine_cipher_decode": {
+      "correctness": [
+        "tests/tests/operations/affine_cipher_decode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "affine_cipher_encode": {
+      "correctness": [
+        "tests/tests/operations/affine_cipher_encode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "alternating_caps": {
+      "correctness": [
+        "tests/tests/operations/alternating_caps.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "analyse_uuid": {
+      "correctness": [
+        "tests/tests/operations/analyse_uuid.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "analyse_hash": {
+      "correctness": [
+        "tests/tests/operations/analyse_hash.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "argon2": {
+      "correctness": [
+        "tests/tests/operations/argon2.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "argon2_compare": {
+      "correctness": [
+        "tests/tests/operations/argon2_compare.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "atbash_cipher": {
+      "correctness": [
+        "tests/tests/operations/atbash_cipher.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "avro_to_json": {
+      "correctness": [
+        "tests/tests/operations/avro_to_json.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "blake2b": {
+      "correctness": [
+        "tests/tests/operations/blake2b.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "blake2s": {
+      "correctness": [
+        "tests/tests/operations/blake2s.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "blake3": {
+      "correctness": [
+        "tests/tests/operations/blake3.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "bson_deserialise": {
+      "correctness": [
+        "tests/tests/operations/bson_deserialise.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "bson_serialise": {
+      "correctness": [
+        "tests/tests/operations/bson_serialise.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "bacon_cipher_decode": {
+      "correctness": [
+        "tests/tests/operations/bacon_cipher_decode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "bacon_cipher_encode": {
+      "correctness": [
+        "tests/tests/operations/bacon_cipher_encode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "bcrypt": {
+      "correctness": [
+        "tests/tests/operations/bcrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "bcrypt_compare": {
+      "correctness": [
+        "tests/tests/operations/bcrypt_compare.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "bcrypt_parse": {
+      "correctness": [
+        "tests/tests/operations/bcrypt_parse.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "bifid_cipher_decode": {
+      "correctness": [
+        "tests/tests/operations/bifid_cipher_decode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "bifid_cipher_encode": {
+      "correctness": [
+        "tests/tests/operations/bifid_cipher_encode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "bit_shift_left": {
+      "correctness": [
+        "tests/tests/operations/bit_shift_left.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "bit_shift_right": {
+      "correctness": [
+        "tests/tests/operations/bit_shift_right.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "blowfish_decrypt": {
+      "correctness": [
+        "tests/tests/operations/blowfish_decrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "blowfish_encrypt": {
+      "correctness": [
+        "tests/tests/operations/blowfish_encrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "blur_image": {
+      "correctness": [
+        "tests/tests/operations/blur_image.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "bombe": {
+      "correctness": [
+        "tests/tests/operations/bombe.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "bzip2_compress": {
+      "correctness": [
+        "tests/tests/operations/bzip2_compress.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "bzip2_decompress": {
+      "correctness": [
+        "tests/tests/operations/bzip2_decompress.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "cbor_decode": {
+      "correctness": [
+        "tests/tests/operations/cbor_decode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "cbor_encode": {
+      "correctness": [
+        "tests/tests/operations/cbor_encode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "cmac": {
+      "correctness": [
+        "tests/tests/operations/cmac.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "crc_checksum": {
+      "correctness": [
+        "tests/tests/operations/crc_checksum.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "crc32": {
+      "correctness": [
+        "tests/tests/operations/crc32.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "css_beautify": {
+      "correctness": [
+        "tests/tests/operations/css_beautify.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "css_minify": {
+      "correctness": [
+        "tests/tests/operations/css_minify.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "css_selector": {
+      "correctness": [
+        "tests/tests/operations/css_selector.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "csv_to_json": {
+      "correctness": [
+        "tests/tests/operations/csv_to_json.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "ctph": {
+      "correctness": [
+        "tests/tests/operations/ctph.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "caesar_box_cipher": {
+      "correctness": [
+        "tests/tests/operations/caesar_box_cipher.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "caret_m_decode": {
+      "correctness": [
+        "tests/tests/operations/caret_mdecode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "cartesian_product": {
+      "correctness": [
+        "tests/tests/operations/cartesian_product.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "cetacean_cipher_decode": {
+      "correctness": [
+        "tests/tests/operations/cetacean_cipher_decode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "cetacean_cipher_encode": {
+      "correctness": [
+        "tests/tests/operations/cetacean_cipher_encode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "chacha": {
+      "correctness": [
+        "tests/tests/operations/chacha.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "change_ip_format": {
+      "correctness": [
+        "tests/tests/operations/change_ip_format.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "chi_square": {
+      "correctness": [
+        "tests/tests/operations/chi_square.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "ciphersaber2_decrypt": {
+      "correctness": [
+        "tests/tests/operations/cipher_saber2_decrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "ciphersaber2_encrypt": {
+      "correctness": [
+        "tests/tests/operations/cipher_saber2_encrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "citrix_ctx1_decode": {
+      "correctness": [
+        "tests/tests/operations/citrix_ctx1_decode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "citrix_ctx1_encode": {
+      "correctness": [
+        "tests/tests/operations/citrix_ctx1_encode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "colossus": {
+      "correctness": [
+        "tests/tests/operations/colossus.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "comment": {
+      "correctness": [
+        "tests/tests/operations/comment.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "compare_ctph_hashes": {
+      "correctness": [
+        "tests/tests/operations/compare_ctph_hashes.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "compare_ssdeep_hashes": {
+      "correctness": [
+        "tests/tests/operations/compare_ssdeep_hashes.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "conditional_jump": {
+      "correctness": [
+        "tests/tests/operations/conditional_jump.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "contain_image": {
+      "correctness": [
+        "tests/tests/operations/contain_image.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "convert_image_format": {
+      "correctness": [
+        "tests/tests/operations/convert_image_format.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "convert_leet_speak": {
+      "correctness": [
+        "tests/tests/operations/convert_leet_speak.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "convert_area": {
+      "correctness": [
+        "tests/tests/operations/convert_area.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "convert_co_ordinate_format": {
+      "correctness": [
+        "tests/tests/operations/convert_coordinate_format.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "convert_data_units": {
+      "correctness": [
+        "tests/tests/operations/convert_data_units.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "convert_distance": {
+      "correctness": [
+        "tests/tests/operations/convert_distance.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "convert_mass": {
+      "correctness": [
+        "tests/tests/operations/convert_mass.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "convert_speed": {
+      "correctness": [
+        "tests/tests/operations/convert_speed.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "convert_to_nato_alphabet": {
+      "correctness": [
+        "tests/tests/operations/convert_to_nato_alphabet.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "count_occurrences": {
+      "correctness": [
+        "tests/tests/operations/count_occurrences.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "cover_image": {
+      "correctness": [
+        "tests/tests/operations/cover_image.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "crop_image": {
+      "correctness": [
+        "tests/tests/operations/crop_image.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "des_decrypt": {
+      "correctness": [
+        "tests/tests/operations/des_decrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "des_encrypt": {
+      "correctness": [
+        "tests/tests/operations/des_encrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "dns_over_https": {
+      "correctness": [
+        "tests/tests/operations/dns_over_https.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "datetime_delta": {
+      "correctness": [
+        "tests/tests/operations/date_time_delta.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "dechunk_http_response": {
+      "correctness": [
+        "tests/tests/operations/dechunk_http_response.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "decode_netbios_name": {
+      "correctness": [
+        "tests/tests/operations/decode_netbios_name.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "decode_text": {
+      "correctness": [
+        "tests/tests/operations/decode_text.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "defang_ip_addresses": {
+      "correctness": [
+        "tests/tests/operations/defang_ip_addresses.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "defang_url": {
+      "correctness": [
+        "tests/tests/operations/defang_url.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "derive_evp_key": {
+      "correctness": [
+        "tests/tests/operations/derive_evp_key.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "derive_hkdf_key": {
+      "correctness": [
+        "tests/tests/operations/derive_hkdf_key.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "derive_pbkdf2_key": {
+      "correctness": [
+        "tests/tests/operations/derive_pbkdf2_key.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "detect_file_type": {
+      "correctness": [
+        "tests/tests/operations/detect_file_type.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "diff": {
+      "correctness": [
+        "tests/tests/operations/diff.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "disassemble_arm": {
+      "correctness": [
+        "tests/tests/operations/disassemble_arm.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "disassemble_x86": {
+      "correctness": [
+        "tests/tests/operations/disassemble_x86.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "dither_image": {
+      "correctness": [
+        "tests/tests/operations/dither_image.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "divide": {
+      "correctness": [
+        "tests/tests/operations/divide.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "drop_bytes": {
+      "correctness": [
+        "tests/tests/operations/drop_bytes.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "drop_nth_bytes": {
+      "correctness": [
+        "tests/tests/operations/drop_nth_bytes.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "ecdsa_sign": {
+      "correctness": [
+        "tests/tests/operations/ecdsa_sign.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "ecdsa_signature_conversion": {
+      "correctness": [
+        "tests/tests/operations/ecdsa_signature_conversion.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "ecdsa_verify": {
+      "correctness": [
+        "tests/tests/operations/ecdsa_verify.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "elf_info": {
+      "correctness": [
+        "tests/tests/operations/elf_info.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "encode_netbios_name": {
+      "correctness": [
+        "tests/tests/operations/encode_netbios_name.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "encode_text": {
+      "correctness": [
+        "tests/tests/operations/encode_text.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "enigma": {
+      "correctness": [
+        "tests/tests/operations/enigma.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "entropy": {
+      "correctness": [
+        "tests/tests/operations/entropy.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "escape_unicode_characters": {
+      "correctness": [
+        "tests/tests/operations/escape_unicode_characters.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "escape_string": {
+      "correctness": [
+        "tests/tests/operations/escape_string.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "expand_alphabet_range": {
+      "correctness": [
+        "tests/tests/operations/expand_alphabet_range.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "extract_audio_metadata": {
+      "correctness": [
+        "tests/tests/operations/extract_audio_metadata.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "extract_exif": {
+      "correctness": [
+        "tests/tests/operations/extract_exif.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "extract_files": {
+      "correctness": [
+        "tests/tests/operations/extract_files.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "extract_id3": {
+      "correctness": [
+        "tests/tests/operations/extract_id3.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "extract_ip_addresses": {
+      "correctness": [
+        "tests/tests/operations/extract_ip_addresses.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "extract_lsb": {
+      "correctness": [
+        "tests/tests/operations/extract_lsb.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "extract_mac_addresses": {
+      "correctness": [
+        "tests/tests/operations/extract_mac_addresses.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "extract_rgba": {
+      "correctness": [
+        "tests/tests/operations/extract_rgba.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "extract_urls": {
+      "correctness": [
+        "tests/tests/operations/extract_urls.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "extract_dates": {
+      "correctness": [
+        "tests/tests/operations/extract_dates.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "extract_domains": {
+      "correctness": [
+        "tests/tests/operations/extract_domains.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "extract_email_addresses": {
+      "correctness": [
+        "tests/tests/operations/extract_email_addresses.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "extract_file_paths": {
+      "correctness": [
+        "tests/tests/operations/extract_file_paths.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "extract_hashes": {
+      "correctness": [
+        "tests/tests/operations/extract_hashes.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "fang_url": {
+      "correctness": [
+        "tests/tests/operations/fang_url.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "fernet_decrypt": {
+      "correctness": [
+        "tests/tests/operations/fernet_decrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "fernet_encrypt": {
+      "correctness": [
+        "tests/tests/operations/fernet_encrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "file_tree": {
+      "correctness": [
+        "tests/tests/operations/file_tree.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "filter": {
+      "correctness": [
+        "tests/tests/operations/filter.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "find_replace": {
+      "correctness": [
+        "tests/tests/operations/find_replace.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "flask_session_decode": {
+      "correctness": [
+        "tests/tests/operations/flask_session_decode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "flask_session_sign": {
+      "correctness": [
+        "tests/tests/operations/flask_session_sign.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "flask_session_verify": {
+      "correctness": [
+        "tests/tests/operations/flask_session_verify.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "fletcher_16_checksum": {
+      "correctness": [
+        "tests/tests/operations/fletcher16_checksum.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "fletcher_32_checksum": {
+      "correctness": [
+        "tests/tests/operations/fletcher32_checksum.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "fletcher_64_checksum": {
+      "correctness": [
+        "tests/tests/operations/fletcher64_checksum.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "fletcher_8_checksum": {
+      "correctness": [
+        "tests/tests/operations/fletcher8_checksum.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "flip_image": {
+      "correctness": [
+        "tests/tests/operations/flip_image.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "fork": {
+      "correctness": [
+        "tests/tests/operations/fork.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "format_mac_addresses": {
+      "correctness": [
+        "tests/tests/operations/format_mac_addresses.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "frequency_distribution": {
+      "correctness": [
+        "tests/tests/operations/frequency_distribution.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_bcd": {
+      "correctness": [
+        "tests/tests/operations/from_bcd.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_base": {
+      "correctness": [
+        "tests/tests/operations/from_base.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_base32": {
+      "correctness": [
+        "tests/tests/operations/from_base32.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_base45": {
+      "correctness": [
+        "tests/tests/operations/from_base45.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_base58": {
+      "correctness": [
+        "tests/tests/operations/from_base58.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_base62": {
+      "correctness": [
+        "tests/tests/operations/from_base62.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_base64": {
+      "correctness": [
+        "tests/tests/operations/from_base64.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_base85": {
+      "correctness": [
+        "tests/tests/operations/from_base85.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_base92": {
+      "correctness": [
+        "tests/tests/operations/from_base92.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_bech32": {
+      "correctness": [
+        "tests/tests/operations/from_bech32.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_binary": {
+      "correctness": [
+        "tests/tests/operations/from_binary.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_braille": {
+      "correctness": [
+        "tests/tests/operations/from_braille.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_case_insensitive_regex": {
+      "correctness": [
+        "tests/tests/operations/from_case_insensitive_regex.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_charcode": {
+      "correctness": [
+        "tests/tests/operations/from_charcode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_decimal": {
+      "correctness": [
+        "tests/tests/operations/from_decimal.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_float": {
+      "correctness": [
+        "tests/tests/operations/from_float.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_html_entity": {
+      "correctness": [
+        "tests/tests/operations/from_html_entity.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_hex": {
+      "correctness": [
+        "tests/tests/operations/from_hex.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_hex_content": {
+      "correctness": [
+        "tests/tests/operations/from_hex_content.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_hexdump": {
+      "correctness": [
+        "tests/tests/operations/from_hexdump.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_messagepack": {
+      "correctness": [
+        "tests/tests/operations/from_message_pack.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_modhex": {
+      "correctness": [
+        "tests/tests/operations/from_modhex.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_morse_code": {
+      "correctness": [
+        "tests/tests/operations/from_morse_code.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_octal": {
+      "correctness": [
+        "tests/tests/operations/from_octal.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_punycode": {
+      "correctness": [
+        "tests/tests/operations/from_punycode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_quoted_printable": {
+      "correctness": [
+        "tests/tests/operations/from_quoted_printable.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "from_unix_timestamp": {
+      "correctness": [
+        "tests/tests/operations/from_unix_timestamp.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "fuzzy_match": {
+      "correctness": [
+        "tests/tests/operations/fuzzy_match.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "gost_decrypt": {
+      "correctness": [
+        "tests/tests/operations/gost_decrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "gost_encrypt": {
+      "correctness": [
+        "tests/tests/operations/gost_encrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "gost_hash": {
+      "correctness": [
+        "tests/tests/operations/gost_hash.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "gost_key_unwrap": {
+      "correctness": [
+        "tests/tests/operations/gost_key_unwrap.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "gost_key_wrap": {
+      "correctness": [
+        "tests/tests/operations/gost_key_wrap.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "gost_sign": {
+      "correctness": [
+        "tests/tests/operations/gost_sign.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "gost_verify": {
+      "correctness": [
+        "tests/tests/operations/gost_verify.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "generate_de_bruijn_sequence": {
+      "correctness": [
+        "tests/tests/operations/generate_de_bruijn_sequence.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "generate_ecdsa_key_pair": {
+      "correctness": [
+        "tests/tests/operations/generate_ecdsa_key_pair.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "generate_hotp": {
+      "correctness": [
+        "tests/tests/operations/generate_hotp.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "generate_image": {
+      "correctness": [
+        "tests/tests/operations/generate_image.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "generate_lorem_ipsum": {
+      "correctness": [
+        "tests/tests/operations/generate_lorem_ipsum.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "generate_pgp_key_pair": {
+      "correctness": [
+        "tests/tests/operations/generate_pgp_key_pair.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "generate_qr_code": {
+      "correctness": [
+        "tests/tests/operations/generate_qr_code.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "generate_rsa_key_pair": {
+      "correctness": [
+        "tests/tests/operations/generate_rsa_key_pair.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "generate_totp": {
+      "correctness": [
+        "tests/tests/operations/generate_totp.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "generate_uuid": {
+      "correctness": [
+        "tests/tests/operations/generate_uuid.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "generate_all_checksums": {
+      "correctness": [
+        "tests/tests/operations/generate_all_checksums.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "generate_all_hashes": {
+      "correctness": [
+        "tests/tests/operations/generate_all_hashes.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "generic_code_beautify": {
+      "correctness": [
+        "tests/tests/operations/generic_code_beautify.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "get_all_casings": {
+      "correctness": [
+        "tests/tests/operations/get_all_casings.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "get_time": {
+      "correctness": [
+        "tests/tests/operations/get_time.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "group_ip_addresses": {
+      "correctness": [
+        "tests/tests/operations/group_ip_addresses.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "gunzip": {
+      "correctness": [
+        "tests/tests/operations/gunzip.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "gzip": {
+      "correctness": [
+        "tests/tests/operations/gzip.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "has_160": {
+      "correctness": [
+        "tests/tests/operations/has160.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "hassh_client_fingerprint": {
+      "correctness": [
+        "tests/tests/operations/hassh_client_fingerprint.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "hassh_server_fingerprint": {
+      "correctness": [
+        "tests/tests/operations/hassh_server_fingerprint.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "hmac": {
+      "correctness": [
+        "tests/tests/operations/hmac.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "html_to_text": {
+      "correctness": [
+        "tests/tests/operations/html_to_text.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "http_request": {
+      "correctness": [
+        "tests/tests/operations/http_request.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "hamming_distance": {
+      "correctness": [
+        "tests/tests/operations/hamming_distance.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "haversine_distance": {
+      "correctness": [
+        "tests/tests/operations/haversine_distance.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "head": {
+      "correctness": [
+        "tests/tests/operations/head.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "heatmap_chart": {
+      "correctness": [
+        "tests/tests/operations/heatmap_chart.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "hex_density_chart": {
+      "correctness": [
+        "tests/tests/operations/hex_density_chart.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "hex_to_object_identifier": {
+      "correctness": [
+        "tests/tests/operations/hex_to_object_identifier.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "hex_to_pem": {
+      "correctness": [
+        "tests/tests/operations/hex_to_pem.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "ipv6_transition_addresses": {
+      "correctness": [
+        "tests/tests/operations/ipv6_transition_addresses.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "image_brightness_contrast": {
+      "correctness": [
+        "tests/tests/operations/image_brightness_contrast.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "image_filter": {
+      "correctness": [
+        "tests/tests/operations/image_filter.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "image_hue_saturation_lightness": {
+      "correctness": [
+        "tests/tests/operations/image_hue_saturation_lightness.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "image_opacity": {
+      "correctness": [
+        "tests/tests/operations/image_opacity.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "index_of_coincidence": {
+      "correctness": [
+        "tests/tests/operations/index_of_coincidence.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "invert_image": {
+      "correctness": [
+        "tests/tests/operations/invert_image.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "ja3_fingerprint": {
+      "correctness": [
+        "tests/tests/operations/ja3_fingerprint.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "ja3s_fingerprint": {
+      "correctness": [
+        "tests/tests/operations/ja3s_fingerprint.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "ja4_fingerprint": {
+      "correctness": [
+        "tests/tests/operations/ja4_fingerprint.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "ja4server_fingerprint": {
+      "correctness": [
+        "tests/tests/operations/ja4_server_fingerprint.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "jpath_expression": {
+      "correctness": [
+        "tests/tests/operations/j_path_expression.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "json_beautify": {
+      "correctness": [
+        "tests/tests/operations/json_beautify.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "json_minify": {
+      "correctness": [
+        "tests/tests/operations/json_minify.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "json_to_csv": {
+      "correctness": [
+        "tests/tests/operations/json_to_csv.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "json_to_yaml": {
+      "correctness": [
+        "tests/tests/operations/json_to_yaml.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "jwk_to_pem": {
+      "correctness": [
+        "tests/tests/operations/jwk_to_pem.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "jwt_decode": {
+      "correctness": [
+        "tests/tests/operations/jwt_decode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "jwt_sign": {
+      "correctness": [
+        "tests/tests/operations/jwt_sign.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "jwt_verify": {
+      "correctness": [
+        "tests/tests/operations/jwt_verify.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "javascript_beautify": {
+      "correctness": [
+        "tests/tests/operations/java_script_beautify.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "javascript_minify": {
+      "correctness": [
+        "tests/tests/operations/java_script_minify.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "javascript_parser": {
+      "correctness": [
+        "tests/tests/operations/java_script_parser.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "jq": {
+      "correctness": [
+        "tests/tests/operations/jq.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "jsonata_query": {
+      "correctness": [
+        "tests/tests/operations/jsonata.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "jump": {
+      "correctness": [
+        "tests/tests/operations/jump.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "keccak": {
+      "correctness": [
+        "tests/tests/operations/keccak.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "lm_hash": {
+      "correctness": [
+        "tests/tests/operations/lm_hash.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "ls47_decrypt": {
+      "correctness": [
+        "tests/tests/operations/ls47_decrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "ls47_encrypt": {
+      "correctness": [
+        "tests/tests/operations/ls47_encrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "lz4_compress": {
+      "correctness": [
+        "tests/tests/operations/lz4_compress.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "lz4_decompress": {
+      "correctness": [
+        "tests/tests/operations/lz4_decompress.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "lzma_compress": {
+      "correctness": [
+        "tests/tests/operations/lzma_compress.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "lzma_decompress": {
+      "correctness": [
+        "tests/tests/operations/lzma_decompress.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "lznt1_decompress": {
+      "correctness": [
+        "tests/tests/operations/lznt1_decompress.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "lzstring_compress": {
+      "correctness": [
+        "tests/tests/operations/lz_string_compress.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "lzstring_decompress": {
+      "correctness": [
+        "tests/tests/operations/lz_string_decompress.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "label": {
+      "correctness": [
+        "tests/tests/operations/label.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "levenshtein_distance": {
+      "correctness": [
+        "tests/tests/operations/levenshtein_distance.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "lorenz": {
+      "correctness": [
+        "tests/tests/operations/lorenz.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "luhn_checksum": {
+      "correctness": [
+        "tests/tests/operations/luhn_checksum.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "md2": {
+      "correctness": [
+        "tests/tests/operations/md2.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "md4": {
+      "correctness": [
+        "tests/tests/operations/md4.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "md5": {
+      "correctness": [
+        "tests/tests/operations/md5.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "md6": {
+      "correctness": [
+        "tests/tests/operations/md6.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "mime_decoding": {
+      "correctness": [
+        "tests/tests/operations/mime_decoding.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "magic": {
+      "correctness": [
+        "tests/tests/operations/magic.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [
+        "representative release benchmark"
+      ],
+      "benchmark_skip_reason": null
+    },
+    "mean": {
+      "correctness": [
+        "tests/tests/operations/mean.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "median": {
+      "correctness": [
+        "tests/tests/operations/median.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "merge": {
+      "correctness": [
+        "tests/tests/operations/merge.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "microsoft_script_decoder": {
+      "correctness": [
+        "tests/tests/operations/microsoft_script_decoder.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "multiple_bombe": {
+      "correctness": [
+        "tests/tests/operations/multiple_bombe.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "multiply": {
+      "correctness": [
+        "tests/tests/operations/multiply.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "murmurhash3": {
+      "correctness": [
+        "tests/tests/operations/murmur_hash3.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "not": {
+      "correctness": [
+        "tests/tests/operations/not.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "nt_hash": {
+      "correctness": [
+        "tests/tests/operations/nt_hash.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "normalise_image": {
+      "correctness": [
+        "tests/tests/operations/normalise_image.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "normalise_unicode": {
+      "correctness": [
+        "tests/tests/operations/normalise_unicode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "numberwang": {
+      "correctness": [
+        "tests/tests/operations/numberwang.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "or": {
+      "correctness": [
+        "tests/tests/operations/or.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "object_identifier_to_hex": {
+      "correctness": [
+        "tests/tests/operations/object_identifier_to_hex.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "offset_checker": {
+      "correctness": [
+        "tests/tests/operations/offset_checker.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "optical_character_recognition": {
+      "correctness": [
+        "tests/tests/operations/optical_character_recognition.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "p_list_viewer": {
+      "correctness": [
+        "tests/tests/operations/plist_viewer.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "pem_to_hex": {
+      "correctness": [
+        "tests/tests/operations/pem_to_hex.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "pem_to_jwk": {
+      "correctness": [
+        "tests/tests/operations/pem_to_jwk.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "pgp_decrypt": {
+      "correctness": [
+        "tests/tests/operations/pgp_decrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "pgp_decrypt_and_verify": {
+      "correctness": [
+        "tests/tests/operations/pgp_decrypt_and_verify.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "pgp_encrypt": {
+      "correctness": [
+        "tests/tests/operations/pgp_encrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "pgp_encrypt_and_sign": {
+      "correctness": [
+        "tests/tests/operations/pgp_encrypt_and_sign.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "pgp_verify": {
+      "correctness": [
+        "tests/tests/operations/pgp_verify.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "php_deserialize": {
+      "correctness": [
+        "tests/tests/operations/php_deserialize.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "php_serialize": {
+      "correctness": [
+        "tests/tests/operations/php_serialize.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "pad_lines": {
+      "correctness": [
+        "tests/tests/operations/pad_lines.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "parity_bit": {
+      "correctness": [
+        "tests/tests/operations/parity_bit.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "parse_asn_1_hex_string": {
+      "correctness": [
+        "tests/tests/operations/parse_asn1_hex_string.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "parse_csr": {
+      "correctness": [
+        "tests/tests/operations/parse_csr.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "parse_datetime": {
+      "correctness": [
+        "tests/tests/operations/parse_date_time.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "parse_ethernet_frame": {
+      "correctness": [
+        "tests/tests/operations/parse_ethernet_frame.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "parse_ip_range": {
+      "correctness": [
+        "tests/tests/operations/parse_ip_range.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "parse_ipv4_header": {
+      "correctness": [
+        "tests/tests/operations/parse_ipv4_header.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "parse_ipv6_address": {
+      "correctness": [
+        "tests/tests/operations/parse_ipv6_address.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "parse_objectid_timestamp": {
+      "correctness": [
+        "tests/tests/operations/parse_object_id_timestamp.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "parse_qr_code": {
+      "correctness": [
+        "tests/tests/operations/parse_qr_code.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "parse_ssh_host_key": {
+      "correctness": [
+        "tests/tests/operations/parse_ssh_host_key.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "parse_tcp": {
+      "correctness": [
+        "tests/tests/operations/parse_tcp.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "parse_tls_record": {
+      "correctness": [
+        "tests/tests/operations/parse_tls_record.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "parse_tlv": {
+      "correctness": [
+        "tests/tests/operations/parse_tlv.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "parse_udp": {
+      "correctness": [
+        "tests/tests/operations/parse_udp.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "parse_unix_file_permissions": {
+      "correctness": [
+        "tests/tests/operations/parse_unix_file_permissions.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "parse_uri": {
+      "correctness": [
+        "tests/tests/operations/parse_uri.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "parse_user_agent": {
+      "correctness": [
+        "tests/tests/operations/parse_user_agent.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "parse_x_509_crl": {
+      "correctness": [
+        "tests/tests/operations/parse_x509_crl.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "parse_x_509_certificate": {
+      "correctness": [
+        "tests/tests/operations/parse_x509_certificate.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "parse_colour_code": {
+      "correctness": [
+        "tests/tests/operations/parse_colour_code.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "play_media": {
+      "correctness": [
+        "tests/tests/operations/play_media.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "power_set": {
+      "correctness": [
+        "tests/tests/operations/power_set.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "protobuf_decode": {
+      "correctness": [
+        "tests/tests/operations/protobuf_decode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "protobuf_encode": {
+      "correctness": [
+        "tests/tests/operations/protobuf_encode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "pseudo_random_integer_generator": {
+      "correctness": [
+        "tests/tests/operations/pseudo_random_integer_generator.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "pseudo_random_number_generator": {
+      "correctness": [
+        "tests/tests/operations/pseudo_random_number_generator.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "public_key_from_certificate": {
+      "correctness": [
+        "tests/tests/operations/pub_key_from_cert.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "public_key_from_private_key": {
+      "correctness": [
+        "tests/tests/operations/pub_key_from_priv_key.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rake": {
+      "correctness": [
+        "tests/tests/operations/rake.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rc2_decrypt": {
+      "correctness": [
+        "tests/tests/operations/rc2_decrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rc2_encrypt": {
+      "correctness": [
+        "tests/tests/operations/rc2_encrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rc4": {
+      "correctness": [
+        "tests/tests/operations/rc4.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rc4_drop": {
+      "correctness": [
+        "tests/tests/operations/rc4_drop.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rc6_decrypt": {
+      "correctness": [
+        "tests/tests/operations/rc6_decrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rc6_encrypt": {
+      "correctness": [
+        "tests/tests/operations/rc6_encrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "ripemd": {
+      "correctness": [
+        "tests/tests/operations/ripemd.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rot13": {
+      "correctness": [
+        "tests/tests/operations/rot13.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rot13_brute_force": {
+      "correctness": [
+        "tests/tests/operations/rot13_brute_force.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rot47": {
+      "correctness": [
+        "tests/tests/operations/rot47.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rot47_brute_force": {
+      "correctness": [
+        "tests/tests/operations/rot47_brute_force.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rot8000": {
+      "correctness": [
+        "tests/tests/operations/rot8000.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rsa_decrypt": {
+      "correctness": [
+        "tests/tests/operations/rsa_decrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rsa_encrypt": {
+      "correctness": [
+        "tests/tests/operations/rsa_encrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rsa_sign": {
+      "correctness": [
+        "tests/tests/operations/rsa_sign.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rsa_verify": {
+      "correctness": [
+        "tests/tests/operations/rsa_verify.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rabbit": {
+      "correctness": [
+        "tests/tests/operations/rabbit.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rail_fence_cipher_decode": {
+      "correctness": [
+        "tests/tests/operations/rail_fence_cipher_decode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rail_fence_cipher_encode": {
+      "correctness": [
+        "tests/tests/operations/rail_fence_cipher_encode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "randomize_colour_palette": {
+      "correctness": [
+        "tests/tests/operations/randomize_colour_palette.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "raw_deflate": {
+      "correctness": [
+        "tests/tests/operations/raw_deflate.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "raw_inflate": {
+      "correctness": [
+        "tests/tests/operations/raw_inflate.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "register": {
+      "correctness": [
+        "tests/tests/operations/register.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "regular_expression": {
+      "correctness": [
+        "tests/tests/operations/regular_expression.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "remove_diacritics": {
+      "correctness": [
+        "tests/tests/operations/remove_diacritics.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "remove_exif": {
+      "correctness": [
+        "tests/tests/operations/remove_exif.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "remove_line_numbers": {
+      "correctness": [
+        "tests/tests/operations/remove_line_numbers.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "remove_null_bytes": {
+      "correctness": [
+        "tests/tests/operations/remove_null_bytes.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "remove_whitespace": {
+      "correctness": [
+        "tests/tests/operations/remove_whitespace.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "render_image": {
+      "correctness": [
+        "tests/tests/operations/render_image.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "render_markdown": {
+      "correctness": [
+        "tests/tests/operations/render_markdown.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "resize_image": {
+      "correctness": [
+        "tests/tests/operations/resize_image.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "return": {
+      "correctness": [
+        "tests/tests/operations/return_op.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "reverse": {
+      "correctness": [
+        "tests/tests/operations/reverse.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rison_decode": {
+      "correctness": [
+        "tests/tests/operations/rison_decode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rison_encode": {
+      "correctness": [
+        "tests/tests/operations/rison_encode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rotate_image": {
+      "correctness": [
+        "tests/tests/operations/rotate_image.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rotate_left": {
+      "correctness": [
+        "tests/tests/operations/rotate_left.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "rotate_right": {
+      "correctness": [
+        "tests/tests/operations/rotate_right.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "sha0": {
+      "correctness": [
+        "tests/tests/operations/sha0.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "sha1": {
+      "correctness": [
+        "tests/tests/operations/sha1.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "sha2": {
+      "correctness": [
+        "tests/tests/operations/sha2.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [
+        "representative release benchmark"
+      ],
+      "benchmark_skip_reason": null
+    },
+    "sha3": {
+      "correctness": [
+        "tests/tests/operations/sha3.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "shake": {
+      "correctness": [
+        "tests/tests/operations/shake.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "sigaba": {
+      "correctness": [
+        "tests/tests/operations/sigaba.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "sm2_decrypt": {
+      "correctness": [
+        "tests/tests/operations/sm2_decrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "sm2_encrypt": {
+      "correctness": [
+        "tests/tests/operations/sm2_encrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "sm3": {
+      "correctness": [
+        "tests/tests/operations/sm3.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "sm4_decrypt": {
+      "correctness": [
+        "tests/tests/operations/sm4_decrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "sm4_encrypt": {
+      "correctness": [
+        "tests/tests/operations/sm4_encrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "snefru": {
+      "correctness": [
+        "tests/tests/operations/snefru.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "sql_beautify": {
+      "correctness": [
+        "tests/tests/operations/sql_beautify.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "sql_minify": {
+      "correctness": [
+        "tests/tests/operations/sql_minify.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "ssdeep": {
+      "correctness": [
+        "tests/tests/operations/ssdeep.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "sub": {
+      "correctness": [
+        "tests/tests/operations/sub.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "salsa20": {
+      "correctness": [
+        "tests/tests/operations/salsa20.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "scan_for_embedded_files": {
+      "correctness": [
+        "tests/tests/operations/scan_for_embedded_files.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "scatter_chart": {
+      "correctness": [
+        "tests/tests/operations/scatter_chart.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "scrypt": {
+      "correctness": [
+        "tests/tests/operations/scrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "series_chart": {
+      "correctness": [
+        "tests/tests/operations/series_chart.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "set_difference": {
+      "correctness": [
+        "tests/tests/operations/set_difference.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "set_intersection": {
+      "correctness": [
+        "tests/tests/operations/set_intersection.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "set_union": {
+      "correctness": [
+        "tests/tests/operations/set_union.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "sharpen_image": {
+      "correctness": [
+        "tests/tests/operations/sharpen_image.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "show_base64_offsets": {
+      "correctness": [
+        "tests/tests/operations/show_base64_offsets.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "show_on_map": {
+      "correctness": [
+        "tests/tests/operations/show_on_map.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "shuffle": {
+      "correctness": [
+        "tests/tests/operations/shuffle.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "sleep": {
+      "correctness": [
+        "tests/tests/operations/sleep.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "sort": {
+      "correctness": [
+        "tests/tests/operations/sort.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "split": {
+      "correctness": [
+        "tests/tests/operations/split.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "split_colour_channels": {
+      "correctness": [
+        "tests/tests/operations/split_colour_channels.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "standard_deviation": {
+      "correctness": [
+        "tests/tests/operations/standard_deviation.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "streebog": {
+      "correctness": [
+        "tests/tests/operations/streebog.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "strings": {
+      "correctness": [
+        "tests/tests/operations/strings.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "strip_html_tags": {
+      "correctness": [
+        "tests/tests/operations/strip_html_tags.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "strip_http_headers": {
+      "correctness": [
+        "tests/tests/operations/strip_http_headers.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "strip_ipv4_header": {
+      "correctness": [
+        "tests/tests/operations/strip_ipv4_header.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "strip_tcp_header": {
+      "correctness": [
+        "tests/tests/operations/strip_tcp_header.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "strip_udp_header": {
+      "correctness": [
+        "tests/tests/operations/strip_udp_header.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "subsection": {
+      "correctness": [
+        "tests/tests/operations/subsection.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "substitute": {
+      "correctness": [
+        "tests/tests/operations/substitute.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "subtract": {
+      "correctness": [
+        "tests/tests/operations/subtract.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "sum": {
+      "correctness": [
+        "tests/tests/operations/sum.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "swap_case": {
+      "correctness": [
+        "tests/tests/operations/swap_case.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "swap_endianness": {
+      "correctness": [
+        "tests/tests/operations/swap_endianness.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "symmetric_difference": {
+      "correctness": [
+        "tests/tests/operations/symmetric_difference.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "syntax_highlighter": {
+      "correctness": [
+        "tests/tests/operations/syntax_highlighter.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "tcp_ip_checksum": {
+      "correctness": [
+        "tests/tests/operations/tcpip_checksum.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "tail": {
+      "correctness": [
+        "tests/tests/operations/tail.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "take_bytes": {
+      "correctness": [
+        "tests/tests/operations/take_bytes.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "take_nth_bytes": {
+      "correctness": [
+        "tests/tests/operations/take_nth_bytes.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "tar": {
+      "correctness": [
+        "tests/tests/operations/tar.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "template": {
+      "correctness": [
+        "tests/tests/operations/template.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "text_encoding_brute_force": {
+      "correctness": [
+        "tests/tests/operations/text_encoding_brute_force.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "text_integer_conversion": {
+      "correctness": [
+        "tests/tests/operations/text_integer_converter.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_bcd": {
+      "correctness": [
+        "tests/tests/operations/to_bcd.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_base": {
+      "correctness": [
+        "tests/tests/operations/to_base.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_base32": {
+      "correctness": [
+        "tests/tests/operations/to_base32.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_base45": {
+      "correctness": [
+        "tests/tests/operations/to_base45.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_base58": {
+      "correctness": [
+        "tests/tests/operations/to_base58.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_base62": {
+      "correctness": [
+        "tests/tests/operations/to_base62.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_base64": {
+      "correctness": [
+        "tests/tests/operations/to_base64.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [
+        "representative release benchmark"
+      ],
+      "benchmark_skip_reason": null
+    },
+    "to_base85": {
+      "correctness": [
+        "tests/tests/operations/to_base85.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_base92": {
+      "correctness": [
+        "tests/tests/operations/to_base92.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_bech32": {
+      "correctness": [
+        "tests/tests/operations/to_bech32.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_binary": {
+      "correctness": [
+        "tests/tests/operations/to_binary.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_braille": {
+      "correctness": [
+        "tests/tests/operations/to_braille.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_camel_case": {
+      "correctness": [
+        "tests/tests/operations/to_camel_case.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_case_insensitive_regex": {
+      "correctness": [
+        "tests/tests/operations/to_case_insensitive_regex.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_charcode": {
+      "correctness": [
+        "tests/tests/operations/to_charcode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_decimal": {
+      "correctness": [
+        "tests/tests/operations/to_decimal.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_float": {
+      "correctness": [
+        "tests/tests/operations/to_float.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_html_entity": {
+      "correctness": [
+        "tests/tests/operations/to_html_entity.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_hex": {
+      "correctness": [
+        "tests/tests/operations/to_hex.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [
+        "representative release benchmark"
+      ],
+      "benchmark_skip_reason": null
+    },
+    "to_hex_content": {
+      "correctness": [
+        "tests/tests/operations/to_hex_content.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_hexdump": {
+      "correctness": [
+        "tests/tests/operations/to_hexdump.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_kebab_case": {
+      "correctness": [
+        "tests/tests/operations/to_kebab_case.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_lower_case": {
+      "correctness": [
+        "tests/tests/operations/to_lower_case.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_messagepack": {
+      "correctness": [
+        "tests/tests/operations/to_message_pack.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_modhex": {
+      "correctness": [
+        "tests/tests/operations/to_modhex.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_morse_code": {
+      "correctness": [
+        "tests/tests/operations/to_morse_code.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_octal": {
+      "correctness": [
+        "tests/tests/operations/to_octal.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_punycode": {
+      "correctness": [
+        "tests/tests/operations/to_punycode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_quoted_printable": {
+      "correctness": [
+        "tests/tests/operations/to_quoted_printable.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_snake_case": {
+      "correctness": [
+        "tests/tests/operations/to_snake_case.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_table": {
+      "correctness": [
+        "tests/tests/operations/to_table.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_unix_timestamp": {
+      "correctness": [
+        "tests/tests/operations/to_unix_timestamp.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "to_upper_case": {
+      "correctness": [
+        "tests/tests/operations/to_upper_case.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "translate_datetime_format": {
+      "correctness": [
+        "tests/tests/operations/translate_date_time_format.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "triple_des_decrypt": {
+      "correctness": [
+        "tests/tests/operations/triple_des_decrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "triple_des_encrypt": {
+      "correctness": [
+        "tests/tests/operations/triple_des_encrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "typex": {
+      "correctness": [
+        "tests/tests/operations/typex.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "unix_timestamp_to_windows_filetime": {
+      "correctness": [
+        "tests/tests/operations/unix_timestamp_to_windows_filetime.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "url_decode": {
+      "correctness": [
+        "tests/tests/operations/url_decode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "url_encode": {
+      "correctness": [
+        "tests/tests/operations/url_encode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "unescape_unicode_characters": {
+      "correctness": [
+        "tests/tests/operations/unescape_unicode_characters.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "unescape_string": {
+      "correctness": [
+        "tests/tests/operations/unescape_string.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "unicode_text_format": {
+      "correctness": [
+        "tests/tests/operations/unicode_text_format.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "unique": {
+      "correctness": [
+        "tests/tests/operations/unique.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "untar": {
+      "correctness": [
+        "tests/tests/operations/untar.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "unzip": {
+      "correctness": [
+        "tests/tests/operations/unzip.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "varint_decode": {
+      "correctness": [
+        "tests/tests/operations/varint_decode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "varint_encode": {
+      "correctness": [
+        "tests/tests/operations/varint_encode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "view_bit_plane": {
+      "correctness": [
+        "tests/tests/operations/view_bit_plane.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "vigenre_decode": {
+      "correctness": [
+        "tests/tests/operations/vigenere_decode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "vigenre_encode": {
+      "correctness": [
+        "tests/tests/operations/vigenere_encode.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "whirlpool": {
+      "correctness": [
+        "tests/tests/operations/whirlpool.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "windows_filetime_to_unix_timestamp": {
+      "correctness": [
+        "tests/tests/operations/windows_filetime_to_unix_timestamp.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "wrap": {
+      "correctness": [
+        "tests/tests/operations/wrap.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "xkcd_random_number": {
+      "correctness": [
+        "tests/tests/operations/xkcd_random_number.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "xml_beautify": {
+      "correctness": [
+        "tests/tests/operations/xml_beautify.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "xml_minify": {
+      "correctness": [
+        "tests/tests/operations/xml_minify.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "xor": {
+      "correctness": [
+        "tests/tests/operations/xor.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "xor_brute_force": {
+      "correctness": [
+        "tests/tests/operations/xor_brute_force.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "xor_checksum": {
+      "correctness": [
+        "tests/tests/operations/xor_checksum.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "xpath_expression": {
+      "correctness": [
+        "tests/tests/operations/x_path_expression.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "xsalsa20": {
+      "correctness": [
+        "tests/tests/operations/x_salsa20.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "xxtea_decrypt": {
+      "correctness": [
+        "tests/tests/operations/xxtea_decrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "xxtea_encrypt": {
+      "correctness": [
+        "tests/tests/operations/xxtea_encrypt.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "yaml_to_json": {
+      "correctness": [
+        "tests/tests/operations/yaml_to_json.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "yara_rules": {
+      "correctness": [
+        "tests/tests/operations/yara_rules.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "zip": {
+      "correctness": [
+        "tests/tests/operations/zip.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "zlib_deflate": {
+      "correctness": [
+        "tests/tests/operations/zlib_deflate.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    },
+    "zlib_inflate": {
+      "correctness": [
+        "tests/tests/operations/zlib_inflate.rs"
+      ],
+      "known_answer": [],
+      "differential": [],
+      "property": [],
+      "fuzz": [],
+      "benchmark": [],
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+    }
+  }
+}

@@ -34,11 +34,23 @@ impl Operation for JA3SFingerprint {
                 name: "Input format",
                 description: "Input format",
                 default_value: "Hex",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Output format",
                 description: "Output format",
                 default_value: "Hash digest",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

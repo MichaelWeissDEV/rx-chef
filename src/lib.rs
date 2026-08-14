@@ -21,7 +21,7 @@ pub mod runtime;
 pub mod scan;
 
 pub use operation::{
-    ArgKind, ArgSchema, ArgValue, DataType, InputRequirement, Operation, OperationData,
-    OperationError, OperationStatus, ParityStatus, SideEffect,
+    ArgKind, ArgSchema, ArgValue, Availability, DataType, ImplementationStatus, InputRequirement,
+    NumericBound, Operation, OperationData, OperationError, ParityStatus, SideEffect,
 };
 pub use pipeline::{Pipeline, PipelineError};

@@ -41,6 +41,12 @@ impl Operation for URLEncode {
             name: "Encode all special chars",
             description: "Encode all characters including those usually allowed in URLs",
             default_value: "false",
+            kind: crate::operation::ArgKind::Boolean,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

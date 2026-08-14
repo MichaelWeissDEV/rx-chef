@@ -41,11 +41,23 @@ impl Operation for CipherSaber2Encrypt {
                 name: "Key",
                 description: "Encryption key",
                 default_value: "",
+                kind: crate::operation::ArgKind::Bytes,
+                required: true,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: true,
             },
             ArgSchema {
                 name: "Rounds",
                 description: "Number of key schedule rounds (default 20)",
                 default_value: "20",
+                kind: crate::operation::ArgKind::UnsignedInteger,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

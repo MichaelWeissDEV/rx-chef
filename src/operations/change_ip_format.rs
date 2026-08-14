@@ -34,11 +34,23 @@ impl Operation for ChangeIPFormat {
                 name: "Input format",
                 description: "Input format: Dotted Decimal, Decimal, Octal, Hex",
                 default_value: "Dotted Decimal",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Output format",
                 description: "Output format: Dotted Decimal, Decimal, Octal, Hex",
                 default_value: "Dotted Decimal",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

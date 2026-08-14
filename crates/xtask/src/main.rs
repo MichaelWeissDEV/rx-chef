@@ -51,6 +51,7 @@ fn main() -> Result<(), String> {
         Some("generate-registry") => registry::generate(false),
         Some("check-registry") => registry::generate(true),
         Some("audit-operations") => operation_audit::run(),
+        Some("generate-verification-manifest") => operation_audit::generate_manifest(),
         _ => Ok(()),
     }
 }
@@ -61,6 +62,14 @@ fn cmd_docs(args: &[String]) -> Result<(), String> {
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     let workspace_root = PathBuf::from(manifest_dir).join("../../");
     let docs_dir = workspace_root.join("docs/operations");
+    let verification_document: serde_json::Value = serde_json::from_str(
+        &fs::read_to_string(workspace_root.join("verification/operations.json"))
+            .map_err(|error| format!("cannot read verification manifest: {error}"))?,
+    )
+    .map_err(|error| format!("invalid verification manifest: {error}"))?;
+    let verification = verification_document["operations"]
+        .as_object()
+        .ok_or_else(|| "verification manifest operations must be an object".to_string())?;
 
     fs::create_dir_all(&docs_dir).map_err(|e| e.to_string())?;
 
@@ -84,9 +93,9 @@ fn cmd_docs(args: &[String]) -> Result<(), String> {
         out.push_str("\n\n## Status\n\n");
         out.push_str(&format!(
             "| Field | Value |\n|---|---|\n| Implementation | `{:?}` |\n| Parity | `{:?}` |\n| Availability | {} |\n| Features | {} |\n| Side effects | `{:?}` |\n| Deterministic | {} |\n\n",
-            info.status,
+            info.implementation_status,
             info.parity,
-            if info.is_broken { "unavailable in this build" } else { "available" },
+            format!("{:?}", info.availability),
             if info.feature_requirements.is_empty() { "none".into() } else { info.feature_requirements.join(", ") },
             info.side_effects,
             info.deterministic,
@@ -103,30 +112,61 @@ fn cmd_docs(args: &[String]) -> Result<(), String> {
             );
             for (index, arg) in info.args.iter().enumerate() {
                 out.push_str(&format!(
-                    "| {} | {} | `{:?}` | no | {} | — | {} | {} |\n",
+                    "| {} | {} | `{:?}` | {} | {} | {} | {} | {} |\n",
                     index + 1,
                     markdown_escape(arg.name),
-                    rxchef::runtime::inferred_arg_kind(arg),
+                    arg.kind,
+                    if arg.required { "yes" } else { "no" },
                     inline_code(&markdown_escape(arg.default_value)),
-                    if rxchef::runtime::is_sensitive_arg(arg) {
-                        "yes"
+                    if arg.choices.is_empty() {
+                        "—".to_string()
                     } else {
-                        "no"
+                        markdown_escape(&arg.choices.join(", "))
                     },
+                    if arg.sensitive { "yes" } else { "no" },
                     markdown_escape(arg.description)
                 ));
             }
             out.push('\n');
         }
         let escaped_name = info.name.replace('"', "\\\"");
+        let evidence = verification
+            .get(&info.id)
+            .ok_or_else(|| format!("missing verification evidence for {}", info.name))?;
+        let testing = format!(
+            "Correctness:\n{}\n\nKnown-answer:\n{}\n\nDifferential:\n{}\n\nProperty:\n{}\n\nFuzz:\n{}",
+            evidence_lines(evidence, "correctness"),
+            evidence_lines(evidence, "known_answer"),
+            evidence_lines(evidence, "differential"),
+            evidence_lines(evidence, "property"),
+            evidence_lines(evidence, "fuzz"),
+        );
+        let performance = if evidence["benchmark"]
+            .as_array()
+            .is_some_and(|items| !items.is_empty())
+        {
+            format!("Benchmark evidence:\n{}\n\nSee [benchmark results](../performance/results.md) for measured environment and statistics.", evidence_lines(evidence, "benchmark"))
+        } else {
+            format!(
+                "Not measured. Reason: {}",
+                evidence["benchmark_skip_reason"]
+                    .as_str()
+                    .unwrap_or("no reviewed benchmark rationale recorded")
+            )
+        };
         out.push_str(&format!(
-            "## How it works\n\nThe shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.\n\n## Implementation\n\nSource module: `src/operations/{}.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.\n\n## Examples\n\n```console\nprintf 'input' | rxchef run \"{}\"\n```\n\nFor file or binary input use `rxchef run \"{}\" --input-file INPUT --output-file OUTPUT`.\n\n## Pipeline usage\n\n```console\nprintf 'input' | rxchef pipe \"{}\" to_base64\n```\n\n## Error conditions\n\nInvalid input representations, invalid argument values, unavailable feature backends, and operation-specific processing failures return an error and a non-zero CLI status. Exact limitations are listed below when known.\n\n## CyberChef compatibility\n\nParity status: `{:?}`. `Unknown` means compatibility has not been independently verified and must not be read as an exact-match claim.\n\n## Security considerations\n\nSide effects: `{:?}`. Treat parser inputs as untrusted and use execution limits for large data. Sensitive arguments are redacted by metadata-aware History output.\n\n## Testing\n\nThe mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).\n\n## Performance\n\nSee [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.\n\n## Limitations\n\n{}\n\n## References\n\n- [Operation quality matrix](../reference/operation-matrix.md)\n- [CLI run documentation](../cli/run.md)\n",
+            "## How it works\n\n{}\n\n## Implementation\n\nThe implementation is in `src/operations/{}.rs` and declares `{}` input and `{}` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.\n\n## Examples\n\n```console\nprintf 'input' | rxchef run \"{}\"\n```\n\nFor file or binary input use `rxchef run \"{}\" --input-file INPUT --output-file OUTPUT`.\n\n## Pipeline usage\n\n```console\nprintf 'input' | rxchef pipe \"{}\" to_base64\n```\n\n## Error conditions\n\nInvalid input representations, invalid argument values, unavailable feature backends, and operation-specific processing failures return an error and a non-zero CLI status. Exact limitations are listed below when known.\n\n## CyberChef compatibility\n\nParity status: `{:?}`. `Unknown` means compatibility has not been independently verified and must not be read as an exact-match claim.\n\n## Security considerations\n\nSide effects: `{:?}`. Treat parser inputs as untrusted and use execution limits for large data. Sensitive arguments are redacted by metadata-aware History output.\n\n## Testing\n\n{}\n\n## Performance\n\n{}\n\n## Limitations\n\n{}\n\n## References\n\n- [Operation quality matrix](../reference/operation-matrix.md)\n- [CLI run documentation](../cli/run.md)\n",
+            info.description.trim(),
             rxchef::runtime::operation_source(info.name)?,
+            data_type_name(info.input_type),
+            data_type_name(info.output_type),
             escaped_name,
             escaped_name,
             escaped_name,
             info.parity,
             info.side_effects,
+            testing,
+            performance,
             if info.known_limitations.is_empty() { "No verified limitation metadata is currently recorded; this is not a claim of perfect upstream parity.".to_string() } else { info.known_limitations.join("\n- ") },
         ));
 
@@ -175,4 +215,22 @@ fn cmd_docs(args: &[String]) -> Result<(), String> {
         println!("generated operations docs in docs/operations/");
     }
     Ok(())
+}
+
+fn evidence_lines(value: &serde_json::Value, field: &str) -> String {
+    let entries = value[field]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter_map(|entry| entry.as_str())
+        .collect::<Vec<_>>();
+    if entries.is_empty() {
+        "- none recorded".to_string()
+    } else {
+        entries
+            .into_iter()
+            .map(|entry| format!("- {entry}"))
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
 }

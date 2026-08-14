@@ -55,11 +55,23 @@ impl Operation for ExtractAudioMetadata {
                 name: "Filename (optional)",
                 description: "Filename",
                 default_value: "",
+                kind: crate::operation::ArgKind::Path,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Max embedded text bytes",
                 description: "Max text bytes",
                 default_value: "524288",
+                kind: crate::operation::ArgKind::UnsignedInteger,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

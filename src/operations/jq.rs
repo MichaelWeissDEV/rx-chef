@@ -34,11 +34,23 @@ impl Operation for Jq {
                 name: "Query",
                 description: "The jq query to run",
                 default_value: ".",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Raw",
                 description: "If true, the output will be raw strings instead of JSON",
                 default_value: "false",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

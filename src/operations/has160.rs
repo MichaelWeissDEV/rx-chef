@@ -31,6 +31,12 @@ impl Operation for HAS160Op {
             name: "Rounds",
             description: "Number of rounds",
             default_value: "80",
+            kind: crate::operation::ArgKind::UnsignedInteger,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

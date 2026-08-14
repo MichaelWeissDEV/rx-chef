@@ -46,6 +46,12 @@ impl Operation for JWTVerify {
             name: "Public/Secret Key",
             description: "The secret key used to verify the HMAC signature",
             default_value: "secret",
+            kind: crate::operation::ArgKind::Bytes,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: true,
         }];
         SCHEMA
     }

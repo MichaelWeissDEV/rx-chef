@@ -35,11 +35,23 @@ impl Operation for BLAKE3 {
                 name: "Size (bytes)",
                 description: "Output size in bytes",
                 default_value: "32",
+                kind: crate::operation::ArgKind::UnsignedInteger,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Key",
                 description: "Optional key for keyed hashing",
                 default_value: "",
+                kind: crate::operation::ArgKind::Bytes,
+                required: true,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: true,
             },
         ];
         SCHEMA

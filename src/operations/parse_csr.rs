@@ -33,6 +33,12 @@ impl Operation for ParseCSR {
             name: "Input format",
             description: "Input format",
             default_value: "PEM",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

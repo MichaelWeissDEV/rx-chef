@@ -32,11 +32,23 @@ impl Operation for GenerateECDSAKeyPairOp {
                 name: "Elliptic Curve",
                 description: "Curve to use",
                 default_value: "P-256",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Output Format",
                 description: "Format of the output keys",
                 default_value: "PEM",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA
@@ -44,6 +56,10 @@ impl Operation for GenerateECDSAKeyPairOp {
 
     fn input_type(&self) -> DataType {
         DataType::String
+    }
+
+    fn input_requirement(&self) -> crate::operation::InputRequirement {
+        crate::operation::InputRequirement::Ignored
     }
 
     fn output_type(&self) -> DataType {

@@ -23,7 +23,7 @@ impl Operation for OpticalCharacterRecognition {
     }
 
     fn description(&self) -> &'static str {
-        "Optical character recognition or optical character reader (OCR) is the mechanical or electronic 
+        "Optical character recognition or optical character reader (OCR) is the mechanical or electronic
         conversion of images of typed, handwritten or printed text into machine-encoded text.\n\n
         Supported image formats: png, jpg, bmp, pbm.\n\n
         Requires Tesseract library. Enable with: --features tesseract"
@@ -35,11 +35,23 @@ impl Operation for OpticalCharacterRecognition {
                 name: "Show confidence",
                 description: "Whether to show the confidence level of the OCR",
                 default_value: "true",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "OCR Engine Mode",
                 description: "The OCR engine mode to use",
                 default_value: "LSTM only",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

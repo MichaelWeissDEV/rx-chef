@@ -10,7 +10,7 @@ Enumerate all possible XOR solutions. Optionally enter a string that you expect 
 |---|---|
 | Implementation | `Partial` |
 | Parity | `Unknown` |
-| Availability | available |
+| Availability | Available |
 | Features | none |
 | Side effects | `[]` |
 | Deterministic | true |
@@ -27,8 +27,8 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Key length | `Integer` | no | `1` | — | no | Length of the XOR key in bytes (1..=2 recommended) |
-| 2 | Sample length | `Integer` | no | `100` | — | no | Number of bytes of input to process |
+| 1 | Key length | `UnsignedInteger` | no | `1` | — | no | Length of the XOR key in bytes (1..=2 recommended) |
+| 2 | Sample length | `UnsignedInteger` | no | `100` | — | no | Number of bytes of input to process |
 | 3 | Sample offset | `Integer` | no | `0` | — | no | Byte offset to start sampling from |
 | 4 | Scheme | `String` | no | `Standard` | — | no | Standard, Input differential, or Output differential |
 | 5 | Null preserving | `Boolean` | no | `false` | — | no | Do not XOR null bytes or bytes equal to the key |
@@ -38,11 +38,11 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 ## How it works
 
-The shared execution engine validates the ordered arguments, passes the declared input representation to this operation, and validates the declared output contract. See the overview for the operation-specific format or algorithm.
+Enumerate all possible XOR solutions. Optionally enter a string that you expect to find in the plaintext to filter results (crib).
 
 ## Implementation
 
-Source module: `src/operations/xor_brute_force.rs`. Execution uses `rxchef::execute`; CLI, recipes, and the stdio server do not carry separate operation logic.
+The implementation is in `src/operations/xor_brute_force.rs` and declares `Bytes` input and `String` output. Its operation module owns the conversion and error rules; every public frontend invokes it through `rxchef::execution`.
 
 ## Examples
 
@@ -72,11 +72,24 @@ Side effects: `[]`. Treat parser inputs as untrusted and use execution limits fo
 
 ## Testing
 
-The mapped Rust test and available KAT/differential/property/fuzz evidence are recorded in the [operation quality matrix](../reference/operation-matrix.md).
+Correctness:
+- tests/tests/operations/xor_brute_force.rs
+
+Known-answer:
+- none recorded
+
+Differential:
+- none recorded
+
+Property:
+- none recorded
+
+Fuzz:
+- none recorded
 
 ## Performance
 
-See [benchmark results](../performance/results.md). Operations outside the representative catalog are explicitly marked with a skip rationale in the machine-readable quality inventory. Measurements are hardware-dependent reference values, not guarantees.
+Not measured. Reason: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
 ## Limitations
 

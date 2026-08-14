@@ -71,11 +71,23 @@ impl Operation for ParseIPv4Header {
                 name: "Input format",
                 description: "Hex or Raw",
                 default_value: "Hex",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Output format",
                 description: "Table, Data (hex), or Data (raw)",
                 default_value: "Table",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

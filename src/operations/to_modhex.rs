@@ -36,11 +36,23 @@ impl Operation for ToModhex {
                 name: "Delimiter",
                 description: "Delimiter between modhex pairs (None, Space, Comma, Semi-colon, Colon, Line feed, CRLF)",
                 default_value: "None",
+                kind: crate::operation::ArgKind::Enum,
+                required: false,
+                choices: &["None", "Space", "Comma", "Semi-colon", "Colon", "Line feed", "CRLF"],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Bytes per line",
                 description: "Number of bytes per output line (0 = no limit)",
                 default_value: "0",
+                kind: crate::operation::ArgKind::UnsignedInteger,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

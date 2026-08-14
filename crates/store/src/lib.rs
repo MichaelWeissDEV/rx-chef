@@ -16,7 +16,9 @@ mod recipe;
 mod vars;
 
 pub use history::{append_history, clear_history, get_history, list_history, new_history_id};
-pub use models::{bytes_preview, HistoryEntry, HistoryStep, Recipe, RecipeStep, Variable};
+pub use models::{
+    bytes_preview, HistoryEntry, HistoryStep, Recipe, RecipeStep, Variable, RECIPE_VERSION,
+};
 pub use paths::{
     default_scope, discover_project_dir, global_dir, init_project, project_dir, Scope,
 };
@@ -39,6 +41,8 @@ pub enum StoreError {
     Yaml(#[from] serde_yaml::Error),
     #[error("not found: {0}")]
     NotFound(String),
+    #[error("unsupported recipe version {found}; supported version is {supported}")]
+    UnsupportedRecipeVersion { found: u32, supported: u32 },
     #[error("{0}")]
     Other(String),
 }

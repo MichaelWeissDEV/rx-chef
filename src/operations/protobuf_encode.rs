@@ -33,6 +33,12 @@ impl Operation for ProtobufEncode {
             name: "Schema (.proto text)",
             description: "Optional .proto schema; the first top-level message is used",
             default_value: "",
+            kind: crate::operation::ArgKind::String,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }

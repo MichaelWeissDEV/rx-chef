@@ -55,11 +55,23 @@ impl Operation for Unique {
                 name: "Delimiter",
                 description: "Line feed, CRLF, Space, Comma, etc.",
                 default_value: "Line feed",
+                kind: crate::operation::ArgKind::String,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
             ArgSchema {
                 name: "Display count",
                 description: "Prefix each unique item with its occurrence count",
                 default_value: "false",
+                kind: crate::operation::ArgKind::Boolean,
+                required: false,
+                choices: &[],
+                minimum: None,
+                maximum: None,
+                sensitive: false,
             },
         ];
         SCHEMA

@@ -33,6 +33,12 @@ impl Operation for BitShiftLeft {
             name: "Amount",
             description: "Amount to shift left",
             default_value: "1",
+            kind: crate::operation::ArgKind::Integer,
+            required: false,
+            choices: &[],
+            minimum: None,
+            maximum: None,
+            sensitive: false,
         }];
         SCHEMA
     }
