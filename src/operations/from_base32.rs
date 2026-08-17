@@ -64,6 +64,11 @@ impl Operation for FromBase32 {
         DataType::Bytes
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let input_str = String::from_utf8(input)
             .map_err(|_| OperationError::InvalidInput("Invalid UTF-8".to_string()))?;
@@ -111,7 +116,12 @@ impl Operation for FromBase32 {
     }
 }
 
-fn expand_base32_alphabet(alphabet: &str) -> String {
+/// Expand a Base32 alphabet written in range notation (`A-Z2-7`) into its 32
+/// literal symbols, dropping the padding character.
+///
+/// Shared with `To Base32` so both directions accept exactly the same
+/// alphabet spellings.
+pub(crate) fn expand_base32_alphabet(alphabet: &str) -> String {
     if alphabet == "A-Z2-7" {
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".to_string()
     } else if alphabet == "0-9A-V" {

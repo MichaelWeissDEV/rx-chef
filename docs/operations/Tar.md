@@ -13,8 +13,8 @@ Packs the input into a tarball.<br><br>No support for multiple files at this tim
 | Availability | Available |
 | Input requirement | `Required` |
 | Features | none |
-| Side effects | `[]` |
-| Deterministic | true |
+| Side effects | `[Time]` |
+| Deterministic | false |
 
 ## Input
 
@@ -58,7 +58,7 @@ Parity status: `Unknown`. `Unknown` records an unassessed compatibility claim; i
 
 ## Security considerations
 
-Declared side effects: `[]`. Treat parser inputs as untrusted and apply execution limits to large data. Arguments marked sensitive in the schema are redacted from metadata-aware History displays.
+Declared side effects: `[Time]`. Treat parser inputs as untrusted and apply execution limits to large data. Arguments marked sensitive in the schema are redacted from metadata-aware History displays.
 
 ## Testing evidence
 

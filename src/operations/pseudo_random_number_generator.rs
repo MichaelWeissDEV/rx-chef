@@ -69,6 +69,17 @@ impl Operation for PseudoRandomNumberGenerator {
         DataType::String
     }
 
+    /// Generates fresh random bytes on every run.
+    fn side_effects(&self) -> &'static [crate::operation::SideEffect] {
+        use crate::operation::SideEffect;
+        &[SideEffect::Random]
+    }
+
+    /// Equal inputs do not produce equal outputs.
+    fn deterministic(&self) -> bool {
+        false
+    }
+
     fn run(&self, _input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let num_bytes = args.first().and_then(|a| a.as_usize()).unwrap_or(32);
         let output_as = args.get(1).and_then(|a| a.as_str()).unwrap_or("Hex");

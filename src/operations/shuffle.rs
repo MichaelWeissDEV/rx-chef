@@ -72,6 +72,17 @@ impl Operation for Shuffle {
         DataType::String
     }
 
+    /// The permutation is randomised.
+    fn side_effects(&self) -> &'static [crate::operation::SideEffect] {
+        use crate::operation::SideEffect;
+        &[SideEffect::Random]
+    }
+
+    /// Equal inputs do not produce equal outputs.
+    fn deterministic(&self) -> bool {
+        false
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let text = String::from_utf8_lossy(&input).into_owned();
         if text.is_empty() {

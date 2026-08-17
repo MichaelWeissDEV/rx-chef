@@ -9,7 +9,7 @@ Streebog is a cryptographic hash function defined in the Russian national standa
 | Field | Value |
 |---|---|
 | Implementation | `Partial` |
-| Parity | `Unknown` |
+| Parity | `Exact` |
 | Availability | Available |
 | Input requirement | `Required` |
 | Features | none |
@@ -28,7 +28,7 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Digest length | `UnsignedInteger` | no | `512` | — | no | The length of the digest to produce. |
+| 1 | Digest length | `UnsignedInteger` | no | `256` | — | no | The length of the digest to produce. |
 
 ## Implementation
 
@@ -54,7 +54,7 @@ Schema violations are rejected before the operation runs. Malformed input, unsup
 
 ## CyberChef compatibility
 
-Parity status: `Unknown`. `Unknown` records an unassessed compatibility claim; it does not imply equality or incompatibility.
+Parity status: `Exact`. `Unknown` records an unassessed compatibility claim; it does not imply equality or incompatibility.
 
 ## Security considerations
 
@@ -64,6 +64,9 @@ Declared side effects: `[]`. Treat parser inputs as untrusted and apply executio
 
 Correctness tests:
 - tests/tests/operations/streebog.rs
+
+Differential tests:
+- tests/tests/differential.rs
 
 ## Performance classification
 

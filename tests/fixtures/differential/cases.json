@@ -1,0 +1,2281 @@
+{
+  "schema_version": 1,
+  "description": "CyberChef differential cases. Every case cites a `reference_source` a reviewer can check: either a value observed by running upstream CyberChef via tools/cyberchef-reference/capture.mjs, or a published specification both implementations follow. Cases are data, never generated from rx-chef.",
+  "encodings": {
+    "input": "One of `text` (UTF-8), `hex` (raw bytes), or `empty`.",
+    "reference": "One of `text` or `hex`.",
+    "reference_source": "Where the expected value comes from. Required. Use a specification reference (e.g. 'RFC 4648 section 10') or 'observed: CyberChef <version>' for a value read off upstream."
+  },
+  "verdicts": {
+    "exact": "rx-chef output must equal the reference byte for byte after normalization.",
+    "documented_difference": "rx-chef deliberately differs; `divergence` explains why and `reference` records what CyberChef produces.",
+    "not_comparable": "The operation is excluded from differential comparison; `divergence` gives the reason.",
+    "unverified": "No reference value has been recorded yet."
+  },
+  "cases": [
+    {
+      "operation": "To Base64",
+      "input": "",
+      "input_encoding": "empty",
+      "args": [
+        "A-Za-z0-9+/="
+      ],
+      "reference": "",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "RFC 4648 section 10 test vectors"
+    },
+    {
+      "operation": "From Base64",
+      "input": "Zm9vYmFy",
+      "input_encoding": "text",
+      "args": [
+        "A-Za-z0-9+/=",
+        "true",
+        "false"
+      ],
+      "reference": "666f6f626172",
+      "reference_encoding": "hex",
+      "expect": "exact",
+      "reference_source": "RFC 4648 section 10 test vectors"
+    },
+    {
+      "operation": "MD5",
+      "input": "abc",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "900150983cd24fb0d6963f7d28e17f72",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "RFC 1321 appendix A.5"
+    },
+    {
+      "operation": "SHA2",
+      "input": "abc",
+      "input_encoding": "text",
+      "args": [
+        "256",
+        "64",
+        "160"
+      ],
+      "reference": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "FIPS 180-4 SHA-256 example"
+    },
+    {
+      "operation": "URL Encode",
+      "input": "Hello World!",
+      "input_encoding": "text",
+      "args": [
+        "false"
+      ],
+      "reference": "Hello%20World!",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "RFC 3986: space is percent-encoded, sub-delims and '!' are not"
+    },
+    {
+      "operation": "URL Encode",
+      "input": "-._~",
+      "input_encoding": "text",
+      "args": [
+        "true"
+      ],
+      "reference": "%2D%2E%5F%7E",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0 (URLEncode.encodeAllChars)"
+    },
+    {
+      "operation": "To Upper case",
+      "input": "hello world",
+      "input_encoding": "text",
+      "args": [
+        "All"
+      ],
+      "reference": "HELLO WORLD",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "ASCII case mapping"
+    },
+    {
+      "operation": "VarInt Decode",
+      "input": "80",
+      "input_encoding": "hex",
+      "args": [],
+      "reference": "0",
+      "reference_encoding": "text",
+      "expect": "documented_difference",
+      "divergence": "A truncated varint (final byte with the continuation bit set) is incomplete. Both implementations return the bits accumulated so far rather than reporting an error; recorded here so the behaviour is not changed by accident.",
+      "reference_source": "Protocol Buffers base-128 varint encoding"
+    },
+    {
+      "operation": "Pseudo-Random Number Generator",
+      "input": "",
+      "input_encoding": "empty",
+      "args": [
+        "32",
+        "Hex"
+      ],
+      "reference": "",
+      "reference_encoding": "text",
+      "expect": "not_comparable",
+      "divergence": "Non-deterministic: the operation produces fresh random bytes on every run.",
+      "reference_source": "n/a - excluded from comparison"
+    },
+    {
+      "operation": "HTTP request",
+      "input": "",
+      "input_encoding": "empty",
+      "args": [],
+      "reference": "",
+      "reference_encoding": "text",
+      "expect": "not_comparable",
+      "divergence": "Performs network I/O, so the result depends on an external service.",
+      "reference_source": "n/a - excluded from comparison"
+    },
+    {
+      "operation": "To UNIX Timestamp",
+      "input": "1970-01-01 00:00:01",
+      "input_encoding": "text",
+      "args": [
+        "Seconds (s)",
+        "true",
+        "false"
+      ],
+      "reference": "1",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "POSIX epoch definition"
+    },
+    {
+      "operation": "A1Z26 Cipher Encode",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Space"
+      ],
+      "reference": "6 15 15 2 1 18",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Add line numbers",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "0"
+      ],
+      "reference": "1 foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Adler-32 Checksum",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "08ab027a",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Affine Cipher Decode",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "1",
+        "0"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Affine Cipher Encode",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "1",
+        "0"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Alternating Caps",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "fOoBaR",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Atbash Cipher",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "ullyzi",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Bacon Cipher Decode",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Standard (I=J and U=V)",
+        "0/1",
+        "false"
+      ],
+      "reference": "",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Bacon Cipher Encode",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Standard (I=J and U=V)",
+        "0/1",
+        "false",
+        "false"
+      ],
+      "reference": "00101 01101 01101 00001 00000 10000",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Bit shift left",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "1"
+      ],
+      "reference": "ccdedec4c2e4",
+      "reference_encoding": "hex",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Bit shift right",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "1",
+        "Logical shift"
+      ],
+      "reference": "377109",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Bzip2 Compress",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "9",
+        "30"
+      ],
+      "reference": "425a683931415926535952c03dc100000101803100900020002183419a09881c5dc914e142414b00f704",
+      "reference_encoding": "hex",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "CSS Beautify",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "    "
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "CSS Minify",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "false"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "CSS selector",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "",
+        "\\n"
+      ],
+      "reference": "",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Caesar Box Cipher",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "1"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Caret/M-decode",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Cetacean Cipher Encode",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "EEEEEEEEEeeEEeeEEEEEEEEEEeeEeeeeEEEEEEEEEeeEeeeeEEEEEEEEEeeEEEeEEEEEEEEEEeeEEEEeEEEEEEEEEeeeEEeE",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Citrix CTX1 Encode",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "MDGGKMAJMDGGKBAEMAGFLCBH",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Comment",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        ""
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Convert Leet Speak",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "To Leet Speak"
+      ],
+      "reference": "f00b4r",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Convert to NATO alphabet",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "Foxtrot Oscar Oscar Bravo Alfa Romeo ",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Count occurrences",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        ""
+      ],
+      "reference": "0",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Decode NetBIOS Name",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "65"
+      ],
+      "reference": "5ee101",
+      "reference_encoding": "hex",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Decode text",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "UTF-8 (65001)"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Defang IP Addresses",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Defang URL",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "true",
+        "true",
+        "true",
+        "Valid domains and full URLs"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Divide",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Line feed"
+      ],
+      "reference": "NaN",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Drop bytes",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "0",
+        "5",
+        "false"
+      ],
+      "reference": "r",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Drop nth bytes",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "4",
+        "0",
+        "false"
+      ],
+      "reference": "oobr",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Encode NetBIOS Name",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "65"
+      ],
+      "reference": "GGGPGPGCGBHCCACACACACACACACACACA",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Encode text",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "UTF-8 (65001)"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Escape Unicode Characters",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "\\u",
+        "false",
+        "4",
+        "true"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Escape string",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Special chars",
+        "Single",
+        "false",
+        "true",
+        "false"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Expand alphabet range",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        ""
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Extract IP addresses",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "true",
+        "false",
+        "false",
+        "false",
+        "false",
+        "false"
+      ],
+      "reference": "",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Extract MAC addresses",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "false",
+        "false",
+        "false"
+      ],
+      "reference": "",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Extract URLs",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "false",
+        "false",
+        "false"
+      ],
+      "reference": "",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Extract dates",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "false"
+      ],
+      "reference": "",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Extract domains",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "false",
+        "false",
+        "false",
+        "false"
+      ],
+      "reference": "",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Extract email addresses",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "false",
+        "false",
+        "false"
+      ],
+      "reference": "",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Extract file paths",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "true",
+        "true",
+        "false",
+        "false",
+        "false"
+      ],
+      "reference": "",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Extract hashes",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "40",
+        "false",
+        "false"
+      ],
+      "reference": "",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Fang URL",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "true",
+        "true",
+        "true"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "File Tree",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "/",
+        "Line feed"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Filter",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Line feed",
+        "",
+        "false"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Fletcher-16 Checksum",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "ad7b",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Fletcher-32 Checksum",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "85734437",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Fletcher-64 Checksum",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "c4df512d626fe1c7",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Fletcher-8 Checksum",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "83",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "From Base",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "36"
+      ],
+      "reference": "948437811",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "From Base32",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "A-Z2-7",
+        "true"
+      ],
+      "reference": "",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "From Base45",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "0-9A-Z $%*+-./:",
+        "true"
+      ],
+      "reference": "",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "From Base58",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz",
+        "true"
+      ],
+      "reference": "05ee33c843",
+      "reference_encoding": "hex",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "From Base62",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "0-9A-Za-z"
+      ],
+      "reference": "08eb97aaf1",
+      "reference_encoding": "hex",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "From Base64",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "A-Za-z0-9+/=",
+        "true",
+        "false"
+      ],
+      "reference": "7e8a1b6a",
+      "reference_encoding": "hex",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "From Base85",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "!-u",
+        "true",
+        "z"
+      ],
+      "reference": "\u0653_\u001e",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "From Base92",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "c0eed0ec",
+      "reference_encoding": "hex",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "From Braille",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "From Case Insensitive Regex",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "From HTML Entity",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "From Hex Content",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "From Hexdump",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "From Morse Code",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Space",
+        "Line feed"
+      ],
+      "reference": "",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "From Punycode",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "false"
+      ],
+      "reference": "\u456e\u456e\u456d\u4572",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "From Quoted Printable",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Generate De Bruijn Sequence",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "2",
+        "3"
+      ],
+      "reference": "00010111",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Generic Code Beautify",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Get All Casings",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "foobar\nFoobar\nfOobar\nFOobar\nfoObar\nFoObar\nfOObar\nFOObar\nfooBar\nFooBar\nfOoBar\nFOoBar\nfoOBar\nFoOBar\nfOOBar\nFOOBar\nfoobAr\nFoobAr\nfOobAr\nFOobAr\nfoObAr\nFoObAr\nfOObAr\nFOObAr\nfooBAr\nFooBAr\nfOoBAr\nFOoBAr\nfoOBAr\nFoOBAr\nfOOBAr\nFOOBAr\nfoobaR\nFoobaR\nfOobaR\nFOobaR\nfoObaR\nFoObaR\nfOObaR\nFOObaR\nfooBaR\nFooBaR\nfOoBaR\nFOoBaR\nfoOBaR\nFoOBaR\nfOOBaR\nFOOBaR\nfoobAR\nFoobAR\nfOobAR\nFOobAR\nfoObAR\nFoObAR\nfOObAR\nFOObAR\nfooBAR\nFooBAR\nfOoBAR\nFOoBAR\nfoOBAR\nFoOBAR\nfOOBAR\nFOOBAR",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Group IP addresses",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Line feed",
+        "24",
+        "false"
+      ],
+      "reference": "",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "HAS-160",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "80"
+      ],
+      "reference": "827f4e4d7966d0259afe92b719890c7b70538f7d",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "HTML To Text",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Head",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Line feed",
+        "10"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Keccak",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "512"
+      ],
+      "reference": "927618d193a11374f6072cdcb8c410e2f18e0c433eb35a9f11ce3035b0066811db6c03a723a2855c4a8ee2b1c842e28d4982a1ff312dd4ddaf807b96d4d2ee1b",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "LS47 Decrypt",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "",
+        "10"
+      ],
+      "reference": "",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "LZString Compress",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Standard"
+      ],
+      "reference": "\u1987\ub108\uc10c\u09c8",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "MD2",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "3af4bb69e03489fc4ceebe50151d3e1a",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "MD4",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "547aefd231dcbaac398625718336f143",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "MD5",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "3858f62230ac3c915f300c664312c63f",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "MD6",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "256",
+        "64",
+        ""
+      ],
+      "reference": "12ab99a30e4406b6a0e902ef62931458d203e53c49d83e2c1a1163ca870ea22f",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "MIME Decoding",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Mean",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Line feed"
+      ],
+      "reference": "NaN",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Median",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Line feed"
+      ],
+      "reference": "NaN",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Microsoft Script Decoder",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Multiply",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Line feed"
+      ],
+      "reference": "NaN",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "MurmurHash3",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "0",
+        "false"
+      ],
+      "reference": "2764362941",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "NOT",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "9990909d9e8d",
+      "reference_encoding": "hex",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "NT Hash",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "BAAC3929FABC9E6DCD32421BA94A84D4",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Normalise Unicode",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "NFD"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "PEM to JWK",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Pad lines",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Start",
+        "5",
+        " "
+      ],
+      "reference": "     foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Public Key from Certificate",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Public Key from Private Key",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "RAKE",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "\\s",
+        "\\.\\s|\\n",
+        "i,me,my,myself,we,our,ours,ourselves,you,you're,you've,you'll,you'd,your,yours,yourself,yourselves,he,him,his,himself,she,she's,her,hers,herself,it,it's,its,itsef,they,them,their,theirs,themselves,what,which,who,whom,this,that,that'll,these,those,am,is,are,was,were,be,been,being,have,has,had,having,do,does',did,doing,a,an,the,and,but,if,or,because,as,until,while,of,at,by,for,with,about,against,between,into,through,during,before,after,above,below,to,from,up,down,in,out,on,off,over,under,again,further,then,once,here,there,when,where,why,how,all,any,both,each,few,more,most,other,some,such,no,nor,not,only,own,same,so,than,too,very,s,t,can,will,just,don,don't,should,should've,now,d,ll,m,o,re,ve,y,ain,aren,aren't,couldn,couldn't,didn,didn't,doesn,doesn't,hadn,hadn't,hasn,hasn't,haven,haven't,isn,isn't,ma,mightn,mightn't,mustn,mustn't,needn,needn't,shan,shan't,shouldn,shouldn't,wasn,wasn't,weren,weren't,won,won't,wouldn,wouldn't"
+      ],
+      "reference": "Scores: , Keywords: \n1, foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "RIPEMD",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "320"
+      ],
+      "reference": "d0335d3ebd1161430fa1f789c6c4edb85ab4ceb2118ed032ee9625318de13fc45c876aef5c29bfff",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "ROT13",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "true",
+        "true",
+        "false",
+        "13"
+      ],
+      "reference": "sbbone",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "ROT47",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "7@@32C",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "ROT47 Brute Force",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "100",
+        "0",
+        "true",
+        ""
+      ],
+      "reference": "Amount =  1: gppcbs\nAmount =  2: hqqdct\nAmount =  3: irredu\nAmount =  4: jssfev\nAmount =  5: kttgfw\nAmount =  6: luuhgx\nAmount =  7: mvvihy\nAmount =  8: nwwjiz\nAmount =  9: oxxkj{\nAmount = 10: pyylk|\nAmount = 11: qzzml}\nAmount = 12: r{{nm~\nAmount = 13: s||on!\nAmount = 14: t}}po\"\nAmount = 15: u~~qp#\nAmount = 16: v!!rq$\nAmount = 17: w\"\"sr%\nAmount = 18: x##ts&\nAmount = 19: y$$ut'\nAmount = 20: z%%vu(\nAmount = 21: {&&wv)\nAmount = 22: |''xw*\nAmount = 23: }((yx+\nAmount = 24: ~))zy,\nAmount = 25: !**{z-\nAmount = 26: \"++|{.\nAmount = 27: #,,}|/\nAmount = 28: $--~}0\nAmount = 29: %..!~1\nAmount = 30: &//\"!2\nAmount = 31: '00#\"3\nAmount = 32: (11$#4\nAmount = 33: )22%$5\nAmount = 34: *33&%6\nAmount = 35: +44'&7\nAmount = 36: ,55('8\nAmount = 37: -66)(9\nAmount = 38: .77*):\nAmount = 39: /88+*;\nAmount = 40: 099,+<\nAmount = 41: 1::-,=\nAmount = 42: 2;;.->\nAmount = 43: 3<</.?\nAmount = 44: 4==0/@\nAmount = 45: 5>>10A\nAmount = 46: 6??21B\nAmount = 47: 7@@32C\nAmount = 48: 8AA43D\nAmount = 49: 9BB54E\nAmount = 50: :CC65F\nAmount = 51: ;DD76G\nAmount = 52: <EE87H\nAmount = 53: =FF98I\nAmount = 54: >GG:9J\nAmount = 55: ?HH;:K\nAmount = 56: @II<;L\nAmount = 57: AJJ=<M\nAmount = 58: BKK>=N\nAmount = 59: CLL?>O\nAmount = 60: DMM@?P\nAmount = 61: ENNA@Q\nAmount = 62: FOOBAR\nAmount = 63: GPPCBS\nAmount = 64: HQQDCT\nAmount = 65: IRREDU\nAmount = 66: JSSFEV\nAmount = 67: KTTGFW\nAmount = 68: LUUHGX\nAmount = 69: MVVIHY\nAmount = 70: NWWJIZ\nAmount = 71: OXXKJ[\nAmount = 72: PYYLK\\\nAmount = 73: QZZML]\nAmount = 74: R[[NM^\nAmount = 75: S\\\\ON_\nAmount = 76: T]]PO`\nAmount = 77: U^^QPa\nAmount = 78: V__RQb\nAmount = 79: W``SRc\nAmount = 80: XaaTSd\nAmount = 81: YbbUTe\nAmount = 82: ZccVUf\nAmount = 83: [ddWVg\nAmount = 84: \\eeXWh\nAmount = 85: ]ffYXi\nAmount = 86: ^ggZYj\nAmount = 87: _hh[Zk\nAmount = 88: `ii\\[l\nAmount = 89: ajj]\\m\nAmount = 90: bkk^]n\nAmount = 91: cll_^o\nAmount = 92: dmm`_p\nAmount = 93: enna`q",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "ROT8000",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "\u7c6f\u7c78\u7c78\u7c6b\u7c6a\u7c7b",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Rail Fence Cipher Decode",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "2",
+        "0"
+      ],
+      "reference": "fboaor",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Rail Fence Cipher Encode",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "2",
+        "0"
+      ],
+      "reference": "foaobr",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Regular expression",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "User defined",
+        "",
+        "true",
+        "true",
+        "false",
+        "false",
+        "false",
+        "false",
+        "Highlight matches"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Remove Diacritics",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Remove line numbers",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Remove null bytes",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Remove whitespace",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "true",
+        "true",
+        "true",
+        "true",
+        "true",
+        "false"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Reverse",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Character"
+      ],
+      "reference": "raboof",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Rotate left",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "1",
+        "false"
+      ],
+      "reference": "ccdedec4c2e4",
+      "reference_encoding": "hex",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Rotate right",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "1",
+        "false"
+      ],
+      "reference": "33b7b731b039",
+      "reference_encoding": "hex",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "SHA0",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "80"
+      ],
+      "reference": "d3fb2f31117cc1481f6c5dc1905e06892a8ca38b",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "SHA1",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "80"
+      ],
+      "reference": "8843d7f92416211de9ebb963ff4ce28125932878",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "SHA3",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "512"
+      ],
+      "reference": "ff32a30c3af5012ea395827a3e99a13073c3a8d8410a708568ff7e6eb85968fccfebaea039bc21411e9d43fdb9a851b529b9960ffea8679199781b8f45ca85e2",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "SIGABA",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "SRGWANHPJZFXVIDQCEUKBYOLMT",
+        "false",
+        "A",
+        "SRGWANHPJZFXVIDQCEUKBYOLMT",
+        "false",
+        "A",
+        "SRGWANHPJZFXVIDQCEUKBYOLMT",
+        "false",
+        "A",
+        "SRGWANHPJZFXVIDQCEUKBYOLMT",
+        "false",
+        "A",
+        "SRGWANHPJZFXVIDQCEUKBYOLMT",
+        "false",
+        "A",
+        "SRGWANHPJZFXVIDQCEUKBYOLMT",
+        "false",
+        "A",
+        "SRGWANHPJZFXVIDQCEUKBYOLMT",
+        "false",
+        "A",
+        "SRGWANHPJZFXVIDQCEUKBYOLMT",
+        "false",
+        "A",
+        "SRGWANHPJZFXVIDQCEUKBYOLMT",
+        "false",
+        "A",
+        "SRGWANHPJZFXVIDQCEUKBYOLMT",
+        "false",
+        "A",
+        "6201348957",
+        "0",
+        "6201348957",
+        "0",
+        "6201348957",
+        "0",
+        "6201348957",
+        "0",
+        "6201348957",
+        "0",
+        "Encrypt"
+      ],
+      "reference": "TQYPJG",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "SM3",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Hex"
+      ],
+      "reference": "adac3a2e85990453d191fd60633e44a4bed4e5785a7a023e6ad908eba21069e6",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "SQL Beautify",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "\\t"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "SQL Minify",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "SSDEEP",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "3:Ne:Y",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Scan for Embedded Files",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "true",
+        "true",
+        "true",
+        "true",
+        "true",
+        "true"
+      ],
+      "reference": "Scanning data for 'magic bytes' which may indicate embedded files. The following results may be false positives and should not be treated as reliable. Any sufficiently long file is likely to contain these magic bytes coincidentally.\n\nNo embedded files were found.",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Sleep",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "1000"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Sort",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Line feed",
+        "false",
+        "Alphabetical (case sensitive)"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Split",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Comma",
+        "Line feed"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Standard Deviation",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Line feed"
+      ],
+      "reference": "NaN",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Streebog",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "256"
+      ],
+      "reference": "e3c9fd89226d93b489a9fe27d686806e24a514e3787bca053c698ec4616ceb78",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Strip HTML tags",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "true",
+        "true"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Strip HTTP headers",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Substitute",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        "XYZABCDEFGHIJKLMNOPQRSTUVW",
+        "false"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Subtract",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Line feed"
+      ],
+      "reference": "NaN",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Sum",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Line feed"
+      ],
+      "reference": "NaN",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Swap case",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "FOOBAR",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "TCP/IP Checksum",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "c8bb",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Tail",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Line feed",
+        "10"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Take bytes",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "0",
+        "5",
+        "false"
+      ],
+      "reference": "fooba",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Take nth bytes",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "4",
+        "0",
+        "false"
+      ],
+      "reference": "fa",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Text-Integer Conversion",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "String"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Base32",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "A-Z2-7="
+      ],
+      "reference": "MZXW6YTBOI======",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Base45",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:"
+      ],
+      "reference": "X.CT3EGEC",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Base58",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+      ],
+      "reference": "t1Zv2yaZ",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Base62",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "0-9A-Za-z"
+      ],
+      "reference": "VytN8Wjy",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Base64",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "A-Za-z0-9+/="
+      ],
+      "reference": "Zm9vYmFy",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Base85",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "!-u",
+        "false"
+      ],
+      "reference": "AoDTs@<)",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Base92",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "F#v^RBd'",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Bech32",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "bc",
+        "Bech32",
+        "Raw bytes",
+        "Generic",
+        "0"
+      ],
+      "reference": "bc1vehk7cnpwgz0ta92",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Binary",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Space",
+        "8"
+      ],
+      "reference": "01100110 01101111 01101111 01100010 01100001 01110010",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Braille",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "\u280b\u2815\u2815\u2803\u2801\u2817",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Camel case",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "false"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Case Insensitive Regex",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "[fF][oO][oO][bB][aA][rR]",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Charcode",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Space",
+        "16"
+      ],
+      "reference": "66 6f 6f 62 61 72",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Decimal",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Space",
+        "false"
+      ],
+      "reference": "102 111 111 98 97 114",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To HTML Entity",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "false",
+        "Named entities"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Hex",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Space",
+        "0"
+      ],
+      "reference": "66 6f 6f 62 61 72",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Hex Content",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Only special chars",
+        "false"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Kebab case",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "false"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Lower case",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Morse Code",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "-/.",
+        "Space",
+        "Line feed"
+      ],
+      "reference": "..-. --- --- -... .- .-.",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Octal",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Space"
+      ],
+      "reference": "146 157 157 142 141 162",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Punycode",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "false"
+      ],
+      "reference": "foobar-",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Quoted Printable",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Snake case",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "false"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "To Upper case",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "All"
+      ],
+      "reference": "FOOBAR",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "URL Decode",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "true"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "URL Encode",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "false"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Unescape Unicode Characters",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "\\u"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Unescape string",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Unique",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Line feed",
+        "false"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "VarInt Decode",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "102",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Whirlpool",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "Whirlpool",
+        "10"
+      ],
+      "reference": "9923afaec3a86f865bb231a588f453f84e8151a2deb4109aebc6de4284be5bebcff4fab82a7e51d920237340a043736e9d13bab196006dcca0fe65314d68eab9",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "Wrap",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "64"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "XKCD Random Number",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "4",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "XML Beautify",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "\\t"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "XML Minify",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "false"
+      ],
+      "reference": "foobar",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "XOR Checksum",
+      "input": "foobar",
+      "input_encoding": "text",
+      "args": [
+        "4"
+      ],
+      "reference": "071d6f62",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0, operation defaults"
+    },
+    {
+      "operation": "From Morse Code",
+      "input": ".... . .-.. .-.. ---",
+      "input_encoding": "text",
+      "args": [
+        "Space",
+        "Line feed"
+      ],
+      "reference": "HELLO",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0; ITU-R M.1677-1"
+    }
+  ]
+}

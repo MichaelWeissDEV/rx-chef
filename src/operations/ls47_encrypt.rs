@@ -159,6 +159,17 @@ impl Operation for LS47Encrypt {
         DataType::String
     }
 
+    /// Uses a random padding block.
+    fn side_effects(&self) -> &'static [crate::operation::SideEffect] {
+        use crate::operation::SideEffect;
+        &[SideEffect::Random]
+    }
+
+    /// Equal inputs do not produce equal outputs.
+    fn deterministic(&self) -> bool {
+        false
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let password = args.first().and_then(|v| v.as_str()).unwrap_or("");
         let padding_size = args.get(1).and_then(|v| v.as_usize()).unwrap_or(10);

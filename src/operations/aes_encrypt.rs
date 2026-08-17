@@ -112,6 +112,11 @@ impl Operation for AesEncrypt {
         DataType::Bytes
     }
 
+    /// Conforms to the published specification; not yet compared against CyberChef.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Compatible
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let key = Self::parse_arg_bytes(args.first())?;
         let iv = Self::parse_arg_bytes(args.get(1))?;

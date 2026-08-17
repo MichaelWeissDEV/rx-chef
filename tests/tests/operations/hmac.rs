@@ -16,8 +16,9 @@ fn run(input: &str, key: &str, hash_func: &str, encoding: &str) -> String {
     String::from_utf8(op.run(input.as_bytes().to_vec(), &args).unwrap()).unwrap()
 }
 
-// RFC 2202 test case 1: key = 0x0b * 16, data = "Hi There".
-// Key supplied with "0x" prefix so decode_key treats it unambiguously as hex.
+// RFC 2202 test case 1 for HMAC-MD5: key = 0x0b * 16, data = "Hi There".
+// The key uses the "0x" prefix so it is unambiguously hexadecimal rather than
+// literal text.
 #[test]
 fn test_hmac_md5_rfc2202_case1() {
     let key = "0x0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b";
@@ -27,13 +28,75 @@ fn test_hmac_md5_rfc2202_case1() {
     );
 }
 
+// RFC 2202 test case 1 for HMAC-SHA1 uses a *20* byte key, not the 16 byte key
+// used by the MD5 case. This previously passed a 16 byte key while claiming to
+// be the RFC vector, so the expected digest was implementation-derived rather
+// than quoted from the standard.
 #[test]
 fn test_hmac_sha1_rfc2202_case1() {
-    let key = "0x0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b";
+    let key = "0x0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b";
     assert_eq!(
         run("Hi There", key, "SHA-1", "Hex"),
-        "675b0b3a1b4ddf4e124872da6c2f632bfed957e9"
+        "b617318655057264e28bc0b6fb378c8ef146be00"
     );
+}
+
+// RFC 2202 test case 2 for HMAC-SHA1: an ASCII key exercises the text path.
+#[test]
+fn test_hmac_sha1_rfc2202_case2_ascii_key() {
+    assert_eq!(
+        run("what do ya want for nothing?", "Jefe", "SHA-1", "Hex"),
+        "effcdf6ae5eb2fa2d27416d5f184df9c259a7c79"
+    );
+}
+
+// Regression: a key supplied as raw bytes (which is how every `hex:`/`0x`
+// argument reaches an operation) was read with `as_str()`, silently yielding
+// an empty key and an authentication code keyed with nothing.
+#[test]
+fn test_hmac_byte_key_is_not_silently_empty() {
+    let op = HMAC;
+    let byte_key = ArgValue::Bytes(vec![0x0b; 20]);
+    let args = [
+        byte_key,
+        ArgValue::Str("SHA-256".to_string()),
+        ArgValue::Str("Hex".to_string()),
+    ];
+    let digest = String::from_utf8(op.run(b"Hi There".to_vec(), &args).unwrap()).unwrap();
+    assert_eq!(
+        digest, "b0344c61d8db38535ca8afceaf0bf12b881dc200c9833da726e9376c2e32cff7",
+        "RFC 4231 case 1 must hold when the key arrives as bytes"
+    );
+
+    // An empty key must produce a different code, proving the key is used.
+    let empty = [
+        ArgValue::Bytes(Vec::new()),
+        ArgValue::Str("SHA-256".to_string()),
+        ArgValue::Str("Hex".to_string()),
+    ];
+    let empty_digest = String::from_utf8(op.run(b"Hi There".to_vec(), &empty).unwrap()).unwrap();
+    assert_ne!(digest, empty_digest);
+}
+
+// All three hex spellings must select the same key bytes.
+#[test]
+fn test_hmac_key_spellings_agree() {
+    let expected = run(
+        "Hi There",
+        "0x0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "MD5",
+        "Hex",
+    );
+    for spelling in [
+        "hex:0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "bytes:0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+    ] {
+        assert_eq!(
+            run("Hi There", spelling, "MD5", "Hex"),
+            expected,
+            "{spelling}"
+        );
+    }
 }
 
 // RFC 4231 test case 1: key = 0x0b * 20, data = "Hi There".

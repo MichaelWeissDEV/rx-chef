@@ -131,6 +131,17 @@ impl Operation for RC6Encrypt {
         DataType::String
     }
 
+    /// Uses a random initialisation vector when none is supplied.
+    fn side_effects(&self) -> &'static [crate::operation::SideEffect] {
+        use crate::operation::SideEffect;
+        &[SideEffect::Random]
+    }
+
+    /// Equal inputs do not produce equal outputs.
+    fn deterministic(&self) -> bool {
+        false
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let key_arg = args
             .get(0)

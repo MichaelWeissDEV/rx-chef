@@ -45,6 +45,12 @@ impl Operation for ToSnakeCase {
         DataType::String
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, _input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let input_str = String::from_utf8_lossy(&_input);
         let smart = args.first().and_then(|v| v.as_bool()).unwrap_or(false);

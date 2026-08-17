@@ -80,6 +80,11 @@ impl Operation for SHA2 {
         DataType::String
     }
 
+    /// Verified against upstream CyberChef by the differential harness.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let size = args
             .get(0)

@@ -16,9 +16,29 @@ use crate::operation::{ArgSchema, ArgValue, Operation, OperationError};
 pub struct LZStringCompress;
 
 impl LZStringCompress {
-    fn compress(input: &str) -> String {
+    /// Emit one 16-bit code unit of the packed bit stream.
+    ///
+    /// The LZ-String bit stream is a sequence of UTF-16 code units, and the
+    /// reference JavaScript implementation stores them with
+    /// `String.fromCharCode`, which accepts unpaired surrogates. A Rust `char`
+    /// cannot hold a surrogate, so those values are reported instead of
+    /// panicking inside `char::from_u32().unwrap()`.
+    fn push_code_unit(res: &mut String, data_val: u32) -> Result<(), OperationError> {
+        match std::char::from_u32(data_val) {
+            Some(character) => {
+                res.push(character);
+                Ok(())
+            }
+            None => Err(OperationError::ProcessingError(format!(
+                "LZString compression produced the UTF-16 surrogate code unit U+{data_val:04X}, \
+                 which cannot be represented in UTF-8 output"
+            ))),
+        }
+    }
+
+    fn compress(input: &str) -> Result<String, OperationError> {
         if input.is_empty() {
-            return "".to_string();
+            return Ok(String::new());
         }
         let mut res = String::new();
         let mut dictionary: HashMap<String, u32> = HashMap::new();
@@ -51,7 +71,7 @@ impl LZStringCompress {
                             data_val <<= 1;
                             if data_position == bits_per_char - 1 {
                                 data_position = 0;
-                                res.push(std::char::from_u32(data_val).unwrap());
+                                Self::push_code_unit(&mut res, data_val)?;
                                 data_val = 0;
                             } else {
                                 data_position += 1;
@@ -62,7 +82,7 @@ impl LZStringCompress {
                             data_val = (data_val << 1) | (value & 1);
                             if data_position == bits_per_char - 1 {
                                 data_position = 0;
-                                res.push(std::char::from_u32(data_val).unwrap());
+                                Self::push_code_unit(&mut res, data_val)?;
                                 data_val = 0;
                             } else {
                                 data_position += 1;
@@ -75,7 +95,7 @@ impl LZStringCompress {
                             data_val = (data_val << 1) | value;
                             if data_position == bits_per_char - 1 {
                                 data_position = 0;
-                                res.push(std::char::from_u32(data_val).unwrap());
+                                Self::push_code_unit(&mut res, data_val)?;
                                 data_val = 0;
                             } else {
                                 data_position += 1;
@@ -87,7 +107,7 @@ impl LZStringCompress {
                             data_val = (data_val << 1) | (value & 1);
                             if data_position == bits_per_char - 1 {
                                 data_position = 0;
-                                res.push(std::char::from_u32(data_val).unwrap());
+                                Self::push_code_unit(&mut res, data_val)?;
                                 data_val = 0;
                             } else {
                                 data_position += 1;
@@ -108,7 +128,7 @@ impl LZStringCompress {
                         data_val = (data_val << 1) | (value & 1);
                         if data_position == bits_per_char - 1 {
                             data_position = 0;
-                            res.push(std::char::from_u32(data_val).unwrap());
+                            Self::push_code_unit(&mut res, data_val)?;
                             data_val = 0;
                         } else {
                             data_position += 1;
@@ -136,7 +156,7 @@ impl LZStringCompress {
                         data_val <<= 1;
                         if data_position == bits_per_char - 1 {
                             data_position = 0;
-                            res.push(std::char::from_u32(data_val).unwrap());
+                            Self::push_code_unit(&mut res, data_val)?;
                             data_val = 0;
                         } else {
                             data_position += 1;
@@ -147,7 +167,7 @@ impl LZStringCompress {
                         data_val = (data_val << 1) | (value & 1);
                         if data_position == bits_per_char - 1 {
                             data_position = 0;
-                            res.push(std::char::from_u32(data_val).unwrap());
+                            Self::push_code_unit(&mut res, data_val)?;
                             data_val = 0;
                         } else {
                             data_position += 1;
@@ -160,7 +180,7 @@ impl LZStringCompress {
                         data_val = (data_val << 1) | value;
                         if data_position == bits_per_char - 1 {
                             data_position = 0;
-                            res.push(std::char::from_u32(data_val).unwrap());
+                            Self::push_code_unit(&mut res, data_val)?;
                             data_val = 0;
                         } else {
                             data_position += 1;
@@ -172,7 +192,7 @@ impl LZStringCompress {
                         data_val = (data_val << 1) | (value & 1);
                         if data_position == bits_per_char - 1 {
                             data_position = 0;
-                            res.push(std::char::from_u32(data_val).unwrap());
+                            Self::push_code_unit(&mut res, data_val)?;
                             data_val = 0;
                         } else {
                             data_position += 1;
@@ -193,7 +213,7 @@ impl LZStringCompress {
                     data_val = (data_val << 1) | (value & 1);
                     if data_position == bits_per_char - 1 {
                         data_position = 0;
-                        res.push(std::char::from_u32(data_val).unwrap());
+                        Self::push_code_unit(&mut res, data_val)?;
                         data_val = 0;
                     } else {
                         data_position += 1;
@@ -208,7 +228,7 @@ impl LZStringCompress {
             data_val = (data_val << 1) | (value & 1);
             if data_position == bits_per_char - 1 {
                 data_position = 0;
-                res.push(std::char::from_u32(data_val).unwrap());
+                Self::push_code_unit(&mut res, data_val)?;
                 data_val = 0;
             } else {
                 data_position += 1;
@@ -219,13 +239,13 @@ impl LZStringCompress {
         loop {
             data_val <<= 1;
             if data_position == bits_per_char - 1 {
-                res.push(std::char::from_u32(data_val).unwrap());
+                Self::push_code_unit(&mut res, data_val)?;
                 break;
             } else {
                 data_position += 1;
             }
         }
-        res
+        Ok(res)
     }
 }
 
@@ -240,21 +260,53 @@ impl Operation for LZStringCompress {
         "Compress the input with lz-string."
     }
     fn args_schema(&self) -> &'static [ArgSchema] {
+        // These choices must stay identical to `LZString Decompress`, so a
+        // value that compresses can also be decompressed. Only "Standard" is
+        // implemented on this side; the others are declared so the mismatch is
+        // reported rather than silently producing unreadable output.
         static SCHEMA: &[ArgSchema] = &[ArgSchema {
             name: "Compression Format",
-            description: "default, UTF16, Base64",
-            default_value: "default",
-            kind: crate::operation::ArgKind::String,
+            description: "Output format. Only 'Standard' is currently implemented.",
+            default_value: "Standard",
+            kind: crate::operation::ArgKind::Enum,
             required: false,
-            choices: &[],
+            choices: &["Standard", "Base64", "UTF16", "EncodedURIComponent"],
             minimum: None,
             maximum: None,
             sensitive: false,
         }];
         SCHEMA
     }
-    fn run(&self, input: Vec<u8>, _args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
+    fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
+        let format = args.first().and_then(|v| v.as_str()).unwrap_or("Standard");
+        // Only the standard 16-bit-per-character stream is implemented. The
+        // argument used to be ignored entirely, so requesting Base64 or UTF16
+        // silently returned a standard-format result that `LZString
+        // Decompress` could not read back.
+        match format {
+            "Standard" => {}
+            "Base64" | "UTF16" | "EncodedURIComponent" => {
+                return Err(OperationError::InvalidArgument {
+                    name: "Compression Format".to_string(),
+                    reason: format!(
+                        "the '{format}' output format is not implemented yet; only 'Standard' is available"
+                    ),
+                })
+            }
+            other => {
+                return Err(OperationError::InvalidArgument {
+                    name: "Compression Format".to_string(),
+                    reason: format!("Unsupported format: {other}"),
+                })
+            }
+        }
         let input_str = String::from_utf8_lossy(&input);
-        Ok(Self::compress(&input_str).into_bytes())
+        Ok(Self::compress(&input_str)?.into_bytes())
     }
 }

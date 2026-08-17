@@ -65,6 +65,12 @@ impl Operation for LS47Decrypt {
         DataType::String
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let password = args.first().and_then(|v| v.as_str()).unwrap_or("");
         let padding_size = args.get(1).and_then(|v| v.as_usize()).unwrap_or(10);

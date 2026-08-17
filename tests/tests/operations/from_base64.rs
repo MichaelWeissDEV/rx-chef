@@ -27,9 +27,7 @@ fn test_from_base64_standard_alphabet() {
     ];
     // "SGVsbG8=" is "Hello" in Base64
     let base64_input = "SGVsbG8=";
-    let result = op.run(base64_input.as_bytes().to_vec(), &args);
-    assert!(result.is_ok());
-    let decoded = result.unwrap();
+    let decoded = op.run(base64_input.as_bytes().to_vec(), &args).unwrap();
     assert_eq!(decoded, b"Hello");
 }
 
@@ -41,10 +39,12 @@ fn test_from_base64_url_safe_alphabet() {
         rxchef::operation::ArgValue::Bool(true),
         rxchef::operation::ArgValue::Bool(false),
     ];
-    // URL-safe Base64
+    // In the URL-safe alphabet '-' is the 62nd symbol, so "SGVsbG8-"
+    // decodes to "Hello>" rather than "Hello".
+    // Value cross-checked against CyberChef 11.0.0.
     let base64_input = "SGVsbG8-";
-    let result = op.run(base64_input.as_bytes().to_vec(), &args);
-    assert!(result.is_ok());
+    let decoded = op.run(base64_input.as_bytes().to_vec(), &args).unwrap();
+    assert_eq!(decoded, b"Hello>");
 }
 
 #[test]

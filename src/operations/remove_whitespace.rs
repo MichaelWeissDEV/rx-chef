@@ -111,6 +111,12 @@ impl Operation for RemoveWhitespace {
         DataType::String
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let remove_spaces = args.first().and_then(|a| a.as_bool()).unwrap_or(true);
         let remove_cr = args.get(1).and_then(|a| a.as_bool()).unwrap_or(true);

@@ -42,6 +42,12 @@ impl Operation for XkcdRandomNumberOp {
         DataType::Number
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, _input: Vec<u8>, _args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         Ok("4".to_string().into_bytes())
     }

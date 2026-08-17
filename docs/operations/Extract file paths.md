@@ -11,7 +11,7 @@ Note that if UNIX is selected, there will likely be a lot of false positives.
 | Field | Value |
 |---|---|
 | Implementation | `Partial` |
-| Parity | `Unknown` |
+| Parity | `Exact` |
 | Availability | Available |
 | Input requirement | `Required` |
 | Features | none |
@@ -60,7 +60,7 @@ Schema violations are rejected before the operation runs. Malformed input, unsup
 
 ## CyberChef compatibility
 
-Parity status: `Unknown`. `Unknown` records an unassessed compatibility claim; it does not imply equality or incompatibility.
+Parity status: `Exact`. `Unknown` records an unassessed compatibility claim; it does not imply equality or incompatibility.
 
 ## Security considerations
 
@@ -70,6 +70,9 @@ Declared side effects: `[]`. Treat parser inputs as untrusted and apply executio
 
 Correctness tests:
 - tests/tests/operations/extract_file_paths.rs
+
+Differential tests:
+- tests/tests/differential.rs
 
 ## Performance classification
 

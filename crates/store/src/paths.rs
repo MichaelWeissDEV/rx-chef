@@ -59,6 +59,7 @@ pub fn init_project() -> io::Result<PathBuf> {
         .unwrap_or_else(|_| PathBuf::from("."))
         .join(".rxchef");
     std::fs::create_dir_all(&path)?;
+    restrict_dir(&path)?;
     Ok(path)
 }
 
@@ -83,10 +84,30 @@ pub fn history_path() -> PathBuf {
     global_dir().join("history.jsonl")
 }
 
+/// Create `path` and any missing parents, restricting it to the owner.
+///
+/// Stored recipes, projects, variables, and history can carry keys, tokens,
+/// and decoded credentials. The files themselves are written 0600, but
+/// `create_dir_all` uses 0777 masked by the umask (commonly 0755), which
+/// leaves the *names* of stored recipes and projects world-readable. Narrowing
+/// the directory to 0700 closes that.
 pub fn ensure_dir(path: &std::path::Path) -> std::io::Result<()> {
     if !path.exists() {
         std::fs::create_dir_all(path)?;
+        restrict_dir(path)?;
     }
+    Ok(())
+}
+
+/// Restrict a directory to owner-only access on Unix. A no-op elsewhere.
+pub(crate) fn restrict_dir(path: &std::path::Path) -> std::io::Result<()> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700))?;
+    }
+    #[cfg(not(unix))]
+    let _ = path;
     Ok(())
 }
 
@@ -161,6 +182,33 @@ mod tests {
             discover_project_dir_from(&nested),
             Some(root.join(".rxchef"))
         );
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn created_store_directories_are_owner_only() {
+        use std::os::unix::fs::PermissionsExt;
+
+        // Stored recipes and projects can be named after the secrets they
+        // handle, so the directory itself must not be world-readable.
+        let root = std::env::temp_dir().join(format!("rxchef-perm-test-{}", uuid::Uuid::new_v4()));
+        super::ensure_dir(&root).unwrap();
+        let mode = std::fs::metadata(&root).unwrap().permissions().mode() & 0o777;
+        assert_eq!(mode, 0o700, "expected 0700, got {mode:o}");
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn private_store_files_are_owner_only() {
+        use std::os::unix::fs::PermissionsExt;
+
+        let root = std::env::temp_dir().join(format!("rxchef-file-test-{}", uuid::Uuid::new_v4()));
+        let file = root.join("vars.json");
+        super::atomic_write(&file, b"{}", true).unwrap();
+        let mode = std::fs::metadata(&file).unwrap().permissions().mode() & 0o777;
+        assert_eq!(mode, 0o600, "expected 0600, got {mode:o}");
         std::fs::remove_dir_all(root).unwrap();
     }
 }

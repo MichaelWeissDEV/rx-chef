@@ -49,6 +49,12 @@ impl Operation for CaesarBoxCipher {
         DataType::String
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let mut input_str = String::from_utf8(input)
             .map_err(|_| OperationError::InvalidInput("Invalid UTF-8".to_string()))?;

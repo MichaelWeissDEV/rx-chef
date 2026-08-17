@@ -86,6 +86,7 @@ nav:
       - Benchmarking: development/benchmarking.md
       - Fuzzing: development/fuzzing.md
       - Release process: development/release-process.md
+      - Release readiness: development/release-readiness.md
 
 markdown_extensions:
   - toc:

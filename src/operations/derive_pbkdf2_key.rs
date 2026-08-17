@@ -105,6 +105,17 @@ impl Operation for DerivePBKDF2Key {
         DataType::String
     }
 
+    /// Generates a random salt when none is supplied.
+    fn side_effects(&self) -> &'static [crate::operation::SideEffect] {
+        use crate::operation::SideEffect;
+        &[SideEffect::Random]
+    }
+
+    /// Equal inputs do not produce equal outputs.
+    fn deterministic(&self) -> bool {
+        false
+    }
+
     fn run(&self, _input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let passphrase = self.parse_arg_bytes(args.first())?;
         let key_size_bits = args.get(1).and_then(|v| v.as_usize()).unwrap_or(128);

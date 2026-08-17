@@ -7,6 +7,8 @@ use std::path::PathBuf;
 mod bench;
 mod operation_audit;
 mod registry;
+mod test_evidence;
+mod verify_version;
 
 fn markdown_escape(value: &str) -> String {
     value
@@ -51,6 +53,7 @@ fn main() -> Result<(), String> {
         Some("generate-registry") => registry::generate(false),
         Some("check-registry") => registry::generate(true),
         Some("audit-operations") => operation_audit::run(),
+        Some("verify-version") => verify_version::run(!args.iter().any(|arg| arg == "--write")),
         Some("generate-verification-manifest") => operation_audit::generate_manifest(),
         _ => Ok(()),
     }

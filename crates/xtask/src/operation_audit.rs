@@ -1,5 +1,6 @@
+use crate::test_evidence::{self, TestEvidence};
 use rxchef::{
-    operation::{ArgKind, Availability, NumericBound},
+    operation::{ArgKind, Availability, NumericBound, ParityStatus},
     runtime::{self, data_type_name},
 };
 use serde_json::{json, Value};
@@ -8,6 +9,122 @@ use std::{
     env, fs,
     path::PathBuf,
 };
+
+/// Aggregate counters behind the audit summary.
+///
+/// Every field is incremented from evidence read out of the repository, so the
+/// printed summary can be re-derived from `docs/_generated/operation-quality.json`.
+#[derive(Debug, Default)]
+struct AuditTotals {
+    registered: usize,
+    tested: usize,
+    total_tests: usize,
+    negative_tested: usize,
+    boundary_tested: usize,
+    reference_verified: usize,
+    differential_verified: usize,
+    parity_exact: usize,
+    parity_compatible: usize,
+    parity_documented_difference: usize,
+    parity_unknown: usize,
+    parity_not_applicable: usize,
+    weak_ok_assertions: usize,
+    known_limitations: usize,
+}
+
+impl AuditTotals {
+    fn record(
+        &mut self,
+        evidence: &TestEvidence,
+        info: &runtime::OperationInfo,
+        has_known_answer: bool,
+        has_differential: bool,
+    ) {
+        self.registered += 1;
+        self.total_tests += evidence.tests;
+        self.weak_ok_assertions += evidence.weak_ok_assertions;
+        if evidence.has_tests() {
+            self.tested += 1;
+        }
+        if evidence.has_negative_case() {
+            self.negative_tested += 1;
+        }
+        if evidence.has_boundary_case() {
+            self.boundary_tested += 1;
+        }
+        if has_known_answer {
+            self.reference_verified += 1;
+        }
+        if has_differential {
+            self.differential_verified += 1;
+        }
+        if !info.known_limitations.is_empty() {
+            self.known_limitations += 1;
+        }
+        match info.parity {
+            ParityStatus::Exact => self.parity_exact += 1,
+            ParityStatus::Compatible => self.parity_compatible += 1,
+            ParityStatus::IntentionalDifference => self.parity_documented_difference += 1,
+            ParityStatus::Unknown => self.parity_unknown += 1,
+            ParityStatus::NotApplicable => self.parity_not_applicable += 1,
+        }
+    }
+
+    fn print_summary(&self) {
+        println!("operation audit summary");
+        println!("  {:<28} {}", "registered", self.registered);
+        println!("  {:<28} {}", "with executable tests", self.tested);
+        println!("  {:<28} {}", "test functions total", self.total_tests);
+        println!("  {:<28} {}", "with negative tests", self.negative_tested);
+        println!("  {:<28} {}", "with boundary tests", self.boundary_tested);
+        println!(
+            "  {:<28} {}",
+            "reference-verified (KAT)", self.reference_verified
+        );
+        println!(
+            "  {:<28} {}",
+            "differential-verified", self.differential_verified
+        );
+        println!("  {:<28} {}", "parity exact", self.parity_exact);
+        println!("  {:<28} {}", "parity compatible", self.parity_compatible);
+        println!(
+            "  {:<28} {}",
+            "parity documented difference", self.parity_documented_difference
+        );
+        println!("  {:<28} {}", "parity unverified", self.parity_unknown);
+        println!(
+            "  {:<28} {}",
+            "parity not applicable", self.parity_not_applicable
+        );
+        println!(
+            "  {:<28} {}",
+            "documented divergences", self.known_limitations
+        );
+        println!(
+            "  {:<28} {}",
+            "tests asserting only success", self.weak_ok_assertions
+        );
+    }
+
+    fn as_json(&self) -> Value {
+        json!({
+            "registered": self.registered,
+            "tested": self.tested,
+            "test_functions": self.total_tests,
+            "negative_tested": self.negative_tested,
+            "boundary_tested": self.boundary_tested,
+            "reference_verified": self.reference_verified,
+            "differential_verified": self.differential_verified,
+            "parity_exact": self.parity_exact,
+            "parity_compatible": self.parity_compatible,
+            "parity_documented_difference": self.parity_documented_difference,
+            "parity_unverified": self.parity_unknown,
+            "parity_not_applicable": self.parity_not_applicable,
+            "documented_divergences": self.known_limitations,
+            "tests_asserting_only_success": self.weak_ok_assertions,
+        })
+    }
+}
 
 const REPRESENTATIVE_BENCHMARKS: &[&str] = &[
     "to_hex",
@@ -19,17 +136,42 @@ const REPRESENTATIVE_BENCHMARKS: &[&str] = &[
     "scan",
 ];
 
-/// Create the initial explicit inventory. This command is deliberately
-/// conservative: it maps each operation to its existing dedicated test module,
-/// records only the representative benchmark catalog, and makes no KAT,
-/// differential, property, or fuzz claim. Reviewers add those claims manually.
+/// Add missing operations to the verification inventory.
+///
+/// New entries are deliberately conservative: they map the operation to its
+/// dedicated test module, record only the representative benchmark catalog,
+/// and make no KAT, differential, property, or fuzz claim. Reviewers add those
+/// manually.
+///
+/// Entries that already exist are left untouched. This used to rewrite the
+/// whole file from scratch, which silently discarded every reviewed
+/// `untested_reason` and every recorded evidence path — the audit would then
+/// fail with dozens of errors and the reasoning behind them would be gone.
 pub fn generate_manifest() -> Result<(), String> {
     let root = workspace_root()?;
-    let mut operations = serde_json::Map::new();
+    let destination = root.join("verification/operations.json");
+
+    let mut operations = match fs::read_to_string(&destination) {
+        Ok(text) => {
+            let existing: Value = serde_json::from_str(&text)
+                .map_err(|error| format!("cannot merge into {}: {error}", destination.display()))?;
+            existing["operations"]
+                .as_object()
+                .cloned()
+                .ok_or_else(|| "verification manifest operations must be an object".to_string())?
+        }
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => serde_json::Map::new(),
+        Err(error) => return Err(format!("cannot read {}: {error}", destination.display())),
+    };
+    let preserved = operations.len();
+
     for name in runtime::operation_names(None) {
         let info = runtime::operation_info(&name)?;
         let source_id = runtime::operation_source(&name)?;
         let benchmark = REPRESENTATIVE_BENCHMARKS.contains(&info.id.as_str());
+        if operations.contains_key(&info.id) {
+            continue;
+        }
         operations.insert(
             info.id,
             json!({
@@ -43,7 +185,7 @@ pub fn generate_manifest() -> Result<(), String> {
             }),
         );
     }
-    let destination = root.join("verification/operations.json");
+    let added = operations.len() - preserved;
     fs::create_dir_all(destination.parent().unwrap()).map_err(|e| e.to_string())?;
     let document = json!({"schema_version": 1, "operations": operations});
     fs::write(
@@ -54,7 +196,10 @@ pub fn generate_manifest() -> Result<(), String> {
         ),
     )
     .map_err(|e| e.to_string())?;
-    println!("wrote {}", destination.display());
+    println!(
+        "wrote {} ({added} added, {preserved} preserved)",
+        destination.display()
+    );
     Ok(())
 }
 
@@ -81,6 +226,7 @@ pub fn run() -> Result<(), String> {
     let mut seen_names = HashSet::new();
     let mut seen_ids = HashSet::new();
     let mut rows = Vec::with_capacity(names.len());
+    let mut totals = AuditTotals::default();
 
     for name in names {
         let info = runtime::operation_info(&name)?;
@@ -230,7 +376,64 @@ pub fn run() -> Result<(), String> {
             ));
         }
 
+        // Evidence is read out of the mapped sources rather than inferred from
+        // the mapping existing. A file that contains no `#[test]` proves
+        // nothing and must carry an explicit, reviewed reason.
+        let evidence = test_evidence::scan_files(&root, &correctness);
+        let untested_reason = verification["untested_reason"].as_str();
+        if !evidence.has_tests() {
+            match untested_reason {
+                Some(reason) if !reason.trim().is_empty() => {}
+                _ => errors.push(format!(
+                    "correctness evidence for {} contains no `#[test]`: {}",
+                    info.name,
+                    correctness.join(", ")
+                )),
+            }
+        } else if untested_reason.is_some() {
+            errors.push(format!(
+                "{} declares untested_reason but its tests do execute",
+                info.name
+            ));
+        }
+
+        // A known-answer claim is only meaningful next to an exact-value
+        // assertion, and parity claims stronger than `Compatible` require a
+        // recorded differential case rather than a spec vector.
+        if !known_answer.is_empty() && evidence.value_assertions == 0 {
+            errors.push(format!(
+                "{} claims known-answer evidence but asserts no exact value",
+                info.name
+            ));
+        }
+        if info.parity == ParityStatus::Exact && differential.is_empty() {
+            errors.push(format!(
+                "{} claims exact CyberChef parity without differential evidence",
+                info.name
+            ));
+        }
+        if matches!(info.parity, ParityStatus::Compatible) && known_answer.is_empty() {
+            errors.push(format!(
+                "{} claims compatible parity without known-answer evidence",
+                info.name
+            ));
+        }
+
+        totals.record(
+            &evidence,
+            &info,
+            !known_answer.is_empty(),
+            !differential.is_empty(),
+        );
+
         rows.push(json!({
+            "tests": evidence.tests,
+            "negative_test": evidence.has_negative_case(),
+            "boundary_test": evidence.has_boundary_case(),
+            "empty_input_test": evidence.empty_input_cases > 0,
+            "value_assertions": evidence.value_assertions,
+            "tests_asserting_only_success": evidence.weak_ok_assertions,
+            "untested_reason": untested_reason,
             "name": info.name,
             "slug": info.id.replace('_', "-"),
             "id": info.id,
@@ -241,7 +444,7 @@ pub fn run() -> Result<(), String> {
             "input": data_type_name(info.input_type),
             "output": data_type_name(info.output_type),
             "args_documented": info.args.iter().all(|arg| !arg.name.trim().is_empty() && !arg.description.trim().is_empty()),
-            "correctness_test": !correctness.is_empty(),
+            "correctness_test": evidence.has_tests(),
             "known_answer_test": !known_answer.is_empty(),
             "differential_test": !differential.is_empty(),
             "property_test": !property.is_empty(),
@@ -282,14 +485,16 @@ pub fn run() -> Result<(), String> {
     fs::create_dir_all(generated.parent().unwrap()).map_err(|e| e.to_string())?;
     fs::create_dir_all(reference.parent().unwrap()).map_err(|e| e.to_string())?;
     let json = serde_json::to_string_pretty(&json!({
-        "schema_version": 1,
+        "schema_version": 2,
         "operation_count": rows.len(),
+        "summary": totals.as_json(),
         "operations": rows,
     }))
     .map_err(|e| e.to_string())?;
     fs::write(&generated, format!("{json}\n")).map_err(|e| e.to_string())?;
-    fs::write(&reference, render_markdown(&rows)).map_err(|e| e.to_string())?;
+    fs::write(&reference, render_markdown(&rows, &totals)).map_err(|e| e.to_string())?;
     println!("operation audit passed ({} operations)", rows.len());
+    totals.print_summary();
     Ok(())
 }
 
@@ -330,30 +535,61 @@ fn text_field<'a>(value: &'a Value, field: &str) -> &'a str {
     value[field].as_str().unwrap_or("")
 }
 
-fn render_markdown(rows: &[Value]) -> String {
+fn render_markdown(rows: &[Value], totals: &AuditTotals) -> String {
     let mut modules = BTreeSet::new();
     for row in rows {
         modules.insert(text_field(row, "module"));
     }
-    let mut output = format!(
-        "# Operation quality matrix\n\n<!-- Generated by `cargo xtask audit-operations`; do not edit. -->\n\nRegistered operations: **{}**. `partial` and `unknown` are deliberate audit results, not release-completeness claims.\n\n",
-        rows.len()
+    let mut output = String::from(
+        "# Operation quality matrix\n\n<!-- Generated by `cargo xtask audit-operations`; do not edit. -->\n\n",
     );
+    output.push_str(
+        "`Tests` counts `#[test]` functions in the mapped sources. `Neg` and `Bound` mark negative and boundary/empty-input coverage found in those sources. `KAT` and `Diff` are reviewer claims recorded in `verification/operations.json`; `partial` and `unknown` are deliberate audit results, not release-completeness claims.\n\n",
+    );
+    output.push_str("## Summary\n\n| Metric | Count |\n|---|---:|\n");
+    for (label, value) in [
+        ("Registered operations", totals.registered),
+        ("With executable tests", totals.tested),
+        ("Test functions", totals.total_tests),
+        ("With negative tests", totals.negative_tested),
+        ("With boundary tests", totals.boundary_tested),
+        (
+            "Reference-verified (known answer)",
+            totals.reference_verified,
+        ),
+        ("Differential-verified", totals.differential_verified),
+        ("Parity: exact", totals.parity_exact),
+        ("Parity: compatible", totals.parity_compatible),
+        (
+            "Parity: documented difference",
+            totals.parity_documented_difference,
+        ),
+        ("Parity: unverified", totals.parity_unknown),
+        ("Parity: not applicable", totals.parity_not_applicable),
+        ("Documented divergences", totals.known_limitations),
+        ("Tests asserting only success", totals.weak_ok_assertions),
+    ] {
+        output.push_str(&format!("| {label} | {value} |\n"));
+    }
+    output.push('\n');
+
     let module_count = modules.len();
     for (module_index, module) in modules.into_iter().enumerate() {
         output.push_str(&format!("## {module}\n\n"));
-        output.push_str("| Operation | Status | Parity | Args | Test | KAT | Diff | Property | Fuzz | Bench | Docs |\n|---|---|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|\n");
+        output.push_str("| Operation | Status | Parity | Args | Tests | Neg | Bound | KAT | Diff | Property | Fuzz | Bench | Docs |\n|---|---|---|:---:|---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|\n");
         for row in rows
             .iter()
             .filter(|row| text_field(row, "module") == module)
         {
             output.push_str(&format!(
-                "| {} | {} | {} | {} | {} | {} | {} | {} | {} | {} | {} |\n",
+                "| {} | {} | {} | {} | {} | {} | {} | {} | {} | {} | {} | {} | {} |\n",
                 text_field(row, "name").replace('|', "\\|"),
                 text_field(row, "status"),
                 text_field(row, "parity"),
                 mark(row["args_documented"].as_bool().unwrap_or(false)),
-                mark(row["correctness_test"].as_bool().unwrap_or(false)),
+                row["tests"].as_u64().unwrap_or(0),
+                mark(row["negative_test"].as_bool().unwrap_or(false)),
+                mark(row["boundary_test"].as_bool().unwrap_or(false)),
                 mark(row["known_answer_test"].as_bool().unwrap_or(false)),
                 mark(row["differential_test"].as_bool().unwrap_or(false)),
                 mark(row["property_test"].as_bool().unwrap_or(false)),

@@ -79,12 +79,35 @@ impl Operation for HMAC {
         DataType::String
     }
 
+    /// Conforms to the published specification; not yet compared against CyberChef.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Compatible
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
-        let key = args.first().and_then(|a| a.as_str()).unwrap_or("");
         let hash_func = args.get(1).and_then(|a| a.as_str()).unwrap_or("SHA-256");
         let output_encoding = args.get(2).and_then(|a| a.as_str()).unwrap_or("Hex");
 
-        let key_bytes = decode_key(key)?;
+        // The Key argument is declared as ArgKind::Bytes, so callers that pass
+        // a `hex:` or `base64:` value reach this operation as ArgValue::Bytes.
+        // Reading it with `as_str()` returned None for exactly those callers
+        // and silently fell back to an empty key, producing an authentication
+        // code keyed with nothing. Use the shared conversion so every frontend
+        // gets identical key bytes.
+        let key_bytes =
+            match args.first() {
+                Some(argument) => crate::operation::Utils::convert_to_byte_array(argument)
+                    .map_err(|error| match error {
+                        OperationError::InvalidArgument { reason, .. } => {
+                            OperationError::InvalidArgument {
+                                name: "Key".to_string(),
+                                reason,
+                            }
+                        }
+                        other => other,
+                    })?,
+                None => Vec::new(),
+            };
 
         let digest = compute_hmac(&key_bytes, hash_func, &input)?;
 
@@ -101,30 +124,6 @@ impl Operation for HMAC {
 
         Ok(result.into_bytes())
     }
-}
-
-fn decode_key(key: &str) -> Result<Vec<u8>, OperationError> {
-    if key.is_empty() {
-        return Ok(vec![]);
-    }
-
-    if let Some(encoded) = key.strip_prefix("0x").or_else(|| key.strip_prefix("hex:")) {
-        return hex::decode(encoded).map_err(|e| OperationError::InvalidArgument {
-            name: "Key".to_string(),
-            reason: format!("Invalid hex: {}", e),
-        });
-    }
-
-    if let Some(encoded) = key.strip_prefix("base64:") {
-        return data_encoding::BASE64
-            .decode(encoded.as_bytes())
-            .map_err(|e| OperationError::InvalidArgument {
-                name: "Key".to_string(),
-                reason: format!("Invalid Base64: {}", e),
-            });
-    }
-
-    Ok(key.as_bytes().to_vec())
 }
 
 fn compute_hmac(key: &[u8], hash_func: &str, input: &[u8]) -> Result<Vec<u8>, OperationError> {

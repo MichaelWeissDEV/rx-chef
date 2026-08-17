@@ -234,6 +234,17 @@ impl Operation for GenerateLoremIpsum {
         DataType::String
     }
 
+    /// Sentence selection is randomised.
+    fn side_effects(&self) -> &'static [crate::operation::SideEffect] {
+        use crate::operation::SideEffect;
+        &[SideEffect::Random]
+    }
+
+    /// Equal inputs do not produce equal outputs.
+    fn deterministic(&self) -> bool {
+        false
+    }
+
     fn run(&self, _input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let length = args.first().and_then(|a| a.as_usize()).unwrap_or(3);
         let length_type = args.get(1).and_then(|a| a.as_str()).unwrap_or("Paragraphs");

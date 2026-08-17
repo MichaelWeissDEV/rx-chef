@@ -64,6 +64,12 @@ impl Operation for FileTree {
         DataType::String
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let input_str = String::from_utf8_lossy(&input);
         let file_delim = args.first().and_then(|v| v.as_str()).unwrap_or("/");

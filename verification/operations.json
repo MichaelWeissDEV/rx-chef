@@ -17,7 +17,9 @@
         "tests/tests/operations/a1z26_cipher_encode.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -49,7 +51,9 @@
       "correctness": [
         "tests/tests/operations/aes_encrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/known_answer_vectors.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -129,7 +133,9 @@
         "tests/tests/operations/add_line_numbers.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -139,8 +145,12 @@
       "correctness": [
         "tests/tests/operations/adler32_checksum.rs"
       ],
-      "known_answer": [],
-      "differential": [],
+      "known_answer": [
+        "tests/tests/known_answer_vectors.rs"
+      ],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -151,7 +161,9 @@
         "tests/tests/operations/affine_cipher_decode.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -162,7 +174,9 @@
         "tests/tests/operations/affine_cipher_encode.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -173,7 +187,9 @@
         "tests/tests/operations/alternating_caps.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -228,7 +244,9 @@
         "tests/tests/operations/atbash_cipher.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -249,7 +267,9 @@
       "correctness": [
         "tests/tests/operations/blake2b.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/known_answer_vectors.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -260,7 +280,9 @@
       "correctness": [
         "tests/tests/operations/blake2s.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/known_answer_vectors.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -305,7 +327,9 @@
         "tests/tests/operations/bacon_cipher_decode.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -316,7 +340,9 @@
         "tests/tests/operations/bacon_cipher_encode.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -382,7 +408,9 @@
         "tests/tests/operations/bit_shift_left.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -393,7 +421,9 @@
         "tests/tests/operations/bit_shift_right.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -448,7 +478,9 @@
         "tests/tests/operations/bzip2_compress.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -525,7 +557,9 @@
         "tests/tests/operations/css_beautify.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -536,7 +570,9 @@
         "tests/tests/operations/css_minify.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -547,7 +583,9 @@
         "tests/tests/operations/css_selector.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -580,7 +618,9 @@
         "tests/tests/operations/caesar_box_cipher.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -591,7 +631,9 @@
         "tests/tests/operations/caret_mdecode.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -624,7 +666,9 @@
         "tests/tests/operations/cetacean_cipher_encode.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -701,7 +745,9 @@
         "tests/tests/operations/citrix_ctx1_encode.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -723,7 +769,9 @@
         "tests/tests/operations/comment.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -789,7 +837,9 @@
         "tests/tests/operations/convert_leet_speak.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -866,7 +916,9 @@
         "tests/tests/operations/convert_to_nato_alphabet.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -877,7 +929,9 @@
         "tests/tests/operations/count_occurrences.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -965,7 +1019,9 @@
         "tests/tests/operations/decode_netbios_name.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -976,7 +1032,9 @@
         "tests/tests/operations/decode_text.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -987,7 +1045,9 @@
         "tests/tests/operations/defang_ip_addresses.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -998,7 +1058,9 @@
         "tests/tests/operations/defang_url.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1097,7 +1159,9 @@
         "tests/tests/operations/divide.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1108,7 +1172,9 @@
         "tests/tests/operations/drop_bytes.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1119,7 +1185,9 @@
         "tests/tests/operations/drop_nth_bytes.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1174,7 +1242,9 @@
         "tests/tests/operations/encode_netbios_name.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1185,7 +1255,9 @@
         "tests/tests/operations/encode_text.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1218,7 +1290,9 @@
         "tests/tests/operations/escape_unicode_characters.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1229,7 +1303,9 @@
         "tests/tests/operations/escape_string.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1240,7 +1316,9 @@
         "tests/tests/operations/expand_alphabet_range.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1295,7 +1373,9 @@
         "tests/tests/operations/extract_ip_addresses.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1317,7 +1397,9 @@
         "tests/tests/operations/extract_mac_addresses.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1339,7 +1421,9 @@
         "tests/tests/operations/extract_urls.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1350,7 +1434,9 @@
         "tests/tests/operations/extract_dates.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1361,7 +1447,9 @@
         "tests/tests/operations/extract_domains.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1372,7 +1460,9 @@
         "tests/tests/operations/extract_email_addresses.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1383,7 +1473,9 @@
         "tests/tests/operations/extract_file_paths.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1394,7 +1486,9 @@
         "tests/tests/operations/extract_hashes.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1405,7 +1499,9 @@
         "tests/tests/operations/fang_url.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1438,7 +1534,9 @@
         "tests/tests/operations/file_tree.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1449,7 +1547,9 @@
         "tests/tests/operations/filter.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1504,7 +1604,9 @@
         "tests/tests/operations/fletcher16_checksum.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1515,7 +1617,9 @@
         "tests/tests/operations/fletcher32_checksum.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1526,7 +1630,9 @@
         "tests/tests/operations/fletcher64_checksum.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1537,7 +1643,9 @@
         "tests/tests/operations/fletcher8_checksum.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1603,7 +1711,9 @@
         "tests/tests/operations/from_base.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1613,8 +1723,12 @@
       "correctness": [
         "tests/tests/operations/from_base32.rs"
       ],
-      "known_answer": [],
-      "differential": [],
+      "known_answer": [
+        "tests/tests/known_answer_vectors.rs"
+      ],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1625,7 +1739,9 @@
         "tests/tests/operations/from_base45.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1636,7 +1752,9 @@
         "tests/tests/operations/from_base58.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1647,7 +1765,9 @@
         "tests/tests/operations/from_base62.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1657,8 +1777,12 @@
       "correctness": [
         "tests/tests/operations/from_base64.rs"
       ],
-      "known_answer": [],
-      "differential": [],
+      "known_answer": [
+        "tests/tests/known_answer_vectors.rs"
+      ],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1669,7 +1793,9 @@
         "tests/tests/operations/from_base85.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1680,7 +1806,9 @@
         "tests/tests/operations/from_base92.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1713,7 +1841,9 @@
         "tests/tests/operations/from_braille.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1724,7 +1854,9 @@
         "tests/tests/operations/from_case_insensitive_regex.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1768,7 +1900,9 @@
         "tests/tests/operations/from_html_entity.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1790,7 +1924,9 @@
         "tests/tests/operations/from_hex_content.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1801,7 +1937,9 @@
         "tests/tests/operations/from_hexdump.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1834,7 +1972,9 @@
         "tests/tests/operations/from_morse_code.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1856,7 +1996,9 @@
         "tests/tests/operations/from_punycode.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1867,7 +2009,9 @@
         "tests/tests/operations/from_quoted_printable.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -1893,7 +2037,8 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
+      "untested_reason": "Scoring weights are tuning parameters; meaningful assertions need an agreed ranking corpus."
     },
     "gost_decrypt": {
       "correctness": [
@@ -1948,7 +2093,8 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
+      "untested_reason": "Needs published GOST 28147-89 key-wrap test vectors; no reference vector is recorded yet."
     },
     "gost_sign": {
       "correctness": [
@@ -1959,7 +2105,8 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
+      "untested_reason": "Needs published GOST 28147-89 MAC test vectors; no reference vector is recorded yet."
     },
     "gost_verify": {
       "correctness": [
@@ -1977,7 +2124,9 @@
         "tests/tests/operations/generate_de_bruijn_sequence.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2109,7 +2258,9 @@
         "tests/tests/operations/generic_code_beautify.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2120,7 +2271,9 @@
         "tests/tests/operations/get_all_casings.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2142,7 +2295,9 @@
         "tests/tests/operations/group_ip_addresses.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2175,7 +2330,9 @@
         "tests/tests/operations/has160.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2201,13 +2358,16 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
+      "untested_reason": "Needs a captured SSH_MSG_KEXINIT fixture to assert the HASSH string and its MD5 digest."
     },
     "hmac": {
       "correctness": [
         "tests/tests/operations/hmac.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/known_answer_vectors.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2219,7 +2379,9 @@
         "tests/tests/operations/html_to_text.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2234,7 +2396,8 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
+      "untested_reason": "Performs live network I/O. Covering it needs a local HTTP stub, which the test suite deliberately does not start."
     },
     "hamming_distance": {
       "correctness": [
@@ -2263,7 +2426,9 @@
         "tests/tests/operations/head.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2278,7 +2443,8 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
+      "untested_reason": "Renders an HTML/SVG chart; asserting the markup would restate the implementation rather than verify it."
     },
     "hex_density_chart": {
       "correctness": [
@@ -2344,7 +2510,8 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
+      "untested_reason": "Needs image fixtures per filter type to assert pixel-level results."
     },
     "image_hue_saturation_lightness": {
       "correctness": [
@@ -2366,7 +2533,8 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
+      "untested_reason": "Needs an image fixture with an alpha channel to assert pixel-level results."
     },
     "index_of_coincidence": {
       "correctness": [
@@ -2399,7 +2567,8 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
+      "untested_reason": "Needs a captured TLS ClientHello fixture to assert the JA3 string and its MD5 digest."
     },
     "ja3s_fingerprint": {
       "correctness": [
@@ -2410,7 +2579,8 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
+      "untested_reason": "Needs a captured TLS ServerHello fixture to assert the JA3S string and its MD5 digest."
     },
     "ja4_fingerprint": {
       "correctness": [
@@ -2421,7 +2591,8 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
+      "untested_reason": "Needs a captured TLS ClientHello fixture to assert the JA4 fingerprint fields."
     },
     "ja4server_fingerprint": {
       "correctness": [
@@ -2432,7 +2603,8 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
+      "untested_reason": "Needs a captured TLS ServerHello fixture to assert the JA4S fingerprint fields."
     },
     "jpath_expression": {
       "correctness": [
@@ -2604,7 +2776,9 @@
         "tests/tests/operations/keccak.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2626,7 +2800,9 @@
         "tests/tests/operations/ls47_decrypt.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2703,7 +2879,9 @@
         "tests/tests/operations/lz_string_compress.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2751,7 +2929,8 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
+      "untested_reason": "Lorenz SZ40/SZ42 needs wheel-pattern and start-position fixtures plus a published cipher/plaintext pair to be meaningful."
     },
     "luhn_checksum": {
       "correctness": [
@@ -2769,7 +2948,9 @@
         "tests/tests/operations/md2.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2780,7 +2961,9 @@
         "tests/tests/operations/md4.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2790,8 +2973,12 @@
       "correctness": [
         "tests/tests/operations/md5.rs"
       ],
-      "known_answer": [],
-      "differential": [],
+      "known_answer": [
+        "tests/tests/known_answer_vectors.rs"
+      ],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2802,7 +2989,9 @@
         "tests/tests/operations/md6.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2813,7 +3002,9 @@
         "tests/tests/operations/mime_decoding.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2837,7 +3028,9 @@
         "tests/tests/operations/mean.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2848,7 +3041,9 @@
         "tests/tests/operations/median.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2870,7 +3065,9 @@
         "tests/tests/operations/microsoft_script_decoder.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2892,7 +3089,9 @@
         "tests/tests/operations/multiply.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2903,7 +3102,9 @@
         "tests/tests/operations/murmur_hash3.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2914,7 +3115,9 @@
         "tests/tests/operations/not.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2925,7 +3128,9 @@
         "tests/tests/operations/nt_hash.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2947,7 +3152,9 @@
         "tests/tests/operations/normalise_unicode.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3035,7 +3242,9 @@
         "tests/tests/operations/pem_to_jwk.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3050,7 +3259,8 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
+      "untested_reason": "Requires an OpenPGP private key and ciphertext fixture; gated behind the optional `pgp` feature, which is not part of the default build."
     },
     "pgp_decrypt_and_verify": {
       "correctness": [
@@ -3061,7 +3271,8 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
+      "untested_reason": "Requires an OpenPGP key pair plus a signed-and-encrypted message fixture; gated behind the optional `pgp` feature."
     },
     "pgp_encrypt": {
       "correctness": [
@@ -3083,7 +3294,8 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
+      "untested_reason": "Requires an OpenPGP key pair fixture and produces non-deterministic ciphertext; gated behind the optional `pgp` feature."
     },
     "pgp_verify": {
       "correctness": [
@@ -3094,7 +3306,8 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
+      "untested_reason": "Requires an OpenPGP public key and detached signature fixture; gated behind the optional `pgp` feature."
     },
     "php_deserialize": {
       "correctness": [
@@ -3123,7 +3336,9 @@
         "tests/tests/operations/pad_lines.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3325,7 +3540,8 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
+      "untested_reason": "Depends on the bundled user-agent database; needs a fixture list of agent strings with agreed expected fields."
     },
     "parse_x_509_crl": {
       "correctness": [
@@ -3336,7 +3552,8 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
+      "untested_reason": "Needs a checked-in CRL fixture with known field values."
     },
     "parse_x_509_certificate": {
       "correctness": [
@@ -3347,7 +3564,8 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
+      "untested_reason": "Needs a checked-in certificate fixture with known field values."
     },
     "parse_colour_code": {
       "correctness": [
@@ -3369,7 +3587,8 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
+      "untested_reason": "Emits a media player payload for a browser host; there is no headless assertion that is not a restatement of the implementation."
     },
     "power_set": {
       "correctness": [
@@ -3431,7 +3650,9 @@
         "tests/tests/operations/pub_key_from_cert.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3442,7 +3663,9 @@
         "tests/tests/operations/pub_key_from_priv_key.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3453,7 +3676,9 @@
         "tests/tests/operations/rake.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3530,7 +3755,9 @@
         "tests/tests/operations/ripemd.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3541,7 +3768,9 @@
         "tests/tests/operations/rot13.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3563,7 +3792,9 @@
         "tests/tests/operations/rot47.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3574,7 +3805,9 @@
         "tests/tests/operations/rot47_brute_force.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3585,7 +3818,9 @@
         "tests/tests/operations/rot8000.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3651,7 +3886,9 @@
         "tests/tests/operations/rail_fence_cipher_decode.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3662,7 +3899,9 @@
         "tests/tests/operations/rail_fence_cipher_encode.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3677,7 +3916,8 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
+      "untested_reason": "Randomises an indexed palette; needs an indexed-colour image fixture to assert against."
     },
     "raw_deflate": {
       "correctness": [
@@ -3717,7 +3957,9 @@
         "tests/tests/operations/regular_expression.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3728,7 +3970,9 @@
         "tests/tests/operations/remove_diacritics.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3750,7 +3994,9 @@
         "tests/tests/operations/remove_line_numbers.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3761,7 +4007,9 @@
         "tests/tests/operations/remove_null_bytes.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3772,7 +4020,9 @@
         "tests/tests/operations/remove_whitespace.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3827,7 +4077,9 @@
         "tests/tests/operations/reverse.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3871,7 +4123,9 @@
         "tests/tests/operations/rotate_left.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3882,7 +4136,9 @@
         "tests/tests/operations/rotate_right.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3893,7 +4149,9 @@
         "tests/tests/operations/sha0.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3903,8 +4161,12 @@
       "correctness": [
         "tests/tests/operations/sha1.rs"
       ],
-      "known_answer": [],
-      "differential": [],
+      "known_answer": [
+        "tests/tests/known_answer_vectors.rs"
+      ],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3914,8 +4176,12 @@
       "correctness": [
         "tests/tests/operations/sha2.rs"
       ],
-      "known_answer": [],
-      "differential": [],
+      "known_answer": [
+        "tests/tests/known_answer_vectors.rs"
+      ],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [
@@ -3927,8 +4193,12 @@
       "correctness": [
         "tests/tests/operations/sha3.rs"
       ],
-      "known_answer": [],
-      "differential": [],
+      "known_answer": [
+        "tests/tests/known_answer_vectors.rs"
+      ],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3950,7 +4220,9 @@
         "tests/tests/operations/sigaba.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3983,7 +4255,9 @@
         "tests/tests/operations/sm3.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4027,7 +4301,9 @@
         "tests/tests/operations/sql_beautify.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4038,7 +4314,9 @@
         "tests/tests/operations/sql_minify.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4049,7 +4327,9 @@
         "tests/tests/operations/ssdeep.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4082,7 +4362,9 @@
         "tests/tests/operations/scan_for_embedded_files.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4203,7 +4485,9 @@
         "tests/tests/operations/sleep.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4214,7 +4498,9 @@
         "tests/tests/operations/sort.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4225,7 +4511,9 @@
         "tests/tests/operations/split.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4247,7 +4535,9 @@
         "tests/tests/operations/standard_deviation.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4258,7 +4548,9 @@
         "tests/tests/operations/streebog.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4280,7 +4572,9 @@
         "tests/tests/operations/strip_html_tags.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4291,7 +4585,9 @@
         "tests/tests/operations/strip_http_headers.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4346,7 +4642,9 @@
         "tests/tests/operations/substitute.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4357,7 +4655,9 @@
         "tests/tests/operations/subtract.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4368,7 +4668,9 @@
         "tests/tests/operations/sum.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4379,7 +4681,9 @@
         "tests/tests/operations/swap_case.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4423,7 +4727,9 @@
         "tests/tests/operations/tcpip_checksum.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4434,7 +4740,9 @@
         "tests/tests/operations/tail.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4445,7 +4753,9 @@
         "tests/tests/operations/take_bytes.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4456,7 +4766,9 @@
         "tests/tests/operations/take_nth_bytes.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4500,7 +4812,9 @@
         "tests/tests/operations/text_integer_converter.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4532,8 +4846,12 @@
       "correctness": [
         "tests/tests/operations/to_base32.rs"
       ],
-      "known_answer": [],
-      "differential": [],
+      "known_answer": [
+        "tests/tests/known_answer_vectors.rs"
+      ],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4544,7 +4862,9 @@
         "tests/tests/operations/to_base45.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4555,7 +4875,9 @@
         "tests/tests/operations/to_base58.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4566,7 +4888,9 @@
         "tests/tests/operations/to_base62.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4576,8 +4900,12 @@
       "correctness": [
         "tests/tests/operations/to_base64.rs"
       ],
-      "known_answer": [],
-      "differential": [],
+      "known_answer": [
+        "tests/tests/known_answer_vectors.rs"
+      ],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [
@@ -4590,7 +4918,9 @@
         "tests/tests/operations/to_base85.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4601,7 +4931,9 @@
         "tests/tests/operations/to_base92.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4612,7 +4944,9 @@
         "tests/tests/operations/to_bech32.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4623,7 +4957,9 @@
         "tests/tests/operations/to_binary.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4634,7 +4970,9 @@
         "tests/tests/operations/to_braille.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4645,7 +4983,9 @@
         "tests/tests/operations/to_camel_case.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4656,7 +4996,9 @@
         "tests/tests/operations/to_case_insensitive_regex.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4667,7 +5009,9 @@
         "tests/tests/operations/to_charcode.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4678,7 +5022,9 @@
         "tests/tests/operations/to_decimal.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4700,7 +5046,9 @@
         "tests/tests/operations/to_html_entity.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4710,8 +5058,12 @@
       "correctness": [
         "tests/tests/operations/to_hex.rs"
       ],
-      "known_answer": [],
-      "differential": [],
+      "known_answer": [
+        "tests/tests/known_answer_vectors.rs"
+      ],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [
@@ -4724,7 +5076,9 @@
         "tests/tests/operations/to_hex_content.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4746,7 +5100,9 @@
         "tests/tests/operations/to_kebab_case.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4757,7 +5113,9 @@
         "tests/tests/operations/to_lower_case.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4790,7 +5148,9 @@
         "tests/tests/operations/to_morse_code.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4801,7 +5161,9 @@
         "tests/tests/operations/to_octal.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4812,7 +5174,9 @@
         "tests/tests/operations/to_punycode.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4823,7 +5187,9 @@
         "tests/tests/operations/to_quoted_printable.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4834,7 +5200,9 @@
         "tests/tests/operations/to_snake_case.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4856,7 +5224,9 @@
         "tests/tests/operations/to_unix_timestamp.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4867,7 +5237,9 @@
         "tests/tests/operations/to_upper_case.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4933,7 +5305,9 @@
         "tests/tests/operations/url_decode.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4943,8 +5317,12 @@
       "correctness": [
         "tests/tests/operations/url_encode.rs"
       ],
-      "known_answer": [],
-      "differential": [],
+      "known_answer": [
+        "tests/tests/operations/url_encode.rs"
+      ],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4955,7 +5333,9 @@
         "tests/tests/operations/unescape_unicode_characters.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4966,7 +5346,9 @@
         "tests/tests/operations/unescape_string.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -4988,7 +5370,9 @@
         "tests/tests/operations/unique.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -5021,7 +5405,9 @@
         "tests/tests/operations/varint_decode.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -5076,7 +5462,9 @@
         "tests/tests/operations/whirlpool.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -5098,7 +5486,9 @@
         "tests/tests/operations/wrap.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -5109,7 +5499,9 @@
         "tests/tests/operations/xkcd_random_number.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -5120,7 +5512,9 @@
         "tests/tests/operations/xml_beautify.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -5131,7 +5525,9 @@
         "tests/tests/operations/xml_minify.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -5164,7 +5560,9 @@
         "tests/tests/operations/xor_checksum.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],

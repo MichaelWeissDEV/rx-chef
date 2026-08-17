@@ -46,6 +46,11 @@ impl Operation for MD5 {
         DataType::String
     }
 
+    /// Verified against upstream CyberChef by the differential harness.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, _args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let mut hasher = Md5::new();
         hasher.update(input);

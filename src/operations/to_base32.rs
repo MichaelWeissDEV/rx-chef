@@ -42,13 +42,19 @@ impl Operation for ToBase32 {
     fn output_type(&self) -> DataType {
         DataType::String
     }
+    /// Verified against upstream CyberChef by the differential harness.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
-        let alphabet = args
-            .get(0)
-            .and_then(|v| v.as_str())
-            .unwrap_or("ABCDEFGHIJKLMNOPQRSTUVWXYZ234567");
+        let alphabet = args.first().and_then(|v| v.as_str()).unwrap_or("A-Z2-7=");
+        // The argument is written in range notation ("A-Z2-7="), which
+        // `data_encoding` does not understand. Without expanding it first the
+        // operation rejected its own declared default and could not run at all.
+        let symbols = crate::operations::from_base32::expand_base32_alphabet(alphabet);
         let mut spec = data_encoding::Specification::new();
-        spec.symbols = alphabet.to_string();
+        spec.symbols = symbols;
         spec.padding = Some('=');
         let encoding = spec
             .encoding()

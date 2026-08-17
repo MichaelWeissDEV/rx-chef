@@ -77,6 +77,12 @@ impl Operation for RAKE {
         DataType::String
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let input_str = String::from_utf8_lossy(&input).to_lowercase();
         let input_str = input_str.trim();

@@ -75,6 +75,11 @@ impl Operation for ToUNIXTimestamp {
         DataType::String
     }
 
+    /// Verified against upstream CyberChef by the differential harness.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let input_str = String::from_utf8_lossy(&input).trim().to_string();
         if input_str.is_empty() {

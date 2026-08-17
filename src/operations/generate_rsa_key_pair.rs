@@ -74,6 +74,17 @@ impl Operation for GenerateRSAKeyPair {
         DataType::String
     }
 
+    /// Key generation draws from a random source.
+    fn side_effects(&self) -> &'static [crate::operation::SideEffect] {
+        use crate::operation::SideEffect;
+        &[SideEffect::Random]
+    }
+
+    /// Equal inputs do not produce equal outputs.
+    fn deterministic(&self) -> bool {
+        false
+    }
+
     fn run(&self, _input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let key_length_str = args.first().and_then(|v| v.as_str()).unwrap_or("2048");
         let key_length =

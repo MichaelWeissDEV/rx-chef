@@ -41,6 +41,12 @@ impl Operation for RemoveNullBytes {
         DataType::Bytes
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, _args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let output: Vec<u8> = input.into_iter().filter(|&b| b != 0).collect();
         Ok(output)

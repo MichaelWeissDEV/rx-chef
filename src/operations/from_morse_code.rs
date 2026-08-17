@@ -64,6 +64,12 @@ impl Operation for FromMorseCode {
         DataType::String
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let input_str = String::from_utf8(input)
             .map_err(|_| OperationError::InvalidInput("Invalid UTF-8".to_string()))?;
@@ -78,20 +84,7 @@ impl Operation for FromMorseCode {
         let letter_delim = parse_morse_delimiter(letter_delim_arg);
         let word_delim = parse_morse_delimiter(word_delim_arg);
 
-        // Normalize signals
-        let normalized = input_str
-            .replace("-", "<dash>")
-            .replace("", "<dash>")
-            .replace("", "<dash>")
-            .replace("_", "<dash>")
-            .replace("", "<dash>")
-            .replace("", "<dash>")
-            .replace("dash", "<dash>")
-            .replace("DASH", "<dash>")
-            .replace(".", "<dot>")
-            .replace("", "<dot>")
-            .replace("dot", "<dot>")
-            .replace("DOT", "<dot>");
+        let normalized = normalize_morse_signals(&input_str);
 
         let morse_to_char = get_morse_table();
 
@@ -114,6 +107,40 @@ impl Operation for FromMorseCode {
 
         Ok(result)
     }
+}
+
+/// Rewrite every accepted dash and dot spelling to the canonical `<dash>` and
+/// `<dot>` tokens the lookup table is keyed by.
+///
+/// Two properties matter here and both were previously broken by a chain of
+/// `str::replace` calls:
+///
+/// 1. Several patterns were the *empty string*. `"ab".replace("", "x")` yields
+///    `"xaxbx"` in Rust, so the normalisation inserted a token between every
+///    character and no signal could ever match the table. `From Morse Code`
+///    returned an empty result for all valid input.
+/// 2. The word forms have to be rewritten in the same pass as the symbols.
+///    `"<dash>"` itself contains the substring `dash`, so a later
+///    `.replace("dash", "<dash>")` would corrupt tokens produced earlier.
+///
+/// Upstream CyberChef does this with two case-insensitive regular expressions,
+/// each applied once, which is what the passes below reproduce.
+fn normalize_morse_signals(input: &str) -> String {
+    use std::sync::OnceLock;
+
+    use regex::Regex;
+
+    static DASH: OnceLock<Regex> = OnceLock::new();
+    static DOT: OnceLock<Regex> = OnceLock::new();
+
+    // hyphen-minus | hyphen | minus sign | underscore | en dash | em dash | "dash"
+    let dash = DASH
+        .get_or_init(|| Regex::new(r"(?i)-|\u{2010}|\u{2212}|_|\u{2013}|\u{2014}|dash").unwrap());
+    // full stop | middle dot | "dot"
+    let dot = DOT.get_or_init(|| Regex::new(r"(?i)\.|\u{00B7}|dot").unwrap());
+
+    let dashed = dash.replace_all(input, "<dash>");
+    dot.replace_all(&dashed, "<dot>").into_owned()
 }
 
 fn parse_morse_delimiter(delim: &str) -> String {

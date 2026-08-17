@@ -173,14 +173,24 @@ fn parse_csv(data: &str, cell_delims: &[char], line_delims: &[char]) -> Vec<Vec<
     lines
 }
 
+/// Display width of a cell.
+///
+/// Column widths must be measured in characters, not bytes: `String::len`
+/// counts UTF-8 bytes, so a cell such as "café" would reserve one column too
+/// many and skew every border on the row.
+fn cell_width(cell: &str) -> usize {
+    cell.chars().count()
+}
+
 fn get_longest_cells(table_data: &[Vec<String>]) -> Vec<usize> {
     let mut longest_cells = Vec::new();
     for row in table_data {
         for (idx, cell) in row.iter().enumerate() {
+            let width = cell_width(cell);
             if idx >= longest_cells.len() {
-                longest_cells.push(cell.len());
-            } else if cell.len() > longest_cells[idx] {
-                longest_cells[idx] = cell.len();
+                longest_cells.push(width);
+            } else if width > longest_cells[idx] {
+                longest_cells[idx] = width;
             }
         }
     }
@@ -201,19 +211,22 @@ fn ascii_output(mut table_data: Vec<Vec<String>>, first_row_header: bool) -> Str
         border
     };
 
+    // A cell occupies `width + 2` columns: one leading space, the padded
+    // content, one trailing space. That must match `horizontal_border`, which
+    // draws `width + 2` dashes.
     let output_row = |row: &[String], longest_cells: &[usize]| {
         let mut row_output = String::from("|");
         for (idx, cell) in row.iter().enumerate() {
             let padding = if idx < longest_cells.len() {
-                longest_cells[idx] - cell.len()
+                longest_cells[idx].saturating_sub(cell_width(cell))
             } else {
                 0
             };
-            row_output.push_str(&format!(" {} {} |", cell, " ".repeat(padding)));
+            row_output.push_str(&format!(" {}{} |", cell, " ".repeat(padding)));
         }
         // Handle cases where row has fewer cells than header
         for idx in row.len()..longest_cells.len() {
-            row_output.push_str(&format!(" {} |", " ".repeat(longest_cells[idx] + 1)));
+            row_output.push_str(&format!(" {} |", " ".repeat(longest_cells[idx])));
         }
         row_output.push('\n');
         row_output
@@ -270,18 +283,19 @@ fn markdown_output(mut table_data: Vec<Vec<String>>) -> String {
     let longest_cells = get_longest_cells(&table_data);
     let mut output = String::new();
 
+    // Matches the `| --- |` divider below: `width + 2` columns per cell.
     let output_row = |row: &[String], longest_cells: &[usize]| {
         let mut row_output = String::from("|");
         for (idx, cell) in row.iter().enumerate() {
             let padding = if idx < longest_cells.len() {
-                longest_cells[idx] - cell.len()
+                longest_cells[idx].saturating_sub(cell_width(cell))
             } else {
                 0
             };
-            row_output.push_str(&format!(" {} {} |", cell, " ".repeat(padding)));
+            row_output.push_str(&format!(" {}{} |", cell, " ".repeat(padding)));
         }
         for idx in row.len()..longest_cells.len() {
-            row_output.push_str(&format!(" {} |", " ".repeat(longest_cells[idx] + 1)));
+            row_output.push_str(&format!(" {} |", " ".repeat(longest_cells[idx])));
         }
         row_output.push('\n');
         row_output

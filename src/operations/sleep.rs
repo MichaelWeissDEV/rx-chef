@@ -51,6 +51,12 @@ impl Operation for Sleep {
         DataType::Bytes
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let ms = args.first().and_then(|a| a.as_f64()).unwrap_or(1000.0) as u64;
         thread::sleep(Duration::from_millis(ms));

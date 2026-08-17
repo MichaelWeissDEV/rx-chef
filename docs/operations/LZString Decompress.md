@@ -28,7 +28,7 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Compression Format | `String` | no | `Standard` | — | no | The format the data was compressed in. |
+| 1 | Compression Format | `Enum` | no | `Standard` | Standard, Base64, UTF16, EncodedURIComponent | no | The format the data was compressed in. |
 
 ## Implementation
 

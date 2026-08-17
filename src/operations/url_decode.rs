@@ -93,6 +93,12 @@ impl Operation for URLDecode {
         DataType::String
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let plus_is_space = args.first().and_then(|a| a.as_bool()).unwrap_or(true);
 

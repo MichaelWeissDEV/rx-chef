@@ -9,7 +9,7 @@ RIPEMD (RACE Integrity Primitives Evaluation Message Digest) is a family of cryp
 | Field | Value |
 |---|---|
 | Implementation | `Partial` |
-| Parity | `Unknown` |
+| Parity | `Exact` |
 | Availability | Available |
 | Input requirement | `Required` |
 | Features | none |
@@ -28,7 +28,7 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Size | `Enum` | no | `160` | 320, 256, 160, 128 | no | Output size in bits (320, 256, 160, or 128) |
+| 1 | Size | `Enum` | no | `320` | 320, 256, 160, 128 | no | Output size in bits (320, 256, 160, or 128) |
 
 ## Implementation
 
@@ -54,7 +54,7 @@ Schema violations are rejected before the operation runs. Malformed input, unsup
 
 ## CyberChef compatibility
 
-Parity status: `Unknown`. `Unknown` records an unassessed compatibility claim; it does not imply equality or incompatibility.
+Parity status: `Exact`. `Unknown` records an unassessed compatibility claim; it does not imply equality or incompatibility.
 
 ## Security considerations
 
@@ -64,6 +64,9 @@ Declared side effects: `[]`. Treat parser inputs as untrusted and apply executio
 
 Correctness tests:
 - tests/tests/operations/ripemd.rs
+
+Differential tests:
+- tests/tests/differential.rs
 
 ## Performance classification
 

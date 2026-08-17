@@ -35,7 +35,9 @@ impl Operation for Streebog {
         static SCHEMA: &[ArgSchema] = &[ArgSchema {
             name: "Digest length",
             description: "The length of the digest to produce.",
-            default_value: "512",
+            // Matches upstream CyberChef, which lists 256 first
+            // in its size options and therefore uses it by default.
+            default_value: "256",
             kind: crate::operation::ArgKind::UnsignedInteger,
             required: false,
             choices: &[],
@@ -52,6 +54,12 @@ impl Operation for Streebog {
 
     fn output_type(&self) -> DataType {
         DataType::String
+    }
+
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
     }
 
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {

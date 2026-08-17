@@ -31,9 +31,10 @@ impl Operation for LZStringDecompress {
             name: "Compression Format",
             description: "The format the data was compressed in.",
             default_value: "Standard",
-            kind: crate::operation::ArgKind::String,
+            kind: crate::operation::ArgKind::Enum,
             required: false,
-            choices: &[],
+            // Must stay identical to `LZString Compress`.
+            choices: &["Standard", "Base64", "UTF16", "EncodedURIComponent"],
             minimum: None,
             maximum: None,
             sensitive: false,

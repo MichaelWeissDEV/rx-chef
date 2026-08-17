@@ -64,6 +64,12 @@ impl Operation for RailFenceCipherDecode {
         DataType::String
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let key: usize = args.first().and_then(|a| a.as_usize()).unwrap_or(2);
         let offset: usize = args.get(1).and_then(|a| a.as_usize()).unwrap_or(0);

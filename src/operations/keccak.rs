@@ -39,7 +39,9 @@ impl Operation for Keccak {
         static SCHEMA: &[ArgSchema] = &[ArgSchema {
             name: "Size",
             description: "Output size in bits: 512, 384, 256, or 224",
-            default_value: "256",
+            // Matches upstream CyberChef, which lists 512 first
+            // in its size options and therefore uses it by default.
+            default_value: "512",
             kind: crate::operation::ArgKind::UnsignedInteger,
             required: false,
             choices: &[],
@@ -56,6 +58,12 @@ impl Operation for Keccak {
 
     fn output_type(&self) -> DataType {
         DataType::String
+    }
+
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
     }
 
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {

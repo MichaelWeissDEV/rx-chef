@@ -25,9 +25,8 @@ fn test_from_charcode_space_delimited() {
     ];
     // Space-delimited hex codes: 48 65 6c 6c 6f -> "Hello"
     let charcode_input = "48 65 6c 6c 6f";
-    let result = op.run(charcode_input.as_bytes().to_vec(), &args);
-    assert!(result.is_ok());
-    let decoded = result.unwrap();
+    let decoded = op.run(charcode_input.as_bytes().to_vec(), &args).unwrap();
+    assert_eq!(decoded, b"Hello");
     assert_eq!(String::from_utf8_lossy(&decoded), "Hello");
 }
 
@@ -40,9 +39,8 @@ fn test_from_charcode_comma_delimited() {
     ];
     // Comma-delimited decimal codes: 72,101,108,108,111 -> "Hello"
     let charcode_input = "72,101,108,108,111";
-    let result = op.run(charcode_input.as_bytes().to_vec(), &args);
-    assert!(result.is_ok());
-    let decoded = result.unwrap();
+    let decoded = op.run(charcode_input.as_bytes().to_vec(), &args).unwrap();
+    assert_eq!(decoded, b"Hello");
     assert_eq!(String::from_utf8_lossy(&decoded), "Hello");
 }
 

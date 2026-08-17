@@ -56,6 +56,11 @@ impl Operation for SHA1 {
         DataType::String
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         // The sha1 crate doesn't support variable rounds; always uses 80
         // We validate the rounds argument but don't use it

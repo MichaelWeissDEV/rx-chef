@@ -38,6 +38,12 @@ impl Operation for FromQuotedPrintable {
         DataType::Bytes
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, _args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         if input.is_empty() {
             return Ok(Vec::new());

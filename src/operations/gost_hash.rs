@@ -35,9 +35,9 @@ impl Operation for GostHash {
                 name: "Algorithm",
                 description: "The GOST hash algorithm version to use.",
                 default_value: "GOST 28147 (1994)",
-                kind: crate::operation::ArgKind::String,
+                kind: crate::operation::ArgKind::Enum,
                 required: false,
-                choices: &[],
+                choices: &["GOST 28147 (1994)", "GOST R 34.11 (2012)"],
                 minimum: None,
                 maximum: None,
                 sensitive: false,
@@ -57,9 +57,9 @@ impl Operation for GostHash {
                 name: "sBox",
                 description: "GOST94 parameter set: E-TEST/D-TEST (test) or CryptoPro/D-A",
                 default_value: "E-TEST",
-                kind: crate::operation::ArgKind::String,
+                kind: crate::operation::ArgKind::Enum,
                 required: false,
-                choices: &[],
+                choices: &["E-TEST", "D-TEST", "CryptoPro", "D-A"],
                 minimum: None,
                 maximum: None,
                 sensitive: false,
@@ -84,8 +84,11 @@ impl Operation for GostHash {
         let digest_length = args.get(1).and_then(|a| a.as_str()).unwrap_or("256");
         let sbox_name = args.get(2).and_then(|a| a.as_str()).unwrap_or("E-TEST");
 
-        let result = if algorithm == "GOST 28147 (1994)" {
-            match sbox_name.to_ascii_uppercase().as_str() {
+        // An unrecognised algorithm must be rejected rather than silently
+        // falling through to Streebog, which would return a digest from a
+        // completely different hash function than the caller named.
+        let result = match algorithm {
+            "GOST 28147 (1994)" => match sbox_name.to_ascii_uppercase().as_str() {
                 "E-TEST" | "D-TEST" | "TEST" => {
                     hex::encode(<Gost94Test as Gost94Digest>::digest(&input))
                 }
@@ -98,9 +101,8 @@ impl Operation for GostHash {
                         reason: format!("unsupported GOST94 parameter set '{sbox_name}'"),
                     })
                 }
-            }
-        } else {
-            match digest_length {
+            },
+            "GOST R 34.11 (2012)" => match digest_length {
                 "256" => hex::encode(<Streebog256 as StreebogDigest>::digest(&input)),
                 "512" => hex::encode(<Streebog512 as StreebogDigest>::digest(&input)),
                 _ => {
@@ -110,6 +112,14 @@ impl Operation for GostHash {
                             .to_string(),
                     })
                 }
+            },
+            other => {
+                return Err(OperationError::InvalidArgument {
+                    name: "Algorithm".to_string(),
+                    reason: format!(
+                        "unsupported GOST algorithm '{other}'; expected 'GOST 28147 (1994)' or 'GOST R 34.11 (2012)'"
+                    ),
+                })
             }
         };
 

@@ -13,8 +13,8 @@ A cryptographically-secure pseudo-random number generator (PRNG). This operation
 | Availability | Available |
 | Input requirement | `Ignored` |
 | Features | none |
-| Side effects | `[]` |
-| Deterministic | true |
+| Side effects | `[Random]` |
+| Deterministic | false |
 
 ## Input
 
@@ -59,7 +59,7 @@ Parity status: `Unknown`. `Unknown` records an unassessed compatibility claim; i
 
 ## Security considerations
 
-Declared side effects: `[]`. Treat parser inputs as untrusted and apply execution limits to large data. Arguments marked sensitive in the schema are redacted from metadata-aware History displays.
+Declared side effects: `[Random]`. Treat parser inputs as untrusted and apply execution limits to large data. Arguments marked sensitive in the schema are redacted from metadata-aware History displays.
 
 ## Testing evidence
 

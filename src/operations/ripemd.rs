@@ -37,7 +37,9 @@ impl Operation for RIPEMD {
         static SCHEMA: &[ArgSchema] = &[ArgSchema {
             name: "Size",
             description: "Output size in bits (320, 256, 160, or 128)",
-            default_value: "160",
+            // Matches upstream CyberChef, which lists 320 first
+            // in its size options and therefore uses it by default.
+            default_value: "320",
             kind: crate::operation::ArgKind::Enum,
             required: false,
             choices: &["320", "256", "160", "128"],
@@ -54,6 +56,12 @@ impl Operation for RIPEMD {
 
     fn output_type(&self) -> DataType {
         DataType::String
+    }
+
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
     }
 
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {

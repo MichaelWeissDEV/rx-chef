@@ -82,6 +82,17 @@ impl Operation for RSAEncrypt {
         DataType::String
     }
 
+    /// PKCS#1 and OAEP padding are randomised.
+    fn side_effects(&self) -> &'static [crate::operation::SideEffect] {
+        use crate::operation::SideEffect;
+        &[SideEffect::Random]
+    }
+
+    /// Equal inputs do not produce equal outputs.
+    fn deterministic(&self) -> bool {
+        false
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let pem_key = args.first().and_then(|a| a.as_str()).unwrap_or("");
         let scheme = args.get(1).and_then(|a| a.as_str()).unwrap_or("RSA-OAEP");

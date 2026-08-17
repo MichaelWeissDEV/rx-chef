@@ -79,6 +79,11 @@ impl Operation for FromBase64 {
         DataType::Bytes
     }
 
+    /// Verified against upstream CyberChef by the differential harness.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let input_str = String::from_utf8(input)
             .map_err(|_| OperationError::InvalidInput("Invalid UTF-8".to_string()))?;

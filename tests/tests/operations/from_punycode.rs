@@ -12,9 +12,8 @@ fn test_from_punycode_ascii_only() {
     // mnchen-3ya is münchen
     let input = b"mnchen-3ya".to_vec();
     let args = [ArgValue::Bool(false)];
-    let result = op.run(input, &args);
-    assert!(result.is_ok());
-    assert_eq!(String::from_utf8(result.unwrap()).unwrap(), "münchen");
+    let decoded = op.run(input, &args).unwrap();
+    assert_eq!(String::from_utf8(decoded).unwrap(), "münchen");
 }
 #[test]
 fn test_from_punycode_idn_domain() {

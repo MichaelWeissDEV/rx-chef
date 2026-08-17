@@ -27,11 +27,11 @@ fn test_from_base58_simple_decode() {
         ),
         rxchef::operation::ArgValue::Bool(true),
     ];
-    // Simple Base58 encoding: "a" -> should decode to some bytes
+    // "a" is index 33 in the Bitcoin alphabet, which is the single byte 0x21.
+    // Value cross-checked against CyberChef 11.0.0.
     let base58_input = "a";
-    let result = op.run(base58_input.as_bytes().to_vec(), &args);
-    // Should successfully decode
-    assert!(result.is_ok());
+    let decoded = op.run(base58_input.as_bytes().to_vec(), &args).unwrap();
+    assert_eq!(decoded, [0x21]);
 }
 
 #[test]
@@ -43,11 +43,11 @@ fn test_from_base58_with_cleaning() {
         ),
         rxchef::operation::ArgValue::Bool(true), // Remove non-alphabet chars
     ];
-    // Base58 with invalid characters
+    // Non-alphabet characters are stripped, leaving "abc".
+    // Value cross-checked against CyberChef 11.0.0.
     let base58_input = "a!b@c";
-    let result = op.run(base58_input.as_bytes().to_vec(), &args);
-    // Should successfully decode after removing invalid chars
-    assert!(result.is_ok());
+    let decoded = op.run(base58_input.as_bytes().to_vec(), &args).unwrap();
+    assert_eq!(decoded, [0x01, 0xb9, 0x7b]);
 }
 
 #[test]
@@ -75,9 +75,10 @@ fn test_from_base58_different_alphabet() {
         ),
         rxchef::operation::ArgValue::Bool(true),
     ];
-    // Using Flickr alphabet
+    // "a" sits at a different index in the Flickr alphabet, giving 0x05
+    // rather than the Bitcoin alphabet's 0x21.
+    // Value cross-checked against CyberChef 11.0.0.
     let base58_input = "a";
-    let result = op.run(base58_input.as_bytes().to_vec(), &args);
-    // Should decode successfully with the different alphabet
-    assert!(result.is_ok());
+    let decoded = op.run(base58_input.as_bytes().to_vec(), &args).unwrap();
+    assert_eq!(decoded, [0x05]);
 }

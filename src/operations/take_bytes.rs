@@ -76,6 +76,12 @@ impl Operation for TakeBytes {
         DataType::Bytes
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let start = args.first().and_then(|a| a.as_i64()).unwrap_or(0);
         let length = args.get(1).and_then(|a| a.as_i64()).unwrap_or(5);

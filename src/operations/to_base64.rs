@@ -44,6 +44,11 @@ impl Operation for ToBase64 {
     fn output_type(&self) -> DataType {
         DataType::String
     }
+    /// Verified against upstream CyberChef by the differential harness.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let alphabet_arg = args
             .get(0)

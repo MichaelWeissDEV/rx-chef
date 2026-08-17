@@ -65,9 +65,11 @@ fn test_from_base32_different_alphabet() {
         rxchef::operation::ArgValue::Str("0-9A-V".to_string()),
         rxchef::operation::ArgValue::Bool(true),
     ];
-    // Using 0-9A-V alphabet
-    let base32_input = "10436841"; // Represents some value in this alphabet
-    let result = op.run(base32_input.as_bytes().to_vec(), &args);
-    // Should decode successfully with the different alphabet
-    assert!(result.is_ok());
+    // The extended-hex alphabet (RFC 4648 base32hex) maps digits before
+    // letters, so "10436841" is a different byte string than it would be in
+    // the standard alphabet.
+    // Value cross-checked against CyberChef 11.0.0.
+    let base32_input = "10436841";
+    let decoded = op.run(base32_input.as_bytes().to_vec(), &args).unwrap();
+    assert_eq!(decoded, [0x08, 0x08, 0x33, 0x20, 0x81]);
 }

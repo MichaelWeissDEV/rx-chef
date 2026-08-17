@@ -25,10 +25,11 @@ fn test_from_base85_standard_alphabet() {
         rxchef::operation::ArgValue::Bool(true),
         rxchef::operation::ArgValue::Str("z".to_string()),
     ];
-    // Simple Base85 encoding
+    // "BOu!r" is the Ascii85 encoding of "hell".
+    // Value cross-checked against CyberChef 11.0.0.
     let base85_input = "BOu!r";
-    let result = op.run(base85_input.as_bytes().to_vec(), &args);
-    assert!(result.is_ok());
+    let decoded = op.run(base85_input.as_bytes().to_vec(), &args).unwrap();
+    assert_eq!(decoded, b"hell");
 }
 
 #[test]
@@ -39,10 +40,11 @@ fn test_from_base85_with_delimiters() {
         rxchef::operation::ArgValue::Bool(true),
         rxchef::operation::ArgValue::Str("z".to_string()),
     ];
-    // Base85 with delimiters
+    // The <~ ~> delimiters are stripped, so the decoded bytes are unchanged.
+    // Value cross-checked against CyberChef 11.0.0.
     let base85_input = "<~BOu!r~>";
-    let result = op.run(base85_input.as_bytes().to_vec(), &args);
-    assert!(result.is_ok());
+    let decoded = op.run(base85_input.as_bytes().to_vec(), &args).unwrap();
+    assert_eq!(decoded, b"hell");
 }
 
 #[test]

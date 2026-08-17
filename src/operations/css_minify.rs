@@ -53,6 +53,12 @@ impl Operation for CssMinify {
         DataType::String
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let text = String::from_utf8_lossy(&input);
         let preserve_comments = args.first().and_then(|a| a.as_bool()).unwrap_or(false);

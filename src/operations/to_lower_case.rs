@@ -39,6 +39,12 @@ impl Operation for ToLowerCase {
         DataType::String
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, _args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let s = String::from_utf8_lossy(&input);
         Ok(s.to_lowercase().into_bytes())

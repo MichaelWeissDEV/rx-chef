@@ -66,6 +66,17 @@ impl Operation for GenerateECDSAKeyPairOp {
         DataType::String
     }
 
+    /// Key generation draws from a random source.
+    fn side_effects(&self) -> &'static [crate::operation::SideEffect] {
+        use crate::operation::SideEffect;
+        &[SideEffect::Random]
+    }
+
+    /// Equal inputs do not produce equal outputs.
+    fn deterministic(&self) -> bool {
+        false
+    }
+
     fn run(&self, _input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let curve_name = args.first().and_then(|a| a.as_str()).unwrap_or("P-256");
         let output_format = args.get(1).and_then(|a| a.as_str()).unwrap_or("PEM");

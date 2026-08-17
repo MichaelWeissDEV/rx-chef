@@ -1641,7 +1641,7 @@ Compress the input with lz-string.
 
 | # | Argument | Default | Description |
 |---:|---|---|---|
-| 1 | Compression Format | `default` | default, UTF16, Base64 |
+| 1 | Compression Format | `Standard` | Output format. Only 'Standard' is currently implemented. |
 
 ### LZString Decompress
 
@@ -5124,7 +5124,7 @@ The Keccak hash algorithm was designed by Guido Bertoni, Joan Daemen, Michael Pe
 
 | # | Argument | Default | Description |
 |---:|---|---|---|
-| 1 | Size | `256` | Output size in bits: 512, 384, 256, or 224 |
+| 1 | Size | `512` | Output size in bits: 512, 384, 256, or 224 |
 
 ### MD2
 
@@ -5176,7 +5176,7 @@ RIPEMD (RACE Integrity Primitives Evaluation Message Digest) is a family of cryp
 
 | # | Argument | Default | Description |
 |---:|---|---|---|
-| 1 | Size | `160` | Output size in bits (320, 256, 160, or 128) |
+| 1 | Size | `320` | Output size in bits (320, 256, 160, or 128) |
 
 ### SHA0
 
@@ -5226,7 +5226,7 @@ SHA-3 (Secure Hash Algorithm 3) is a cryptographic hash function standard releas
 
 | # | Argument | Default | Description |
 |---:|---|---|---|
-| 1 | Size | `256` | Output size in bits (512, 384, 256, or 224) |
+| 1 | Size | `512` | Output size in bits (512, 384, 256, or 224) |
 
 ### SHAKE
 
@@ -5276,7 +5276,7 @@ Streebog is a cryptographic hash function defined in the Russian national standa
 
 | # | Argument | Default | Description |
 |---:|---|---|---|
-| 1 | Digest length | `512` | The length of the digest to produce. |
+| 1 | Digest length | `256` | The length of the digest to produce. |
 
 ### Whirlpool
 

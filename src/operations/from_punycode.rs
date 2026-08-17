@@ -8,7 +8,7 @@
  * -----------------------------------------------------------------------------
  */
 
-use idna::domain_to_unicode;
+use idna::{domain_to_unicode, punycode};
 
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
 
@@ -53,6 +53,12 @@ impl Operation for FromPunycode {
         DataType::String
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let input_str = String::from_utf8(input)
             .map_err(|_| OperationError::InvalidInput("Invalid UTF-8 input".to_string()))?;
@@ -69,19 +75,18 @@ impl Operation for FromPunycode {
             }
             Ok(unicode.into_bytes())
         } else {
-            // Treat as raw punycode label (without xn-- prefix)
-            // Prepend xn-- so domain_to_unicode can handle it
-            let with_prefix = if input_str.starts_with("xn--") {
-                input_str.clone()
-            } else {
-                format!("xn--{}", input_str.trim())
-            };
-            let (unicode, result) = domain_to_unicode(&with_prefix);
-            if result.is_err() {
-                return Err(OperationError::ProcessingError(
-                    "Failed to decode punycode".to_string(),
-                ));
-            }
+            // Decode a raw punycode label directly.
+            //
+            // This previously prepended `xn--` and went through
+            // `domain_to_unicode`, which applies IDNA label validation on top
+            // of punycode. That rejected perfectly valid raw labels such as
+            // "foobar-" (the encoding of an all-ASCII string), so `To
+            // Punycode` output could not be decoded back.
+            let label = input_str.trim();
+            let label = label.strip_prefix("xn--").unwrap_or(label);
+            let unicode = punycode::decode_to_string(label).ok_or_else(|| {
+                OperationError::ProcessingError("Failed to decode punycode".to_string())
+            })?;
             Ok(unicode.into_bytes())
         }
     }

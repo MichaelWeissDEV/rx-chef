@@ -41,6 +41,15 @@ impl Operation for VarIntDecode {
         DataType::String
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::IntentionalDifference
+    }
+
+    fn known_limitations(&self) -> &'static [&'static str] {
+        &["A truncated varint (final byte with the continuation bit still set) returns the bits accumulated so far instead of an error, matching upstream CyberChef rather than a strict protobuf decoder."]
+    }
+
     fn run(&self, input: Vec<u8>, _args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let mut result = BigUint::from_u8(0).unwrap();
         let mut offset = 0;

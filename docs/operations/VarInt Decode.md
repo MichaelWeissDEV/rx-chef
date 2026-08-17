@@ -9,7 +9,7 @@ Decodes a VarInt encoded integer. VarInt is an efficient way of encoding variabl
 | Field | Value |
 |---|---|
 | Implementation | `Partial` |
-| Parity | `Unknown` |
+| Parity | `IntentionalDifference` |
 | Availability | Available |
 | Input requirement | `Required` |
 | Features | none |
@@ -52,7 +52,7 @@ Schema violations are rejected before the operation runs. Malformed input, unsup
 
 ## CyberChef compatibility
 
-Parity status: `Unknown`. `Unknown` records an unassessed compatibility claim; it does not imply equality or incompatibility.
+Parity status: `IntentionalDifference`. `Unknown` records an unassessed compatibility claim; it does not imply equality or incompatibility.
 
 ## Security considerations
 
@@ -63,9 +63,16 @@ Declared side effects: `[]`. Treat parser inputs as untrusted and apply executio
 Correctness tests:
 - tests/tests/operations/varint_decode.rs
 
+Differential tests:
+- tests/tests/differential.rs
+
 ## Performance classification
 
 Excluded from the committed representative benchmark set: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
+
+## Known limitations
+
+- A truncated varint (final byte with the continuation bit still set) returns the bits accumulated so far instead of an error, matching upstream CyberChef rather than a strict protobuf decoder.
 
 ## References
 

@@ -91,6 +91,17 @@ impl Operation for GenerateTOTP {
         DataType::String
     }
 
+    /// The one-time password depends on the current time step.
+    fn side_effects(&self) -> &'static [crate::operation::SideEffect] {
+        use crate::operation::SideEffect;
+        &[SideEffect::Time]
+    }
+
+    /// Equal inputs do not produce equal outputs.
+    fn deterministic(&self) -> bool {
+        false
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let name = args.first().and_then(|v| v.as_str()).unwrap_or("");
         let digits = args.get(1).and_then(|v| v.as_f64()).unwrap_or(6.0) as usize;

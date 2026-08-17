@@ -32,9 +32,9 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Algorithm | `String` | no | `GOST 28147 (1994)` | — | no | The GOST hash algorithm version to use. |
+| 1 | Algorithm | `Enum` | no | `GOST 28147 (1994)` | GOST 28147 (1994), GOST R 34.11 (2012) | no | The GOST hash algorithm version to use. |
 | 2 | Digest length | `UnsignedInteger` | no | `256` | — | no | The length of the digest to produce (only for Streebog). |
-| 3 | sBox | `String` | no | `E-TEST` | — | no | GOST94 parameter set: E-TEST/D-TEST (test) or CryptoPro/D-A |
+| 3 | sBox | `Enum` | no | `E-TEST` | E-TEST, D-TEST, CryptoPro, D-A | no | GOST94 parameter set: E-TEST/D-TEST (test) or CryptoPro/D-A |
 
 ## Implementation
 

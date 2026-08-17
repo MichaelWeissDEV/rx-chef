@@ -132,6 +132,17 @@ impl Operation for DnsOverHttps {
         DataType::Json
     }
 
+    /// Queries a remote DNS-over-HTTPS resolver.
+    fn side_effects(&self) -> &'static [crate::operation::SideEffect] {
+        use crate::operation::SideEffect;
+        &[SideEffect::Network]
+    }
+
+    /// Equal inputs do not produce equal outputs.
+    fn deterministic(&self) -> bool {
+        false
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let resolver = args
             .get(0)

@@ -50,6 +50,12 @@ impl Operation for Reverse {
         DataType::Bytes
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let by = args.first().and_then(|a| a.as_str()).unwrap_or("Character");
 

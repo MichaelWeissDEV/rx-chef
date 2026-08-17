@@ -89,11 +89,13 @@ impl Operation for IPv6TransitionAddresses {
                 } else if re_ipv6.is_match(item) {
                     output.push_str(&un_transition(item, remove_headers));
                 } else {
-                    return Ok(
-                        "Enter compressed or expanded IPv6 address, IPv4 address or MAC Address."
-                            .as_bytes()
-                            .to_vec(),
-                    );
+                    // Unrecognised input is a caller error, not a result. It
+                    // must surface as a structured error so the CLI exits
+                    // non-zero and the JSON API reports a failure, instead of
+                    // this prose being mistaken for a converted address.
+                    return Err(OperationError::InvalidInput(format!(
+                        "'{item}' is not a compressed or expanded IPv6 address, IPv4 address, or MAC address"
+                    )));
                 }
             }
         }

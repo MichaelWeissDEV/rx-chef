@@ -80,6 +80,12 @@ impl Operation for GroupIPAddresses {
         DataType::String
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let delim_str = args.first().and_then(|v| v.as_str()).unwrap_or("Line feed");
         let cidr = args.get(1).and_then(|v| v.as_i64()).unwrap_or(24);

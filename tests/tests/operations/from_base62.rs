@@ -17,35 +17,32 @@ fn test_from_base62_empty_input() {
 fn test_from_base62_simple_decode() {
     let op = FromBase62;
     let args = [rxchef::operation::ArgValue::Str("0-9A-Za-z".to_string())];
-    // Simple Base62 encoding: "a" -> should decode to some bytes
+    // "a" is index 36, which is the single byte 0x24 ('$').
+    // Value cross-checked against CyberChef 11.0.0.
     let base62_input = "a";
-    let result = op.run(base62_input.as_bytes().to_vec(), &args);
-    // Should successfully decode
-    assert!(result.is_ok());
+    let decoded = op.run(base62_input.as_bytes().to_vec(), &args).unwrap();
+    assert_eq!(decoded, b"$");
 }
 
 #[test]
 fn test_from_base62_number_decode() {
     let op = FromBase62;
     let args = [rxchef::operation::ArgValue::Str("0-9A-Za-z".to_string())];
-    // Test with numeric input
+    // 1*62^2 + 2*62 + 3 = 3971 = 0x0F83.
+    // Value cross-checked against CyberChef 11.0.0.
     let base62_input = "123";
-    let result = op.run(base62_input.as_bytes().to_vec(), &args);
-    // Should successfully decode
-    assert!(result.is_ok());
-    let decoded = result.unwrap();
-    assert!(!decoded.is_empty());
+    let decoded = op.run(base62_input.as_bytes().to_vec(), &args).unwrap();
+    assert_eq!(decoded, [0x0f, 0x83]);
 }
 
 #[test]
 fn test_from_base62_mixed_alphabet() {
     let op = FromBase62;
     let args = [rxchef::operation::ArgValue::Str("0-9A-Za-z".to_string())];
-    // Test with mixed alphabet characters
+    // Value cross-checked against CyberChef 11.0.0.
     let base62_input = "aBc123";
-    let result = op.run(base62_input.as_bytes().to_vec(), &args);
-    // Should successfully decode
-    assert!(result.is_ok());
+    let decoded = op.run(base62_input.as_bytes().to_vec(), &args).unwrap();
+    assert_eq!(decoded, [0x07, 0xb8, 0x09, 0x34, 0x83]);
 }
 
 #[test]

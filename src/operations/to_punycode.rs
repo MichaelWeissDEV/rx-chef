@@ -8,7 +8,7 @@
  * -----------------------------------------------------------------------------
  */
 
-use idna::domain_to_ascii;
+use idna::{domain_to_ascii, punycode};
 
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
 
@@ -53,6 +53,12 @@ impl Operation for ToPunycode {
         DataType::String
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let input_str = String::from_utf8(input)
             .map_err(|_| OperationError::InvalidInput("Invalid UTF-8 input".to_string()))?;
@@ -65,16 +71,19 @@ impl Operation for ToPunycode {
             })?;
             Ok(ascii.into_bytes())
         } else {
-            // Encode as a single label
-            let ascii = domain_to_ascii(input_str.trim()).map_err(|e| {
-                OperationError::ProcessingError(format!("Failed to encode as punycode: {:?}", e))
+            // Encode as a single raw punycode label.
+            //
+            // This previously went through `domain_to_ascii` and stripped the
+            // `xn--` prefix. For all-ASCII input that function returns the
+            // string unchanged, so no delimiter was emitted and the result was
+            // not decodable: "foobar" encoded to "foobar", which `From
+            // Punycode` then decoded as an extended sequence and turned into
+            // unrelated characters. RFC 3492 section 6.3 requires the literal
+            // portion to be terminated by the delimiter, so "foobar" must
+            // encode to "foobar-".
+            let result = punycode::encode_str(input_str.trim()).ok_or_else(|| {
+                OperationError::ProcessingError("Failed to encode as punycode".to_string())
             })?;
-            // Strip the xn-- prefix to match CyberChef's raw punycode behaviour
-            let result = if ascii.starts_with("xn--") {
-                ascii[4..].to_string()
-            } else {
-                ascii
-            };
             Ok(result.into_bytes())
         }
     }

@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-13T00:00:00+02:00",
+  "version": "0.1.0",
   "workspace_crates": [
     "rxchef",
     "rxchef_cli",
@@ -10,19 +10,17 @@
   "binaries": [
     "rxchef"
   ],
-  "version": "0.0.1",
   "features": [
-    "pgp",
+    "disassembly",
     "jsonata",
-    "tesseract"
+    "pgp",
+    "tesseract",
+    "yara"
   ],
-  "build_status": "passing",
-  "test_status": "passing",
   "operations_count": 478,
-  "tests_count": 1829,
-  "known_build_errors": [],
-  "known_test_errors": [],
   "feature_gated_operations": [
+    "Disassemble ARM",
+    "Disassemble x86",
     "Generate PGP Key Pair",
     "Jsonata Query",
     "Optical Character Recognition",
@@ -30,19 +28,10 @@
     "PGP Decrypt and Verify",
     "PGP Encrypt",
     "PGP Encrypt and Sign",
-    "PGP Verify"
+    "PGP Verify",
+    "YARA Rules"
   ],
-  "broken_operations": [
-    "Generate PGP Key Pair (without feature)",
-    "Jsonata Query (without feature)",
-    "Optical Character Recognition (without feature)",
-    "PGP Decrypt (without feature)",
-    "PGP Decrypt and Verify (without feature)",
-    "PGP Encrypt (without feature)",
-    "PGP Encrypt and Sign (without feature)",
-    "PGP Verify (without feature)"
-  ],
-  "all_features_broken_operations": [],
-  "placeholders": [],
-  "native_dependencies": ["tesseract"]
+  "native_dependencies": [
+    "tesseract"
+  ]
 }

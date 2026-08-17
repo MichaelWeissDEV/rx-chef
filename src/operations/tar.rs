@@ -53,6 +53,17 @@ impl Operation for Tar {
         DataType::Bytes
     }
 
+    /// Archive headers embed the current modification time.
+    fn side_effects(&self) -> &'static [crate::operation::SideEffect] {
+        use crate::operation::SideEffect;
+        &[SideEffect::Time]
+    }
+
+    /// Equal inputs do not produce equal outputs.
+    fn deterministic(&self) -> bool {
+        false
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let filename = args.first().and_then(|v| v.as_str()).unwrap_or("file.txt");
 

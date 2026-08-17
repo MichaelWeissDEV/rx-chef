@@ -376,7 +376,15 @@ impl Utils {
                 if let Some(text) = s.strip_prefix("text:") {
                     return Ok(text.as_bytes().to_vec());
                 }
-                if let Some(encoded) = s.strip_prefix("hex:").or_else(|| s.strip_prefix("bytes:")) {
+                // `0x` is accepted alongside `hex:`/`bytes:` so a spelling that
+                // previously only worked for individual operations behaves the
+                // same for every byte argument. `text:` forces literal text
+                // when a key really does start with "0x".
+                if let Some(encoded) = s
+                    .strip_prefix("hex:")
+                    .or_else(|| s.strip_prefix("bytes:"))
+                    .or_else(|| s.strip_prefix("0x"))
+                {
                     let cleaned = encoded.replace([' ', '\n', '\r', '\t'], "");
                     return hex::decode(cleaned).map_err(|error| OperationError::InvalidArgument {
                         name: "Argument".to_string(),
@@ -681,5 +689,32 @@ mod tests {
             Utils::convert_to_byte_array(&ArgValue::Str("base64:SGk=".into())).unwrap(),
             b"Hi"
         );
+    }
+
+    #[test]
+    fn byte_arguments_accept_every_documented_prefix() {
+        use super::Utils;
+
+        // All three hex spellings must agree.
+        for spelling in ["hex:0b0b", "bytes:0b0b", "0x0b0b"] {
+            assert_eq!(
+                Utils::convert_to_byte_array(&ArgValue::Str(spelling.into())).unwrap(),
+                [0x0b, 0x0b],
+                "spelling {spelling}"
+            );
+        }
+        // `text:` is the escape hatch for literal text starting with a prefix.
+        assert_eq!(
+            Utils::convert_to_byte_array(&ArgValue::Str("text:0x0b0b".into())).unwrap(),
+            b"0x0b0b"
+        );
+        // Already-decoded bytes pass through unchanged.
+        assert_eq!(
+            Utils::convert_to_byte_array(&ArgValue::Bytes(vec![1, 2, 3])).unwrap(),
+            [1, 2, 3]
+        );
+        // Malformed hex is an error, not a silent fallback to literal text.
+        assert!(Utils::convert_to_byte_array(&ArgValue::Str("hex:zz".into())).is_err());
+        assert!(Utils::convert_to_byte_array(&ArgValue::Str("0xzz".into())).is_err());
     }
 }

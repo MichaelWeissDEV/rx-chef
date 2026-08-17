@@ -88,6 +88,17 @@ impl Operation for FlaskSessionSign {
         DataType::String
     }
 
+    /// Embeds the current timestamp in the signed session.
+    fn side_effects(&self) -> &'static [crate::operation::SideEffect] {
+        use crate::operation::SideEffect;
+        &[SideEffect::Time]
+    }
+
+    /// Equal inputs do not produce equal outputs.
+    fn deterministic(&self) -> bool {
+        false
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let key = args
             .get(0)

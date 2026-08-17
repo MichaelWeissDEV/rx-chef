@@ -66,6 +66,12 @@ impl Operation for RotateRight {
         DataType::Bytes
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let amount = args.first().and_then(|a| a.as_usize()).unwrap_or(1);
         let carry = args.get(1).and_then(|a| a.as_bool()).unwrap_or(false);

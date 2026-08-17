@@ -80,6 +80,12 @@ impl Operation for Head {
         DataType::String
     }
 
+    /// Matches upstream CyberChef byte for byte on the recorded
+    /// differential case.
+    fn parity(&self) -> crate::operation::ParityStatus {
+        crate::operation::ParityStatus::Exact
+    }
+
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let delim_name = args.first().and_then(|a| a.as_str()).unwrap_or("Line feed");
         let number: i64 = args.get(1).and_then(|a| a.as_i64()).unwrap_or(10);

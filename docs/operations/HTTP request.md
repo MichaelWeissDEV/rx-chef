@@ -13,8 +13,8 @@ Makes an HTTP request and returns the response.
 | Availability | Available |
 | Input requirement | `Optional` |
 | Features | none |
-| Side effects | `[]` |
-| Deterministic | true |
+| Side effects | `[Network]` |
+| Deterministic | false |
 
 ## Input
 
@@ -62,7 +62,7 @@ Parity status: `Unknown`. `Unknown` records an unassessed compatibility claim; i
 
 ## Security considerations
 
-Declared side effects: `[]`. Treat parser inputs as untrusted and apply execution limits to large data. Arguments marked sensitive in the schema are redacted from metadata-aware History displays.
+Declared side effects: `[Network]`. Treat parser inputs as untrusted and apply execution limits to large data. Arguments marked sensitive in the schema are redacted from metadata-aware History displays.
 
 ## Testing evidence
 
