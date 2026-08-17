@@ -279,6 +279,21 @@ impl Operation for LZStringCompress {
     }
     /// Matches upstream CyberChef byte for byte on the recorded
     /// differential case.
+    /// Only the `Standard` output format is implemented.
+    ///
+    /// The remaining three are declared in the argument schema because they
+    /// are part of the operation's contract, and each is rejected with a
+    /// structured error rather than silently returning a Standard-format
+    /// stream. Recording that here keeps the gap machine-readable instead of
+    /// leaving callers to discover it at runtime.
+    fn known_limitations(&self) -> &'static [&'static str] {
+        &[
+            "Only the Standard compression format is implemented; Base64, UTF16 \
+             and EncodedURIComponent are declared and rejected with an \
+             InvalidArgument error rather than produced.",
+        ]
+    }
+
     fn parity(&self) -> crate::operation::ParityStatus {
         crate::operation::ParityStatus::Exact
     }

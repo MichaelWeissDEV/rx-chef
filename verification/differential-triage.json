@@ -934,12 +934,6 @@
       "status": "verified"
     },
     {
-      "operation": "To Base64",
-      "classification": "EXACT",
-      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
-      "status": "verified"
-    },
-    {
       "operation": "To Base85",
       "classification": "EXACT",
       "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
@@ -2232,12 +2226,6 @@
       "status": "excluded"
     },
     {
-      "operation": "PHP Deserialize",
-      "classification": "NOT_COMPARABLE",
-      "reason": "Upstream could not run in Node for the sweep input: Unknown type: f",
-      "status": "excluded"
-    },
-    {
       "operation": "PHP Serialize",
       "classification": "NOT_COMPARABLE",
       "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
@@ -2830,12 +2818,6 @@
       "status": "excluded"
     },
     {
-      "operation": "XXTEA Decrypt",
-      "classification": "NOT_COMPARABLE",
-      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
-      "status": "excluded"
-    },
-    {
       "operation": "XXTEA Encrypt",
       "classification": "NOT_COMPARABLE",
       "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
@@ -2924,11 +2906,29 @@
       "status": "fixed"
     },
     {
+      "operation": "PHP Deserialize",
+      "classification": "RXCHEF_BUG",
+      "reason": "The serialized byte length was used to slice a &str and panicked when it fell inside a multi-byte character; four 0xFF bytes reached it.",
+      "status": "fixed"
+    },
+    {
+      "operation": "To Base64",
+      "classification": "RXCHEF_BUG",
+      "reason": "Its alphabet expansion was a literal substring replacement, so it rejected the URL-safe alphabet that From Base64 accepts and upstream supports, and it padded unconditionally regardless of whether the alphabet declares a padding character. All Base-N operations now share src/alphabet.rs.",
+      "status": "fixed"
+    },
+    {
       "operation": "To Hexdump",
       "classification": "RXCHEF_BUG",
       "reason": "Emitted one space between the hex and ASCII columns; hexdump -C and upstream use two, so every line was a character narrow.",
       "reference": "00000000  66 6f 6f 62 61 72                                |foobar|",
       "rxchef": "00000000  66 6f 6f 62 61 72                               |foobar|",
+      "status": "fixed"
+    },
+    {
+      "operation": "XXTEA Decrypt",
+      "classification": "RXCHEF_BUG",
+      "reason": "to_uint8_array underflowed n - 3 for a single-word ciphertext and panicked on a one-byte input.",
       "status": "fixed"
     },
     {

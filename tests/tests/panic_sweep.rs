@@ -20,7 +20,10 @@ fn adversarial_inputs() -> Vec<(&'static str, Vec<u8>)> {
         ("single nul", vec![0]),
         ("single byte", vec![b'a']),
         ("all high bytes", vec![0xFF; 64]),
-        ("invalid utf-8", vec![0xC3, 0x28, 0xA0, 0xA1, 0xE2, 0x28, 0xA1]),
+        (
+            "invalid utf-8",
+            vec![0xC3, 0x28, 0xA0, 0xA1, 0xE2, 0x28, 0xA1],
+        ),
         ("surrogate encoding", vec![0xED, 0xA0, 0x80]),
         ("truncated multibyte", vec![0xE2, 0x82]),
         ("long ascii", vec![b'a'; 4096]),
@@ -32,7 +35,10 @@ fn adversarial_inputs() -> Vec<(&'static str, Vec<u8>)> {
         ("equals signs", b"============".to_vec()),
         ("quotes", b"\"'\"'\"'\"'".to_vec()),
         ("backslashes", b"\\\\\\\\\\\\\\\\".to_vec()),
-        ("oversized number", b"999999999999999999999999999999".to_vec()),
+        (
+            "oversized number",
+            b"999999999999999999999999999999".to_vec(),
+        ),
         ("negative number", b"-1".to_vec()),
         ("dots", b"..........".to_vec()),
         ("colon prefixed", b":::::::::::".to_vec()),

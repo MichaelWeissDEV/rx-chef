@@ -66,7 +66,7 @@ impl Operation for ToBase85 {
         let alphabet_arg = args.first().and_then(|v| v.as_str()).unwrap_or("!-u");
         let include_delim = args.get(1).and_then(|v| v.as_bool()).unwrap_or(false);
 
-        let alphabet = expand_alphabet(alphabet_arg);
+        let alphabet = crate::alphabet::expand_alphabet(alphabet_arg);
         let alphabet_chars: Vec<char> = alphabet.chars().collect();
         if alphabet_chars.len() != 85 {
             return Err(OperationError::InvalidArgument {
@@ -122,29 +122,4 @@ impl Operation for ToBase85 {
 
         Ok(final_result.into_bytes())
     }
-}
-
-fn expand_alphabet(alphabet: &str) -> String {
-    let mut result = String::new();
-    let chars: Vec<char> = alphabet.chars().collect();
-    let mut i = 0;
-    while i < chars.len() {
-        if i < chars.len() - 2 && chars[i + 1] == '-' && (i == 0 || chars[i - 1] != '\\') {
-            let start = chars[i] as u32;
-            let end = chars[i + 2] as u32;
-            for code in start..=end {
-                if let Some(c) = std::char::from_u32(code) {
-                    result.push(c);
-                }
-            }
-            i += 3;
-        } else if i < chars.len() - 1 && chars[i] == '\\' && chars[i + 1] == '-' {
-            result.push('-');
-            i += 2;
-        } else {
-            result.push(chars[i]);
-            i += 1;
-        }
-    }
-    result
 }

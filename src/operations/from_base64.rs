@@ -95,7 +95,7 @@ impl Operation for FromBase64 {
         let remove_non_alph = args.get(1).and_then(|v| v.as_bool()).unwrap_or(true);
         let strict = args.get(2).and_then(|v| v.as_bool()).unwrap_or(false);
 
-        let alphabet_str = expand_alphabet(alphabet_arg);
+        let alphabet_str = crate::alphabet::expand_alphabet_without_padding(alphabet_arg);
 
         let clean_input = if remove_non_alph {
             input_str
@@ -139,44 +139,5 @@ impl Operation for FromBase64 {
         engine
             .decode(clean_input.trim())
             .map_err(|e| OperationError::InvalidInput(format!("Base64 decode failed: {}", e)))
-    }
-}
-
-fn expand_alphabet(alphabet: &str) -> String {
-    if alphabet == "A-Za-z0-9+/=" || alphabet == "A-Za-z0-9+-" || alphabet == "A-Za-z0-9-_" {
-        // Special common cases
-        match alphabet {
-            "A-Za-z0-9+/=" => {
-                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".to_string()
-            }
-            "A-Za-z0-9+-" => {
-                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-".to_string()
-            }
-            "A-Za-z0-9-_" => {
-                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_".to_string()
-            }
-            _ => alphabet.to_string(),
-        }
-    } else {
-        // Simple range expansion logic (enough for most CyberChef cases)
-        let mut result = String::new();
-        let chars: Vec<char> = alphabet.chars().collect();
-        let mut i = 0;
-        while i < chars.len() {
-            if i + 2 < chars.len() && chars[i + 1] == '-' {
-                let start = chars[i] as u32;
-                let end = chars[i + 2] as u32;
-                for code in start..=end {
-                    result.push(std::char::from_u32(code).unwrap());
-                }
-                i += 3;
-            } else {
-                if chars[i] != '=' {
-                    result.push(chars[i]);
-                }
-                i += 1;
-            }
-        }
-        result
     }
 }

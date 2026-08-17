@@ -12,9 +12,29 @@
 use std::{fs, path::Path};
 
 /// Evidence extracted from one or more test source files.
+///
+/// # What the counts mean
+///
+/// These are counts of what is *written* in the sources, not of what a
+/// particular build runs. The two were compared directly when this scanner was
+/// last reviewed:
+///
+/// ```text
+/// 1855  cargo test --test operations                  (default features)
+/// 1900  cargo test --all-features --test operations
+/// 1903  #[test] attributes counted here
+/// ```
+///
+/// The 3-attribute gap is mutually exclusive `#[cfg(feature = "x")]` /
+/// `#[cfg(not(feature = "x"))]` pairs, where both arms are written but only
+/// one is ever compiled. The repository contains no `#[tokio::test]`, no
+/// macro-generated tests, and no `#[test]` inside comments or string literals,
+/// so those forms are not a source of error. An AST-based scanner would remove
+/// a 0.16% overcount at the cost of a parser dependency, which is not a trade
+/// worth making; the number is documented instead.
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct TestEvidence {
-    /// Number of `#[test]` attributes.
+    /// Number of `#[test]` attributes written in the mapped sources.
     pub tests: usize,
     /// Assertions that an operation rejected something: `is_err`,
     /// `unwrap_err`, `expect_err`, or an `Err(..)` match arm assertion.

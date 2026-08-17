@@ -54,6 +54,9 @@ case, so a specification vector can no longer be mistaken for CyberChef parity.
 | `Generate all hashes` | Reported a **SHA-1 digest under the `SHA0` label** — the source comment read "using SHA1 as proxy". SHA-0 and SHA-1 differ by a rotate in the message schedule, so the published value was simply wrong. The dedicated `SHA0` operation already implemented the real algorithm; its digest function is now shared. |
 | `Blowfish Decrypt` | ECB mode did not strip PKCS#7 padding, although `Blowfish Encrypt` applies it and the CBC path in the same file removes it. Decryption returned `secret message\x02\x02`. Upstream rejects unpadded input the same way rx-chef now does. |
 | `To Hexdump` | Emitted one space between the hex and ASCII columns where `hexdump -C` and upstream use two, so every line was a character narrower than the reference output. |
+| `To Base64` | Its alphabet expansion was a literal substring replacement for the standard alphabet only, so it **rejected `A-Za-z0-9-_`** — an alphabet `From Base64` accepted and upstream supports — with "Must be 64 chars". Encoding and decoding disagreed about which alphabets exist. It also padded unconditionally, emitting `=` for alphabets that contain no padding character. |
+| `XXTEA Decrypt` | `to_uint8_array` computed `n - 3` after `n` had already been reduced to 0 for a single-word ciphertext, **panicking on a one-byte input**. |
+| `PHP Deserialize` | The serialized byte length was used to slice a `&str`, **panicking** when it landed inside a multi-byte character. Four `0xFF` bytes were enough to reach it. |
 
 ### Drift
 
@@ -104,6 +107,30 @@ test asserts that invariant across all 478 registered operations.
 ```text
 rxchef: operation 'AES Encrypt' requires a value for argument 'Key'
 ```
+
+### Shared alphabet handling
+
+`To Base64`, `From Base64`, `To Base85` and `From Base85` each carried their
+own range expansion and they were not equivalent — which is how the `To Base64`
+defect above survived. All four now use `src/alphabet.rs`, a direct port of
+upstream's `Utils.expandAlphRange`, which is the single definition every Base-N
+operation shares there. Expansion is pure: padding rules and length validation
+differ per codec and stay with the caller. Verified against upstream for the
+standard, URL-safe and a fully custom alphabet, all three now byte-identical.
+
+### Panic sweep
+
+`tests/tests/panic_sweep.rs` runs every deterministic, side-effect-free
+operation against 20 adversarial inputs — empty, single byte, all-high bytes,
+invalid UTF-8, truncated multibyte sequences, unbalanced brackets, oversized
+numbers — and fails if any of them panics. A panic crosses the FFI boundary as
+undefined behaviour, aborts the JSONL server mid-session, and kills the CLI
+without an exit code a caller can act on.
+
+The sweep found two reachable panics on first run (`XXTEA Decrypt` and
+`PHP Deserialize`, both above). It is now green. `src/operations` contains no
+`todo!`, `unimplemented!` or `panic!`; the remaining `unwrap()` calls were not
+reached by any input in the sweep.
 
 ### CLI structure
 
@@ -217,13 +244,13 @@ known classification and a reason of substance, no entry may read `UNTRIAGED`,
 every `RXCHEF_BUG` must be marked fixed, and operations may not repeat.
 
 ```text
-EXACT                        169
-NOT_COMPARABLE               252
+EXACT                        168
+NOT_COMPARABLE               250
 VALID_SEMANTIC_DIFFERENCE     17
 NONDETERMINISTIC              15
+RXCHEF_BUG                     8   (all fixed; a test enforces this)
 ARGUMENT_MAPPING_DIFFERENCE    6
 REFERENCE_CAPTURE_BUG          6
-RXCHEF_BUG                     5
 DEFAULT_MAPPING_DIFFERENCE     4
 UNSUPPORTED_UPSTREAM_MODE      3
 ```
@@ -303,7 +330,7 @@ From `cargo run -p xtask -- audit-operations`:
 ```text
 registered                   478
 with executable tests        456
-test functions total        1903
+test functions total        1903   (attributes in source)
 with negative tests          195
 with boundary tests          253
 reference-verified (KAT)      22
@@ -312,9 +339,12 @@ parity exact                 171
 parity compatible              5
 parity documented difference   1
 parity unverified            301
-documented divergences         1
+documented divergences         2
 tests asserting only success  53
 ```
+
+Differential fixture: **182 EXACT, 3 COMPATIBLE, 1 DOCUMENTED_DIFFERENCE,
+2 NOT_COMPARABLE**.
 
 The 22 operations without executable tests each carry a reviewed
 `untested_reason` in `verification/operations.json` — network I/O, feature-gated
@@ -348,6 +378,29 @@ gate runs even after one fails, so the summary reports all failures at once.
 The hardcoded `jq -e "length == 478"` operation-count check was replaced with a
 count derived from the audit output.
 
+All-features clippy is now part of the gate. The default feature set leaves the
+optional integrations (PGP, JSONata, OCR, YARA, disassembly) unlinted, so
+without it that code was never checked at all:
+
+```bash
+cargo clippy --locked --workspace --all-targets --all-features -- \
+    -D clippy::correctness -D clippy::suspicious
+```
+
+### CI trigger
+
+`.github/workflows/platform-checks.yml` triggered on pushes to `main`, but the
+repository develops on `master` — so **no push to the default branch had ever
+started these checks**. The trigger now lists both branches, keeping the
+workflow working if the branch is ever renamed:
+
+```yaml
+push:
+  branches:
+    - master
+    - main
+```
+
 ## Open items
 
 **P0** — none known.
@@ -375,13 +428,25 @@ count derived from the audit output.
   is fixed, but no authenticated `gh` session was available to confirm the jobs
   start and pass.
 
+* **FFI panic containment is incomplete.** `src/ffi.rs` defines an
+  `ffi_boundary` helper that wraps a call in `catch_unwind`, but only
+  `rxchef_run` uses it — the other 11 `extern "C"` entry points are unguarded,
+  including `rxchef_magic`, which runs the detection engine over arbitrary
+  caller-supplied bytes. Unwinding across `extern "C"` is undefined behaviour.
+  This round removed the two panics reachable from operation input, so no
+  concrete crash path is known today, but the guard is missing as defence in
+  depth. Fix: route every entry point through `ffi_boundary`.
+
 **P2**
 
-* `LZString Compress` implements only the `Standard` output format; Base64,
-  UTF16 and EncodedURIComponent are declared and rejected rather than produced.
-* Alphabet expansion is duplicated across `to_base64`, `from_base64`,
-  `to_base85`, `from_base85` and `from_base32`. Only the Base32 pair was
-  unified here.
+* `LZString Compress` implements only the `Standard` output format. Base64,
+  UTF16 and EncodedURIComponent are declared and rejected with a structured
+  error rather than silently producing a Standard-format stream. This is now
+  recorded in the operation's `known_limitations()`, so it appears in the
+  generated documentation and the audit rather than being discovered at
+  runtime.
+* `from_base32` still keeps its own `expand_base32_alphabet`; the Base64 and
+  Base85 pairs now share `src/alphabet.rs`.
 * The Linux container gate has **not been run in this round** — Docker was
   unavailable on the development host. See below.
 * `cli.rs` still holds every argument group in one module. Splitting it per
@@ -391,8 +456,8 @@ count derived from the audit output.
 
 | Check | Reason | Still to verify |
 |---|---|---|
-| `scripts/release-check-linux.sh` (container) | Docker was not running on the development host (`docker info` failed). | FFI C linking (`cc -lrxchef`, `LD_LIBRARY_PATH`), `cargo package`, `cargo install`, quick Linux benchmarks, and `mkdocs build --strict`. |
-| `mkdocs build --strict` | `mkdocs` is not installed on the development host; the host gate reports it as skipped. | Documentation build after the operation-doc regeneration. |
+| Remote GitHub Actions execution | No authenticated `gh` session was available on the development host (`gh auth status`: not logged in). | That the corrected `push` trigger actually starts the three jobs on `master` and that they pass. The trigger itself was verified by parsing the workflow: `push.branches` is now `[master, main]`. |
+| Native macOS / Windows matrix jobs | Runnable only on those runners; the local host is `Darwin arm64`. | `scripts/check-native-platform.sh` on `macos-latest` and `windows-latest`. |
 
-Everything else in this document was verified by running it on
-`Darwin arm64` with `rustc 1.97.1`.
+The Linux release container **was** run in this round and is the reference
+result recorded above.

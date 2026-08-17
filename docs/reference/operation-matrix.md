@@ -20,7 +20,7 @@
 | Parity: documented difference | 1 |
 | Parity: unverified | 301 |
 | Parity: not applicable | 0 |
-| Documented divergences | 1 |
+| Documented divergences | 2 |
 | Tests asserting only success | 53 |
 
 ## Bletchley

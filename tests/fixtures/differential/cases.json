@@ -2323,6 +2323,30 @@
       "inverse_args": [],
       "reference_source": "observed: CyberChef 11.0.0 @ 0bb5472e50e1 (checkout dirty; operation sources clean) (upstream run with its own default compression arguments)",
       "divergence": "DEFLATE does not specify a unique encoding; the two implementations choose different Huffman strategies for the same input."
+    },
+    {
+      "operation": "To Base64",
+      "input": "foo~~~?",
+      "input_encoding": "text",
+      "args": [
+        "A-Za-z0-9-_"
+      ],
+      "reference": "Zm9vfn5-Pw",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0 @ 0bb5472e50e1 (URL-safe alphabet, no padding character)"
+    },
+    {
+      "operation": "To Base64",
+      "input": "foo~~~?",
+      "input_encoding": "text",
+      "args": [
+        "./0-9A-Za-z"
+      ],
+      "reference": "NaxjTbtyDk",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.0.0 @ 0bb5472e50e1 (fully custom alphabet)"
     }
   ],
   "reference_provenance": {

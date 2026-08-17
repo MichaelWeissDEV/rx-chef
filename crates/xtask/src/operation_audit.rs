@@ -74,7 +74,10 @@ impl AuditTotals {
         println!("operation audit summary");
         println!("  {:<28} {}", "registered", self.registered);
         println!("  {:<28} {}", "with executable tests", self.tested);
-        println!("  {:<28} {}", "test functions total", self.total_tests);
+        println!(
+            "  {:<28} {} (attributes in source; a single build runs slightly fewer, see TestEvidence)",
+            "test functions total", self.total_tests
+        );
         println!("  {:<28} {}", "with negative tests", self.negative_tested);
         println!("  {:<28} {}", "with boundary tests", self.boundary_tested);
         println!(

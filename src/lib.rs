@@ -8,6 +8,7 @@
  * -----------------------------------------------------------------------------
  */
 
+pub mod alphabet;
 pub mod catalog;
 pub mod execute;
 pub mod execution;

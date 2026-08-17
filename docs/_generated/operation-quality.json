@@ -14,7 +14,7 @@
     "parity_documented_difference": 1,
     "parity_unverified": 301,
     "parity_not_applicable": 0,
-    "documented_divergences": 1,
+    "documented_divergences": 2,
     "tests_asserting_only_success": 53
   },
   "operations": [

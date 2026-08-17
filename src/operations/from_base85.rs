@@ -90,7 +90,7 @@ impl Operation for FromBase85 {
             .and_then(|s| s.chars().next())
             .or(Some('z'));
 
-        let alphabet = expand_alphabet(alphabet_arg);
+        let alphabet = crate::alphabet::expand_alphabet(alphabet_arg);
         if alphabet.chars().count() != 85 {
             return Err(OperationError::InvalidArgument {
                 name: "Alphabet".to_string(),
@@ -200,61 +200,4 @@ impl Operation for FromBase85 {
 
         Ok(result)
     }
-}
-
-fn expand_alphabet(alphabet: &str) -> String {
-    // Handle standard alphabet specially
-    if alphabet == "!-u" {
-        return (33..=117)
-            .map(|c| std::char::from_u32(c).unwrap())
-            .collect();
-    }
-    if alphabet == "0-9a-zA-Z.\\-:+=^!/*?&<>()[]{}@%$#" {
-        let mut res = String::new();
-        for c in '0'..='9' {
-            res.push(c);
-        }
-        for c in 'a'..='z' {
-            res.push(c);
-        }
-        for c in 'A'..='Z' {
-            res.push(c);
-        }
-        res.push_str(".-:+=^!/*?&<>()[]{}@%$#");
-        return res;
-    }
-    if alphabet == "0-9A-Za-z!#$%&()*+\\-;<=>?@^_`{|}~" {
-        let mut res = String::new();
-        for c in '0'..='9' {
-            res.push(c);
-        }
-        for c in 'A'..='Z' {
-            res.push(c);
-        }
-        for c in 'a'..='z' {
-            res.push(c);
-        }
-        res.push_str("!#$%&()*+-;<=>?@^_`{|}~");
-        return res;
-    }
-
-    let mut result = String::new();
-    let chars: Vec<char> = alphabet.chars().collect();
-    let mut i = 0;
-    while i < chars.len() {
-        if i + 2 < chars.len() && chars[i + 1] == '-' {
-            let start = chars[i] as u32;
-            let end = chars[i + 2] as u32;
-            for code in start..=end {
-                if let Some(c) = std::char::from_u32(code) {
-                    result.push(c);
-                }
-            }
-            i += 3;
-        } else {
-            result.push(chars[i]);
-            i += 1;
-        }
-    }
-    result
 }

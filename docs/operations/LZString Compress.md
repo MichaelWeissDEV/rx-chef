@@ -72,6 +72,10 @@ Differential tests:
 
 Excluded from the committed representative benchmark set: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.
 
+## Known limitations
+
+- Only the Standard compression format is implemented; Base64, UTF16 and EncodedURIComponent are declared and rejected with an InvalidArgument error rather than produced.
+
 ## References
 
 - [Operation quality matrix](../reference/operation-matrix.md)
