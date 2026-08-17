@@ -50,6 +50,10 @@ case, so a specification vector can no longer be mistaken for CyberChef parity.
 | `From Morse Code` | **Decoded every input to an empty string.** Its signal normalisation chained `str::replace`, and five of the patterns were the *empty string* — `"ab".replace("", "x")` yields `"xaxbx"` in Rust, so a token was inserted between every character and no signal could match the lookup table. The four tests covering it asserted only `result.is_ok()` with the comment "test that the operation runs without panicking", so a completely broken operation looked tested. Normalisation now mirrors upstream's two case-insensitive regex passes. |
 | `To Punycode` / `From Punycode` | `To Punycode` went through `domain_to_ascii` and stripped the `xn--` prefix. For all-ASCII input that returns the string unchanged, so no delimiter was emitted: `"foobar"` encoded to `"foobar"`, which `From Punycode` then decoded to `䕮䕮䕭䕲`. **The encoding was not round-trippable.** RFC 3492 §6.3 requires the trailing delimiter (`foobar-`), which Python's own punycode codec and CyberChef both produce. Both directions now use `idna::punycode` directly. |
 | `SHA3`, `Keccak`, `RIPEMD`, `Streebog` | Default digest sizes differed from upstream (SHA3/Keccak 256 vs 512, RIPEMD 160 vs 320, Streebog 512 vs 256), so `rxchef run SHA3` and CyberChef's SHA3 with default settings returned **different digests of different lengths**. The algorithms were correct — only the defaults diverged. Now aligned; verified against observed upstream output. |
+| `Chi Square`, `Index of Coincidence` | Both declare `Number` output but returned `to_le_bytes()` — the raw IEEE-754 representation of the score. The runtime's output contract rejected every run ("declared numeric output but produced invalid UTF-8"), so **both operations were unusable through the CLI, recipes and the API alike**. Their tests decoded the result with `f64::from_le_bytes` and asserted only `value >= 0.0`, so they matched the bug rather than catching it. |
+| `Generate all hashes` | Reported a **SHA-1 digest under the `SHA0` label** — the source comment read "using SHA1 as proxy". SHA-0 and SHA-1 differ by a rotate in the message schedule, so the published value was simply wrong. The dedicated `SHA0` operation already implemented the real algorithm; its digest function is now shared. |
+| `Blowfish Decrypt` | ECB mode did not strip PKCS#7 padding, although `Blowfish Encrypt` applies it and the CBC path in the same file removes it. Decryption returned `secret message\x02\x02`. Upstream rejects unpadded input the same way rx-chef now does. |
+| `To Hexdump` | Emitted one space between the hex and ASCII columns where `hexdump -C` and upstream use two, so every line was a character narrower than the reference output. |
 
 ### Drift
 
@@ -68,24 +72,57 @@ stored recipes and projects world-readable. `ensure_dir` now applies `0700` to
 directories **it creates**; store directories created by earlier versions keep
 their existing mode and are not retrofitted.
 
+### Required-argument binding
+
+`resolve_named_args` materialised every schema default into a full argument
+vector before the runtime saw it. That erased the difference between "not
+supplied" and "supplied as the empty string", so `ArgSchema::required` could
+never fire: `rxchef run "AES Encrypt"` reached the cipher with a zero-length key
+and failed with *"Invalid key length: 0 bytes"* — an error about the value
+rather than about the omission. 58 operations declare a required argument with
+an empty default, so the flag was decorative across the whole registry.
+
+Binding now runs in `runtime::bind_arguments` over `Vec<Option<String>>`:
+
+```text
+1. one None slot per schema argument
+2. positional values, left to right
+3. named values; unknown names and duplicate assignments rejected
+4. required check   -> None + required = MissingArgument
+5. defaults         -> None + optional = schema default
+6. materialise Vec<String> for the operation
+```
+
+`RuntimeError::MissingArgument` is a distinct variant so a frontend can tell
+"you forgot this" from "what you gave me is wrong". `validate_operation_args`
+keeps the same check for recipe-supplied vectors that simply stop short of the
+schema length. No operation declares a required argument *and* a default, and a
+test asserts that invariant across all 478 registered operations.
+
+`run`, `pipe` and `recipe` all report the omission identically:
+
+```text
+rxchef: operation 'AES Encrypt' requires a value for argument 'Key'
+```
+
 ### CLI structure
 
-`crates/cli/src/main.rs` was a 2655-line file holding the clap definitions, all
+`crates/cli/src/main.rs` was a single file holding the clap definitions, all
 sixteen command implementations, the interactive shell, input selection, output
-rendering, and the pipeline step model. It is now 119 lines — the doc header,
-module declarations, `main`, and the command dispatch — with the rest split
+rendering, and the pipeline step model. It now contains only the doc header,
+module declarations, `main`, and the command dispatch, with the rest split
 across 20 modules:
 
 ```text
 crates/cli/src/
-├── main.rs        119   entry point and dispatch only
-├── cli.rs         630   clap parser and every argument group
-├── error.rs        60   CliError, exit codes, human-readable rendering
-├── input.rs        84   literal / file / stdin selection
-├── output.rs      204   raw, hex and JSON writing
-├── steps.rs       252   pipeline step model, execution, history
-├── shell/               interactive shell (mod.rs + completion.rs)
-└── commands/            one module per subcommand
+├── main.rs        entry point and dispatch only
+├── cli.rs         clap parser and every argument group
+├── error.rs       CliError, exit codes, human-readable rendering
+├── input.rs       literal / file / stdin selection
+├── output.rs      raw, hex and JSON writing
+├── steps.rs       pipeline step model, execution, history
+├── shell/         interactive shell (mod.rs + completion.rs)
+└── commands/      one module per subcommand
 ```
 
 The split is behaviour-preserving, and that was checked rather than assumed: the
@@ -170,6 +207,57 @@ On a MISMATCH the expected value must not simply be edited. Establish first
 whether rx-chef is wrong, CyberChef differs, the normalization is wrong, or the
 difference is deliberate.
 
+### Sweep triage
+
+`verification/differential-triage.json` records a verdict and a checkable
+reason for every operation in the upstream default sweep — both the output
+differences and the rx-chef errors, which were previously summarised only as a
+count. Four tests enforce that it stays complete: every entry must carry a
+known classification and a reason of substance, no entry may read `UNTRIAGED`,
+every `RXCHEF_BUG` must be marked fixed, and operations may not repeat.
+
+```text
+EXACT                        169
+NOT_COMPARABLE               252
+VALID_SEMANTIC_DIFFERENCE     17
+NONDETERMINISTIC              15
+ARGUMENT_MAPPING_DIFFERENCE    6
+REFERENCE_CAPTURE_BUG          6
+RXCHEF_BUG                     5
+DEFAULT_MAPPING_DIFFERENCE     4
+UNSUPPORTED_UPSTREAM_MODE      3
+```
+
+Three findings are worth naming because they change what the earlier summary
+implied:
+
+* Six differences were **defects in the capture harness, not in rx-chef**.
+  `Unicode Text Format` is the only upstream operation declaring a boolean
+  argument with the *string* value `"false"`, which is truthy in JavaScript, so
+  the sweep made upstream apply formatting that rx-chef correctly omitted.
+  Five more returned structured objects or browser types the sweep stringified
+  to `[object Object]` / `[object File]`.
+* Most `NOT_COMPARABLE` entries are the sweep input `foobar` not being valid
+  input for a decoder. Rejecting it is correct behaviour, not a divergence.
+* `Gzip`'s upstream output embeds a modification timestamp and is **not
+  reproducible between captures**, which is what motivated the semantic
+  comparison below.
+
+### Compression parity
+
+DEFLATE and bzip2 do not specify a unique encoding for a given input, so two
+conforming encoders may legitimately disagree byte for byte. Demanding exact
+equality there would either force a false MISMATCH or invite pasting rx-chef's
+own output into the fixture, which proves nothing.
+
+The harness therefore has a `semantic_roundtrip` expectation: both rx-chef's
+output *and* the recorded upstream stream must decode back to the original
+input through rx-chef's inverse operation. That establishes interoperability in
+both directions without asserting equality the format never promised. It
+reports `EXACT` when the streams happen to be identical and `COMPATIBLE`
+otherwise. `Gzip`, `Zlib Deflate` and `Raw Deflate` currently report
+`COMPATIBLE`; rx-chef reads every upstream stream correctly.
+
 ### Reference capture
 
 `tools/cyberchef-reference/capture.mjs` runs operations in an upstream CyberChef
@@ -180,6 +268,18 @@ recorded fixture and needs neither Node nor a CyberChef checkout.
 ```bash
 CYBERCHEF_DIR=/path/to/CyberChef node tools/cyberchef-reference/capture.mjs requests.json
 ```
+
+Every capture records the upstream **git commit**, not just the package
+version: "CyberChef 11.0.0" spans every commit between two releases and cannot
+identify what was observed. The tool refuses to run when the checkout has
+uncommitted changes to operation sources, since the recorded commit would then
+not describe what ran, and records any other local modifications so a reviewer
+can judge them. The fixture carries the same provenance block.
+
+The values in this repository were observed with
+`CyberChef 11.0.0 @ 0bb5472e50e158ee1885aab02a2ce93adf538656`
+(`v11.0.0-18-g0bb5472e`); the capture checkout had local changes to a lockfile
+and scratch files only, with operation sources clean.
 
 171 of the current cases were produced by a sweep that ran every loadable
 upstream operation and every rx-chef operation against the same input under each
@@ -203,17 +303,17 @@ From `cargo run -p xtask -- audit-operations`:
 ```text
 registered                   478
 with executable tests        456
-test functions total        1886
+test functions total        1903
 with negative tests          195
-with boundary tests          251
-reference-verified (KAT)      15
+with boundary tests          253
+reference-verified (KAT)      22
 differential-verified        173
 parity exact                 171
 parity compatible              5
 parity documented difference   1
 parity unverified            301
 documented divergences         1
-tests asserting only success  69
+tests asserting only success  53
 ```
 
 The 22 operations without executable tests each carry a reviewed
@@ -254,30 +354,26 @@ count derived from the audit output.
 
 **P1**
 
-* 301 operations have unverified CyberChef parity. The harness and the capture
-  tool both exist; the fixture needs cases for the operations the default sweep
-  could not compare.
-* 54 operations differed in the upstream default sweep and are not yet fully
-  triaged. The confirmed defects among them were fixed; the rest are believed to
-  be artifacts of resolving upstream's nested option groups to a single default,
-  but that has not been established case by case. Notable untriaged candidates:
-  `To Hexdump` (padding width), `To Modhex` (delimiter), `Entropy` (float
-  precision), `Rison Decode` / `YAML to JSON` (scalar quoting), `Render Markdown`
-  (`<p>` wrapper), `ROT13 Brute Force` (label format), `Generate HOTP` (secret
-  encoding), and the compression operations (`Gzip`, `Raw Deflate`,
-  `Zlib Deflate`, `LZ4`, `LZMA`), whose streams differ but decompress correctly.
-* 69 test functions assert only that an operation succeeded, without checking
-  the value. The audit counts them per test function — a redundant
-  `assert!(result.is_ok())` followed by an `assert_eq!` is not counted — so the
-  number can be driven down deliberately. The largest remaining groups are
-  `Generate all checksums`/`Generate all hashes` (5 each), `Blowfish Encrypt`
-  (5), `Bzip2 Compress`, `Cartesian Product`, `ECDSA Signature Conversion` and
-  `ELF Info` (4 each).
-* `required: true` is not enforced centrally. 58 operations declare a required
-  argument with an empty default; every frontend fills defaults before calling
-  `runtime::run_operation`, so the runtime never sees a missing value and the
-  operation itself has to catch it (`AES Encrypt` reports an invalid key
-  *length* rather than a missing key). The flag is currently decorative.
+* 301 operations have unverified CyberChef parity. The harness, the capture
+  tool and the triage all exist; the fixture needs cases for the operations the
+  default sweep could not compare.
+* Ten operations carry an unresolved mapping difference: four
+  `DEFAULT_MAPPING_DIFFERENCE` (`To Modhex`, `GOST Hash`, `CTPH`,
+  `Swap endianness`) and six `ARGUMENT_MAPPING_DIFFERENCE` (`Bifid Cipher`
+  encode/decode, `Enigma`, `Typex`, `Generate HOTP`, `Generate all checksums`).
+  Each has a stated cause in `verification/differential-triage.json`; none is a
+  confirmed defect.
+* `To Modhex` cannot be aligned to upstream's `Space` default until
+  `From Modhex` supports an `Auto` delimiter — changing only the encoder would
+  break the working default roundtrip, and adding `Auto` is a feature.
+* `Generate all checksums` emits five checksums where upstream emits the full
+  CRC catalogue. This is a coverage gap, not a wrong value.
+* 53 test functions assert only that an operation succeeded. The largest
+  remaining groups are `Bzip2 Compress`, `Cartesian Product`,
+  `ECDSA Signature Conversion` and `ELF Info` (4 each).
+* The remote GitHub Actions run has **not been verified**: the workflow trigger
+  is fixed, but no authenticated `gh` session was available to confirm the jobs
+  start and pass.
 
 **P2**
 
@@ -288,9 +384,8 @@ count derived from the audit output.
   unified here.
 * The Linux container gate has **not been run in this round** — Docker was
   unavailable on the development host. See below.
-* The CLI split raised the crate from one file to 21; `cli.rs` (630 lines) still
-  holds every argument group. Splitting it per command group is possible but was
-  not needed to remove the monolith.
+* `cli.rs` still holds every argument group in one module. Splitting it per
+  command group is possible but was not needed to remove the monolith.
 
 ## Not run
 

@@ -65,6 +65,9 @@ Declared side effects: `[]`. Treat parser inputs as untrusted and apply executio
 Correctness tests:
 - tests/tests/operations/sha0.rs
 
+Known-answer tests:
+- tests/tests/operations/generate_all_hashes.rs
+
 Differential tests:
 - tests/tests/differential.rs
 

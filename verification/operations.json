@@ -444,7 +444,9 @@
       "correctness": [
         "tests/tests/operations/blowfish_encrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/blowfish_encrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -700,7 +702,9 @@
       "correctness": [
         "tests/tests/operations/chi_square.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/chi_square.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2235,7 +2239,9 @@
       "correctness": [
         "tests/tests/operations/generate_all_checksums.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/generate_all_checksums.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2246,7 +2252,9 @@
       "correctness": [
         "tests/tests/operations/generate_all_hashes.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/generate_all_hashes.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2540,7 +2548,9 @@
       "correctness": [
         "tests/tests/operations/index_of_coincidence.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/index_of_coincidence.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4148,7 +4158,9 @@
       "correctness": [
         "tests/tests/operations/sha0.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/generate_all_hashes.rs"
+      ],
       "differential": [
         "tests/tests/differential.rs"
       ],
@@ -5088,7 +5100,9 @@
       "correctness": [
         "tests/tests/operations/to_hexdump.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/to_hexdump.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],

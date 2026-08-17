@@ -4,7 +4,25 @@
 
 use rxchef::operation::ArgValue;
 use rxchef::operations::blowfish_decrypt::BlowfishDecrypt;
+use rxchef::runtime;
 use rxchef::Operation;
+
+/// Encrypt through the runtime so the ciphertext really is what this
+/// operation is expected to consume, rather than an arbitrary byte string.
+fn encrypt_hex(plaintext: &[u8], key_hex: &str, mode: &str) -> Vec<u8> {
+    runtime::run_operation(
+        "Blowfish Encrypt",
+        plaintext.to_vec(),
+        &[
+            format!("hex:{key_hex}"),
+            String::new(),
+            mode.to_string(),
+            "Raw".to_string(),
+            "Hex".to_string(),
+        ],
+    )
+    .expect("encrypting the fixture plaintext must succeed")
+}
 
 #[test]
 fn test_blowfish_decrypt_invalid_key_length() {
@@ -16,9 +34,22 @@ fn test_blowfish_decrypt_invalid_key_length() {
         ArgValue::Str("Raw".to_string()),
         ArgValue::Str("Raw".to_string()),
     ];
-    // 32 bytes should be valid
-    let result = op.run(vec![], &args);
-    assert!(result.is_ok(), "Valid key test failed: {:?}", result.err());
+    // A valid key must decrypt a genuinely padded ciphertext back to its
+    // plaintext. The previous version decrypted an empty buffer and asserted
+    // only `is_ok()`, which held even while ECB left PKCS#7 padding in place.
+    let ciphertext = encrypt_hex(b"round trip", "0123456789abcdef0123456789abcdef", "ECB");
+    let args_hex = [
+        ArgValue::Str("0123456789abcdef0123456789abcdef".to_string()),
+        ArgValue::Str("".to_string()),
+        ArgValue::Str("ECB".to_string()),
+        ArgValue::Str("Hex".to_string()),
+        ArgValue::Str("Raw".to_string()),
+    ];
+    let recovered = op
+        .run(ciphertext, &args_hex)
+        .expect("valid key must decrypt");
+    assert_eq!(recovered, b"round trip");
+    let _ = &args;
     // 3 bytes should be invalid
     let args = [
         ArgValue::Str("012".to_string()), // 3 bytes - invalid
@@ -49,7 +80,10 @@ fn test_blowfish_decrypt_ecb_mode() {
     // Key: 0x0000000000000000 (8 bytes)
     // Using hex-encoded ciphertext as input with "Hex" input type
     let key = hex::decode("0000000000000000").unwrap();
-    let ciphertext_hex = "64ec88c00b37661d"; // Known test vector (hex-encoded)
+    // Encrypting through the encrypt operation guarantees valid PKCS#7
+    // padding; an arbitrary 8-byte block would decrypt to bytes whose last
+    // value is not a valid pad length, which upstream also rejects.
+    let ciphertext_hex = String::from_utf8(encrypt_hex(b"ecb", "0000000000000000", "ECB")).unwrap();
     let args = [
         ArgValue::Bytes(key),
         ArgValue::Str("".to_string()), // Empty IV (will be null)
@@ -57,8 +91,10 @@ fn test_blowfish_decrypt_ecb_mode() {
         ArgValue::Str("Hex".to_string()),
         ArgValue::Str("Raw".to_string()),
     ];
-    let result = op.run(ciphertext_hex.as_bytes().to_vec(), &args);
-    assert!(result.is_ok(), "ECB decrypt failed: {:?}", result.err());
+    let recovered = op
+        .run(ciphertext_hex.as_bytes().to_vec(), &args)
+        .expect("ECB decrypt failed");
+    assert_eq!(recovered, b"ecb", "ECB must strip PKCS#7 padding");
 }
 #[test]
 fn test_blowfish_decrypt_cbc_mode() {
@@ -103,9 +139,23 @@ fn test_blowfish_decrypt_key_formats() {
         ArgValue::Str("Hex".to_string()),
         ArgValue::Str("Raw".to_string()),
     ];
-    let result = op.run(vec![], &args);
-    // Should work (even with empty input, key parsing succeeds)
-    assert!(result.is_ok());
+    // A hex key string and the equivalent byte key must decrypt identically.
+    let ciphertext = encrypt_hex(b"key formats", key_hex, "ECB");
+    let from_hex_string = op
+        .run(ciphertext.clone(), &args)
+        .expect("hex key string must decrypt");
+    let args_bytes = [
+        ArgValue::Bytes(hex::decode(key_hex).unwrap()),
+        ArgValue::Str("".to_string()),
+        ArgValue::Str("ECB".to_string()),
+        ArgValue::Str("Hex".to_string()),
+        ArgValue::Str("Raw".to_string()),
+    ];
+    let from_bytes = op
+        .run(ciphertext, &args_bytes)
+        .expect("byte key must decrypt");
+    assert_eq!(from_hex_string, b"key formats");
+    assert_eq!(from_hex_string, from_bytes);
 }
 #[test]
 fn test_blowfish_decrypt_output_formats() {
@@ -119,9 +169,11 @@ fn test_blowfish_decrypt_output_formats() {
         ArgValue::Str("Hex".to_string()),
         ArgValue::Str("Hex".to_string()), // Hex output
     ];
-    // Valid 8-byte ECB ciphertext (hex-encoded)
-    let result = op.run("64ec88c00b37661d".as_bytes().to_vec(), &args);
-    assert!(result.is_ok(), "Hex output test failed: {:?}", result.err());
+    let ciphertext = encrypt_hex(b"formats", "0123456789abcdef0123456789abcdef", "ECB");
+    let as_hex = op
+        .run(ciphertext.clone(), &args)
+        .expect("hex output must decrypt");
+    assert_eq!(String::from_utf8(as_hex).unwrap(), hex::encode(b"formats"));
     // Test with Raw output
     let args = [
         ArgValue::Bytes(key),
@@ -130,6 +182,6 @@ fn test_blowfish_decrypt_output_formats() {
         ArgValue::Str("Hex".to_string()),
         ArgValue::Str("Raw".to_string()), // Raw output
     ];
-    let result = op.run("64ec88c00b37661d".as_bytes().to_vec(), &args);
-    assert!(result.is_ok(), "Raw output test failed: {:?}", result.err());
+    let as_raw = op.run(ciphertext, &args).expect("raw output must decrypt");
+    assert_eq!(as_raw, b"formats");
 }

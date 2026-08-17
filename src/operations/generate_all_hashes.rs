@@ -98,7 +98,11 @@ impl Operation for GenerateAllHashes {
 
         // Digest 0.10 hashes
         hashes.push(("MD5", run_hash10::<Md5>(&input)));
-        hashes.push(("SHA0", run_hash10::<Sha1>(&input))); // Using SHA1 as proxy if SHA0 not available
+        // SHA-0 is not SHA-1: the two differ by a single rotate in the message
+        // schedule. Substituting SHA-1 here labelled a SHA-1 digest as SHA-0,
+        // so this listing reported a cryptographic value that was simply
+        // wrong. The dedicated `SHA0` operation implements the real algorithm.
+        hashes.push(("SHA0", crate::operations::sha0::sha0_hex(&input, 80)));
         hashes.push(("SHA1", run_hash10::<Sha1>(&input)));
         hashes.push(("SHA2 224", run_hash10::<Sha224>(&input)));
         hashes.push(("SHA2 256", run_hash10::<Sha256>(&input)));

@@ -598,3 +598,97 @@ fn library_cli_bake_pipe_and_server_produce_identical_flow_bytes() {
     assert_eq!(bake.stdout, library);
     assert_eq!(server_bytes, library);
 }
+
+// ── Required-argument reporting ───────────────────────────────────────────
+//
+// A required argument that the user did not supply must be named as missing.
+// Previously the CLI materialised the schema default into every slot before
+// the runtime saw the arguments, so `rxchef run "AES Encrypt"` reached the
+// cipher with a zero-length key and failed with "Invalid key length: 0 bytes"
+// — an error about the value rather than about the omission.
+
+#[test]
+fn missing_required_argument_names_the_argument() {
+    let output = rxchef(&["run", "AES Encrypt"], Some(b"secret"));
+    assert!(!output.status.success(), "the run must not succeed");
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("requires a value for argument 'Key'"),
+        "stderr should name the missing argument, got: {stderr}"
+    );
+    assert!(
+        !stderr.contains("key length"),
+        "the omission must not be reported as an invalid key length: {stderr}"
+    );
+}
+
+#[test]
+fn missing_required_argument_is_reported_for_every_such_operation() {
+    for operation in ["AES Decrypt", "Blowfish Encrypt", "HMAC", "XOR"] {
+        let output = rxchef(&["run", operation], Some(b"x"));
+        assert!(
+            !output.status.success(),
+            "{operation}: run without its required argument must fail"
+        );
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        assert!(
+            stderr.contains("requires a value for argument"),
+            "{operation}: expected a missing-argument error, got: {stderr}"
+        );
+    }
+}
+
+#[test]
+fn supplying_the_required_argument_lets_the_operation_run() {
+    let output = rxchef(
+        &["run", "AES Encrypt", "hex:00112233445566778899aabbccddeeff"],
+        Some(b"secret"),
+    );
+    assert!(
+        output.status.success(),
+        "a supplied key should run: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+}
+
+#[test]
+fn unknown_named_argument_is_rejected_by_the_cli() {
+    let output = rxchef(
+        &["run", "From Base64", "--arg", "NoSuchArgument=1"],
+        Some(b"Zm9v"),
+    );
+    assert!(!output.status.success(), "unknown argument must fail");
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("no such argument"),
+        "expected an unknown-argument error, got: {stderr}"
+    );
+}
+
+#[test]
+fn duplicate_named_argument_is_rejected_by_the_cli() {
+    let output = rxchef(
+        &[
+            "run",
+            "From Base64",
+            "--arg",
+            "Strict mode=true",
+            "--arg",
+            "strict_mode=false",
+        ],
+        Some(b"Zm9v"),
+    );
+    assert!(!output.status.success(), "duplicate argument must fail");
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("more than once"),
+        "expected a duplicate-assignment error, got: {stderr}"
+    );
+}
+
+#[test]
+fn omitted_optional_arguments_use_their_defaults() {
+    let output = rxchef(&["run", "From Base64"], Some(b"Zm9vYmFy"));
+    assert!(output.status.success(), "optional arguments should default");
+    assert_eq!(output.stdout, b"foobar");
+}

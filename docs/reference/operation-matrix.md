@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 456 |
-| Test functions | 1886 |
+| Test functions | 1903 |
 | With negative tests | 195 |
-| With boundary tests | 251 |
-| Reference-verified (known answer) | 15 |
+| With boundary tests | 253 |
+| Reference-verified (known answer) | 22 |
 | Differential-verified | 173 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -21,7 +21,7 @@
 | Parity: unverified | 301 |
 | Parity: not applicable | 0 |
 | Documented divergences | 1 |
-| Tests asserting only success | 69 |
+| Tests asserting only success | 53 |
 
 ## Bletchley
 
@@ -67,7 +67,7 @@
 | Bifid Cipher Decode | partial | unknown | yes | 3 | — | yes | — | — | — | — | — | yes |
 | Bifid Cipher Encode | partial | unknown | yes | 3 | — | yes | — | — | — | — | — | yes |
 | Blowfish Decrypt | partial | unknown | yes | 6 | yes | yes | — | — | — | — | — | yes |
-| Blowfish Encrypt | partial | unknown | yes | 8 | yes | — | — | — | — | — | — | yes |
+| Blowfish Encrypt | partial | unknown | yes | 8 | yes | yes | yes | — | — | — | — | yes |
 | Caesar Box Cipher | partial | exact | yes | 7 | yes | yes | — | yes | — | — | — | yes |
 | Cetacean Cipher Decode | partial | unknown | yes | 10 | yes | yes | — | — | — | — | — | yes |
 | Cetacean Cipher Encode | partial | exact | yes | 11 | yes | yes | — | yes | — | — | — | yes |
@@ -201,8 +201,8 @@
 | Fletcher-64 Checksum | partial | exact | yes | 1 | — | — | — | yes | — | — | — | yes |
 | Fletcher-8 Checksum | partial | exact | yes | 1 | — | — | — | yes | — | — | — | yes |
 | Generate UUID | partial | unknown | yes | 3 | yes | yes | — | — | — | — | — | yes |
-| Generate all checksums | partial | unknown | yes | 5 | — | yes | — | — | — | — | — | yes |
-| Generate all hashes | partial | unknown | yes | 5 | — | yes | — | — | — | — | — | yes |
+| Generate all checksums | partial | unknown | yes | 8 | — | yes | yes | — | — | — | — | yes |
+| Generate all hashes | partial | unknown | yes | 8 | — | yes | yes | — | — | — | — | yes |
 | HAS-160 | partial | exact | yes | 1 | — | yes | — | yes | — | — | — | yes |
 | HASSH Client Fingerprint | partial | unknown | yes | 8 | yes | yes | — | — | — | — | — | yes |
 | HASSH Server Fingerprint | partial | unknown | yes | 0 | — | — | — | — | — | — | — | yes |
@@ -241,7 +241,7 @@
 | Caret/M-decode | partial | exact | yes | 4 | — | — | — | yes | — | — | — | yes |
 | Cartesian Product | partial | unknown | yes | 6 | yes | yes | — | — | — | — | — | yes |
 | Change IP format | partial | unknown | yes | 4 | — | — | — | — | — | — | — | yes |
-| Chi Square | partial | unknown | yes | 2 | — | — | — | — | — | — | — | yes |
+| Chi Square | partial | unknown | yes | 7 | — | yes | yes | — | — | — | — | yes |
 | Comment | partial | exact | yes | 2 | — | — | — | yes | — | — | — | yes |
 | Conditional Jump | partial | unknown | yes | 3 | — | — | — | — | — | — | — | yes |
 | Convert Leet Speak | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
@@ -314,7 +314,7 @@
 | Haversine distance | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
 | Head | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
 | IPv6 Transition Addresses | partial | unknown | yes | 8 | yes | yes | — | — | — | — | — | yes |
-| Index of Coincidence | partial | unknown | yes | 2 | — | yes | — | — | — | — | — | yes |
+| Index of Coincidence | partial | unknown | yes | 8 | — | yes | yes | — | — | — | — | yes |
 | JSON to CSV | partial | unknown | yes | 3 | — | — | — | — | — | — | — | yes |
 | JSON to YAML | partial | unknown | yes | 2 | — | yes | — | — | — | — | — | yes |
 | Jump | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
@@ -408,7 +408,7 @@
 | To Float | partial | unknown | yes | 2 | yes | — | — | — | — | — | — | yes |
 | To Hex | partial | exact | yes | 5 | — | yes | yes | yes | — | — | yes | yes |
 | To Hex Content | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
-| To Hexdump | partial | unknown | yes | 5 | yes | — | — | — | — | — | — | yes |
+| To Hexdump | partial | unknown | yes | 5 | yes | — | yes | — | — | — | — | yes |
 | To Lower case | partial | exact | yes | 5 | — | yes | — | yes | — | — | — | yes |
 | To Modhex | partial | unknown | yes | 3 | — | — | — | — | — | — | — | yes |
 | To Morse Code | partial | exact | yes | 15 | yes | yes | — | yes | — | — | — | yes |
@@ -479,7 +479,7 @@
 | MD5 | partial | exact | yes | 3 | — | yes | yes | yes | — | — | — | yes |
 | MurmurHash3 | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
 | RIPEMD | partial | exact | yes | 6 | yes | yes | — | yes | — | — | — | yes |
-| SHA0 | partial | exact | yes | 5 | yes | yes | — | yes | — | — | — | yes |
+| SHA0 | partial | exact | yes | 5 | yes | yes | yes | yes | — | — | — | yes |
 | SHA1 | partial | exact | yes | 4 | yes | yes | yes | yes | — | — | — | yes |
 | SHA2 | partial | exact | yes | 9 | yes | — | yes | yes | — | — | yes | yes |
 | SHA3 | partial | exact | yes | 6 | yes | yes | yes | yes | — | — | — | yes |

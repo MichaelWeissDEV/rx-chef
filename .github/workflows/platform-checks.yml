@@ -3,7 +3,12 @@ name: Platform checks
 on:
   pull_request:
   push:
-    branches: [main]
+    # This repository develops on `master`. The trigger previously listed only
+    # `main`, so no push to the default branch ever started these checks.
+    # `main` is kept so the workflow keeps working if the branch is renamed.
+    branches:
+      - master
+      - main
   workflow_dispatch:
 
 permissions:

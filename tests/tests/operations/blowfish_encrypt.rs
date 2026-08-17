@@ -1,178 +1,148 @@
 // Tests for the blowfish_encrypt operation.
 // Run only these tests:
 //   cargo test -p cyberchef-rust-tests --test operations blowfish_encrypt::
+//
+// The ECB vectors below are the published Blowfish test vectors distributed
+// with the reference implementation (Schneier / Eric Young), not values taken
+// from rx-chef. Because the operation applies PKCS#7 padding, an exactly
+// block-sized plaintext produces a second, all-padding block; the assertions
+// therefore pin the first ciphertext block against the published value.
+//
+// These tests previously asserted only `result.is_ok()` on a valid key, which
+// says nothing about whether the cipher is correct.
 
-use rxchef::operation::ArgValue;
-use rxchef::operations::blowfish_encrypt::BlowfishEncrypt;
-use rxchef::Operation;
+use rxchef::runtime::{self, RuntimeError};
+
+/// Run through the runtime rather than calling `Operation::run` directly, so
+/// the arguments go through the same parsing every frontend uses (in
+/// particular the `hex:` prefix that turns a string into bytes).
+fn args(key: &str, iv: &str, mode: &str, input: &str, output: &str) -> Vec<String> {
+    vec![
+        key.to_string(),
+        iv.to_string(),
+        mode.to_string(),
+        input.to_string(),
+        output.to_string(),
+    ]
+}
+
+fn encrypt(input: &[u8], args: &[String]) -> Result<Vec<u8>, RuntimeError> {
+    runtime::run_operation("Blowfish Encrypt", input.to_vec(), args)
+}
+
+fn encrypt_ecb_hex(key_hex: &str, plaintext_hex: &str) -> String {
+    let args = args(&format!("hex:{key_hex}"), "", "ECB", "Hex", "Hex");
+    String::from_utf8(encrypt(plaintext_hex.as_bytes(), &args).unwrap()).unwrap()
+}
+
+/// The first 64-bit block, which is what the published vectors specify.
+fn first_block(ciphertext: &str) -> String {
+    ciphertext.chars().take(16).collect()
+}
 
 #[test]
-fn test_blowfish_encrypt_invalid_key_length() {
-    let op = BlowfishEncrypt;
-    let input = b"Test message".to_vec();
-    let args = [
-        ArgValue::Str("0123456789abcdef01234567".to_string()), // 24 bytes - valid
-        ArgValue::Str("".to_string()),
-        ArgValue::Str("CBC".to_string()),
-        ArgValue::Str("Raw".to_string()),
-        ArgValue::Str("Hex".to_string()),
-    ];
-    // 24 bytes should be valid
-    let result = op.run(input.clone(), &args);
-    assert!(result.is_ok());
-    // 3 bytes should be invalid
-    let args = [
-        ArgValue::Str("012".to_string()), // 3 bytes - invalid
-        ArgValue::Str("".to_string()),
-        ArgValue::Str("CBC".to_string()),
-        ArgValue::Str("Raw".to_string()),
-        ArgValue::Str("Hex".to_string()),
-    ];
-    let result = op.run(input, &args);
-    assert!(result.is_err());
-}
-#[test]
-fn test_blowfish_encrypt_invalid_iv_length() {
-    let op = BlowfishEncrypt;
-    let input = b"Test message".to_vec();
-    let args = [
-        ArgValue::Str("0123456789abcdef0123456789abcdef".to_string()), // 16 bytes - valid
-        ArgValue::Str("0123456789".to_string()),                       // 10 bytes - invalid
-        ArgValue::Str("CBC".to_string()),
-        ArgValue::Str("Raw".to_string()),
-        ArgValue::Str("Hex".to_string()),
-    ];
-    let result = op.run(input, &args);
-    assert!(result.is_err());
-}
-#[test]
-fn test_blowfish_encrypt_ecb_mode() {
-    let op = BlowfishEncrypt;
-    let key = hex::decode("0000000000000000").unwrap(); // 8 bytes
-    let args = [
-        ArgValue::Bytes(key),
-        ArgValue::Str("".to_string()), // Empty IV (will be null)
-        ArgValue::Str("ECB".to_string()),
-        ArgValue::Str("Raw".to_string()),
-        ArgValue::Str("Hex".to_string()),
-    ];
-    let result = op.run(b"Hello, World!".to_vec(), &args);
-    assert!(result.is_ok());
-}
-#[test]
-fn test_blowfish_encrypt_cbc_mode() {
-    let op = BlowfishEncrypt;
-    let key = hex::decode("0123456789abcdef0123456789abcdef").unwrap(); // 16 bytes
-    let iv = hex::decode("0000000000000000").unwrap(); // 8 bytes
-    let args = [
-        ArgValue::Bytes(key),
-        ArgValue::Bytes(iv),
-        ArgValue::Str("CBC".to_string()),
-        ArgValue::Str("Raw".to_string()),
-        ArgValue::Str("Hex".to_string()),
-    ];
-    let result = op.run(b"Test message for CBC encryption".to_vec(), &args);
-    assert!(result.is_ok());
-}
-#[test]
-fn test_blowfish_encrypt_roundtrip() {
-    let encrypt_op = BlowfishEncrypt;
-    let decrypt_op = rxchef::operations::blowfish_decrypt::BlowfishDecrypt;
-    let input = b"Test message for roundtrip encryption".to_vec();
-    let key = hex::decode("0123456789abcdef0123456789abcdef").unwrap(); // 16 bytes
-    let iv = hex::decode("0000000000000000").unwrap(); // 8 bytes
-                                                       // Test CBC mode
-    let encrypt_args = [
-        ArgValue::Bytes(key.clone()),
-        ArgValue::Bytes(iv.clone()),
-        ArgValue::Str("CBC".to_string()),
-        ArgValue::Str("Raw".to_string()),
-        ArgValue::Str("Hex".to_string()),
-    ];
-    let encrypted = encrypt_op.run(input.clone(), &encrypt_args).unwrap();
-    let decrypt_args = [
-        ArgValue::Bytes(key),
-        ArgValue::Bytes(iv),
-        ArgValue::Str("CBC".to_string()),
-        ArgValue::Str("Hex".to_string()),
-        ArgValue::Str("Raw".to_string()),
-    ];
-    let decrypted = decrypt_op.run(encrypted, &decrypt_args).unwrap();
-    assert_eq!(input, decrypted);
-}
-#[test]
-fn test_blowfish_encrypt_key_formats() {
-    let op = BlowfishEncrypt;
-    let key_hex = "0123456789abcdef0123456789abcdef";
-    // Test with hex input
-    let args = [
-        ArgValue::Str(key_hex.to_string()),
-        ArgValue::Str("".to_string()),
-        ArgValue::Str("ECB".to_string()),
-        ArgValue::Str("Raw".to_string()),
-        ArgValue::Str("Hex".to_string()),
-    ];
-    let result = op.run(b"Test".to_vec(), &args);
-    assert!(result.is_ok());
-    // Test with base64 input
-    let key_base64 = base64::Engine::encode(
-        &base64::engine::general_purpose::STANDARD,
-        "0123456789abcdef0123456789abcdef",
-    );
-    let args = [
-        ArgValue::Str(key_base64),
-        ArgValue::Str("".to_string()),
-        ArgValue::Str("ECB".to_string()),
-        ArgValue::Str("Raw".to_string()),
-        ArgValue::Str("Hex".to_string()),
-    ];
-    let result = op.run(b"Test".to_vec(), &args);
-    assert!(result.is_ok());
-}
-#[test]
-fn test_blowfish_encrypt_output_formats() {
-    let op = BlowfishEncrypt;
-    let key = hex::decode("0123456789abcdef0123456789abcdef").unwrap();
-    // Test with Hex output
-    let args = [
-        ArgValue::Bytes(key.clone()),
-        ArgValue::Str("".to_string()),
-        ArgValue::Str("ECB".to_string()),
-        ArgValue::Str("Raw".to_string()),
-        ArgValue::Str("Hex".to_string()), // Hex output
-    ];
-    let result = op.run(b"Test".to_vec(), &args);
-    assert!(result.is_ok());
-    let output = result.unwrap();
-    let output_str = String::from_utf8_lossy(&output);
-    assert!(output_str.starts_with("0x") || output_str.len().is_multiple_of(2)); // Hex should have even length
-                                                                                 // Test with Raw output
-    let args = [
-        ArgValue::Bytes(key),
-        ArgValue::Str("".to_string()),
-        ArgValue::Str("ECB".to_string()),
-        ArgValue::Str("Raw".to_string()),
-        ArgValue::Str("Raw".to_string()), // Raw output
-    ];
-    let result = op.run(b"Test".to_vec(), &args);
-    assert!(result.is_ok());
-}
-#[test]
-fn test_blowfish_encrypt_all_modes() {
-    let op = BlowfishEncrypt;
-    let key = hex::decode("0123456789abcdef0123456789abcdef").unwrap();
-    let iv = hex::decode("0000000000000000").unwrap();
-    let input = b"Test message for all modes".to_vec();
-    let modes = ["ECB", "CBC", "CFB", "OFB", "CTR"];
-    for mode in modes.iter() {
-        let args = [
-            ArgValue::Bytes(key.clone()),
-            ArgValue::Bytes(iv.clone()),
-            ArgValue::Str(mode.to_string()),
-            ArgValue::Str("Raw".to_string()),
-            ArgValue::Str("Hex".to_string()),
-        ];
-        let result = op.run(input.clone(), &args);
-        assert!(result.is_ok(), "Mode {} failed", mode);
+fn test_blowfish_encrypt_published_ecb_vectors() {
+    for (key, plaintext, expected) in [
+        ("0000000000000000", "0000000000000000", "4ef997456198dd78"),
+        ("ffffffffffffffff", "ffffffffffffffff", "51866fd5b85ecb8a"),
+        ("3000000000000000", "1000000000000001", "7d856f9a613063f2"),
+        ("0123456789abcdef", "1111111111111111", "61f9c3802281b096"),
+        ("1111111111111111", "1111111111111111", "2466dd878b963c9d"),
+        ("fedcba9876543210", "0123456789abcdef", "0aceab0fc6a0a28d"),
+    ] {
+        assert_eq!(
+            first_block(&encrypt_ecb_hex(key, plaintext)),
+            expected,
+            "Blowfish ECB vector failed for key {key} / plaintext {plaintext}"
+        );
     }
+}
+
+#[test]
+fn test_blowfish_encrypt_appends_a_full_padding_block_for_block_sized_input() {
+    // PKCS#7 on an exact multiple of the block size adds one whole block.
+    let ciphertext = encrypt_ecb_hex("0000000000000000", "0000000000000000");
+    assert_eq!(
+        ciphertext.len(),
+        32,
+        "expected two 8-byte blocks: {ciphertext}"
+    );
+}
+
+#[test]
+fn test_blowfish_encrypt_roundtrips_through_blowfish_decrypt() {
+    // The published vectors above pin the cipher itself; this checks that the
+    // decrypt operation agrees with it rather than standing in for that proof.
+    let key = "hex:0123456789abcdef";
+    let ciphertext = encrypt(b"secret message", &args(key, "", "ECB", "Raw", "Hex")).unwrap();
+    let recovered = runtime::run_operation(
+        "Blowfish Decrypt",
+        ciphertext,
+        &args(key, "", "ECB", "Hex", "Raw"),
+    )
+    .unwrap();
+    assert_eq!(recovered, b"secret message");
+}
+
+#[test]
+fn test_blowfish_encrypt_cbc_depends_on_the_iv() {
+    let key = "hex:0123456789abcdef";
+    let with_zero_iv = encrypt(
+        b"same plaintext..",
+        &args(key, "hex:0000000000000000", "CBC", "Raw", "Hex"),
+    )
+    .unwrap();
+    let with_other_iv = encrypt(
+        b"same plaintext..",
+        &args(key, "hex:0011223344556677", "CBC", "Raw", "Hex"),
+    )
+    .unwrap();
+    assert_ne!(
+        with_zero_iv, with_other_iv,
+        "CBC ciphertext must depend on the IV"
+    );
+}
+
+#[test]
+fn test_blowfish_encrypt_ecb_is_deterministic() {
+    let key = "hex:0123456789abcdef";
+    let once = encrypt(b"repeatable", &args(key, "", "ECB", "Raw", "Hex")).unwrap();
+    let twice = encrypt(b"repeatable", &args(key, "", "ECB", "Raw", "Hex")).unwrap();
+    assert_eq!(once, twice);
+}
+
+#[test]
+fn test_blowfish_encrypt_accepts_the_full_valid_key_length_range() {
+    // Blowfish keys are 4 to 56 bytes.
+    for key_bytes in [4usize, 8, 16, 24, 56] {
+        let key = format!("hex:{}", "ab".repeat(key_bytes));
+        assert!(
+            encrypt(b"message!", &args(&key, "", "ECB", "Raw", "Hex")).is_ok(),
+            "a {key_bytes}-byte key should be accepted"
+        );
+    }
+}
+
+#[test]
+fn test_blowfish_encrypt_rejects_out_of_range_key_lengths() {
+    for key_bytes in [0usize, 1, 3, 57, 64] {
+        let key = format!("hex:{}", "ab".repeat(key_bytes));
+        assert!(
+            encrypt(b"message!", &args(&key, "", "ECB", "Raw", "Hex")).is_err(),
+            "a {key_bytes}-byte key must be rejected"
+        );
+    }
+}
+
+#[test]
+fn test_blowfish_encrypt_rejects_an_unknown_mode() {
+    let error = encrypt(
+        b"message!",
+        &args("hex:0123456789abcdef", "", "NOTAMODE", "Raw", "Hex"),
+    )
+    .expect_err("an unknown mode must be rejected");
+    assert!(
+        matches!(error, RuntimeError::InvalidArgument { .. }),
+        "expected InvalidArgument, got {error:?}"
+    );
 }

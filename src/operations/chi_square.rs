@@ -59,6 +59,11 @@ impl Operation for ChiSquare {
             }
         }
 
-        Ok(total.to_le_bytes().to_vec())
+        // `output_type()` is `Number`, which the runtime validates as UTF-8
+        // decimal text. Emitting `to_le_bytes()` wrote the raw IEEE-754
+        // representation instead, so every run was rejected by the output
+        // contract with "declared numeric output but produced invalid UTF-8"
+        // and the operation could never return a result.
+        Ok(total.to_string().into_bytes())
     }
 }

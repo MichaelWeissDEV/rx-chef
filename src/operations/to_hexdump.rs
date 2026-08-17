@@ -127,7 +127,10 @@ impl Operation for ToHexdump {
                 line_no = line_no.to_uppercase();
             }
 
-            lines.push(format!("{}  {} |{}|", line_no, hex_str, ascii_str));
+            // Two spaces separate the hex column from the ASCII column, matching
+            // `hexdump -C` and upstream CyberChef. Emitting one left every line
+            // a character narrower than the reference output.
+            lines.push(format!("{}  {}  |{}|", line_no, hex_str, ascii_str));
         }
 
         if include_final_length && !input.is_empty() {

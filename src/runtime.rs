@@ -19,6 +19,12 @@ pub enum RuntimeError {
     Unavailable { operation: String, features: String },
     #[error("argument '{name}': {reason}")]
     InvalidArgument { name: String, reason: String },
+    /// A required argument was not supplied at all.
+    ///
+    /// Distinct from [`RuntimeError::InvalidArgument`] so frontends can tell
+    /// "you forgot this" from "what you gave me is wrong".
+    #[error("operation '{operation}' requires a value for argument '{name}'")]
+    MissingArgument { operation: String, name: String },
     #[error("{0}")]
     Operation(#[from] crate::operation::OperationError),
     #[error("operation output violates its declared type: {0}")]
@@ -149,11 +155,13 @@ pub fn validate_operation_args(
         .iter()
         .enumerate()
         .map(|(index, argument)| {
+            // A recipe may simply stop short of the schema length; every slot
+            // past the end of `raw_args` was not supplied.
             let supplied = raw_args.get(index).map(String::as_str);
             if supplied.is_none() && argument.required {
-                return Err(RuntimeError::InvalidArgument {
+                return Err(RuntimeError::MissingArgument {
+                    operation: operation.name().to_string(),
                     name: argument.name.into(),
-                    reason: "value is required".into(),
                 });
             }
             let raw = supplied.unwrap_or(argument.default_value);
@@ -174,49 +182,106 @@ pub fn validate_operation_args(
         .collect::<Result<Vec<_>, _>>()
 }
 
+/// Bind supplied positional and named values to an operation's schema.
+///
+/// # Why this keeps `Option` internally
+///
+/// "the caller did not supply this argument" and "the caller supplied the
+/// empty string" are different facts, and only the first one may be answered
+/// with a default. Materialising defaults into every slot up front — which is
+/// what this function used to do — erases that distinction before
+/// [`ArgSchema::required`] is ever consulted, so a required argument could
+/// never be reported as missing. `rxchef run "AES Encrypt"` then reached the
+/// cipher with an empty key and failed with "Invalid key length: 0 bytes"
+/// instead of naming the argument the user forgot.
+///
+/// Slots therefore stay `None` until every supplied value has been placed and
+/// the required check has run. Defaults are substituted only afterwards.
+///
+/// An explicitly supplied empty string counts as supplied: `required` guards
+/// absence, not emptiness. Whether an empty value is *acceptable* is the
+/// operation's own business.
+pub fn bind_arguments(
+    operation_name: &str,
+    named: &[String],
+    positional: &[String],
+) -> Result<Vec<String>, RuntimeError> {
+    let canonical_name = resolve_operation_name(operation_name)
+        .ok_or_else(|| RuntimeError::UnknownOperation(operation_name.to_string()))?;
+    let operation = operations::get_operation(&canonical_name)
+        .ok_or_else(|| RuntimeError::UnknownOperation(operation_name.to_string()))?;
+    let schema = operation.args_schema();
+
+    // 1. One empty slot per schema argument.
+    let mut slots: Vec<Option<String>> = vec![None; schema.len()];
+
+    // 2. Positional values, left to right.
+    if positional.len() > schema.len() {
+        return Err(RuntimeError::InvalidArgument {
+            name: "arguments".into(),
+            reason: format!(
+                "'{}' accepts {} argument(s), but {} positional values were provided",
+                operation.name(),
+                schema.len(),
+                positional.len()
+            ),
+        });
+    }
+    for (index, value) in positional.iter().enumerate() {
+        slots[index] = Some(value.clone());
+    }
+
+    // 3. Named values, rejecting unknown names and 4. duplicate assignments.
+    for entry in named {
+        let (name, value) = entry
+            .split_once('=')
+            .ok_or_else(|| RuntimeError::InvalidArgument {
+                name: entry.clone(),
+                reason: "expected NAME=VALUE".into(),
+            })?;
+        let normalized = slugify(name);
+        let index = schema
+            .iter()
+            .position(|argument| slugify(argument.name) == normalized)
+            .ok_or_else(|| RuntimeError::InvalidArgument {
+                name: name.to_string(),
+                reason: format!("'{}' has no such argument", operation.name()),
+            })?;
+        if slots[index].is_some() {
+            return Err(RuntimeError::InvalidArgument {
+                name: schema[index].name.into(),
+                reason: format!("provided more than once for '{}'", operation.name()),
+            });
+        }
+        slots[index] = Some(value.to_string());
+    }
+
+    // 5. Required check first, defaults only for absent optional arguments.
+    schema
+        .iter()
+        .zip(slots)
+        .map(|(argument, slot)| match slot {
+            Some(value) => Ok(value),
+            None if argument.required => Err(RuntimeError::MissingArgument {
+                operation: operation.name().to_string(),
+                name: argument.name.into(),
+            }),
+            // 6. Only now is a default allowed to stand in for a value.
+            None => Ok(argument.default_value.to_string()),
+        })
+        .collect()
+}
+
+/// Backwards-compatible wrapper returning a plain message.
+///
+/// Prefer [`bind_arguments`], which returns a structured [`RuntimeError`] the
+/// frontends can map to an exit code.
 pub fn resolve_named_args(
     op_name: &str,
     named: &[String],
     positional: &[String],
 ) -> Result<Vec<String>, String> {
-    let info = operation_info(op_name)?;
-    let schema_len = info.args.len();
-    if positional.len() > schema_len {
-        return Err(format!(
-            "'{}' accepts {} argument(s), but {} positional values were provided",
-            info.name,
-            schema_len,
-            positional.len()
-        ));
-    }
-    let mut result: Vec<String> = info
-        .args
-        .iter()
-        .map(|argument| argument.default_value.to_string())
-        .collect();
-    for (index, value) in positional.iter().enumerate() {
-        result[index] = value.clone();
-    }
-    let mut assigned = std::collections::HashSet::new();
-    for kv in named {
-        let (name, value) = kv
-            .split_once('=')
-            .ok_or_else(|| format!("invalid --arg '{}': expected NAME=VALUE", kv))?;
-        let normalized_name = slugify(name);
-        let idx = info
-            .args
-            .iter()
-            .position(|argument| slugify(argument.name) == normalized_name)
-            .ok_or_else(|| format!("argument '{}' not found in '{}'", name, op_name))?;
-        if idx < positional.len() || !assigned.insert(idx) {
-            return Err(format!(
-                "argument '{}' was provided more than once for '{}'",
-                info.args[idx].name, info.name
-            ));
-        }
-        result[idx] = value.to_string();
-    }
-    Ok(result)
+    bind_arguments(op_name, named, positional).map_err(|error| error.to_string())
 }
 
 /// Redact argument positions explicitly marked sensitive by operation metadata.
@@ -437,8 +502,8 @@ mod tests {
     use std::collections::HashSet;
 
     use super::{
-        canonical_identifier, operation_info, operation_names, parse_operation_arg,
-        resolve_named_args, resolve_operation_name,
+        bind_arguments, canonical_identifier, operation_info, operation_names, parse_operation_arg,
+        resolve_named_args, resolve_operation_name, validate_operation_args, RuntimeError,
     };
     use crate::operation::ArgValue;
 
@@ -527,5 +592,181 @@ mod tests {
             &["standard".to_string()],
         );
         assert!(positional_and_named.is_err());
+    }
+
+    // ── Required-argument binding ──────────────────────────────────────────
+    //
+    // `bind_arguments` must not substitute a default before the required check
+    // has run, otherwise a missing value is indistinguishable from an empty
+    // one. "AES Encrypt" is the canonical case: its `Key` is required and its
+    // default is empty, so the old behaviour reached the cipher with a
+    // zero-length key and reported an invalid key *length*.
+
+    fn missing_argument(error: &RuntimeError) -> Option<(&str, &str)> {
+        match error {
+            RuntimeError::MissingArgument { operation, name } => {
+                Some((operation.as_str(), name.as_str()))
+            }
+            _ => None,
+        }
+    }
+
+    #[test]
+    fn missing_required_positional_argument_is_reported_by_name() {
+        let error = bind_arguments("AES Encrypt", &[], &[]).unwrap_err();
+        assert_eq!(missing_argument(&error), Some(("AES Encrypt", "Key")));
+    }
+
+    #[test]
+    fn missing_required_named_argument_is_reported_by_name() {
+        // Supplying only an optional argument by name leaves `Key` absent.
+        let error = bind_arguments("AES Encrypt", &["Mode=CBC".to_string()], &[]).unwrap_err();
+        assert_eq!(missing_argument(&error), Some(("AES Encrypt", "Key")));
+    }
+
+    #[test]
+    fn supplied_required_argument_binds_and_fills_remaining_defaults() {
+        let bound = bind_arguments(
+            "AES Encrypt",
+            &[],
+            &["hex:00112233445566778899aabbccddeeff".to_string()],
+        )
+        .unwrap();
+        assert_eq!(bound[0], "hex:00112233445566778899aabbccddeeff");
+        // Every remaining slot is filled from the schema defaults.
+        let info = operation_info("AES Encrypt").unwrap();
+        assert_eq!(bound.len(), info.args.len());
+        for (index, argument) in info.args.iter().enumerate().skip(1) {
+            assert_eq!(bound[index], argument.default_value);
+        }
+    }
+
+    #[test]
+    fn explicit_empty_string_counts_as_supplied() {
+        // `required` guards absence, not emptiness: an explicit "" is a value
+        // the user chose, so binding succeeds and the operation decides
+        // whether it is acceptable.
+        let bound = bind_arguments("AES Encrypt", &[], &[String::new()]).unwrap();
+        assert_eq!(bound[0], "");
+    }
+
+    #[test]
+    fn absent_optional_argument_receives_its_default() {
+        let bound = bind_arguments("From Base64", &[], &[]).unwrap();
+        let info = operation_info("From Base64").unwrap();
+        for (index, argument) in info.args.iter().enumerate() {
+            assert_eq!(bound[index], argument.default_value);
+        }
+    }
+
+    #[test]
+    fn named_argument_may_follow_an_omitted_optional_argument() {
+        // "Strict mode" sits after "Alphabet"; naming it must not require
+        // positionally filling the arguments before it.
+        let bound = bind_arguments("From Base64", &["Strict mode=true".to_string()], &[]).unwrap();
+        let info = operation_info("From Base64").unwrap();
+        assert_eq!(bound[0], info.args[0].default_value);
+        assert_eq!(bound[1], "true");
+    }
+
+    #[test]
+    fn unknown_named_argument_is_rejected() {
+        let error =
+            bind_arguments("From Base64", &["NoSuchArgument=1".to_string()], &[]).unwrap_err();
+        assert!(
+            matches!(&error, RuntimeError::InvalidArgument { name, .. } if name == "NoSuchArgument"),
+            "expected InvalidArgument naming the unknown argument, got {error:?}"
+        );
+    }
+
+    #[test]
+    fn named_argument_without_a_separator_is_rejected() {
+        let error = bind_arguments("From Base64", &["Alphabet".to_string()], &[]).unwrap_err();
+        assert!(
+            matches!(&error, RuntimeError::InvalidArgument { reason, .. } if reason.contains("NAME=VALUE")),
+            "expected a NAME=VALUE hint, got {error:?}"
+        );
+    }
+
+    #[test]
+    fn duplicate_named_argument_is_rejected() {
+        let error = bind_arguments(
+            "From Base64",
+            &[
+                "Strict mode=true".to_string(),
+                "strict_mode=false".to_string(),
+            ],
+            &[],
+        )
+        .unwrap_err();
+        assert!(
+            matches!(&error, RuntimeError::InvalidArgument { reason, .. } if reason.contains("more than once")),
+            "expected a duplicate-assignment error, got {error:?}"
+        );
+    }
+
+    #[test]
+    fn named_argument_colliding_with_a_positional_one_is_rejected() {
+        let error = bind_arguments(
+            "From Base64",
+            &["Alphabet=custom".to_string()],
+            &["standard".to_string()],
+        )
+        .unwrap_err();
+        assert!(
+            matches!(&error, RuntimeError::InvalidArgument { reason, .. } if reason.contains("more than once")),
+            "expected a duplicate-assignment error, got {error:?}"
+        );
+    }
+
+    #[test]
+    fn too_many_positional_arguments_are_rejected() {
+        let extra = vec!["a".to_string(); 32];
+        let error = bind_arguments("From Base64", &[], &extra).unwrap_err();
+        assert!(
+            matches!(&error, RuntimeError::InvalidArgument { name, .. } if name == "arguments"),
+            "expected an arity error, got {error:?}"
+        );
+    }
+
+    #[test]
+    fn recipe_style_short_argument_vectors_still_report_missing_required_values() {
+        // Recipes hand the runtime a plain vector that may stop short of the
+        // schema length; the slots past the end were not supplied.
+        let error = validate_operation_args("AES Encrypt", &[]).unwrap_err();
+        assert_eq!(missing_argument(&error), Some(("AES Encrypt", "Key")));
+    }
+
+    #[test]
+    fn binding_is_consistent_across_every_operation_with_required_arguments() {
+        // No operation may declare a required argument that also carries a
+        // default: that combination makes "required" unenforceable.
+        for name in operation_names(None) {
+            let info = operation_info(&name).unwrap();
+            for argument in info.args {
+                if argument.required {
+                    assert_eq!(
+                        argument.default_value, "",
+                        "{name}: required argument '{}' also declares a default",
+                        argument.name
+                    );
+                }
+            }
+            // An operation with no required arguments must bind with none given.
+            if info.args.iter().all(|argument| !argument.required) {
+                assert!(
+                    bind_arguments(&name, &[], &[]).is_ok(),
+                    "{name}: binding with no arguments should succeed"
+                );
+            } else {
+                assert!(
+                    matches!(
+                        bind_arguments(&name, &[], &[]),
+                        Err(RuntimeError::MissingArgument { .. })
+                    ),
+                    "{name}: binding with no arguments should report a missing argument"
+                );
+            }
+        }
     }
 }

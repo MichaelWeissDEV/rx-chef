@@ -248,7 +248,11 @@ impl BlowfishDecrypt {
             result.extend_from_slice(block.as_slice());
         }
 
-        Ok(result)
+        // `Blowfish Encrypt` applies PKCS#7 padding in ECB just as it does in
+        // CBC, and `decrypt_cbc` below strips it. ECB did not, so decrypting
+        // returned the plaintext with its padding bytes still attached —
+        // "secret message\x02\x02" instead of "secret message".
+        Self::pkcs7_unpad(&result)
     }
 
     /// Decrypt data in CBC mode

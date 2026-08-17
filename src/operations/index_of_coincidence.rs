@@ -73,6 +73,9 @@ impl Operation for IndexOfCoincidence {
 
         let result = coincidence / (density * (density - 1.0));
 
-        Ok(result.to_le_bytes().to_vec())
+        // See `chi_square.rs`: `output_type()` is `Number`, so the result must
+        // be decimal text. `to_le_bytes()` wrote raw IEEE-754 bytes and the
+        // runtime rejected every run against the declared output contract.
+        Ok(result.to_string().into_bytes())
     }
 }

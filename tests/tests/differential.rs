@@ -51,6 +51,18 @@ struct Case {
     reference_source: String,
     #[serde(default)]
     divergence: Option<String>,
+    /// For `semantic_roundtrip` cases: the operation that reverses this one.
+    ///
+    /// Compression formats do not specify a unique byte encoding, so two
+    /// conforming encoders may legitimately disagree byte for byte. Demanding
+    /// exact equality there would either force a false MISMATCH or invite
+    /// pasting rx-chef's own output into the fixture, which proves nothing.
+    /// What *is* checkable is that each side's stream decodes to the original
+    /// input under both implementations.
+    #[serde(default)]
+    inverse_operation: Option<String>,
+    #[serde(default)]
+    inverse_args: Vec<String>,
 }
 
 #[derive(Debug, Clone, Copy, Deserialize, PartialEq, Eq)]
@@ -66,6 +78,9 @@ enum Encoding {
 enum Expectation {
     Exact,
     DocumentedDifference,
+    /// The encodings need not match byte for byte, but both must decode back
+    /// to the original input through rx-chef's inverse operation.
+    SemanticRoundtrip,
     NotComparable,
     Unverified,
 }
@@ -74,6 +89,7 @@ enum Expectation {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 enum Verdict {
     Exact,
+    Compatible,
     DocumentedDifference,
     Mismatch,
     NotComparable,
@@ -84,6 +100,7 @@ impl fmt::Display for Verdict {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         let text = match self {
             Verdict::Exact => "EXACT",
+            Verdict::Compatible => "COMPATIBLE",
             Verdict::DocumentedDifference => "DOCUMENTED_DIFFERENCE",
             Verdict::Mismatch => "MISMATCH",
             Verdict::NotComparable => "NOT_COMPARABLE",
@@ -176,6 +193,10 @@ fn evaluate(case: &Case) -> (Verdict, String) {
     let rendered = String::from_utf8(produced.clone())
         .unwrap_or_else(|_| format!("hex:{}", hex::encode(&produced)));
 
+    if case.expect == Expectation::SemanticRoundtrip {
+        return evaluate_semantic_roundtrip(case, &produced, &expected, rendered);
+    }
+
     match (case.expect, matches) {
         (Expectation::Exact, true) => (Verdict::Exact, rendered),
         (Expectation::Exact, false) => (Verdict::Mismatch, rendered),
@@ -184,6 +205,56 @@ fn evaluate(case: &Case) -> (Verdict, String) {
         (Expectation::DocumentedDifference, true) => (Verdict::DocumentedDifference, rendered),
         (Expectation::DocumentedDifference, false) => (Verdict::Mismatch, rendered),
         _ => unreachable!("handled above"),
+    }
+}
+
+/// Compare two encodings that need not be byte-identical.
+///
+/// Both rx-chef's own output and the recorded upstream stream must decode back
+/// to the original input through rx-chef's inverse operation. That establishes
+/// interoperability in both directions — rx-chef can read what upstream wrote,
+/// and produces something upstream's format admits — without asserting a byte
+/// equality the format never promised.
+fn evaluate_semantic_roundtrip(
+    case: &Case,
+    produced: &[u8],
+    reference: &[u8],
+    rendered: String,
+) -> (Verdict, String) {
+    let Some(inverse) = case.inverse_operation.as_deref() else {
+        return (
+            Verdict::Mismatch,
+            "semantic_roundtrip case does not name an inverse_operation".to_string(),
+        );
+    };
+    let original = case.input_encoding.decode(&case.input);
+
+    let decode = |bytes: &[u8], label: &str| -> Result<(), String> {
+        match runtime::run_operation(inverse, bytes.to_vec(), &case.inverse_args) {
+            Ok(decoded) if decoded == original => Ok(()),
+            Ok(decoded) => Err(format!(
+                "{label} decoded to {} bytes that differ from the {} byte input",
+                decoded.len(),
+                original.len()
+            )),
+            Err(error) => Err(format!(
+                "{label} could not be decoded by {inverse}: {error}"
+            )),
+        }
+    };
+
+    if let Err(why) = decode(produced, "rx-chef output") {
+        return (Verdict::Mismatch, why);
+    }
+    if let Err(why) = decode(reference, "the recorded upstream stream") {
+        return (Verdict::Mismatch, why);
+    }
+
+    if produced == reference {
+        // Byte-identical is strictly stronger; report it as such.
+        (Verdict::Exact, rendered)
+    } else {
+        (Verdict::Compatible, rendered)
     }
 }
 
@@ -288,4 +359,105 @@ fn cyberchef_differential_cases_match_their_recorded_verdict() {
         mismatches.len(),
         mismatches.join("\n\n")
     );
+}
+
+// ── Sweep triage completeness ─────────────────────────────────────────────
+//
+// `verification/differential-triage.json` records why every operation in the
+// upstream default sweep matched, differed, or could not be compared. Its
+// value is that it has no gaps: a difference with no stated cause is a
+// difference nobody has looked at.
+
+#[derive(serde::Deserialize)]
+struct TriageDocument {
+    schema_version: u32,
+    classifications: Vec<String>,
+    entries: Vec<TriageEntry>,
+}
+
+#[derive(serde::Deserialize)]
+struct TriageEntry {
+    operation: String,
+    classification: String,
+    reason: String,
+    status: Option<String>,
+}
+
+fn load_triage() -> TriageDocument {
+    let path = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../verification/differential-triage.json"
+    );
+    let text = std::fs::read_to_string(path).expect("differential triage document must exist");
+    serde_json::from_str(&text).expect("differential triage document must parse")
+}
+
+#[test]
+fn every_swept_operation_has_a_triage_verdict_with_a_reason() {
+    let document = load_triage();
+    assert_eq!(document.schema_version, 1);
+    assert!(
+        document.entries.len() > 400,
+        "the triage should cover the whole sweep, got {} entries",
+        document.entries.len()
+    );
+    for entry in &document.entries {
+        assert!(
+            document.classifications.contains(&entry.classification),
+            "{}: unknown classification {:?}",
+            entry.operation,
+            entry.classification
+        );
+        assert!(
+            entry.reason.trim().len() >= 20,
+            "{}: classification {} needs a reason a reviewer can check, got {:?}",
+            entry.operation,
+            entry.classification,
+            entry.reason
+        );
+    }
+}
+
+#[test]
+fn no_swept_operation_is_left_untriaged() {
+    let document = load_triage();
+    let untriaged: Vec<&str> = document
+        .entries
+        .iter()
+        .filter(|entry| entry.classification == "UNTRIAGED")
+        .map(|entry| entry.operation.as_str())
+        .collect();
+    assert!(
+        untriaged.is_empty(),
+        "these operations still have no stated cause: {untriaged:?}"
+    );
+}
+
+#[test]
+fn confirmed_rxchef_bugs_from_the_sweep_are_marked_fixed() {
+    // A RXCHEF_BUG left open is a release blocker, not a note.
+    let document = load_triage();
+    for entry in &document.entries {
+        if entry.classification == "RXCHEF_BUG" {
+            assert_eq!(
+                entry.status.as_deref(),
+                Some("fixed"),
+                "{}: confirmed rx-chef defect is not marked fixed",
+                entry.operation
+            );
+        }
+    }
+}
+
+#[test]
+fn triage_operations_are_unique() {
+    let document = load_triage();
+    let mut seen = std::collections::HashSet::new();
+    for entry in &document.entries {
+        assert!(
+            seen.insert(entry.operation.as_str()),
+            "duplicate triage entry for {}",
+            entry.operation
+        );
+    }
 }

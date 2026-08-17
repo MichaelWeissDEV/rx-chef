@@ -90,7 +90,17 @@ impl<'a> PHPParser<'a> {
         }
         let start = self.offset;
         self.offset += length;
-        Ok(&self.input[start..self.offset])
+        // The serialized length counts bytes, but `input` is a `&str`: slicing
+        // it at a byte offset that falls inside a multi-byte character
+        // panicked on attacker-controlled input (four 0xFF bytes were enough,
+        // arriving as replacement characters). Report it instead.
+        self.input
+            .get(start..self.offset)
+            .ok_or_else(|| {
+                OperationError::InvalidInput(format!(
+                    "declared length {length} does not end on a character boundary at offset {start}"
+                ))
+            })
     }
 
     #[allow(dead_code)]

@@ -64,6 +64,15 @@ run_gate "clippy (correctness, suspicious)" \
     cargo clippy --locked --workspace --all-targets -- \
     -D clippy::correctness -D clippy::suspicious
 
+# The default feature set leaves the optional integrations unlinted. Running
+# clippy again with every feature enabled is the only way the PGP, JSONata,
+# OCR, YARA and disassembly code paths get checked at all. This runs in both
+# modes for the same reason the all-features check and tests below do: the
+# optional native dependencies build on the supported developer hosts.
+run_gate "clippy all-features (correctness, suspicious)" \
+    cargo clippy --locked --workspace --all-targets --all-features -- \
+    -D clippy::correctness -D clippy::suspicious
+
 # --- Tests -----------------------------------------------------------------
 
 run_gate "workspace tests" cargo test --locked --workspace

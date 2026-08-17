@@ -122,8 +122,13 @@ fn to_uint8_array(v: &[u32], include_length: bool) -> Vec<u8> {
     let mut n = length << 2;
     if include_length {
         let m = v[length - 1] as usize;
-        n -= 4;
-        if m > n || m < n - 3 {
+        // `n` is 4 for a single-word ciphertext, so `n -= 4` reaches 0 and the
+        // following `n - 3` underflowed and panicked in debug builds on
+        // attacker-controlled input (a one-byte ciphertext was enough).
+        // Saturating arithmetic keeps the length check intact while making the
+        // malformed case return empty like the other rejections here.
+        n = n.saturating_sub(4);
+        if m > n || m < n.saturating_sub(3) {
             return Vec::new();
         }
         n = m;

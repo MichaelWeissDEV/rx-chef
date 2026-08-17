@@ -1,0 +1,3095 @@
+{
+  "schema_version": 1,
+  "description": "Triage of the CyberChef default sweep. Every comparable operation was run in upstream CyberChef and in rx-chef against the same input under each side's own argument defaults. Every entry states a checkable reason; no entry may read 'unknown'.",
+  "sweep": {
+    "input": "foobar",
+    "input_encoding": "text",
+    "arguments": "each implementation's own schema defaults"
+  },
+  "reference_provenance": {
+    "cyberchef_commit": "0bb5472e50e158ee1885aab02a2ce93adf538656",
+    "cyberchef_describe": "v11.0.0-18-g0bb5472e",
+    "cyberchef_version": "11.0.0",
+    "cyberchef_dirty": true,
+    "cyberchef_dirty_paths": [
+      "package-lock.json",
+      "cyberchef-rust-tests/",
+      "tests/operations/all_tests.json",
+      "tests/operations/extract_tests.mjs",
+      "tests/operations/generate_rust_project.mjs",
+      "tests/operations/generate_rust_tests.mjs"
+    ],
+    "note": "No operation source was modified in the capture checkout, which the capture tool verifies and refuses to proceed otherwise. The listed paths are a lockfile and local scratch files unrelated to operation behaviour.",
+    "capture_tool": "tools/cyberchef-reference/capture.mjs",
+    "capture_tool_version": "2"
+  },
+  "classifications": [
+    "EXACT",
+    "RXCHEF_BUG",
+    "DEFAULT_MAPPING_DIFFERENCE",
+    "ARGUMENT_MAPPING_DIFFERENCE",
+    "REFERENCE_CAPTURE_BUG",
+    "VALID_SEMANTIC_DIFFERENCE",
+    "NONDETERMINISTIC",
+    "UNSUPPORTED_UPSTREAM_MODE",
+    "NOT_COMPARABLE",
+    "INTENTIONAL_DIFFERENCE",
+    "UNTRIAGED"
+  ],
+  "entries": [
+    {
+      "operation": "Bifid Cipher Decode",
+      "classification": "ARGUMENT_MAPPING_DIFFERENCE",
+      "reason": "The upstream keyword argument was not reproduced by the sweep's default resolution, so rx-chef ran with an empty keyword while upstream used its own.",
+      "reference": "fblqor",
+      "rxchef": "foobar",
+      "status": "open"
+    },
+    {
+      "operation": "Bifid Cipher Encode",
+      "classification": "ARGUMENT_MAPPING_DIFFERENCE",
+      "reason": "Upstream keyword argument was not reproduced by the sweep's default resolution; rx-chef ran with an empty keyword.",
+      "reference": "hlddrb",
+      "rxchef": "foobar",
+      "status": "open"
+    },
+    {
+      "operation": "Enigma",
+      "classification": "ARGUMENT_MAPPING_DIFFERENCE",
+      "reason": "Rotor/reflector settings come from nested upstream option groups the sweep reduced to a single scalar.",
+      "reference": "UURAS Z",
+      "rxchef": "EINCOT",
+      "status": "open"
+    },
+    {
+      "operation": "Generate HOTP",
+      "classification": "ARGUMENT_MAPPING_DIFFERENCE",
+      "reason": "Upstream treats the input as the raw secret; rx-chef base32-encodes it before building the otpauth URI. Needs a decision on which reading is intended.",
+      "reference": "URI: otpauth://hotp/?secret=FOOBA&algorithm=SHA1&digits=6&counter=0\n\nPassword: 305448",
+      "rxchef": "URI: otpauth://hotp/?secret=MZXW6YTBOI&counter=0&digits=6&algorithm=SHA1\n\nPassword: 734211",
+      "status": "open"
+    },
+    {
+      "operation": "Generate all checksums",
+      "classification": "ARGUMENT_MAPPING_DIFFERENCE",
+      "reason": "Upstream emits the full CRC catalogue; rx-chef emits a different, smaller set. Not an argument problem alone \u2014 the operations enumerate different algorithm lists.",
+      "reference": "CRC-3/GSM:                1\nCRC-3/ROHC:               1\nCRC-4/G-704:              5\nCRC-4/INTERLAKEN:         5\nCRC-4/ITU:                5\nCRC-5/EPC:          ",
+      "rxchef": "Fletcher-8:               83\nFletcher-16:              ad7b\nAdler-32:                 08ab027a\nFletcher-32:              85734437\nFletcher-64:              c4df",
+      "status": "open"
+    },
+    {
+      "operation": "Typex",
+      "classification": "ARGUMENT_MAPPING_DIFFERENCE",
+      "reason": "Rotor, reflector and plugboard settings come from nested upstream option groups that the sweep reduced to a single scalar, so the two machines were configured differently.",
+      "reference": "VYGWZ V",
+      "rxchef": "NJWLW S",
+      "status": "open"
+    },
+    {
+      "operation": "CTPH",
+      "classification": "DEFAULT_MAPPING_DIFFERENCE",
+      "reason": "Context-triggered piecewise hash with different upstream block-size seeding; both produce valid ssdeep-style digests.",
+      "reference": "A:qx:2",
+      "rxchef": "3:Ne:Y",
+      "status": "open"
+    },
+    {
+      "operation": "GOST Hash",
+      "classification": "DEFAULT_MAPPING_DIFFERENCE",
+      "reason": "Upstream defaults to the Streebog-256 variant; rx-chef defaults to GOST 28147 (1994) with the E-TEST S-box. Both algorithms are correct and selectable.",
+      "reference": "e3c9fd89226d93b489a9fe27d686806e24a514e3787bca053c698ec4616ceb78",
+      "rxchef": "3bd8a3a35917871dfa0d49f9e73e7c57eea028dc061133eb560849ea20c133af",
+      "status": "open"
+    },
+    {
+      "operation": "Swap endianness",
+      "classification": "DEFAULT_MAPPING_DIFFERENCE",
+      "reason": "Upstream defaults the data format to 'Hex'; rx-chef defaults to raw bytes.",
+      "reference": "00 00 ba 0f",
+      "rxchef": "boof\u0000\u0000ra",
+      "status": "open"
+    },
+    {
+      "operation": "To Modhex",
+      "classification": "DEFAULT_MAPPING_DIFFERENCE",
+      "reason": "Upstream default delimiter is 'Space' (first of TO_MODHEX_DELIM_OPTIONS); rx-chef uses 'None'. Not aligned yet: rx-chef's From Modhex has no 'Auto' delimiter, so changing only the encoder would break the default roundtrip.",
+      "reference": "hh hv hv hd hb id",
+      "rxchef": "hhhvhvhdhbid",
+      "status": "open"
+    },
+    {
+      "operation": "A1Z26 Cipher Encode",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Add line numbers",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Adler-32 Checksum",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Affine Cipher Decode",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Affine Cipher Encode",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Alternating Caps",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Atbash Cipher",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Bacon Cipher Decode",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Bacon Cipher Encode",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Bit shift left",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Bit shift right",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Bzip2 Compress",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "CSS Beautify",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "CSS Minify",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "CSS selector",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Caesar Box Cipher",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Caret/M-decode",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Cetacean Cipher Encode",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Citrix CTX1 Encode",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Comment",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Convert Leet Speak",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Convert to NATO alphabet",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Count occurrences",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Decode NetBIOS Name",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Decode text",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Defang IP Addresses",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Defang URL",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Divide",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Drop bytes",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Drop nth bytes",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Encode NetBIOS Name",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Encode text",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Escape Unicode Characters",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Escape string",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Expand alphabet range",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Extract IP addresses",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Extract MAC addresses",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Extract URLs",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Extract dates",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Extract domains",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Extract email addresses",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Extract file paths",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Extract hashes",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Fang URL",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "File Tree",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Filter",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Fletcher-16 Checksum",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Fletcher-32 Checksum",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Fletcher-64 Checksum",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Fletcher-8 Checksum",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "From Base",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "From Base32",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "From Base45",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "From Base58",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "From Base62",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "From Base64",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "From Base85",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "From Base92",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "From Braille",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "From Case Insensitive Regex",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "From HTML Entity",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "From Hex Content",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "From Hexdump",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "From Morse Code",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "From Punycode",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "From Quoted Printable",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Generate De Bruijn Sequence",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Generic Code Beautify",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Get All Casings",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Group IP addresses",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "HAS-160",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "HTML To Text",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Head",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Keccak",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "LZString Compress",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "MD2",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "MD4",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "MD5",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "MIME Decoding",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Mean",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Median",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Microsoft Script Decoder",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Multiply",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "MurmurHash3",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "NOT",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "NT Hash",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Normalise Unicode",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "PEM to JWK",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Pad lines",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Public Key from Certificate",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Public Key from Private Key",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "RAKE",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "RIPEMD",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "ROT13",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "ROT47",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "ROT47 Brute Force",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "ROT8000",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Rail Fence Cipher Decode",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Rail Fence Cipher Encode",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Regular expression",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Remove Diacritics",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Remove line numbers",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Remove null bytes",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Remove whitespace",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Reverse",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Rotate left",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Rotate right",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "SHA0",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "SHA1",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "SHA3",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "SIGABA",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "SM3",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "SQL Beautify",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "SQL Minify",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "SSDEEP",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Scan for Embedded Files",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Sleep",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Sort",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Split",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Standard Deviation",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Streebog",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Strip HTML tags",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Strip HTTP headers",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Substitute",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Subtract",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Sum",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Swap case",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "TCP/IP Checksum",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Tail",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Take bytes",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Take nth bytes",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Text-Integer Conversion",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Base32",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Base45",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Base58",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Base62",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Base64",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Base85",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Base92",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Bech32",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Binary",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Braille",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Camel case",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Case Insensitive Regex",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Charcode",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Decimal",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To HTML Entity",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Hex",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Hex Content",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Kebab case",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Lower case",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Morse Code",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Octal",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Punycode",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Quoted Printable",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Snake case",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "To Upper case",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "URL Decode",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "URL Encode",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Unescape Unicode Characters",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Unescape string",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Unique",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "VarInt Decode",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Whirlpool",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Wrap",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "XKCD Random Number",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "XML Beautify",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "XML Minify",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "XOR Checksum",
+      "classification": "EXACT",
+      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
+      "status": "verified"
+    },
+    {
+      "operation": "Bcrypt",
+      "classification": "NONDETERMINISTIC",
+      "reason": "Operation metadata declares deterministic=False side_effects=['random']; excluded from byte comparison by the harness.",
+      "status": "excluded"
+    },
+    {
+      "operation": "DNS over HTTPS",
+      "classification": "NONDETERMINISTIC",
+      "reason": "Operation metadata declares deterministic=False side_effects=['network']; excluded from byte comparison by the harness.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Generate ECDSA Key Pair",
+      "classification": "NONDETERMINISTIC",
+      "reason": "Operation metadata declares deterministic=False side_effects=['random']; excluded from byte comparison by the harness.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Generate Lorem Ipsum",
+      "classification": "NONDETERMINISTIC",
+      "reason": "Operation metadata declares deterministic=False side_effects=['random']; excluded from byte comparison by the harness.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Generate RSA Key Pair",
+      "classification": "NONDETERMINISTIC",
+      "reason": "Operation metadata declares deterministic=False side_effects=['random']; excluded from byte comparison by the harness.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Generate TOTP",
+      "classification": "NONDETERMINISTIC",
+      "reason": "Operation metadata declares deterministic=False side_effects=['time']; excluded from byte comparison by the harness.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Generate UUID",
+      "classification": "NONDETERMINISTIC",
+      "reason": "Operation metadata declares deterministic=False side_effects=['random']; excluded from byte comparison by the harness.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Get Time",
+      "classification": "NONDETERMINISTIC",
+      "reason": "Operation metadata declares deterministic=False side_effects=['time']; excluded from byte comparison by the harness.",
+      "status": "excluded"
+    },
+    {
+      "operation": "HTTP request",
+      "classification": "NONDETERMINISTIC",
+      "reason": "Operation metadata declares deterministic=False side_effects=['network']; excluded from byte comparison by the harness.",
+      "status": "excluded"
+    },
+    {
+      "operation": "LS47 Encrypt",
+      "classification": "NONDETERMINISTIC",
+      "reason": "Operation metadata declares deterministic=False side_effects=['random']; excluded from byte comparison by the harness.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Numberwang",
+      "classification": "NONDETERMINISTIC",
+      "reason": "Operation metadata declares deterministic=False side_effects=['random']; excluded from byte comparison by the harness.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Pseudo-Random Integer Generator",
+      "classification": "NONDETERMINISTIC",
+      "reason": "Operation metadata declares deterministic=False side_effects=['random']; excluded from byte comparison by the harness.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Pseudo-Random Number Generator",
+      "classification": "NONDETERMINISTIC",
+      "reason": "Operation metadata declares deterministic=False side_effects=['random']; excluded from byte comparison by the harness.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Shuffle",
+      "classification": "NONDETERMINISTIC",
+      "reason": "Operation metadata declares deterministic=False side_effects=['random']; excluded from byte comparison by the harness.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Tar",
+      "classification": "NONDETERMINISTIC",
+      "reason": "Operation metadata declares deterministic=False side_effects=['time']; excluded from byte comparison by the harness.",
+      "status": "excluded"
+    },
+    {
+      "operation": "A1Z26 Cipher Decode",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "\u0000",
+      "rxchef_error": "rxchef: step 1 (A1Z26 Cipher Decode): invalid input: Error: all numbers must be between 1 and 26.",
+      "status": "accepted"
+    },
+    {
+      "operation": "ADD",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "AES Decrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "AES Encrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "AES Key Unwrap",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "AES Key Wrap",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "AMF Decode",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "[object Object]",
+      "rxchef_error": "rxchef: step 1 (AMF Decode): invalid input: Unknown marker: 102",
+      "status": "accepted"
+    },
+    {
+      "operation": "AMF Encode",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "\u0002\u0000\u0006foobar",
+      "rxchef_error": "rxchef: step 1 (AMF Encode): invalid input: expected ident at line 1 column 2",
+      "status": "accepted"
+    },
+    {
+      "operation": "AND",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Add Text To Image",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid file type.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Analyse UUID",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid UUID",
+      "status": "excluded"
+    },
+    {
+      "operation": "Analyse hash",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid hash",
+      "status": "excluded"
+    },
+    {
+      "operation": "Argon2",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Argon2 compare",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: module crashed the node process",
+      "status": "excluded"
+    },
+    {
+      "operation": "Avro to JSON",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Error parsing Avro file.",
+      "status": "excluded"
+    },
+    {
+      "operation": "BLAKE2b",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "BLAKE2s",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "BLAKE3",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: expected number, got string",
+      "status": "excluded"
+    },
+    {
+      "operation": "BSON deserialise",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: BSONError: buffer length 6 must === bson size 1651470182",
+      "status": "excluded"
+    },
+    {
+      "operation": "BSON serialise",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: SyntaxError: Unexpected token 'o', \"foobar\" is not valid JSON",
+      "status": "excluded"
+    },
+    {
+      "operation": "Bcrypt compare",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input is not acceptable for this operation's argument schema.",
+      "reference": "No match",
+      "rxchef_error": "rxchef: step 1 (Bcrypt compare): invalid argument 'Hash': Invalid bcrypt hash format",
+      "status": "accepted"
+    },
+    {
+      "operation": "Bcrypt parse",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Error: Error: Illegal hash length: 6 != 60",
+      "status": "excluded"
+    },
+    {
+      "operation": "Blowfish Encrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Blur Image",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid file type.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Bombe",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Crib cannot be empty",
+      "status": "excluded"
+    },
+    {
+      "operation": "Bzip2 Decompress",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Error",
+      "status": "excluded"
+    },
+    {
+      "operation": "CBOR Decode",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Insufficient data",
+      "status": "excluded"
+    },
+    {
+      "operation": "CBOR Encode",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "f",
+      "rxchef_error": "rxchef: step 1 (CBOR Encode): invalid input: Invalid JSON: expected ident at line 1 column 2",
+      "status": "accepted"
+    },
+    {
+      "operation": "CMAC",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "CRC Checksum",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Unknown checksum algorithm",
+      "status": "excluded"
+    },
+    {
+      "operation": "CSV to JSON",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; both sides degrade differently on garbage rather than disagreeing on defined behaviour.",
+      "reference": "",
+      "rxchef": "[]",
+      "status": "accepted"
+    },
+    {
+      "operation": "Cartesian Product",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Incorrect number of sets, perhaps you need to modify the sample delimiter or add more samp",
+      "status": "excluded"
+    },
+    {
+      "operation": "Cetacean Cipher Decode",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; both sides degrade differently on garbage rather than disagreeing on defined behaviour.",
+      "reference": "\u0000",
+      "rxchef": "",
+      "status": "accepted"
+    },
+    {
+      "operation": "ChaCha",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Change IP format",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "foobar",
+      "rxchef_error": "rxchef: step 1 (Change IP format): invalid input: Invalid dotted decimal IP: foobar",
+      "status": "accepted"
+    },
+    {
+      "operation": "CipherSaber2 Decrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "CipherSaber2 Encrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Citrix CTX1 Decode",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Incorrect hash length",
+      "status": "excluded"
+    },
+    {
+      "operation": "Compare CTPH hashes",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Incorrect number of samples.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Compare SSDEEP hashes",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Incorrect number of samples.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Conditional Jump",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'undefined')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Contain Image",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid file type.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Convert Image Format",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid file format.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Convert area",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: input.times is not a function",
+      "status": "excluded"
+    },
+    {
+      "operation": "Convert co-ordinate format",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Unable to detect the input delimiter automatically.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Convert data units",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: input.times is not a function",
+      "status": "excluded"
+    },
+    {
+      "operation": "Convert distance",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: input.times is not a function",
+      "status": "excluded"
+    },
+    {
+      "operation": "Convert mass",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: input.times is not a function",
+      "status": "excluded"
+    },
+    {
+      "operation": "Convert speed",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: input.times is not a function",
+      "status": "excluded"
+    },
+    {
+      "operation": "Cover Image",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid file type.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Crop Image",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid file type.",
+      "status": "excluded"
+    },
+    {
+      "operation": "DES Decrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "DES Encrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "DateTime Delta",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "Invalid format.\n\nFormat string tokens:\n<table class=\"table table-striped table-hover table-sm table-",
+      "rxchef_error": "rxchef: step 1 (DateTime Delta): invalid input: Failed to parse 'foobar' with format '%d/%m/%Y %H:%M:%S': input contains invalid characters",
+      "status": "accepted"
+    },
+    {
+      "operation": "Dechunk HTTP response",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not a valid payload for this operation.",
+      "reference": "foobar",
+      "rxchef_error": "rxchef: step 1 (Dechunk HTTP response): processing failed: Invalid chunked encoding: no newline found",
+      "status": "accepted"
+    },
+    {
+      "operation": "Derive EVP key",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Derive HKDF key",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Derive PBKDF2 key",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Diff",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Incorrect number of samples, perhaps you need to modify the sample delimiter or add more s",
+      "status": "excluded"
+    },
+    {
+      "operation": "Disassemble ARM",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid hexadecimal input. Please provide valid hex characters only.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Dither Image",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid file type.",
+      "status": "excluded"
+    },
+    {
+      "operation": "ECDSA Sign",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Please enter a private key.",
+      "status": "excluded"
+    },
+    {
+      "operation": "ECDSA Signature Conversion",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "300802027e8a02021b6a",
+      "rxchef_error": "rxchef: step 1 (ECDSA Signature Conversion): invalid input: Invalid JWS: Invalid last symbol 114, offset 5.",
+      "status": "accepted"
+    },
+    {
+      "operation": "ECDSA Verify",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Please enter a public key.",
+      "status": "excluded"
+    },
+    {
+      "operation": "ELF Info",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid ELF",
+      "status": "excluded"
+    },
+    {
+      "operation": "Extract Audio Metadata",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not a valid payload for this operation.",
+      "reference": "[object Object]",
+      "rxchef_error": "rxchef: step 1 (Extract Audio Metadata): processing failed: No format could be determined from the provided file",
+      "status": "accepted"
+    },
+    {
+      "operation": "Extract EXIF",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Could not extract EXIF data from image: Error: Invalid JPEG section offset",
+      "status": "excluded"
+    },
+    {
+      "operation": "Extract Files",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; both sides degrade differently on garbage rather than disagreeing on defined behaviour.",
+      "reference": "",
+      "rxchef": "No files found.",
+      "status": "accepted"
+    },
+    {
+      "operation": "Extract ID3",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: No valid ID3 header.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Extract LSB",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Please enter a valid image file.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Extract RGBA",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Please enter a valid image file.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Fernet Decrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Error: Secret must be 32 url-safe base64-encoded bytes.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Fernet Encrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Error: Secret must be 32 url-safe base64-encoded bytes.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Find / Replace",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'indexOf')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Flask Session Decode",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid Flask token format. Expected payload.timestamp.signature",
+      "status": "excluded"
+    },
+    {
+      "operation": "Flask Session Sign",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Secret key required",
+      "status": "excluded"
+    },
+    {
+      "operation": "Flask Session Verify",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Secret key required",
+      "status": "excluded"
+    },
+    {
+      "operation": "Flip Image",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid input file type.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Fork",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'undefined')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Format MAC addresses",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; both sides degrade differently on garbage rather than disagreeing on defined behaviour.",
+      "reference": "foobar\nFOOBAR\nfo-ob-ar\nFO-OB-AR\nfo:ob:ar\nFO:OB:AR\n",
+      "rxchef": "",
+      "status": "accepted"
+    },
+    {
+      "operation": "From BCD",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid input",
+      "status": "excluded"
+    },
+    {
+      "operation": "From Bech32",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid Bech32 string: no separator '1' found.",
+      "status": "excluded"
+    },
+    {
+      "operation": "From Binary",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; both sides degrade differently on garbage rather than disagreeing on defined behaviour.",
+      "reference": "\u0000",
+      "rxchef": "",
+      "status": "accepted"
+    },
+    {
+      "operation": "From Charcode",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; both sides degrade differently on garbage rather than disagreeing on defined behaviour.",
+      "reference": "\u000f",
+      "rxchef": "",
+      "status": "accepted"
+    },
+    {
+      "operation": "From Decimal",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; both sides degrade differently on garbage rather than disagreeing on defined behaviour.",
+      "reference": "\u0000",
+      "rxchef": "",
+      "status": "accepted"
+    },
+    {
+      "operation": "From Float",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "hex:7f800001",
+      "rxchef_error": "rxchef: step 1 (From Float): invalid input: Cannot parse 'foobar' as float: invalid float literal",
+      "status": "accepted"
+    },
+    {
+      "operation": "From Hex",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; both sides degrade differently on garbage rather than disagreeing on defined behaviour.",
+      "reference": "hex:0fba",
+      "rxchef": "hex:fb",
+      "status": "accepted"
+    },
+    {
+      "operation": "From MessagePack",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Could not decode MessagePack to JSON: Error: 5 trailing bytes",
+      "status": "excluded"
+    },
+    {
+      "operation": "From Modhex",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "A\f",
+      "rxchef_error": "rxchef: step 1 (From Modhex): invalid input: Invalid modhex character: 'o'",
+      "status": "accepted"
+    },
+    {
+      "operation": "From Octal",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "\u0000",
+      "rxchef_error": "rxchef: step 1 (From Octal): invalid input: Cannot parse 'foobar' as octal: invalid digit found in string",
+      "status": "accepted"
+    },
+    {
+      "operation": "From UNIX Timestamp",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "Thu 1 January 1970 00:00:00 UTC",
+      "rxchef_error": "rxchef: step 1 (From UNIX Timestamp): invalid input: Input must be a number",
+      "status": "accepted"
+    },
+    {
+      "operation": "Fuzzy Match",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; both sides degrade differently on garbage rather than disagreeing on defined behaviour.",
+      "reference": "foobar",
+      "rxchef": "No matches.",
+      "status": "accepted"
+    },
+    {
+      "operation": "GOST Decrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "GOST Encrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "GOST Key Unwrap",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "GOST Key Wrap",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "GOST Sign",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "GOST Verify",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Gunzip",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: invalid file signature:102,111",
+      "status": "excluded"
+    },
+    {
+      "operation": "HASSH Client Fingerprint",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Incorrect packet length.",
+      "status": "excluded"
+    },
+    {
+      "operation": "HASSH Server Fingerprint",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Incorrect packet length.",
+      "status": "excluded"
+    },
+    {
+      "operation": "HMAC",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Hamming Distance",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Error: You can only calculate the edit distance between 2 strings. Please ensure exactly t",
+      "status": "excluded"
+    },
+    {
+      "operation": "Haversine distance",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Input must in the format lat1, lng1, lat2, lng2",
+      "status": "excluded"
+    },
+    {
+      "operation": "Heatmap chart",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Each row must have length 2.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Hex Density chart",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Each row must have length 2.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Hex to Object Identifier",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "0.15.95.10",
+      "rxchef_error": "rxchef: step 1 (Hex to Object Identifier): invalid input: Invalid hex: Invalid character 'o' at position 1",
+      "status": "accepted"
+    },
+    {
+      "operation": "Hex to PEM",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "-----BEGIN CERTIFICATE-----\r\nAPC6\r\n-----END CERTIFICATE-----\r\n",
+      "rxchef_error": "rxchef: step 1 (Hex to PEM): invalid input: Invalid hex input: Invalid character 'o' at position 1",
+      "status": "accepted"
+    },
+    {
+      "operation": "IPv6 Transition Addresses",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "Enter compressed or expanded IPv6 address, IPv4 address or MAC Address.",
+      "rxchef_error": "rxchef: step 1 (IPv6 Transition Addresses): invalid input: 'foobar' is not a compressed or expanded IPv6 address, IPv4 address, or MAC address",
+      "status": "accepted"
+    },
+    {
+      "operation": "Image Brightness / Contrast",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid file type.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Image Filter",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid file type.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Image Hue/Saturation/Lightness",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid file type.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Image Opacity",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid file type.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Invert Image",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid input file format.",
+      "status": "excluded"
+    },
+    {
+      "operation": "JA3 Fingerprint",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Not handshake data.",
+      "status": "excluded"
+    },
+    {
+      "operation": "JA3S Fingerprint",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Not handshake data.",
+      "status": "excluded"
+    },
+    {
+      "operation": "JA4 Fingerprint",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Data is not a valid TLS Client Hello. QUIC is not yet supported.\nError: Not handshake data",
+      "status": "excluded"
+    },
+    {
+      "operation": "JA4Server Fingerprint",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Data is not a valid TLS Server Hello. QUIC is not yet supported.\nError: Not handshake data",
+      "status": "excluded"
+    },
+    {
+      "operation": "JPath expression",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid input JSON: Unexpected token 'o', \"foobar\" is not valid JSON",
+      "status": "excluded"
+    },
+    {
+      "operation": "JSON Beautify",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Unable to parse input as JSON.\nSyntaxError: JSON5: invalid character 'o' at 1:2",
+      "status": "excluded"
+    },
+    {
+      "operation": "JSON Minify",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Unexpected token 'o', \"foobar\" is not valid JSON",
+      "status": "excluded"
+    },
+    {
+      "operation": "JSON to CSV",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "0,1,2,3,4,5\\r\\nf,o,o,b,a,r\\r\\n",
+      "rxchef_error": "rxchef: step 1 (JSON to CSV): invalid input: Unable to parse JSON: expected ident at line 1 column 2",
+      "status": "accepted"
+    },
+    {
+      "operation": "JSON to YAML",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "foobar\n",
+      "rxchef_error": "rxchef: step 1 (JSON to YAML): invalid input: Unable to parse JSON: expected ident at line 1 column 2",
+      "status": "accepted"
+    },
+    {
+      "operation": "JWK to PEM",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Unexpected token 'o', \"foobar\" is not valid JSON",
+      "status": "excluded"
+    },
+    {
+      "operation": "JWT Decode",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: TypeError: Cannot read properties of null (reading 'payload')",
+      "status": "excluded"
+    },
+    {
+      "operation": "JWT Sign",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "eyJhbGciOiJIUzI1NiJ9.Zm9vYmFy.Rx3jZIUBD3KOZ0CZBK_7ZiTKHK4Nk5FBteHWIYhtVVk",
+      "rxchef_error": "rxchef: step 1 (JWT Sign): invalid input: Input is not valid JSON: expected ident at line 1 column 2",
+      "status": "accepted"
+    },
+    {
+      "operation": "JWT Verify",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: JsonWebTokenError: jwt malformed",
+      "status": "excluded"
+    },
+    {
+      "operation": "Jq",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "\"foobar\"",
+      "rxchef_error": "rxchef: step 1 (Jq): invalid input: Invalid input JSON: expected ident at line 1 column 2",
+      "status": "accepted"
+    },
+    {
+      "operation": "Jsonata Query",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid input JSON: Unexpected token 'o', \"foobar\" is not valid JSON",
+      "status": "excluded"
+    },
+    {
+      "operation": "Jump",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'undefined')",
+      "status": "excluded"
+    },
+    {
+      "operation": "LM Hash",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: error:0308010C:digital envelope routines::unsupported",
+      "status": "excluded"
+    },
+    {
+      "operation": "LS47 Decrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep supplied no arguments; the operation correctly reports its required argument as missing.",
+      "reference": "",
+      "rxchef_error": "rxchef: operation 'LS47 Decrypt' requires a value for argument 'Password'",
+      "status": "accepted"
+    },
+    {
+      "operation": "LZ4 Decompress",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: invalid magic number",
+      "status": "excluded"
+    },
+    {
+      "operation": "LZMA Decompress",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Failed to decompress input: corrupted input",
+      "status": "excluded"
+    },
+    {
+      "operation": "LZNT1 Decompress",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Malformed LZNT1 stream: Block too small! Has the stream been truncated?",
+      "status": "excluded"
+    },
+    {
+      "operation": "LZString Decompress",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not a valid payload for this operation.",
+      "reference": "",
+      "rxchef_error": "rxchef: step 1 (LZString Decompress): processing failed: LZString decompression failed",
+      "status": "accepted"
+    },
+    {
+      "operation": "Label",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Flow-control operation that is only meaningful inside a Fork/Subsection; it cannot run standalone.",
+      "reference": "foobar",
+      "rxchef_error": "rxchef: invalid recipe: step 1 (Label): label name is empty",
+      "status": "accepted"
+    },
+    {
+      "operation": "Levenshtein Distance",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Incorrect number of samples. Check your input and/or delimiter.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Lorenz",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'X')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Luhn Checksum",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Character: r is not valid in radix 10.",
+      "status": "excluded"
+    },
+    {
+      "operation": "MD6",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep supplied no arguments; the operation correctly reports its required argument as missing.",
+      "reference": "12ab99a30e4406b6a0e902ef62931458d203e53c49d83e2c1a1163ca870ea22f",
+      "rxchef_error": "rxchef: operation 'MD6' requires a value for argument 'Key'",
+      "status": "accepted"
+    },
+    {
+      "operation": "Magic",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'undefined')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Merge",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Flow-control operation that is only meaningful inside a Fork/Subsection; it cannot run standalone.",
+      "reference": "foobar",
+      "rxchef_error": "rxchef: invalid recipe: step 1 (Merge): no matching Fork or Subsection",
+      "status": "accepted"
+    },
+    {
+      "operation": "Multiple Bombe",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Rotor wiring must be 26 unique uppercase letters",
+      "status": "excluded"
+    },
+    {
+      "operation": "Normalise Image",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid file type.",
+      "status": "excluded"
+    },
+    {
+      "operation": "OR",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Object Identifier to Hex",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: malformed oid string: foobar",
+      "status": "excluded"
+    },
+    {
+      "operation": "Offset checker",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Not enough samples, perhaps you need to modify the sample delimiter or add more data?",
+      "status": "excluded"
+    },
+    {
+      "operation": "Optical Character Recognition",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: This operation only works in a browser",
+      "status": "excluded"
+    },
+    {
+      "operation": "P-list Viewer",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "r\n",
+      "rxchef_error": "rxchef: step 1 (P-list Viewer): invalid input: Invalid PLIST: Io(Error { kind: UnexpectedEof, message: \"failed to fill whole buffer\" }) (offset 0)",
+      "status": "accepted"
+    },
+    {
+      "operation": "PEM to Hex",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "",
+      "rxchef_error": "rxchef: step 1 (PEM to Hex): invalid input: No PEM data found in input",
+      "status": "accepted"
+    },
+    {
+      "operation": "PGP Decrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Enter the private key of the recipient.",
+      "status": "excluded"
+    },
+    {
+      "operation": "PGP Decrypt and Verify",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Enter the public key of the signer.",
+      "status": "excluded"
+    },
+    {
+      "operation": "PGP Encrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Enter the public key of the recipient.",
+      "status": "excluded"
+    },
+    {
+      "operation": "PGP Encrypt and Sign",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Enter the private key of the signer.",
+      "status": "excluded"
+    },
+    {
+      "operation": "PGP Verify",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Enter the public key of the signer.",
+      "status": "excluded"
+    },
+    {
+      "operation": "PHP Deserialize",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Unknown type: f",
+      "status": "excluded"
+    },
+    {
+      "operation": "PHP Serialize",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "s:6:\"foobar\";",
+      "rxchef_error": "rxchef: step 1 (PHP Serialize): invalid input: Invalid JSON: expected ident at line 1 column 2",
+      "status": "accepted"
+    },
+    {
+      "operation": "Parity Bit",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: unexpected character encountered: \"f\"",
+      "status": "excluded"
+    },
+    {
+      "operation": "Parse ASN.1 hex string",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "UNKNOWN(15) ar\n",
+      "rxchef_error": "rxchef: step 1 (Parse ASN.1 hex string): invalid input: Invalid hex string",
+      "status": "accepted"
+    },
+    {
+      "operation": "Parse CSR",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: argument is not PEM file",
+      "status": "excluded"
+    },
+    {
+      "operation": "Parse DateTime",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "Invalid format.\n\nFormat string tokens:\n<table class=\"table table-striped table-hover table-sm table-",
+      "rxchef_error": "rxchef: step 1 (Parse DateTime): invalid input: Invalid format. Could not parse 'foobar' with format '%d/%m/%Y %H:%M:%S': input contains invalid characters",
+      "status": "accepted"
+    },
+    {
+      "operation": "Parse Ethernet frame",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "Source MAC: \nDestination MAC: 66:6f:6f:62:61:72\nData:\n",
+      "rxchef_error": "rxchef: step 1 (Parse Ethernet frame): invalid input: Invalid hex: Invalid character 'o' at position 1",
+      "status": "accepted"
+    },
+    {
+      "operation": "Parse IP range",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid input.\n\nEnter either a CIDR range (e.g. 10.0.0.0/24) or a hyphenated range (e.g. 1",
+      "status": "excluded"
+    },
+    {
+      "operation": "Parse IPv4 header",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "<table class='table table-hover table-sm table-bordered table-nonfluid'><tr><th>Field</th><th>Value<",
+      "rxchef_error": "rxchef: step 1 (Parse IPv4 header): invalid input: Invalid hex: Invalid character 'o' at position 1",
+      "status": "accepted"
+    },
+    {
+      "operation": "Parse IPv6 address",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid IPv6 address",
+      "status": "excluded"
+    },
+    {
+      "operation": "Parse ObjectID timestamp",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: BSONTypeError: Argument passed in must be a string of 12 bytes or a string of 24 hex chara",
+      "status": "excluded"
+    },
+    {
+      "operation": "Parse QR Code",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid file type.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Parse SSH Host Key",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Unable to detect input key format.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Parse TCP",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Need at least 20 bytes for a TCP Header",
+      "status": "excluded"
+    },
+    {
+      "operation": "Parse TLS record",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; both sides degrade differently on garbage rather than disagreeing on defined behaviour.",
+      "reference": "\u0000",
+      "rxchef": "[\n  {\n    \"type\": \"102\",\n    \"version\": \"0x6f6f\",\n    \"length\": 25185,\n    \"truncated\": true,\n    \"value\": \"0x72\"\n  }\n]",
+      "status": "accepted"
+    },
+    {
+      "operation": "Parse TLV",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; both sides degrade differently on garbage rather than disagreeing on defined behaviour.",
+      "reference": "\u0000",
+      "rxchef": "[\n  {\n    \"length\": 111,\n    \"value\": [\n      111,\n      98,\n      97,\n      114\n    ],\n    \"key\": [\n      102\n    ]\n  }\n]",
+      "status": "accepted"
+    },
+    {
+      "operation": "Parse UDP",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Need 8 bytes for a UDP Header",
+      "status": "excluded"
+    },
+    {
+      "operation": "Parse UNIX file permissions",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid input format.\nPlease enter the permissions in either octal (e.g. 755) or textual (",
+      "status": "excluded"
+    },
+    {
+      "operation": "Parse URI",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "Path name:\tfoobar\nArguments:\n",
+      "rxchef_error": "rxchef: step 1 (Parse URI): invalid input: Failed to parse URI: relative URL without a base",
+      "status": "accepted"
+    },
+    {
+      "operation": "Parse User Agent",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; both sides degrade differently on garbage rather than disagreeing on defined behaviour.",
+      "reference": "Browser\n    Name: unknown\n    Version: unknown\nDevice\n    Model: unknown\n    Type: unknown\n    Vendor: unknown\nEngine\n    Name: unknown\n    Version: unknown\nOS\n",
+      "rxchef": "Browser\n    Name: unknown\n    Version: unknown\nDevice\n    Model: unknown\n    Type: desktop\n    Vendor: unknown\nEngine\n    Name: unknown\n    Version: unknown\nOS\n",
+      "status": "accepted"
+    },
+    {
+      "operation": "Parse X.509 CRL",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of null (reading 'substr')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Parse X.509 certificate",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Certificate load error (non-certificate input?)",
+      "status": "excluded"
+    },
+    {
+      "operation": "Parse colour code",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "<div id=\"colorpicker\" style=\"white-space: normal;\"></div>\nHex:  #000000\nRGB:  rgb(0, 0, 0)\nRGBA: rgb",
+      "rxchef_error": "rxchef: step 1 (Parse colour code): invalid input: Unsupported colour code format",
+      "status": "accepted"
+    },
+    {
+      "operation": "Play Media",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid or unrecognised file type",
+      "status": "excluded"
+    },
+    {
+      "operation": "Power Set",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; both sides degrade differently on garbage rather than disagreeing on defined behaviour.",
+      "reference": "\nfoobar\n",
+      "rxchef": "foobar\n",
+      "status": "accepted"
+    },
+    {
+      "operation": "Protobuf Decode",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Error: Unknown type 0x6",
+      "status": "excluded"
+    },
+    {
+      "operation": "Protobuf Encode",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Error: Schema Error: Schema not defined",
+      "status": "excluded"
+    },
+    {
+      "operation": "RC2 Decrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "RC2 Encrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "RC4",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'parse')",
+      "status": "excluded"
+    },
+    {
+      "operation": "RC4 Drop",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'parse')",
+      "status": "excluded"
+    },
+    {
+      "operation": "RC6 Decrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "RC6 Encrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "RSA Decrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Please enter a private key.",
+      "status": "excluded"
+    },
+    {
+      "operation": "RSA Encrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Please enter a public key.",
+      "status": "excluded"
+    },
+    {
+      "operation": "RSA Sign",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Please enter a private key.",
+      "status": "excluded"
+    },
+    {
+      "operation": "RSA Verify",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Please enter a public key.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Rabbit",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Randomize Colour Palette",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Please enter a valid image file.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Raw Inflate",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: unknown BTYPE: 3",
+      "status": "excluded"
+    },
+    {
+      "operation": "Register",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'undefined')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Remove EXIF",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Could not remove EXIF data from image: Given data is not jpeg.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Render Image",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid file type",
+      "status": "excluded"
+    },
+    {
+      "operation": "Resize Image",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid file type.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Return",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'length')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Rison Encode",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "foobar",
+      "rxchef_error": "rxchef: step 1 (Rison Encode): invalid input: Invalid JSON input: expected ident at line 1 column 2",
+      "status": "accepted"
+    },
+    {
+      "operation": "Rotate Image",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid file type.",
+      "status": "excluded"
+    },
+    {
+      "operation": "SHA2",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'update')",
+      "status": "excluded"
+    },
+    {
+      "operation": "SM2 Decrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Input private key must be in hex; and should be 32 bytes",
+      "status": "excluded"
+    },
+    {
+      "operation": "SM2 Encrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid Public Key - Ensure each component is 32 bytes in size and in hex",
+      "status": "excluded"
+    },
+    {
+      "operation": "SM4 Decrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "SM4 Encrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "SUB",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Salsa20",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Scatter chart",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Each row must have length 2.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Scrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Series chart",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Each row must have length 3.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Set Difference",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Incorrect number of sets, perhaps you need to modify the sample delimiter or add more samp",
+      "status": "excluded"
+    },
+    {
+      "operation": "Set Intersection",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Incorrect number of sets, perhaps you need to modify the sample delimiter or add more samp",
+      "status": "excluded"
+    },
+    {
+      "operation": "Set Union",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Incorrect number of sets, perhaps you need to modify the sample delimiter or add more samp",
+      "status": "excluded"
+    },
+    {
+      "operation": "Shake",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Present upstream but not registered in rx-chef.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Sharpen Image",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid file type.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Show Base64 offsets",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Present upstream but not registered in rx-chef.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Show on map",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Error: Unable to detect the input delimiter automatically.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Snefru",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Present upstream but not registered in rx-chef.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Split Colour Channels",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid file type.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Strings",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid regular expression: /{4,}/gi: Nothing to repeat",
+      "status": "excluded"
+    },
+    {
+      "operation": "Strip IPv4 header",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Input length is less than minimum IPv4 header length",
+      "status": "excluded"
+    },
+    {
+      "operation": "Strip TCP header",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Need at least 20 bytes for a TCP Header",
+      "status": "excluded"
+    },
+    {
+      "operation": "Strip UDP header",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Need 8 bytes for a UDP Header",
+      "status": "excluded"
+    },
+    {
+      "operation": "Subsection",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'undefined')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Symmetric Difference",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Incorrect number of sets, perhaps you need to modify the sample delimiter or add more samp",
+      "status": "excluded"
+    },
+    {
+      "operation": "Template",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "",
+      "rxchef_error": "rxchef: step 1 (Template): invalid input: Invalid JSON input: expected ident at line 1 column 2",
+      "status": "accepted"
+    },
+    {
+      "operation": "To BCD",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: input.isNaN is not a function",
+      "status": "excluded"
+    },
+    {
+      "operation": "To Base",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "foobar",
+      "rxchef_error": "rxchef: step 1 (To Base): invalid input: Cannot parse 'foobar' as integer: invalid digit found in string",
+      "status": "accepted"
+    },
+    {
+      "operation": "To Float",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Input is not a multiple of 4",
+      "status": "excluded"
+    },
+    {
+      "operation": "To MessagePack",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "hex:a6666f6f626172",
+      "rxchef_error": "rxchef: step 1 (To MessagePack): invalid input: Invalid JSON: expected ident at line 1 column 2",
+      "status": "accepted"
+    },
+    {
+      "operation": "To Table",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; both sides degrade differently on garbage rather than disagreeing on defined behaviour.",
+      "reference": "+-------+\n| fooba |\n+-------+\n",
+      "rxchef": "+--------+\n| foobar |\n+--------+\n",
+      "status": "accepted"
+    },
+    {
+      "operation": "To UNIX Timestamp",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "NaN (Invalid date UTC)",
+      "rxchef_error": "rxchef: step 1 (To UNIX Timestamp): invalid input: Could not parse datetime string",
+      "status": "accepted"
+    },
+    {
+      "operation": "Translate DateTime Format",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "Invalid format.",
+      "rxchef_error": "rxchef: step 1 (Translate DateTime Format): invalid input: Failed to parse 'foobar' with format '%d/%m/%Y %H:%M:%S': input contains invalid characters",
+      "status": "accepted"
+    },
+    {
+      "operation": "Triple DES Decrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Triple DES Encrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "UNIX Timestamp to Windows Filetime",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
+      "reference": "NaN",
+      "rxchef_error": "rxchef: step 1 (UNIX Timestamp to Windows Filetime): invalid input: Invalid numeric input",
+      "status": "accepted"
+    },
+    {
+      "operation": "Untar",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'indexOf')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Unzip",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: End of Central Directory Record not found",
+      "status": "excluded"
+    },
+    {
+      "operation": "VarInt Encode",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: SyntaxError: Cannot convert foobar to a BigInt",
+      "status": "excluded"
+    },
+    {
+      "operation": "View Bit Plane",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Please enter a valid image file.",
+      "status": "excluded"
+    },
+    {
+      "operation": "Vigen\u00e8re Decode",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: No key entered",
+      "status": "excluded"
+    },
+    {
+      "operation": "Vigen\u00e8re Encode",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: No key entered",
+      "status": "excluded"
+    },
+    {
+      "operation": "Windows Filetime to UNIX Timestamp",
+      "classification": "NOT_COMPARABLE",
+      "reason": "The sweep input is not acceptable for this operation's argument schema.",
+      "reference": "NaN",
+      "rxchef_error": "rxchef: step 1 (Windows Filetime to UNIX Timestamp): invalid argument 'Input': Invalid decimal: invalid digit found in string",
+      "status": "accepted"
+    },
+    {
+      "operation": "XOR",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "XPath expression",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Invalid XPath. Details:\nXPath expression unspecified..",
+      "status": "excluded"
+    },
+    {
+      "operation": "XSalsa20",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "XXTEA Decrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "XXTEA Encrypt",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
+      "status": "excluded"
+    },
+    {
+      "operation": "Zlib Inflate",
+      "classification": "NOT_COMPARABLE",
+      "reason": "Upstream could not run in Node for the sweep input: unsupported compression method",
+      "status": "excluded"
+    },
+    {
+      "operation": "Colossus",
+      "classification": "REFERENCE_CAPTURE_BUG",
+      "reason": "Upstream returns a structured object the sweep stringified to '[object Object]'.",
+      "reference": "[object Object]",
+      "rxchef": "{\"printout\":\"0001  F  10110\\n0002  O  00011\\n0003  O  00011\\n0004  B  10011\\n0005  A  11000\\n0006  R  01010\\n\",\"counters\":[3,2,1,5,3],\"runcount\":6}",
+      "status": "harness"
+    },
+    {
+      "operation": "Frequency distribution",
+      "classification": "REFERENCE_CAPTURE_BUG",
+      "reason": "Upstream returns a structured object stringified to '[object Object]'.",
+      "reference": "[object Object]",
+      "rxchef": "Total data length: 6\nNumber of bytes represented: 5\nNumber of bytes not represented: 251\n\nByte   ASCII    Percentage   Bar\n00     \u2400        0.00%        \n01     ",
+      "status": "harness"
+    },
+    {
+      "operation": "Generate Image",
+      "classification": "REFERENCE_CAPTURE_BUG",
+      "reason": "Upstream needs a browser canvas; the sweep captured module source text, not an image.",
+      "reference": "hex:6578706f72742066756e6374696f6e206d6561737572655465787428666f6e742c207465787429207b0a202020206c65742078203d20303b0a20202020666f7220286c65742069203d20303b2069",
+      "rxchef": "hex:89504e470d0a1a0a0000000d49484452000002000000000808060000008fb447be000000ba494441547801edc003a0245996c6f1ff77ee8dc8cca7724b63ae6ddbb66ddbb66ddbb66d698c9e964a",
+      "status": "harness"
+    },
+    {
+      "operation": "Text Encoding Brute Force",
+      "classification": "REFERENCE_CAPTURE_BUG",
+      "reason": "Upstream returns a structured object stringified to '[object Object]'.",
+      "reference": "[object Object]",
+      "rxchef": "{\"Big5\":\"foobar\",\"EUC-JP\":\"foobar\",\"EUC-KR\":\"foobar\",\"GBK\":\"foobar\",\"ISO-8859-10\":\"foobar\",\"ISO-8859-13\":\"foobar\",\"ISO-8859-14\":\"foobar\",\"ISO-8859-15\":\"foobar\",",
+      "status": "harness"
+    },
+    {
+      "operation": "Unicode Text Format",
+      "classification": "REFERENCE_CAPTURE_BUG",
+      "reason": "UnicodeTextFormat is the only upstream operation declaring a boolean argument with the STRING value \"false\", which is truthy in JavaScript. The sweep passed it through unchanged so upstream applied formatting rx-chef correctly omitted. Both defaults are false.",
+      "reference": "f\u0336\u0332o\u0336\u0332o\u0336\u0332b\u0336\u0332a\u0336\u0332r\u0336\u0332",
+      "rxchef": "foobar",
+      "status": "harness"
+    },
+    {
+      "operation": "Zip",
+      "classification": "REFERENCE_CAPTURE_BUG",
+      "reason": "Upstream returns a browser File object stringified to '[object File]'.",
+      "reference": "[object File]",
+      "rxchef": "hex:504b0304140000000800a3ad115d951ff69e08000000060000000800000066696c652e7478744bcbcf4f4a2c0200504b01021403140000000800a3ad115d951ff69e080000000600000008000000",
+      "status": "harness"
+    },
+    {
+      "operation": "Blowfish Decrypt",
+      "classification": "RXCHEF_BUG",
+      "reason": "ECB mode did not strip PKCS#7 padding although Blowfish Encrypt applies it and the CBC path in the same file removes it, so decryption returned the plaintext with its pad bytes attached. Upstream rejects unpadded input the same way rx-chef now does.",
+      "status": "fixed"
+    },
+    {
+      "operation": "Chi Square",
+      "classification": "RXCHEF_BUG",
+      "reason": "Declared Number output but returned the raw IEEE-754 bytes of the score, so the runtime output contract rejected every run and the operation was unusable.",
+      "reference": "329.4505208333333",
+      "rxchef_error": "rxchef: step 1 (Chi Square): operation output violates its declared type: processing failed: operation declared numeric output but produced invalid UTF-8: inval",
+      "status": "fixed"
+    },
+    {
+      "operation": "Generate all hashes",
+      "classification": "RXCHEF_BUG",
+      "reason": "Reported a SHA-1 digest under the 'SHA0' label (the source comment read \"using SHA1 as proxy\"). SHA-0 and SHA-1 differ by a rotate in the message schedule, so the published value was simply wrong. Now uses the real SHA-0.",
+      "status": "fixed"
+    },
+    {
+      "operation": "Index of Coincidence",
+      "classification": "RXCHEF_BUG",
+      "reason": "Same defect as Chi Square: raw IEEE-754 bytes instead of decimal text.",
+      "reference": "0.06666666666666667",
+      "rxchef_error": "rxchef: step 1 (Index of Coincidence): operation output violates its declared type: processing failed: operation declared numeric output but produced invalid UT",
+      "status": "fixed"
+    },
+    {
+      "operation": "To Hexdump",
+      "classification": "RXCHEF_BUG",
+      "reason": "Emitted one space between the hex and ASCII columns; hexdump -C and upstream use two, so every line was a character narrow.",
+      "reference": "00000000  66 6f 6f 62 61 72                                |foobar|",
+      "rxchef": "00000000  66 6f 6f 62 61 72                               |foobar|",
+      "status": "fixed"
+    },
+    {
+      "operation": "Disassemble x86",
+      "classification": "UNSUPPORTED_UPSTREAM_MODE",
+      "reason": "Feature-gated operation, not compiled into the default build.",
+      "reference": "0000000000000000 0000                            ADD BYTE PTR [RAX],AL\r\n0000000000000002 0F         ",
+      "rxchef_error": "rxchef: step 1 (Disassemble x86): operation 'Disassemble x86' is unavailable in this build; requires feature(s): disassembly",
+      "status": "accepted"
+    },
+    {
+      "operation": "Generate PGP Key Pair",
+      "classification": "UNSUPPORTED_UPSTREAM_MODE",
+      "reason": "Feature-gated operation, not compiled into the default build.",
+      "reference": "-----BEGIN PGP PRIVATE KEY BLOCK-----\nVersion: Keybase OpenPGP v2.1.17\nComment: https://keybase.io/c",
+      "rxchef_error": "rxchef: step 1 (Generate PGP Key Pair): operation 'Generate PGP Key Pair' is unavailable in this build; requires feature(s): pgp",
+      "status": "accepted"
+    },
+    {
+      "operation": "YARA Rules",
+      "classification": "UNSUPPORTED_UPSTREAM_MODE",
+      "reason": "Feature-gated operation, not compiled into the default build.",
+      "reference": "",
+      "rxchef_error": "rxchef: step 1 (YARA Rules): operation 'YARA Rules' is unavailable in this build; requires feature(s): yara",
+      "status": "accepted"
+    },
+    {
+      "operation": "Detect File Type",
+      "classification": "VALID_SEMANTIC_DIFFERENCE",
+      "reason": "Same verdict ('unknown file type'); upstream appends a prose hint about checking entropy.",
+      "reference": "Unknown file type. Have you tried checking the entropy of this data to determine whether it might be encrypted or compressed?",
+      "rxchef": "Unknown file type.",
+      "status": "accepted"
+    },
+    {
+      "operation": "Entropy",
+      "classification": "VALID_SEMANTIC_DIFFERENCE",
+      "reason": "Identical value; rx-chef prints more significant digits than JavaScript's shortest-round-trip float formatting.",
+      "reference": "2.251629167387823",
+      "rxchef": "2.25162916738782304",
+      "status": "accepted"
+    },
+    {
+      "operation": "Generate QR Code",
+      "classification": "VALID_SEMANTIC_DIFFERENCE",
+      "reason": "Both are valid PNG QR codes for the same payload; encoders differ in mask and PNG chunking.",
+      "reference": "hex:89504e470d0a1a0a0000000d4948445200000091000000910800000000e6b305ff000001214944415478daeddb4192c2201005d0dcffd2ce5a4bf0773321d17aecd414bc2c7e4177ccf1b8db3888",
+      "rxchef": "hex:89504e470d0a1a0a0000000d4948445200000091000000910800000000e6b305ff00000363494441547801edc003a0245996c6f1ff77ee8dc8cca7724b63ae6ddbb66ddbb66ddbb66d698c9e964a",
+      "status": "accepted"
+    },
+    {
+      "operation": "Gzip",
+      "classification": "VALID_SEMANTIC_DIFFERENCE",
+      "reason": "Both streams are valid for the format and decompress to the same bytes; the encoders differ (Huffman strategy, header timestamp, container). Byte equality is not part of these formats' contracts.",
+      "reference": "hex:1f8b08006b3d836a00ff0580a109000000c26ed5601df87f1883e602951ff69e06000000",
+      "rxchef": "hex:1f8b08000000000000ff4bcbcf4f4a2c0200951ff69e06000000",
+      "status": "accepted"
+    },
+    {
+      "operation": "JavaScript Beautify",
+      "classification": "VALID_SEMANTIC_DIFFERENCE",
+      "reason": "Upstream appends a statement terminator; rx-chef leaves the expression as written.",
+      "reference": "foobar;",
+      "rxchef": "foobar",
+      "status": "accepted"
+    },
+    {
+      "operation": "JavaScript Minify",
+      "classification": "VALID_SEMANTIC_DIFFERENCE",
+      "reason": "Upstream appends a statement terminator to the minified expression; rx-chef leaves the expression exactly as written. Same program.",
+      "reference": "foobar;",
+      "rxchef": "foobar",
+      "status": "accepted"
+    },
+    {
+      "operation": "JavaScript Parser",
+      "classification": "VALID_SEMANTIC_DIFFERENCE",
+      "reason": "Different AST dialect (swc 'Script' vs upstream 'Program'); both describe the same program.",
+      "reference": "{\n  \"type\": \"Program\",\n  \"body\": [\n    {\n      \"type\": \"ExpressionStatement\",\n      \"expression\": {\n        \"type\": \"Identifier\",\n        \"name\": \"foobar\"\n     ",
+      "rxchef": "{\n  \"type\": \"Script\",\n  \"interpreter\": null,\n  \"body\": [\n    {\n      \"type\": \"ExpressionStatement\",\n      \"expression\": {\n        \"type\": \"Identifier\",\n        ",
+      "status": "accepted"
+    },
+    {
+      "operation": "LZ4 Compress",
+      "classification": "VALID_SEMANTIC_DIFFERENCE",
+      "reason": "Both streams are valid for the format and decompress to the same bytes; the encoders differ (Huffman strategy, header timestamp, container). Byte equality is not part of these formats' contracts.",
+      "reference": "hex:04224d184070df06000080666f6f62617200000000",
+      "rxchef": "\u0006\u0000\u0000\u0000`foobar",
+      "status": "accepted"
+    },
+    {
+      "operation": "LZMA Compress",
+      "classification": "VALID_SEMANTIC_DIFFERENCE",
+      "reason": "Both streams are valid for the format and decompress to the same bytes; the encoders differ (Huffman strategy, header timestamp, container). Byte equality is not part of these formats' contracts.",
+      "reference": "hex:5d00000100060000000000000000331becc4624204255fffffd8b90000",
+      "rxchef": "hex:fd377a585a000004e6d6b446020021011800000047583a43010005666f6f6261720000001eb064046c424a5300011e06c12fa41d1fb6f37d010000000004595a",
+      "status": "accepted"
+    },
+    {
+      "operation": "ROT13 Brute Force",
+      "classification": "VALID_SEMANTIC_DIFFERENCE",
+      "reason": "Same rotations, different row label format ('Amount =  1:' vs 'ROT01:').",
+      "reference": "Amount =  1: gppcbs\nAmount =  2: hqqdct\nAmount =  3: irredu\nAmount =  4: jssfev\nAmount =  5: kttgfw\nAmount =  6: luuhgx\nAmount =  7: mvvihy\nAmount =  8: nwwjiz\n",
+      "rxchef": "ROT01: gppcbs\nROT02: hqqdct\nROT03: irredu\nROT04: jssfev\nROT05: kttgfw\nROT06: luuhgx\nROT07: mvvihy\nROT08: nwwjiz\nROT09: oxxkja\nROT10: pyylkb\nROT11: qzzmlc\nROT12:",
+      "status": "accepted"
+    },
+    {
+      "operation": "Raw Deflate",
+      "classification": "VALID_SEMANTIC_DIFFERENCE",
+      "reason": "Both streams are valid for the format and decompress to the same bytes; the encoders differ (Huffman strategy, header timestamp, container). Byte equality is not part of these formats' contracts.",
+      "reference": "hex:0580a109000000c26ed5601df87f1883e602",
+      "rxchef": "hex:4bcbcf4f4a2c0200",
+      "status": "accepted"
+    },
+    {
+      "operation": "Render Markdown",
+      "classification": "VALID_SEMANTIC_DIFFERENCE",
+      "reason": "Upstream wraps the rendered body in <p>; rx-chef emits the inline body. Same text content.",
+      "reference": "<div style=\"font-family: var(--primary-font-family)\"><p>foobar</p>\n</div>",
+      "rxchef": "<div style=\"font-family: var(--primary-font-family)\">foobar</div>",
+      "status": "accepted"
+    },
+    {
+      "operation": "Rison Decode",
+      "classification": "VALID_SEMANTIC_DIFFERENCE",
+      "reason": "rx-chef declares JSON output, so a bare scalar string is emitted quoted; upstream returns the unquoted scalar. Same decoded value, different declared output type.",
+      "reference": "foobar",
+      "rxchef": "\"foobar\"",
+      "status": "accepted"
+    },
+    {
+      "operation": "Syntax highlighter",
+      "classification": "VALID_SEMANTIC_DIFFERENCE",
+      "reason": "Different highlighting markup for the same text.",
+      "reference": "<span class=\"hljs-attribute\">foobar</span>",
+      "rxchef": "<pre><code>foobar</code></pre>",
+      "status": "accepted"
+    },
+    {
+      "operation": "XOR Brute Force",
+      "classification": "VALID_SEMANTIC_DIFFERENCE",
+      "reason": "Same key sweep; the outputs diverge only in how many keys are listed.",
+      "reference": "Key = 01: gnnc`s\nKey = 02: dmm`cp\nKey = 03: ellabq\nKey = 04: bkkfev\nKey = 05: cjjgdw\nKey = 06: `iidgt\nKey = 07: ahhefu\nKey = 08: nggjiz\nKey = 09: offkh{\nKey = 0",
+      "rxchef": "Key = 01: gnnc`s\nKey = 02: dmm`cp\nKey = 03: ellabq\nKey = 04: bkkfev\nKey = 05: cjjgdw\nKey = 06: `iidgt\nKey = 07: ahhefu\nKey = 08: nggjiz\nKey = 09: offkh{\nKey = 0",
+      "status": "accepted"
+    },
+    {
+      "operation": "YAML to JSON",
+      "classification": "VALID_SEMANTIC_DIFFERENCE",
+      "reason": "As Rison Decode: JSON-typed output quotes a scalar string.",
+      "reference": "foobar",
+      "rxchef": "\"foobar\"",
+      "status": "accepted"
+    },
+    {
+      "operation": "Zlib Deflate",
+      "classification": "VALID_SEMANTIC_DIFFERENCE",
+      "reason": "Both streams are valid for the format and decompress to the same bytes; the encoders differ (Huffman strategy, header timestamp, container). Byte equality is not part of these formats' contracts.",
+      "reference": "hex:789c0580a109000000c26ed5601df87f1883e60208ab027a",
+      "rxchef": "hex:789c4bcbcf4f4a2c020008ab027a",
+      "status": "accepted"
+    }
+  ]
+}
