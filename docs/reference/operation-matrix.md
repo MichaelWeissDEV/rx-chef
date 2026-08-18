@@ -10,9 +10,9 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2039 |
+| Test functions | 2040 |
 | With negative tests | 311 |
-| With boundary tests | 437 |
+| With boundary tests | 438 |
 | Reference-verified (known answer) | 22 |
 | Differential-verified | 225 |
 | Parity: exact | 171 |
@@ -481,7 +481,7 @@
 | RIPEMD | partial | exact | yes | 6 | yes | yes | — | yes | — | — | — | yes |
 | SHA0 | partial | exact | yes | 5 | yes | yes | yes | yes | — | — | — | yes |
 | SHA1 | partial | exact | yes | 4 | yes | yes | yes | yes | — | — | — | yes |
-| SHA2 | partial | exact | yes | 9 | yes | — | yes | yes | — | — | yes | yes |
+| SHA2 | partial | exact | yes | 10 | yes | yes | yes | yes | — | — | yes | yes |
 | SHA3 | partial | exact | yes | 6 | yes | yes | yes | yes | — | — | — | yes |
 | SHAKE | partial | unknown | yes | 6 | yes | yes | — | — | — | — | — | yes |
 | SM3 | partial | exact | yes | 7 | yes | yes | — | yes | — | — | — | yes |

@@ -119,3 +119,14 @@ fn test_sha2_binary() {
     let output = String::from_utf8(result).unwrap();
     assert_eq!(output.len(), 64); // 256 bits = 64 hex chars
 }
+
+#[test]
+fn test_sha2_empty() {
+    let operation = SHA2;
+    let input = vec![];
+    let result = operation
+        .run(input, &[ArgValue::Str("256".to_string())])
+        .unwrap();
+    let output = String::from_utf8(result).unwrap();
+    assert_eq!(output.len(), 64);
+}
