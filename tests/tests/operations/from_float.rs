@@ -43,3 +43,17 @@ fn test_from_float_multiple_values() {
     let result = op.run(input, &args).unwrap();
     assert_eq!(result.len(), 8);
 }
+
+#[test]
+fn test_from_float_invalid_chars() {
+    use rxchef::operations::from_float::FromFloat;
+    use rxchef::Operation;
+    let op = FromFloat;
+    let args = [
+        rxchef::operation::ArgValue::Str("Space".to_string()),
+        rxchef::operation::ArgValue::Str("Float".to_string()),
+        rxchef::operation::ArgValue::Str("Big Endian".to_string())
+    ];
+    let result = op.run(b"abc".to_vec(), &args);
+    assert!(result.is_err());
+}

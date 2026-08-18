@@ -69,3 +69,14 @@ fn test_varint_decode_handles_values_wider_than_64_bits() {
         "151115727451828646838271"
     );
 }
+
+#[test]
+fn test_varint_decode_truncated() {
+    use rxchef::operations::varint_decode::VarIntDecode;
+    use rxchef::Operation;
+    let op = VarIntDecode;
+    let args = [];
+    // 0x80 means more bytes are expected, but we provide no more.
+    let result = op.run(vec![0x80], &args);
+    assert!(result.is_err());
+}

@@ -14,3 +14,21 @@ fn test_has160_vectors() {
         b"975e810488cf2a3d49838478124afce4b1c78804"
     );
 }
+
+#[test]
+fn test_has160_invalid_rounds_zero() {
+    let operation = HAS160Op;
+    let input = b"test".to_vec();
+    use rxchef::operation::ArgValue;
+    let result = operation.run(input, &[ArgValue::Num(0.0)]);
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_has160_invalid_rounds_too_large() {
+    let operation = HAS160Op;
+    let input = b"test".to_vec();
+    use rxchef::operation::ArgValue;
+    let result = operation.run(input, &[ArgValue::Num(81.0)]);
+    assert!(result.is_err());
+}

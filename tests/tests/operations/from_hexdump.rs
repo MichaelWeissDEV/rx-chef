@@ -76,3 +76,13 @@ fn test_non_hexdump_text_yields_no_bytes() {
         .unwrap();
     assert_eq!(result, Vec::<u8>::new());
 }
+
+#[test]
+fn test_from_hexdump_malformed() {
+    use rxchef::operations::from_hexdump::FromHexdump;
+    use rxchef::Operation;
+    let op = FromHexdump;
+    let args = [];
+    let result = op.run(b"00000000: ZZZZ ZZZZ".to_vec(), &args);
+    assert!(result.is_err());
+}

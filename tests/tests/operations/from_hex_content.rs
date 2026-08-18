@@ -33,3 +33,13 @@ fn test_from_hex_content_multiple() {
     let result = op.run(input, &[]).unwrap();
     assert_eq!(result, b"Hello");
 }
+
+#[test]
+fn test_from_hex_content_invalid_chars() {
+    use rxchef::operations::from_hex_content::FromHexContent;
+    use rxchef::Operation;
+    let op = FromHexContent;
+    let args = [];
+    let result = op.run(b"ZZ ZZ".to_vec(), &args);
+    assert!(result.is_err());
+}

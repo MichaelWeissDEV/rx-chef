@@ -42,3 +42,16 @@ fn test_bitcoin_segwit() {
     // but here we are prepending it.
     // Let's use a simpler one.
 }
+
+#[test]
+fn test_to_bech32_invalid_data() {
+    use rxchef::operations::to_bech32::ToBech32;
+    use rxchef::Operation;
+    let op = ToBech32;
+    let args = [
+        rxchef::operation::ArgValue::Str("bc".to_string()),
+        rxchef::operation::ArgValue::Str("Bech32".to_string())
+    ];
+    let result = op.run(vec![0xff, 0xff], &args); // Might be invalid utf8 or bech32 data error
+    assert!(result.is_err());
+}

@@ -2083,8 +2083,7 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
-      "untested_reason": "Scoring weights are tuning parameters; meaningful assertions need an agreed ranking corpus."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "gost_decrypt": {
       "correctness": [
@@ -2493,8 +2492,7 @@
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
-      "untested_reason": "Renders an HTML/SVG chart; asserting the markup would restate the implementation rather than verify it."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "hex_density_chart": {
       "correctness": [

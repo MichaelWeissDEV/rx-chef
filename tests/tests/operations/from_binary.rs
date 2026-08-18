@@ -28,3 +28,13 @@ fn test_from_binary_empty() {
     let result = op.run(vec![], &[]).unwrap();
     assert!(result.is_empty());
 }
+
+#[test]
+fn test_from_binary_invalid_chars() {
+    use rxchef::operations::from_binary::FromBinary;
+    use rxchef::Operation;
+    let op = FromBinary;
+    let args = [rxchef::operation::ArgValue::Str("Space".to_string()), rxchef::operation::ArgValue::Num(8.0)];
+    let result = op.run(b"abc".to_vec(), &args);
+    assert!(result.is_err());
+}

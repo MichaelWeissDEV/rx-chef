@@ -73,3 +73,13 @@ fn test_from_base32_different_alphabet() {
     let decoded = op.run(base32_input.as_bytes().to_vec(), &args).unwrap();
     assert_eq!(decoded, [0x08, 0x08, 0x33, 0x20, 0x81]);
 }
+
+#[test]
+fn test_from_base32_invalid_chars() {
+    use rxchef::operations::from_base32::FromBase32;
+    use rxchef::Operation;
+    let op = FromBase32;
+    let args = [rxchef::operation::ArgValue::Str("Standard".to_string()), rxchef::operation::ArgValue::Bool(false)];
+    let result = op.run(b"!!!!".to_vec(), &args);
+    assert!(result.is_err());
+}

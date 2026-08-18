@@ -126,3 +126,16 @@ fn test_from_morse_code_roundtrips_with_to_morse_code() {
     let encoded = String::from_utf8(encoded).unwrap();
     assert_eq!(decode(&encoded, "Space", "Line feed"), "HELLO WORLD");
 }
+
+#[test]
+fn test_from_morse_code_malformed() {
+    use rxchef::operations::from_morse_code::FromMorseCode;
+    use rxchef::Operation;
+    let op = FromMorseCode;
+    let args = [
+        rxchef::operation::ArgValue::Str("Space".to_string()),
+        rxchef::operation::ArgValue::Str("Line feed".to_string())
+    ];
+    let result = op.run(vec![0xff, 0xff], &args);
+    assert!(result.is_err());
+}

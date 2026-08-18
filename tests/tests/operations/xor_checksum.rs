@@ -57,3 +57,12 @@ fn test_bs4_utf8() {
 fn test_bs4_all_bytes() {
     assert_eq!(run_str(&all_bytes(), 4), "00000000");
 }
+
+#[test]
+fn test_xor_checksum_invalid_blocksize_zero() {
+    use rxchef::operation::ArgValue;
+    let operation = rxchef::operations::xor_checksum::XORChecksum;
+    let input = b"test".to_vec();
+    let result = operation.run(input, &[ArgValue::Str("0".to_string())]);
+    assert!(result.is_err());
+}

@@ -75,3 +75,13 @@ fn test_from_decimal_no_delimiter() {
     let decoded = result.unwrap();
     assert_eq!(decoded, vec![72]);
 }
+
+#[test]
+fn test_from_decimal_invalid_chars() {
+    use rxchef::operations::from_decimal::FromDecimal;
+    use rxchef::Operation;
+    let op = FromDecimal;
+    let args = [rxchef::operation::ArgValue::Str("Space".to_string())];
+    let result = op.run(b"abc".to_vec(), &args);
+    assert!(result.is_err());
+}

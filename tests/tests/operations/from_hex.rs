@@ -60,3 +60,11 @@ fn test_from_hex_odd_length() {
     let decoded = result.unwrap();
     assert_eq!(decoded, vec![0x48, 0x65]); // "He"
 }
+
+#[test]
+fn test_from_hex_invalid_chars() {
+    let op = FromHex;
+    let args = [rxchef::operation::ArgValue::Str("Space".to_string())];
+    let result = op.run(b"ZZ ZZ".to_vec(), &args);
+    assert!(result.is_err());
+}

@@ -35,3 +35,51 @@ fn test_md6_honours_levels_and_key() {
     assert_ne!(unkeyed, keyed);
     assert_eq!(keyed.len(), 64);
 }
+
+#[test]
+fn test_md6_invalid_size_zero() {
+    use rxchef::operation::ArgValue;
+    let op = MD6;
+    let res = op.run(
+        b"test".to_vec(),
+        &[ArgValue::Num(0.0), ArgValue::Num(64.0), ArgValue::Str("".to_string())],
+    );
+    assert!(res.is_err());
+}
+
+#[test]
+fn test_md6_invalid_size_too_large() {
+    use rxchef::operation::ArgValue;
+    let op = MD6;
+    let res = op.run(
+        b"test".to_vec(),
+        &[ArgValue::Num(513.0), ArgValue::Num(64.0), ArgValue::Str("".to_string())],
+    );
+    assert!(res.is_err());
+}
+
+#[test]
+fn test_md6_invalid_levels() {
+    use rxchef::operation::ArgValue;
+    let op = MD6;
+    let res = op.run(
+        b"test".to_vec(),
+        &[ArgValue::Num(256.0), ArgValue::Num(256.0), ArgValue::Str("".to_string())],
+    );
+    assert!(res.is_err());
+}
+
+#[test]
+fn test_md6_invalid_key_too_long() {
+    use rxchef::operation::ArgValue;
+    let op = MD6;
+    let res = op.run(
+        b"test".to_vec(),
+        &[
+            ArgValue::Num(256.0),
+            ArgValue::Num(64.0),
+            ArgValue::Str("a".repeat(65)),
+        ],
+    );
+    assert!(res.is_err());
+}

@@ -44,3 +44,42 @@ fn test_blake2b_keyed() {
     // Should produce different hash with key
     assert!(output.len() == 128); // 512 bits = 128 hex chars
 }
+
+#[test]
+fn test_blake2b_invalid_size() {
+    let operation = BLAKE2b;
+    let input = b"hello".to_vec();
+    let args = &[
+        ArgValue::Str("999".to_string()),
+        ArgValue::Str("Hex".to_string()),
+        ArgValue::Str("".to_string()),
+    ];
+    let result = operation.run(input, args);
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_blake2b_invalid_key_too_long() {
+    let operation = BLAKE2b;
+    let input = b"hello".to_vec();
+    let args = &[
+        ArgValue::Str("512".to_string()),
+        ArgValue::Str("Hex".to_string()),
+        ArgValue::Str("a".repeat(65)),
+    ];
+    let result = operation.run(input, args);
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_blake2b_invalid_output_format() {
+    let operation = BLAKE2b;
+    let input = b"hello".to_vec();
+    let args = &[
+        ArgValue::Str("512".to_string()),
+        ArgValue::Str("UnknownFormat".to_string()),
+        ArgValue::Str("".to_string()),
+    ];
+    let result = operation.run(input, args);
+    assert!(result.is_err());
+}

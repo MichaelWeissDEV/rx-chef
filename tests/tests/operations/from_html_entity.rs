@@ -60,3 +60,11 @@ fn test_from_html_entity_no_entities() {
     let decoded = result.unwrap();
     assert_eq!(String::from_utf8_lossy(&decoded), "Hello World");
 }
+
+#[test]
+fn test_from_html_entity_invalid_utf8() {
+    let op = FromHTMLEntity;
+    // Invalid UTF-8 bytes should be rejected
+    let result = op.run(vec![0xFF, 0xFE], &[]);
+    assert!(result.is_err());
+}
