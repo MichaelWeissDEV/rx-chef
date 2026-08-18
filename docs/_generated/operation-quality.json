@@ -3,12 +3,12 @@
   "operation_count": 478,
   "summary": {
     "registered": 478,
-    "correctness_verified": 108,
-    "correctness_partially_verified": 370,
+    "correctness_verified": 114,
+    "correctness_partially_verified": 364,
     "correctness_unverified": 0,
     "tested": 478,
-    "test_functions": 2032,
-    "negative_tested": 305,
+    "test_functions": 2039,
+    "negative_tested": 311,
     "boundary_tested": 437,
     "reference_verified": 22,
     "differential_verified": 225,
@@ -1416,15 +1416,13 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 3,
-      "negative_test": false,
+      "tests": 4,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
       "value_assertions": 0,
@@ -1461,15 +1459,13 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 3,
-      "negative_test": false,
+      "tests": 4,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
       "value_assertions": 0,
@@ -2161,15 +2157,13 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 1,
-      "negative_test": false,
+      "tests": 2,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 1,
@@ -14758,15 +14752,13 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 3,
-      "negative_test": false,
+      "tests": 4,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 2,
@@ -19521,15 +19513,13 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 2,
-      "negative_test": false,
+      "tests": 4,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 2,
@@ -20362,15 +20352,13 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 8,
-      "negative_test": false,
+      "tests": 9,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
       "value_assertions": 6,

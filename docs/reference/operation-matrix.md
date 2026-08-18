@@ -10,8 +10,8 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2032 |
-| With negative tests | 305 |
+| Test functions | 2039 |
+| With negative tests | 311 |
 | With boundary tests | 437 |
 | Reference-verified (known answer) | 22 |
 | Differential-verified | 225 |
@@ -33,7 +33,7 @@
 | Lorenz | partial | unknown | yes | 0 | — | — | — | — | — | — | — | yes |
 | Multiple Bombe | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
 | SIGABA | partial | exact | yes | 2 | — | — | — | yes | — | — | — | yes |
-| Typex | partial | unknown | yes | 2 | — | — | — | yes | — | — | — | yes |
+| Typex | partial | unknown | yes | 4 | yes | — | — | yes | — | — | — | yes |
 
 ## Charts
 
@@ -64,8 +64,8 @@
 | Affine Cipher Decode | partial | exact | yes | 5 | yes | — | — | yes | — | — | — | yes |
 | Affine Cipher Encode | partial | exact | yes | 5 | yes | — | — | yes | — | — | — | yes |
 | Atbash Cipher | partial | exact | yes | 5 | yes | yes | — | yes | — | — | — | yes |
-| Bifid Cipher Decode | partial | unknown | yes | 3 | — | yes | — | yes | — | — | — | yes |
-| Bifid Cipher Encode | partial | unknown | yes | 3 | — | yes | — | yes | — | — | — | yes |
+| Bifid Cipher Decode | partial | unknown | yes | 4 | yes | yes | — | yes | — | — | — | yes |
+| Bifid Cipher Encode | partial | unknown | yes | 4 | yes | yes | — | yes | — | — | — | yes |
 | Blowfish Decrypt | partial | unknown | yes | 6 | yes | yes | — | — | — | — | — | yes |
 | Blowfish Encrypt | partial | unknown | yes | 8 | yes | yes | yes | — | — | — | — | yes |
 | Caesar Box Cipher | partial | exact | yes | 7 | yes | yes | — | yes | — | — | — | yes |
@@ -122,7 +122,7 @@
 |---|---|---|:---:|---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | CSS Beautify | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |
 | CSS Minify | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |
-| CSS selector | partial | exact | yes | 1 | — | — | — | yes | — | — | — | yes |
+| CSS selector | partial | exact | yes | 2 | yes | — | — | yes | — | — | — | yes |
 | From MessagePack | partial | unknown | yes | 5 | — | yes | — | yes | — | — | — | yes |
 | Generic Code Beautify | partial | exact | yes | 1 | — | — | — | yes | — | — | — | yes |
 | JPath expression | partial | unknown | yes | 3 | yes | yes | — | — | — | — | — | yes |
@@ -140,7 +140,7 @@
 | To Kebab case | partial | exact | yes | 13 | yes | yes | — | yes | — | — | — | yes |
 | To MessagePack | partial | unknown | yes | 10 | yes | yes | — | — | — | — | — | yes |
 | To Snake case | partial | exact | yes | 6 | — | yes | — | yes | — | — | — | yes |
-| XML Beautify | partial | exact | yes | 8 | — | yes | — | yes | — | — | — | yes |
+| XML Beautify | partial | exact | yes | 9 | yes | yes | — | yes | — | — | — | yes |
 | XML Minify | partial | exact | yes | 10 | yes | yes | — | yes | — | — | — | yes |
 | XPath expression | partial | unknown | yes | 2 | — | — | — | — | — | — | — | yes |
 
@@ -595,7 +595,7 @@
 | Filter | partial | exact | yes | 4 | yes | yes | — | yes | — | — | — | yes |
 | Find / Replace | partial | unknown | yes | 4 | — | — | — | — | — | — | — | yes |
 | Register | partial | unknown | yes | 6 | — | yes | — | — | — | — | — | yes |
-| Regular expression | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
+| Regular expression | partial | exact | yes | 4 | yes | — | — | yes | — | — | — | yes |
 | Strings | partial | unknown | yes | 3 | — | yes | — | — | — | — | — | yes |
 
 ## Serialise
