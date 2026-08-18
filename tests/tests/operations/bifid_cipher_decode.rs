@@ -35,3 +35,10 @@ fn test_bifid_decode_empty_keyword() {
     assert!(!output.is_empty());
 }
 
+#[test]
+fn test_bifid_decode_invalid_keyword() {
+    let operation = BifidCipherDecode;
+    let input = b"HELLO".to_vec();
+    let result = operation.run(input, &[ArgValue::Str("KEY123".to_string())]);
+    assert!(result.is_err());
+}

@@ -64,3 +64,21 @@ fn test_regex_groups() {
     assert_eq!(result_str, "key\nvalue");
 }
 
+
+#[test]
+fn test_regular_expression_invalid_pattern() {
+    let op = RegularExpressionOp;
+    let args = [
+        rxchef::operation::ArgValue::Str("User defined".to_string()),
+        rxchef::operation::ArgValue::Str("[invalid".to_string()),
+        rxchef::operation::ArgValue::Bool(true),
+        rxchef::operation::ArgValue::Bool(true),
+        rxchef::operation::ArgValue::Bool(false),
+        rxchef::operation::ArgValue::Bool(false),
+        rxchef::operation::ArgValue::Bool(false),
+        rxchef::operation::ArgValue::Bool(false),
+        rxchef::operation::ArgValue::Str("Highlight matches".to_string()),
+    ];
+    let result = rxchef::Operation::run(&op, b"test".to_vec(), &args);
+    assert!(result.is_err());
+}

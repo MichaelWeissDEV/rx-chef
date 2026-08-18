@@ -64,3 +64,11 @@ fn test_xml_beautify_unclosed_tags_do_not_panic() {
     assert!(output.contains("<b>"), "unexpected output: {output}");
 }
 
+#[test]
+fn test_xml_beautify_invalid_xml_error() {
+    let op = XMLBeautify;
+    let input = b"<unclosed tag".to_vec();
+    let args = vec![ArgValue::Str("\\t".to_string())];
+    let result = op.run(input, &args);
+    assert!(result.is_err());
+}

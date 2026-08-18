@@ -77,3 +77,70 @@ fn test_typex_keyboard() {
     assert_eq!(String::from_utf8_lossy(&decrypted), "HELLO 123");
 }
 
+#[test]
+fn test_typex_invalid_wiring() {
+    let op = Typex;
+    let input = b"HELLO".to_vec();
+    let args = vec![
+        ArgValue::Str("SHORT_WIRING".to_string()), // 1
+        ArgValue::Bool(false),
+        ArgValue::Str("A".to_string()),
+        ArgValue::Str("A".to_string()),
+        ArgValue::Str("KHWENRCBISXJQGOFMAPVYZDLTU<BFHNQUW".to_string()), // 2
+        ArgValue::Bool(false),
+        ArgValue::Str("A".to_string()),
+        ArgValue::Str("A".to_string()),
+        ArgValue::Str("BYPDZMGIKQCUSATREHOJNLFWXV<BFHNQUW".to_string()), // 3
+        ArgValue::Bool(false),
+        ArgValue::Str("A".to_string()),
+        ArgValue::Str("A".to_string()),
+        ArgValue::Str("ZANJCGDLVHIXOBRPMSWQUKFYET<BFHNQUW".to_string()), // 4
+        ArgValue::Bool(false),
+        ArgValue::Str("A".to_string()),
+        ArgValue::Str("A".to_string()),
+        ArgValue::Str("QXBGUTOVFCZPJIHSWERYNDAMLK<BFHNQUW".to_string()), // 5
+        ArgValue::Bool(false),
+        ArgValue::Str("A".to_string()),
+        ArgValue::Str("A".to_string()),
+        ArgValue::Str("AN BC FG IE KD LU MH OR TS VZ WQ XJ YP".to_string()), // Reflector
+        ArgValue::Str("ABCDEFGHIJKLMNOPQRSTUVWXYZ".to_string()),             // Plugboard
+        ArgValue::Str("None".to_string()),                                   // Keyboard
+        ArgValue::Bool(true),                                                // Strict
+    ];
+    let result = op.run(input, &args);
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_typex_invalid_plugboard() {
+    let op = Typex;
+    let input = b"HELLO".to_vec();
+    let args = vec![
+        ArgValue::Str("MCYLPQUVRXGSAOWNBJEZDTFKHI<BFHNQUW".to_string()), // 1
+        ArgValue::Bool(false),
+        ArgValue::Str("A".to_string()),
+        ArgValue::Str("A".to_string()),
+        ArgValue::Str("KHWENRCBISXJQGOFMAPVYZDLTU<BFHNQUW".to_string()), // 2
+        ArgValue::Bool(false),
+        ArgValue::Str("A".to_string()),
+        ArgValue::Str("A".to_string()),
+        ArgValue::Str("BYPDZMGIKQCUSATREHOJNLFWXV<BFHNQUW".to_string()), // 3
+        ArgValue::Bool(false),
+        ArgValue::Str("A".to_string()),
+        ArgValue::Str("A".to_string()),
+        ArgValue::Str("ZANJCGDLVHIXOBRPMSWQUKFYET<BFHNQUW".to_string()), // 4
+        ArgValue::Bool(false),
+        ArgValue::Str("A".to_string()),
+        ArgValue::Str("A".to_string()),
+        ArgValue::Str("QXBGUTOVFCZPJIHSWERYNDAMLK<BFHNQUW".to_string()), // 5
+        ArgValue::Bool(false),
+        ArgValue::Str("A".to_string()),
+        ArgValue::Str("A".to_string()),
+        ArgValue::Str("AN BC FG IE KD LU MH OR TS VZ WQ XJ YP".to_string()), // Reflector
+        ArgValue::Str("SHORT".to_string()),                                   // Plugboard
+        ArgValue::Str("None".to_string()),                                   // Keyboard
+        ArgValue::Bool(true),                                                // Strict
+    ];
+    let result = op.run(input, &args);
+    assert!(result.is_err());
+}

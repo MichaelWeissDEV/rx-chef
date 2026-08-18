@@ -19,3 +19,14 @@ fn test_css_selector() {
     assert_eq!(output, expected);
 }
 
+#[test]
+fn test_css_selector_invalid_query_error() {
+    let op = CssSelector;
+    let input = b"<div id=\"test\">hello</div>".to_vec();
+    let args = vec![
+        ArgValue::Str("::invalid{selector".to_string()),
+        ArgValue::Str("\\n".to_string()),
+    ];
+    let result = op.run(input, &args);
+    assert!(result.is_err());
+}
