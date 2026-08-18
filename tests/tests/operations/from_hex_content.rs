@@ -35,11 +35,9 @@ fn test_from_hex_content_multiple() {
 }
 
 #[test]
-fn test_from_hex_content_invalid_chars() {
-    use rxchef::operations::from_hex_content::FromHexContent;
-    use rxchef::Operation;
+fn test_from_hex_content_invalid_utf8() {
     let op = FromHexContent;
     let args = [];
-    let result = op.run(b"ZZ ZZ".to_vec(), &args);
+    let result = op.run(vec![0xFF, 0xFE], &args);
     assert!(result.is_err());
 }

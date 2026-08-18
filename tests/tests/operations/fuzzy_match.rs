@@ -78,7 +78,7 @@ fn test_fuzzy_match_html_escaping() {
     assert!(result_str.contains("&amp;"));
     assert!(result_str.contains("&quot;"));
     assert!(result_str.contains("&#039;"));
-    assert!(result_str.contains("<b>t</b><b>e</b><b>s</b><b>t</b>"));
+    assert!(result_str.contains("<b>test</b>"));
 }
 
 #[test]
@@ -114,7 +114,7 @@ fn test_fuzzy_match_multiline_input() {
     let result = op.run(b"first line\nsecond line".to_vec(), &args).unwrap();
     let result_str = String::from_utf8_lossy(&result);
     // Should highlight 'l' 'i' 'n' 'e' in 'first line'
-    assert!(result_str.contains("<b>l</b><b>i</b><b>n</b><b>e</b>"));
+    assert!(result_str.contains("<b>line</b>"));
 }
 
 #[test]

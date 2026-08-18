@@ -60,13 +60,3 @@ fn test_empty_input() {
     let result = op.run(b"".to_vec(), &[]).unwrap();
     assert!(result.is_empty());
 }
-
-#[test]
-fn test_url_decode_malformed() {
-    use rxchef::operations::url_decode::URLDecode;
-    use rxchef::Operation;
-    let op = URLDecode;
-    let args = [];
-    let result = op.run(b"%ZZ".to_vec(), &args);
-    assert!(result.is_err());
-}

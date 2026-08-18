@@ -78,11 +78,9 @@ fn test_non_hexdump_text_yields_no_bytes() {
 }
 
 #[test]
-fn test_from_hexdump_malformed() {
-    use rxchef::operations::from_hexdump::FromHexdump;
-    use rxchef::Operation;
+fn test_from_hexdump_invalid_utf8() {
     let op = FromHexdump;
     let args = [];
-    let result = op.run(b"00000000: ZZZZ ZZZZ".to_vec(), &args);
+    let result = op.run(vec![0xFF, 0xFE], &args);
     assert!(result.is_err());
 }

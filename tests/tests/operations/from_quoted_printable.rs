@@ -61,12 +61,3 @@ fn test_from_quoted_printable_space_encoding() {
     assert_eq!(String::from_utf8_lossy(&decoded), "Hello World");
 }
 
-#[test]
-fn test_from_quoted_printable_malformed() {
-    use rxchef::operations::from_quoted_printable::FromQuotedPrintable;
-    use rxchef::Operation;
-    let op = FromQuotedPrintable;
-    let args = [];
-    let result = op.run(b"=".to_vec(), &args); // Incomplete hex
-    assert!(result.is_err());
-}

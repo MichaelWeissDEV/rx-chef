@@ -44,14 +44,16 @@ fn test_bitcoin_segwit() {
 }
 
 #[test]
-fn test_to_bech32_invalid_data() {
-    use rxchef::operations::to_bech32::ToBech32;
-    use rxchef::Operation;
+fn test_to_bech32_invalid_hex() {
     let op = ToBech32;
+    // Input format is at index 2 (HRP, Encoding, Input Format, Mode, Witness Version)
     let args = [
         rxchef::operation::ArgValue::Str("bc".to_string()),
-        rxchef::operation::ArgValue::Str("Bech32".to_string())
+        rxchef::operation::ArgValue::Str("Bech32".to_string()),
+        rxchef::operation::ArgValue::Str("Hex".to_string()),
+        rxchef::operation::ArgValue::Str("Generic".to_string()),
+        rxchef::operation::ArgValue::Num(0.0),
     ];
-    let result = op.run(vec![0xff, 0xff], &args); // Might be invalid utf8 or bech32 data error
+    let result = op.run(b"invalid hex".to_vec(), &args);
     assert!(result.is_err());
 }
