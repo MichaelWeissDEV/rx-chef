@@ -38,3 +38,4 @@ fn test_mixed_content() {
     let result = op.run(input, &args).unwrap();
     assert_eq!(String::from_utf8_lossy(&result), "Char A is A");
 }
+

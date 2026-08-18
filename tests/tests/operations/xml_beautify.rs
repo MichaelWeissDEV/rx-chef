@@ -63,3 +63,4 @@ fn test_xml_beautify_unclosed_tags_do_not_panic() {
     assert!(output.contains("<a>"), "unexpected output: {output}");
     assert!(output.contains("<b>"), "unexpected output: {output}");
 }
+

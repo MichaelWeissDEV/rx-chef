@@ -30,3 +30,11 @@ fn test_bacon_cipher_encode_non_alpha() {
     let output = String::from_utf8(result).unwrap();
     assert!(output.contains("H") || output.contains("0") || output.contains("1"));
 }
+
+#[test]
+fn test_bacon_cipher_encode_invalid_utf8() {
+    let op = BaconCipherEncode;
+    // Operations that take String input should fail on invalid UTF-8
+    let result = rxchef::Operation::run(&op, vec![0xFF, 0xFE], &[]);
+    assert!(result.is_err());
+}

@@ -76,3 +76,4 @@ fn test_typex_keyboard() {
     let decrypted = op.run(encrypted, &args).unwrap();
     assert_eq!(String::from_utf8_lossy(&decrypted), "HELLO 123");
 }
+

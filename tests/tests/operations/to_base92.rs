@@ -42,3 +42,4 @@ fn test_to_base92_long() {
         ]
     );
 }
+

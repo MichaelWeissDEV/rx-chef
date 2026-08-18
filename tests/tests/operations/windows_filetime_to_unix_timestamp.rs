@@ -50,3 +50,11 @@ fn test_windows_filetime_hex_le() {
     let result = op.run(input, &args).unwrap();
     assert_eq!(String::from_utf8_lossy(&result), "1506910800");
 }
+
+#[test]
+fn test_windows_filetime_to_unix_timestamp_invalid_utf8() {
+    let op = WindowsFiletimeToUnixTimestampOp;
+    // Operations that take String input should fail on invalid UTF-8
+    let result = rxchef::Operation::run(&op, vec![0xFF, 0xFE], &[]);
+    assert!(result.is_err());
+}

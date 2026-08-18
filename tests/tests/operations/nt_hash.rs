@@ -19,3 +19,4 @@ fn test_nthash_empty() {
     let result = op.run(input, &[]).unwrap();
     assert_eq!(result, b"31D6CFE0D16AE931B73C59D7E0C089C0");
 }
+

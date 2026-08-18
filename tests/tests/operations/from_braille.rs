@@ -29,3 +29,11 @@ fn test_from_braille_passthrough_non_braille() {
     let result = op.run(input, &[]).unwrap();
     assert_eq!(String::from_utf8(result).unwrap(), "hello");
 }
+
+#[test]
+fn test_from_braille_invalid_utf8() {
+    let op = FromBraille;
+    // Operations that take String input should fail on invalid UTF-8
+    let result = rxchef::Operation::run(&op, vec![0xFF, 0xFE], &[]);
+    assert!(result.is_err());
+}

@@ -40,3 +40,4 @@ fn test_multiply_two_numbers() {
         .unwrap();
     assert_eq!(String::from_utf8(result).unwrap(), "42");
 }
+

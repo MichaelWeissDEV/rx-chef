@@ -18,3 +18,4 @@ fn test_css_selector() {
     let expected = b"<p class=\"a\">hello</p>\n<p class=\"a\">again</p>".to_vec();
     assert_eq!(output, expected);
 }
+

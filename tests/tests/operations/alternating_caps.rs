@@ -45,3 +45,4 @@ fn test_alternating_caps_two_letters() {
     let result_str = String::from_utf8(result).unwrap();
     assert_eq!(result_str, "aB");
 }
+

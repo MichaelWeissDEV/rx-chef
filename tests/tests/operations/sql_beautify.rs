@@ -31,3 +31,4 @@ fn test_sql_beautify_empty() {
     let result = op.run(vec![], &[]).unwrap();
     assert!(result.is_empty());
 }
+

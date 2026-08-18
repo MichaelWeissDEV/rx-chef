@@ -34,3 +34,4 @@ fn test_convert_to_nato_unknown_char() {
     // Non-matching chars should be preserved
     assert!(output.contains("!"));
 }
+

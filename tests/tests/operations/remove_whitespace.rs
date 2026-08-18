@@ -42,3 +42,4 @@ fn test_remove_whitespace_preserve() {
     let output = String::from_utf8(result).unwrap();
     assert_eq!(output, "hello world");
 }
+

@@ -96,3 +96,11 @@ fn test_rot8000_non_bmp_unchanged() {
     let result = op.run(input.clone(), &[]).unwrap();
     assert_eq!(result, input);
 }
+
+#[test]
+fn test_rot8000_invalid_utf8() {
+    let op = ROT8000;
+    // Operations that take String input should fail on invalid UTF-8
+    let result = rxchef::Operation::run(&op, vec![0xFF, 0xFE], &[]);
+    assert!(result.is_err());
+}

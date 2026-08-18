@@ -34,3 +34,4 @@ fn test_bifid_encode_empty_keyword() {
     let output = String::from_utf8(result).unwrap();
     assert!(!output.is_empty());
 }
+

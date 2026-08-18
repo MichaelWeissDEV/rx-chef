@@ -46,3 +46,4 @@ fn test_median_empty() {
         .unwrap();
     assert_eq!(String::from_utf8(result).unwrap(), "NaN");
 }
+

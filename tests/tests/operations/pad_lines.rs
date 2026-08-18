@@ -58,3 +58,4 @@ fn test_pad_multiline() {
     let out = String::from_utf8(result).unwrap();
     assert_eq!(out, "Xa\nXb\nXc");
 }
+

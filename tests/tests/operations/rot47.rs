@@ -23,3 +23,4 @@ fn test_non_printable_unchanged() {
     assert_eq!(rot47(" "), " ");
     assert_eq!(rot47("\n"), "\n");
 }
+

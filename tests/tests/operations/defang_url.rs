@@ -40,3 +40,4 @@ fn test_defang_url_no_slashes() {
     let output = String::from_utf8(result).unwrap();
     assert!(!output.contains("[://]"));
 }
+

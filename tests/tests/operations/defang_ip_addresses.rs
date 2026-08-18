@@ -38,3 +38,4 @@ fn test_defang_mixed() {
     assert!(output.contains("[.]"));
     assert!(output.contains("[:"));
 }
+

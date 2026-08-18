@@ -70,3 +70,11 @@ fn test_change_ip_format_same() {
     let output = String::from_utf8(result).unwrap();
     assert_eq!(output, "192.168.1.1");
 }
+
+#[test]
+fn test_change_ip_format_invalid_utf8() {
+    let op = ChangeIPFormat;
+    // Operations that take String input should fail on invalid UTF-8
+    let result = rxchef::Operation::run(&op, vec![0xFF, 0xFE], &[]);
+    assert!(result.is_err());
+}

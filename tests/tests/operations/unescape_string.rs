@@ -34,3 +34,4 @@ fn test_unescape_backslash() {
     let result = op.run(input, &[]).unwrap();
     assert_eq!(String::from_utf8_lossy(&result), "\\");
 }
+

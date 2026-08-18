@@ -82,3 +82,4 @@ fn test_xkcd_random_number_rfc_compliance() {
         "RFC 1149.5 specifies 4 as the standard IEEE-vetted random number"
     );
 }
+

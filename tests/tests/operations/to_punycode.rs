@@ -22,3 +22,11 @@ fn test_to_punycode_idn() {
     let result = op.run(input, &args).unwrap();
     assert_eq!(String::from_utf8(result).unwrap(), "example.com");
 }
+
+#[test]
+fn test_to_punycode_invalid_utf8() {
+    let op = ToPunycode;
+    // Operations that take String input should fail on invalid UTF-8
+    let result = rxchef::Operation::run(&op, vec![0xFF, 0xFE], &[]);
+    assert!(result.is_err());
+}

@@ -31,3 +31,11 @@ fn test_roundtrip() {
     let back = from.run(braille, &[]).unwrap();
     assert_eq!(String::from_utf8(back).unwrap(), "HELLO");
 }
+
+#[test]
+fn test_to_braille_invalid_utf8() {
+    let op = FromBraille;
+    // Operations that take String input should fail on invalid UTF-8
+    let result = rxchef::Operation::run(&op, vec![0xFF, 0xFE], &[]);
+    assert!(result.is_err());
+}

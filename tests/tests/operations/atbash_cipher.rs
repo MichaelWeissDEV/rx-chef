@@ -39,3 +39,11 @@ fn test_atbash_cipher_empty() {
     let output = String::from_utf8(result).unwrap();
     assert_eq!(output, "");
 }
+
+#[test]
+fn test_atbash_cipher_invalid_utf8() {
+    let op = AtbashCipher;
+    // Operations that take String input should fail on invalid UTF-8
+    let result = rxchef::Operation::run(&op, vec![0xFF, 0xFE], &[]);
+    assert!(result.is_err());
+}

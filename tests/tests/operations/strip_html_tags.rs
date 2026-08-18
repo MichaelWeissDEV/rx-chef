@@ -25,3 +25,4 @@ fn test_strip_empty() {
     let result = op.run(b"".to_vec(), &[]).expect("should succeed");
     assert_eq!(result, b"");
 }
+

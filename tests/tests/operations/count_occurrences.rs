@@ -42,3 +42,4 @@ fn test_count_occurrences_overlapping() {
         .unwrap();
     assert_eq!(String::from_utf8(result).unwrap(), "2");
 }
+

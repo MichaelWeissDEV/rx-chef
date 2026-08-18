@@ -49,3 +49,4 @@ fn test_smart_mode_leaves_quoted_strings_untouched() {
     let result = run(r#""hello_world" foo_bar"#, true);
     assert_eq!(result, r#""hello_world" fooBar"#);
 }
+

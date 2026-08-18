@@ -10,8 +10,8 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2014 |
-| With negative tests | 286 |
+| Test functions | 2032 |
+| With negative tests | 305 |
 | With boundary tests | 437 |
 | Reference-verified (known answer) | 22 |
 | Differential-verified | 225 |
@@ -63,7 +63,7 @@
 | AES Key Wrap | partial | unknown | yes | 5 | yes | — | — | — | — | — | — | yes |
 | Affine Cipher Decode | partial | exact | yes | 5 | yes | — | — | yes | — | — | — | yes |
 | Affine Cipher Encode | partial | exact | yes | 5 | yes | — | — | yes | — | — | — | yes |
-| Atbash Cipher | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |
+| Atbash Cipher | partial | exact | yes | 5 | yes | yes | — | yes | — | — | — | yes |
 | Bifid Cipher Decode | partial | unknown | yes | 3 | — | yes | — | yes | — | — | — | yes |
 | Bifid Cipher Encode | partial | unknown | yes | 3 | — | yes | — | yes | — | — | — | yes |
 | Blowfish Decrypt | partial | unknown | yes | 6 | yes | yes | — | — | — | — | — | yes |
@@ -137,7 +137,7 @@
 | SQL Minify | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |
 | Syntax highlighter | partial | unknown | yes | 3 | — | — | — | — | — | — | — | yes |
 | To Camel case | partial | exact | yes | 6 | — | yes | — | yes | — | — | — | yes |
-| To Kebab case | partial | exact | yes | 12 | — | yes | — | yes | — | — | — | yes |
+| To Kebab case | partial | exact | yes | 13 | yes | yes | — | yes | — | — | — | yes |
 | To MessagePack | partial | unknown | yes | 10 | yes | yes | — | — | — | — | — | yes |
 | To Snake case | partial | exact | yes | 6 | — | yes | — | yes | — | — | — | yes |
 | XML Beautify | partial | exact | yes | 8 | — | yes | — | yes | — | — | — | yes |
@@ -234,13 +234,13 @@
 | AND | partial | unknown | yes | 4 | — | yes | — | — | — | — | — | yes |
 | Add line numbers | partial | exact | yes | 5 | — | yes | — | yes | — | — | — | yes |
 | Alternating Caps | partial | exact | yes | 5 | — | yes | — | yes | — | — | — | yes |
-| Bacon Cipher Decode | partial | exact | yes | 3 | — | yes | — | yes | — | — | — | yes |
-| Bacon Cipher Encode | partial | exact | yes | 3 | — | yes | — | yes | — | — | — | yes |
+| Bacon Cipher Decode | partial | exact | yes | 4 | yes | yes | — | yes | — | — | — | yes |
+| Bacon Cipher Encode | partial | exact | yes | 4 | yes | yes | — | yes | — | — | — | yes |
 | Bit shift left | partial | exact | yes | 4 | — | — | — | yes | — | — | — | yes |
 | Bit shift right | partial | exact | yes | 4 | — | — | — | yes | — | — | — | yes |
 | Caret/M-decode | partial | exact | yes | 4 | — | — | — | yes | — | — | — | yes |
 | Cartesian Product | partial | unknown | yes | 6 | yes | yes | — | — | — | — | — | yes |
-| Change IP format | partial | unknown | yes | 4 | — | — | — | yes | — | — | — | yes |
+| Change IP format | partial | unknown | yes | 5 | yes | — | — | yes | — | — | — | yes |
 | Chi Square | partial | unknown | yes | 7 | — | yes | yes | yes | — | — | — | yes |
 | Comment | partial | exact | yes | 2 | — | — | — | yes | — | — | — | yes |
 | Conditional Jump | partial | unknown | yes | 3 | — | — | — | — | — | — | — | yes |
@@ -264,9 +264,9 @@
 | Drop nth bytes | partial | exact | yes | 5 | yes | — | — | yes | — | — | — | yes |
 | ELF Info | partial | unknown | yes | 7 | yes | yes | — | — | — | — | — | yes |
 | Encode NetBIOS Name | partial | exact | yes | 5 | — | yes | — | yes | — | — | — | yes |
-| Escape Unicode Characters | partial | exact | yes | 2 | — | — | — | yes | — | — | — | yes |
-| Escape string | partial | exact | yes | 2 | — | — | — | yes | — | — | — | yes |
-| Expand alphabet range | partial | exact | yes | 3 | — | yes | — | yes | — | — | — | yes |
+| Escape Unicode Characters | partial | exact | yes | 3 | yes | — | — | yes | — | — | — | yes |
+| Escape string | partial | exact | yes | 3 | yes | — | — | yes | — | — | — | yes |
+| Expand alphabet range | partial | exact | yes | 4 | yes | yes | — | yes | — | — | — | yes |
 | Extract Files | partial | unknown | yes | 5 | — | yes | — | — | — | — | — | yes |
 | Extract ID3 | partial | unknown | yes | 5 | yes | yes | — | — | — | — | — | yes |
 | Fang URL | partial | exact | yes | 4 | — | — | — | yes | — | — | — | yes |
@@ -274,7 +274,7 @@
 | Fernet Encrypt | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
 | File Tree | partial | exact | yes | 1 | — | — | — | yes | — | — | — | yes |
 | Fork | partial | unknown | yes | 2 | — | yes | — | — | — | — | — | yes |
-| Format MAC addresses | partial | unknown | yes | 3 | — | — | — | yes | — | — | — | yes |
+| Format MAC addresses | partial | unknown | yes | 4 | yes | — | — | yes | — | — | — | yes |
 | Frequency distribution | partial | unknown | yes | 3 | yes | yes | — | — | — | — | — | yes |
 | From BCD | partial | unknown | yes | 5 | yes | yes | — | — | — | — | — | yes |
 | From Base | partial | exact | yes | 4 | yes | — | — | yes | — | — | — | yes |
@@ -287,10 +287,10 @@
 | From Base92 | partial | exact | yes | 5 | yes | yes | — | yes | — | — | — | yes |
 | From Bech32 | partial | unknown | yes | 5 | yes | yes | — | yes | — | — | — | yes |
 | From Binary | partial | unknown | yes | 4 | yes | yes | — | yes | — | — | — | yes |
-| From Braille | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
-| From Case Insensitive Regex | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
+| From Braille | partial | exact | yes | 4 | yes | — | — | yes | — | — | — | yes |
+| From Case Insensitive Regex | partial | exact | yes | 4 | yes | — | — | yes | — | — | — | yes |
 | From Charcode | partial | unknown | yes | 5 | yes | yes | — | yes | — | — | — | yes |
-| From Decimal | partial | unknown | yes | 7 | yes | yes | — | yes | — | — | — | yes |
+| From Decimal | partial | unknown | yes | 6 | yes | yes | — | yes | — | — | — | yes |
 | From Float | partial | unknown | yes | 4 | yes | — | — | yes | — | — | — | yes |
 | From Hex | partial | unknown | yes | 6 | yes | yes | — | yes | — | — | — | yes |
 | From Hex Content | partial | exact | yes | 5 | yes | — | — | yes | — | — | — | yes |
@@ -354,9 +354,9 @@
 | Power Set | partial | unknown | yes | 3 | — | yes | — | yes | — | — | — | yes |
 | RAKE | partial | exact | yes | 1 | — | — | — | yes | — | — | — | yes |
 | ROT47 Brute Force | partial | exact | yes | 2 | — | — | — | yes | — | — | — | yes |
-| ROT8000 | partial | exact | yes | 4 | — | — | — | yes | — | — | — | yes |
-| Remove Diacritics | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
-| Remove line numbers | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
+| ROT8000 | partial | exact | yes | 5 | yes | — | — | yes | — | — | — | yes |
+| Remove Diacritics | partial | exact | yes | 4 | yes | — | — | yes | — | — | — | yes |
+| Remove line numbers | partial | exact | yes | 4 | yes | — | — | yes | — | — | — | yes |
 | Remove null bytes | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
 | Remove whitespace | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
 | Return | partial | unknown | yes | 5 | — | yes | — | — | — | — | — | yes |
@@ -401,7 +401,7 @@
 | To Base92 | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |
 | To Bech32 | partial | exact | yes | 4 | yes | — | — | yes | — | — | — | yes |
 | To Binary | partial | exact | yes | 3 | — | yes | — | yes | — | — | — | yes |
-| To Braille | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
+| To Braille | partial | exact | yes | 4 | yes | — | — | yes | — | — | — | yes |
 | To Case Insensitive Regex | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
 | To Charcode | partial | exact | yes | 5 | yes | yes | — | yes | — | — | — | yes |
 | To Decimal | partial | exact | yes | 5 | — | yes | — | yes | — | — | — | yes |
@@ -418,14 +418,14 @@
 | To UNIX Timestamp | partial | exact | yes | 10 | yes | yes | — | yes | — | — | — | yes |
 | To Upper case | partial | exact | yes | 6 | yes | — | — | yes | — | — | — | yes |
 | Translate DateTime Format | partial | unknown | yes | 4 | yes | yes | — | yes | — | — | — | yes |
-| UNIX Timestamp to Windows Filetime | partial | unknown | yes | 3 | — | — | — | yes | — | — | — | yes |
+| UNIX Timestamp to Windows Filetime | partial | unknown | yes | 4 | yes | — | — | yes | — | — | — | yes |
 | Unescape Unicode Characters | partial | exact | yes | 4 | — | — | — | yes | — | — | — | yes |
 | Unescape string | partial | exact | yes | 4 | — | — | — | yes | — | — | — | yes |
 | Unicode Text Format | partial | unknown | yes | 4 | — | — | — | yes | — | — | — | yes |
 | Unique | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
 | VarInt Decode | partial | intentional_difference | yes | 8 | — | yes | — | yes | — | — | — | yes |
 | VarInt Encode | partial | unknown | yes | 7 | yes | yes | — | — | — | — | — | yes |
-| Windows Filetime to UNIX Timestamp | partial | unknown | yes | 4 | — | — | — | yes | — | — | — | yes |
+| Windows Filetime to UNIX Timestamp | partial | unknown | yes | 5 | yes | — | — | yes | — | — | — | yes |
 | Wrap | partial | exact | yes | 3 | — | yes | — | yes | — | — | — | yes |
 | XKCD Random Number | partial | exact | yes | 5 | — | yes | — | yes | — | — | — | yes |
 | XOR | partial | unknown | yes | 4 | — | yes | — | — | — | — | — | yes |
@@ -447,7 +447,7 @@
 | Citrix CTX1 Decode | partial | unknown | yes | 3 | yes | yes | — | yes | — | — | — | yes |
 | Citrix CTX1 Encode | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |
 | Decode text | partial | exact | yes | 4 | — | — | — | yes | — | — | — | yes |
-| Encode text | partial | exact | yes | 2 | — | — | — | yes | — | — | — | yes |
+| Encode text | partial | exact | yes | 3 | yes | — | — | yes | — | — | — | yes |
 | From HTML Entity | partial | exact | yes | 6 | yes | yes | — | yes | — | — | — | yes |
 | From Punycode | partial | exact | yes | 2 | — | — | — | yes | — | — | — | yes |
 | Normalise Unicode | partial | exact | yes | 2 | — | — | — | yes | — | — | — | yes |
@@ -455,7 +455,7 @@
 | Rison Encode | partial | unknown | yes | 3 | — | — | — | — | — | — | — | yes |
 | Text Encoding Brute Force | partial | unknown | yes | 3 | — | — | — | — | — | — | — | yes |
 | To HTML Entity | partial | exact | yes | 7 | — | yes | — | yes | — | — | — | yes |
-| To Punycode | partial | exact | yes | 2 | — | — | — | yes | — | — | — | yes |
+| To Punycode | partial | exact | yes | 3 | yes | — | — | yes | — | — | — | yes |
 
 ## Handlebars
 

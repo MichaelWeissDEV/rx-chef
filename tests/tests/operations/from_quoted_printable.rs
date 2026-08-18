@@ -61,3 +61,4 @@ fn test_from_quoted_printable_space_encoding() {
     assert_eq!(String::from_utf8_lossy(&decoded), "Hello World");
 }
 
+

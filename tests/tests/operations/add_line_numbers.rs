@@ -47,3 +47,4 @@ fn test_add_line_numbers_trailing_newline() {
     let result_str = String::from_utf8(result).unwrap();
     assert_eq!(result_str, "1 hello\n2 world\n");
 }
+

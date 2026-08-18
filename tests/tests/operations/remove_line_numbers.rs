@@ -31,3 +31,11 @@ fn test_remove_line_numbers_no_numbers() {
     let result = op.run(input.clone(), &[]).unwrap();
     assert_eq!(result, input);
 }
+
+#[test]
+fn test_remove_line_numbers_invalid_utf8() {
+    let op = RemoveLineNumbers;
+    // Operations that take String input should fail on invalid UTF-8
+    let result = rxchef::Operation::run(&op, vec![0xFF, 0xFE], &[]);
+    assert!(result.is_err());
+}

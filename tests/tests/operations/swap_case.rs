@@ -37,3 +37,4 @@ fn test_swap_case_mixed() {
     let output = String::from_utf8(result).unwrap();
     assert_eq!(output, "hELLO123wORLD!");
 }
+

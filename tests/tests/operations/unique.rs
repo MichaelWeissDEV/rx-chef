@@ -40,3 +40,4 @@ fn test_unique_no_duplicates() {
     let out = String::from_utf8(result).unwrap();
     assert_eq!(out, "x\ny\nz");
 }
+

@@ -23,3 +23,4 @@ fn test_normalise_unicode_nfd() {
     let result = op.run(input, &args).unwrap();
     assert_eq!(String::from_utf8(result).unwrap(), "e\u{0301}");
 }
+

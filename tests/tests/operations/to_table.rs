@@ -97,3 +97,4 @@ fn test_to_table_ragged_rows_are_padded_to_the_widest_row() {
         "ragged rows must be padded, got {widths:?}:\n{table}"
     );
 }
+

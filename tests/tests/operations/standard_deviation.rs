@@ -50,3 +50,4 @@ fn test_std_dev_two_values() {
         .unwrap();
     assert_eq!(String::from_utf8(result).unwrap(), "1");
 }
+

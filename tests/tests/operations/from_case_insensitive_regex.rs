@@ -27,3 +27,11 @@ fn test_from_case_insensitive_regex_no_pairs() {
     let result = op.run(input, &[]).unwrap();
     assert_eq!(String::from_utf8(result).unwrap(), "Mozilla/[0-9].[0-9] .*");
 }
+
+#[test]
+fn test_from_case_insensitive_regex_invalid_utf8() {
+    let op = FromCaseInsensitiveRegex;
+    // Operations that take String input should fail on invalid UTF-8
+    let result = rxchef::Operation::run(&op, vec![0xFF, 0xFE], &[]);
+    assert!(result.is_err());
+}

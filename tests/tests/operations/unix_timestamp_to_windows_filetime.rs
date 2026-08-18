@@ -45,3 +45,11 @@ fn test_nanoseconds_to_hex_le() {
     // LE: 00 60 9a 5f 95 a9 d2 01
     assert_eq!(String::from_utf8_lossy(&result), "0000e07c4afcd201");
 }
+
+#[test]
+fn test_unix_timestamp_to_windows_filetime_invalid_utf8() {
+    let op = UNIXTimestampToWindowsFiletime;
+    // Operations that take String input should fail on invalid UTF-8
+    let result = rxchef::Operation::run(&op, vec![0xFF, 0xFE], &[]);
+    assert!(result.is_err());
+}

@@ -114,3 +114,11 @@ fn test_to_kebab_case_with_underscores() {
         .unwrap();
     assert_eq!(result, "hello-world-test".as_bytes());
 }
+
+#[test]
+fn test_to_kebab_case_invalid_utf8() {
+    let op = ToKebabCase;
+    // Operations that take String input should fail on invalid UTF-8
+    let result = rxchef::Operation::run(&op, vec![0xFF, 0xFE], &[]);
+    assert!(result.is_err());
+}

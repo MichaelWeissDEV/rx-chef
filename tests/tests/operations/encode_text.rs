@@ -23,3 +23,11 @@ fn test_encode_text_ebcdic() {
     // hello in EBCDIC 500 is 88 85 93 93 96
     assert_eq!(output, vec![0x88, 0x85, 0x93, 0x93, 0x96]);
 }
+
+#[test]
+fn test_encode_text_invalid_utf8() {
+    let op = EncodeText;
+    // Operations that take String input should fail on invalid UTF-8
+    let result = rxchef::Operation::run(&op, vec![0xFF, 0xFE], &[]);
+    assert!(result.is_err());
+}

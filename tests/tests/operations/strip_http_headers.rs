@@ -29,3 +29,4 @@ fn test_strip_http_headers_no_headers() {
     let out = String::from_utf8(result).unwrap();
     assert_eq!(out, "no headers here");
 }
+

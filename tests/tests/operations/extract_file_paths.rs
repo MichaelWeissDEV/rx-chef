@@ -36,3 +36,4 @@ fn test_extract_file_paths_windows() {
     let output = String::from_utf8(result).unwrap();
     assert_eq!(output, "C:\\Windows\\System32\\calc.exe\nD:\\data.txt");
 }
+

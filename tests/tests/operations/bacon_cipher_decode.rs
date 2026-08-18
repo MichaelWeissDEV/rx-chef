@@ -31,3 +31,11 @@ fn test_bacon_cipher_decode_a_b() {
     let output = String::from_utf8(result).unwrap();
     assert_eq!(output, "ABG");
 }
+
+#[test]
+fn test_bacon_cipher_decode_invalid_utf8() {
+    let op = BaconCipherDecode;
+    // Operations that take String input should fail on invalid UTF-8
+    let result = rxchef::Operation::run(&op, vec![0xFF, 0xFE], &[]);
+    assert!(result.is_err());
+}

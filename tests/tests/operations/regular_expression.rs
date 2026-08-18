@@ -63,3 +63,4 @@ fn test_regex_groups() {
     let result_str = String::from_utf8(result).unwrap();
     assert_eq!(result_str, "key\nvalue");
 }
+

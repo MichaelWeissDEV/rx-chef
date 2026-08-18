@@ -32,3 +32,4 @@ fn test_mixed_regex() {
         "[aA][bB][cC][0-9][dD][eE][fF]"
     );
 }
+

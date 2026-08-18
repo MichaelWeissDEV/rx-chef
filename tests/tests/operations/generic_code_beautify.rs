@@ -16,3 +16,4 @@ fn test_generic_code_beautify() {
     assert!(output.contains("console.log(\"hello\");"));
     assert!(output.contains("else"));
 }
+

@@ -58,3 +58,4 @@ fn test_sort_ip() {
     let out = String::from_utf8(result).unwrap();
     assert_eq!(out, "10.0.0.1\n10.0.0.2\n192.168.1.1");
 }
+

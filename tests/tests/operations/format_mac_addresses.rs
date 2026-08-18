@@ -61,3 +61,11 @@ fn test_insert_sep() {
     assert_eq!(insert_sep("aabbccddeeff", '-', 2), "aa-bb-cc-dd-ee-ff");
     assert_eq!(insert_sep("aabbccddeeff", '.', 4), "aabb.ccdd.eeff");
 }
+
+#[test]
+fn test_format_mac_addresses_invalid_utf8() {
+    let op = FormatMACAddresses;
+    // Operations that take String input should fail on invalid UTF-8
+    let result = rxchef::Operation::run(&op, vec![0xFF, 0xFE], &[]);
+    assert!(result.is_err());
+}
