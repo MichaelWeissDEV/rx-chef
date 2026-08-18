@@ -117,13 +117,22 @@ impl Operation for FromBCD {
         match input_format {
             "Nibbles" | "Bytes" => {
                 let clean_input = input_str.replace(|c: char| c.is_whitespace(), "");
-                for i in (0..clean_input.len()).step_by(4) {
-                    if i + 4 <= clean_input.len() {
-                        let n = u8::from_str_radix(&clean_input[i..i + 4], 2).map_err(|_| {
-                            OperationError::InvalidInput("Invalid bit string".to_string())
-                        })?;
-                        nibbles.push(n);
+                // Slice the bytes, not the `&str`. A multi-byte character makes
+                // `clean_input[i..i + 4]` land inside a character and panic —
+                // "café 日本語" was enough to reach it. Nibbles are ASCII '0'
+                // and '1', so anything else is invalid input, not a slice.
+                let bits = clean_input.as_bytes();
+                for chunk in bits.chunks(4) {
+                    if chunk.len() < 4 {
+                        break;
                     }
+                    let text = std::str::from_utf8(chunk).map_err(|_| {
+                        OperationError::InvalidInput("Invalid bit string".to_string())
+                    })?;
+                    let n = u8::from_str_radix(text, 2).map_err(|_| {
+                        OperationError::InvalidInput("Invalid bit string".to_string())
+                    })?;
+                    nibbles.push(n);
                 }
             }
             "Raw" => {

@@ -30,26 +30,35 @@ struct AuditTotals {
     parity_not_applicable: usize,
     weak_ok_assertions: usize,
     known_limitations: usize,
+    correctness_verified: usize,
+    correctness_partial: usize,
+    correctness_unverified: usize,
 }
 
 impl AuditTotals {
     fn record(
         &mut self,
         evidence: &TestEvidence,
+        fixture: FixtureEvidence,
         info: &runtime::OperationInfo,
         has_known_answer: bool,
         has_differential: bool,
     ) {
         self.registered += 1;
+        match Correctness::derive(evidence, fixture, has_known_answer, has_differential) {
+            Correctness::Verified => self.correctness_verified += 1,
+            Correctness::PartiallyVerified => self.correctness_partial += 1,
+            Correctness::Unverified => self.correctness_unverified += 1,
+        }
         self.total_tests += evidence.tests;
         self.weak_ok_assertions += evidence.weak_ok_assertions;
-        if evidence.has_tests() {
+        if evidence.has_tests() || fixture.any {
             self.tested += 1;
         }
-        if evidence.has_negative_case() {
+        if evidence.has_negative_case() || fixture.rejection {
             self.negative_tested += 1;
         }
-        if evidence.has_boundary_case() {
+        if evidence.has_boundary_case() || fixture.empty_input || fixture.binary_or_unicode {
             self.boundary_tested += 1;
         }
         if has_known_answer {
@@ -73,6 +82,18 @@ impl AuditTotals {
     fn print_summary(&self) {
         println!("operation audit summary");
         println!("  {:<28} {}", "registered", self.registered);
+        println!(
+            "  {:<28} {}",
+            "correctness: verified", self.correctness_verified
+        );
+        println!(
+            "  {:<28} {}",
+            "correctness: partial", self.correctness_partial
+        );
+        println!(
+            "  {:<28} {}",
+            "correctness: unverified", self.correctness_unverified
+        );
         println!("  {:<28} {}", "with executable tests", self.tested);
         println!(
             "  {:<28} {} (attributes in source; a single build runs slightly fewer, see TestEvidence)",
@@ -107,11 +128,30 @@ impl AuditTotals {
             "  {:<28} {}",
             "tests asserting only success", self.weak_ok_assertions
         );
+        println!();
+        println!("operations audit progress");
+        println!("  TOTAL:        {}", self.registered);
+        println!(
+            "  VERIFIED:     {}  ({:.0}%)",
+            self.correctness_verified,
+            100.0 * self.correctness_verified as f64 / self.registered.max(1) as f64
+        );
+        println!("  PARTIAL:      {}", self.correctness_partial);
+        println!("  UNVERIFIED:   {}", self.correctness_unverified);
+        println!(
+            "  gaps: {} need negative tests, {} need boundary tests, {} need independent evidence",
+            self.registered - self.negative_tested,
+            self.registered - self.boundary_tested,
+            self.registered - self.reference_verified.max(self.differential_verified)
+        );
     }
 
     fn as_json(&self) -> Value {
         json!({
             "registered": self.registered,
+            "correctness_verified": self.correctness_verified,
+            "correctness_partially_verified": self.correctness_partial,
+            "correctness_unverified": self.correctness_unverified,
             "tested": self.tested,
             "test_functions": self.total_tests,
             "negative_tested": self.negative_tested,
@@ -126,6 +166,132 @@ impl AuditTotals {
             "documented_divergences": self.known_limitations,
             "tests_asserting_only_success": self.weak_ok_assertions,
         })
+    }
+}
+
+/// Per-operation evidence held in the differential fixture.
+///
+/// The fixture is executed by `tests/tests/differential.rs`, so a case in it is
+/// a test that ran — it simply lives in one data file rather than in 478
+/// hand-written ones. Not reading it would have understated coverage and
+/// pushed toward duplicating the same assertions per operation.
+#[derive(Debug, Default, Clone, Copy)]
+struct FixtureEvidence {
+    /// A case feeding this operation an empty input.
+    empty_input: bool,
+    /// A case asserting this operation rejects an input upstream also rejects.
+    rejection: bool,
+    /// A case feeding this operation non-UTF-8 or multi-byte bytes.
+    binary_or_unicode: bool,
+    /// Any case at all.
+    any: bool,
+}
+
+/// Index the differential fixture by operation name.
+fn fixture_evidence(
+    root: &std::path::Path,
+) -> Result<std::collections::HashMap<String, FixtureEvidence>, String> {
+    let path = root.join("tests/fixtures/differential/cases.json");
+    let text = fs::read_to_string(&path)
+        .map_err(|error| format!("cannot read {}: {error}", path.display()))?;
+    let document: Value = serde_json::from_str(&text)
+        .map_err(|error| format!("invalid {}: {error}", path.display()))?;
+    let mut index: std::collections::HashMap<String, FixtureEvidence> =
+        std::collections::HashMap::new();
+    for case in document["cases"].as_array().into_iter().flatten() {
+        let Some(name) = case["operation"].as_str() else {
+            continue;
+        };
+        let entry = index.entry(name.to_string()).or_default();
+        entry.any = true;
+        let encoding = case["input_encoding"].as_str().unwrap_or("");
+        let input = case["input"].as_str().unwrap_or("");
+        if encoding == "empty" || (encoding == "text" && input.is_empty()) {
+            entry.empty_input = true;
+        }
+        if case["expect"] == "rejected" {
+            entry.rejection = true;
+        }
+        if encoding == "hex" || !input.is_ascii() {
+            entry.binary_or_unicode = true;
+        }
+    }
+    Ok(index)
+}
+
+/// The correctness dimension, **derived** from evidence rather than declared.
+///
+/// Keeping this out of the operation trait is deliberate. `implementation_status`
+/// is a hand-written trait method that defaulted to `Partial` for all 478
+/// operations because nobody ever set it, and 473 of them carried a benchmark
+/// skip reason reading "operation remains Partial until performance evidence is
+/// reviewed" — conflating how fast an operation is with whether it is correct.
+/// A verdict that can be raised by editing a line is not evidence, so this one
+/// can only be raised by adding tests.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Correctness {
+    /// Executable tests covering normal, negative and boundary input, plus at
+    /// least one independent reference (known-answer or differential).
+    Verified,
+    /// Executable tests, but at least one of those dimensions is missing.
+    PartiallyVerified,
+    /// No executable tests at all.
+    Unverified,
+}
+
+impl Correctness {
+    fn derive(
+        evidence: &TestEvidence,
+        fixture: FixtureEvidence,
+        has_known_answer: bool,
+        has_differential: bool,
+    ) -> Self {
+        // A fixture case is an executed test; it just lives in a data file
+        // rather than in a per-operation source file.
+        if !evidence.has_tests() && !fixture.any {
+            return Correctness::Unverified;
+        }
+        let independent = has_known_answer || has_differential;
+        let negative = evidence.has_negative_case() || fixture.rejection;
+        let boundary =
+            evidence.has_boundary_case() || fixture.empty_input || fixture.binary_or_unicode;
+        if negative && boundary && independent {
+            Correctness::Verified
+        } else {
+            Correctness::PartiallyVerified
+        }
+    }
+
+    fn as_str(self) -> &'static str {
+        match self {
+            Correctness::Verified => "verified",
+            Correctness::PartiallyVerified => "partially_verified",
+            Correctness::Unverified => "unverified",
+        }
+    }
+
+    /// What this operation still needs before it can reach `verified`.
+    fn missing(
+        evidence: &TestEvidence,
+        fixture: FixtureEvidence,
+        has_known_answer: bool,
+        has_differential: bool,
+    ) -> Vec<&'static str> {
+        let mut gaps = Vec::new();
+        if !evidence.has_tests() && !fixture.any {
+            gaps.push("executable tests");
+            return gaps;
+        }
+        if !evidence.has_negative_case() && !fixture.rejection {
+            gaps.push("negative tests");
+        }
+        if !evidence.has_boundary_case() && !fixture.empty_input && !fixture.binary_or_unicode {
+            gaps.push("boundary tests");
+        }
+        if !has_known_answer && !has_differential {
+            gaps.push("independent reference evidence");
+        }
+        gaps
     }
 }
 
@@ -230,6 +396,7 @@ pub fn run() -> Result<(), String> {
     let mut seen_ids = HashSet::new();
     let mut rows = Vec::with_capacity(names.len());
     let mut totals = AuditTotals::default();
+    let fixture_index = fixture_evidence(&root)?;
 
     for name in names {
         let info = runtime::operation_info(&name)?;
@@ -383,6 +550,7 @@ pub fn run() -> Result<(), String> {
         // the mapping existing. A file that contains no `#[test]` proves
         // nothing and must carry an explicit, reviewed reason.
         let evidence = test_evidence::scan_files(&root, &correctness);
+        let fixture = fixture_index.get(info.name).copied().unwrap_or_default();
         let untested_reason = verification["untested_reason"].as_str();
         if !evidence.has_tests() {
             match untested_reason {
@@ -424,12 +592,33 @@ pub fn run() -> Result<(), String> {
 
         totals.record(
             &evidence,
+            fixture,
             &info,
             !known_answer.is_empty(),
             !differential.is_empty(),
         );
 
+        // Named distinctly: `correctness` above is the manifest's list of test
+        // files, which this row still serialises as `test_mapping`.
+        let correctness_verdict = Correctness::derive(
+            &evidence,
+            fixture,
+            !known_answer.is_empty(),
+            !differential.is_empty(),
+        );
+        let correctness_gaps = Correctness::missing(
+            &evidence,
+            fixture,
+            !known_answer.is_empty(),
+            !differential.is_empty(),
+        );
+
         rows.push(json!({
+            "correctness": correctness_verdict.as_str(),
+            "correctness_gaps": correctness_gaps,
+            "fixture_empty_input": fixture.empty_input,
+            "fixture_rejection": fixture.rejection,
+            "fixture_binary_or_unicode": fixture.binary_or_unicode,
             "tests": evidence.tests,
             "negative_test": evidence.has_negative_case(),
             "boundary_test": evidence.has_boundary_case(),

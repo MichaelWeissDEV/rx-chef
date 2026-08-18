@@ -34,7 +34,8 @@
     "UNSUPPORTED_UPSTREAM_MODE",
     "NOT_COMPARABLE",
     "INTENTIONAL_DIFFERENCE",
-    "UNTRIAGED"
+    "UNTRIAGED",
+    "REFERENCE_IMPLEMENTATION_DIFFERENCE"
   ],
   "entries": [
     {
@@ -107,14 +108,6 @@
       "reason": "Upstream defaults the data format to 'Hex'; rx-chef defaults to raw bytes.",
       "reference": "00 00 ba 0f",
       "rxchef": "boof\u0000\u0000ra",
-      "status": "open"
-    },
-    {
-      "operation": "To Modhex",
-      "classification": "DEFAULT_MAPPING_DIFFERENCE",
-      "reason": "Upstream default delimiter is 'Space' (first of TO_MODHEX_DELIM_OPTIONS); rx-chef uses 'None'. Not aligned yet: rx-chef's From Modhex has no 'Auto' delimiter, so changing only the encoder would break the default roundtrip.",
-      "reference": "hh hv hv hd hb id",
-      "rxchef": "hhhvhvhdhbid",
       "status": "open"
     },
     {
@@ -557,12 +550,6 @@
     },
     {
       "operation": "Keccak",
-      "classification": "EXACT",
-      "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
-      "status": "verified"
-    },
-    {
-      "operation": "LZString Compress",
       "classification": "EXACT",
       "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
       "status": "verified"
@@ -1016,6 +1003,14 @@
       "classification": "EXACT",
       "reason": "rx-chef and upstream produced identical output for the sweep input under each side's own defaults.",
       "status": "verified"
+    },
+    {
+      "operation": "To Modhex",
+      "classification": "EXACT",
+      "reason": "Upstream's default delimiter is 'Space'; rx-chef used 'None'. Now aligned. From Modhex gained a working 'Auto' delimiter (upstream's default), which accepts any separator, so the default roundtrip still holds.",
+      "reference": "hh hv hv hd hb id",
+      "rxchef": "hhhvhvhdhbid",
+      "status": "fixed"
     },
     {
       "operation": "To Morse Code",
@@ -1587,12 +1582,6 @@
       "operation": "Diff",
       "classification": "NOT_COMPARABLE",
       "reason": "Upstream could not run in Node for the sweep input: Incorrect number of samples, perhaps you need to modify the sample delimiter or add more s",
-      "status": "excluded"
-    },
-    {
-      "operation": "Disassemble ARM",
-      "classification": "NOT_COMPARABLE",
-      "reason": "Upstream could not run in Node for the sweep input: Invalid hexadecimal input. Please provide valid hex characters only.",
       "status": "excluded"
     },
     {
@@ -2350,14 +2339,6 @@
       "status": "accepted"
     },
     {
-      "operation": "Parse User Agent",
-      "classification": "NOT_COMPARABLE",
-      "reason": "The sweep input 'foobar' is not valid input for this operation; both sides degrade differently on garbage rather than disagreeing on defined behaviour.",
-      "reference": "Browser\n    Name: unknown\n    Version: unknown\nDevice\n    Model: unknown\n    Type: unknown\n    Vendor: unknown\nEngine\n    Name: unknown\n    Version: unknown\nOS\n",
-      "rxchef": "Browser\n    Name: unknown\n    Version: unknown\nDevice\n    Model: unknown\n    Type: desktop\n    Vendor: unknown\nEngine\n    Name: unknown\n    Version: unknown\nOS\n",
-      "status": "accepted"
-    },
-    {
       "operation": "Parse X.509 CRL",
       "classification": "NOT_COMPARABLE",
       "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of null (reading 'substr')",
@@ -2878,6 +2859,14 @@
       "status": "harness"
     },
     {
+      "operation": "Parse User Agent",
+      "classification": "REFERENCE_IMPLEMENTATION_DIFFERENCE",
+      "reason": "Browser name and version agree; device type, vendor and engine differ because the two projects use different user-agent databases (upstream uses ua-parser-js). Objectively derivable fields are asserted; the heuristic fields are not a correctness defect in either direction.",
+      "reference": "Browser\n    Name: unknown\n    Version: unknown\nDevice\n    Model: unknown\n    Type: unknown\n    Vendor: unknown\nEngine\n    Name: unknown\n    Version: unknown\nOS\n",
+      "rxchef": "Browser\n    Name: unknown\n    Version: unknown\nDevice\n    Model: unknown\n    Type: desktop\n    Vendor: unknown\nEngine\n    Name: unknown\n    Version: unknown\nOS\n",
+      "status": "accepted"
+    },
+    {
       "operation": "Blowfish Decrypt",
       "classification": "RXCHEF_BUG",
       "reason": "ECB mode did not strip PKCS#7 padding although Blowfish Encrypt applies it and the CBC path in the same file removes it, so decryption returned the plaintext with its pad bytes attached. Upstream rejects unpadded input the same way rx-chef now does.",
@@ -2892,6 +2881,12 @@
       "status": "fixed"
     },
     {
+      "operation": "Disassemble ARM",
+      "classification": "RXCHEF_BUG",
+      "reason": "Sliced its hex input as a &str by byte offset; non-ASCII input becomes three-byte U+FFFD characters, so the length stayed even while the slice landed inside a character and panicked. Only reachable with --features disassembly.",
+      "status": "fixed"
+    },
+    {
       "operation": "Generate all hashes",
       "classification": "RXCHEF_BUG",
       "reason": "Reported a SHA-1 digest under the 'SHA0' label (the source comment read \"using SHA1 as proxy\"). SHA-0 and SHA-1 differ by a rotate in the message schedule, so the published value was simply wrong. Now uses the real SHA-0.",
@@ -2903,6 +2898,12 @@
       "reason": "Same defect as Chi Square: raw IEEE-754 bytes instead of decimal text.",
       "reference": "0.06666666666666667",
       "rxchef_error": "rxchef: step 1 (Index of Coincidence): operation output violates its declared type: processing failed: operation declared numeric output but produced invalid UT",
+      "status": "fixed"
+    },
+    {
+      "operation": "LZString Compress",
+      "classification": "RXCHEF_BUG",
+      "reason": "Implemented only the Standard format (the bit packer hardcoded 16 bits per character) and iterated Unicode scalar values instead of UTF-16 code units, truncating astral characters and making upstream streams undecodable. All four formats now work and non-BMP input is byte-identical with upstream.",
       "status": "fixed"
     },
     {

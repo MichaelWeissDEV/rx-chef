@@ -35,9 +35,9 @@ impl Operation for ImageFilter {
             name: "Filter type",
             description: "The filter to apply.",
             default_value: "Greyscale",
-            kind: crate::operation::ArgKind::String,
+            kind: crate::operation::ArgKind::Enum,
             required: false,
-            choices: &[],
+            choices: &["Greyscale", "Grayscale", "Sepia"],
             minimum: None,
             maximum: None,
             sensitive: false, // Options: Greyscale, Sepia

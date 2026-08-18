@@ -121,31 +121,13 @@ impl Operation for FromBase32 {
 ///
 /// Shared with `To Base32` so both directions accept exactly the same
 /// alphabet spellings.
+/// Expand a Base32 alphabet argument into its 32 symbols.
+///
+/// Delegates to the shared expansion every Base-N operation uses. The previous
+/// local copy special-cased the two standard alphabets — both of which the
+/// general path already produces identically — and reached
+/// `char::from_u32(..).unwrap()`, which panics on surrogate code points from a
+/// caller-supplied range.
 pub(crate) fn expand_base32_alphabet(alphabet: &str) -> String {
-    if alphabet == "A-Z2-7" {
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".to_string()
-    } else if alphabet == "0-9A-V" {
-        "0123456789ABCDEFGHIJKLMNOPQRSTUV".to_string()
-    } else {
-        // Simple range expansion logic
-        let mut result = String::new();
-        let chars: Vec<char> = alphabet.chars().collect();
-        let mut i = 0;
-        while i < chars.len() {
-            if i + 2 < chars.len() && chars[i + 1] == '-' {
-                let start = chars[i] as u32;
-                let end = chars[i + 2] as u32;
-                for code in start..=end {
-                    result.push(std::char::from_u32(code).unwrap());
-                }
-                i += 3;
-            } else {
-                if chars[i] != '=' {
-                    result.push(chars[i]);
-                }
-                i += 1;
-            }
-        }
-        result
-    }
+    crate::alphabet::expand_alphabet_without_padding(alphabet)
 }

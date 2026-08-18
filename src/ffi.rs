@@ -67,9 +67,15 @@ struct ArgMetadata {
  */
 #[no_mangle]
 pub extern "C" fn rxchef_list_operations() -> *mut c_char {
-    let names = operation_names();
-    let joined = names.join(";");
-    CString::new(joined).unwrap_or_default().into_raw()
+    // Panics must not cross `extern "C"`: unwinding into a foreign
+    // frame is undefined behaviour. A panic is reported to the caller as
+    // the same failure value this function already uses.
+    ffi_boundary(|| {
+        let names = operation_names();
+        let joined = names.join(";");
+        CString::new(joined).unwrap_or_default().into_raw()
+    })
+    .unwrap_or(ptr::null_mut())
 }
 
 /// Returns JSON metadata for an operation.
@@ -78,33 +84,39 @@ pub extern "C" fn rxchef_list_operations() -> *mut c_char {
 /// The caller must ensure op_name is a valid null-terminated C string.
 #[no_mangle]
 pub unsafe extern "C" fn rxchef_get_metadata(op_name: *const c_char) -> *mut c_char {
-    if op_name.is_null() {
-        return ptr::null_mut();
-    }
-    let name = CStr::from_ptr(op_name).to_string_lossy();
-    let canonical = runtime::resolve_operation_name(&name);
-    let op = match canonical.as_deref().and_then(|n| get_operation(n)) {
-        Some(o) => o,
-        None => return ptr::null_mut(),
-    };
+    // Panics must not cross `extern "C"`: unwinding into a foreign
+    // frame is undefined behaviour. A panic is reported to the caller as
+    // the same failure value this function already uses.
+    ffi_boundary(|| {
+        if op_name.is_null() {
+            return ptr::null_mut();
+        }
+        let name = CStr::from_ptr(op_name).to_string_lossy();
+        let canonical = runtime::resolve_operation_name(&name);
+        let op = match canonical.as_deref().and_then(|n| get_operation(n)) {
+            Some(o) => o,
+            None => return ptr::null_mut(),
+        };
 
-    let metadata = OpMetadata {
-        name: op.name().to_string(),
-        module: op.module().to_string(),
-        description: op.description().to_string(),
-        args: op
-            .args_schema()
-            .iter()
-            .map(|a| ArgMetadata {
-                name: a.name.to_string(),
-                description: a.description.to_string(),
-                default_value: a.default_value.to_string(),
-            })
-            .collect(),
-    };
+        let metadata = OpMetadata {
+            name: op.name().to_string(),
+            module: op.module().to_string(),
+            description: op.description().to_string(),
+            args: op
+                .args_schema()
+                .iter()
+                .map(|a| ArgMetadata {
+                    name: a.name.to_string(),
+                    description: a.description.to_string(),
+                    default_value: a.default_value.to_string(),
+                })
+                .collect(),
+        };
 
-    let json = serde_json::to_string(&metadata).unwrap_or_default();
-    CString::new(json).unwrap_or_default().into_raw()
+        let json = serde_json::to_string(&metadata).unwrap_or_default();
+        CString::new(json).unwrap_or_default().into_raw()
+    })
+    .unwrap_or(ptr::null_mut())
 }
 
 /**
@@ -113,30 +125,36 @@ pub unsafe extern "C" fn rxchef_get_metadata(op_name: *const c_char) -> *mut c_c
  */
 #[no_mangle]
 pub extern "C" fn rxchef_get_all_metadata() -> *mut c_char {
-    let names = operation_names();
-    let mut all_meta = Vec::with_capacity(names.len());
+    // Panics must not cross `extern "C"`: unwinding into a foreign
+    // frame is undefined behaviour. A panic is reported to the caller as
+    // the same failure value this function already uses.
+    ffi_boundary(|| {
+        let names = operation_names();
+        let mut all_meta = Vec::with_capacity(names.len());
 
-    for name in names {
-        if let Some(op) = get_operation(&name) {
-            all_meta.push(OpMetadata {
-                name: op.name().to_string(),
-                module: op.module().to_string(),
-                description: op.description().to_string(),
-                args: op
-                    .args_schema()
-                    .iter()
-                    .map(|a| ArgMetadata {
-                        name: a.name.to_string(),
-                        description: a.description.to_string(),
-                        default_value: a.default_value.to_string(),
-                    })
-                    .collect(),
-            });
+        for name in names {
+            if let Some(op) = get_operation(&name) {
+                all_meta.push(OpMetadata {
+                    name: op.name().to_string(),
+                    module: op.module().to_string(),
+                    description: op.description().to_string(),
+                    args: op
+                        .args_schema()
+                        .iter()
+                        .map(|a| ArgMetadata {
+                            name: a.name.to_string(),
+                            description: a.description.to_string(),
+                            default_value: a.default_value.to_string(),
+                        })
+                        .collect(),
+                });
+            }
         }
-    }
 
-    let json = serde_json::to_string(&all_meta).unwrap_or_default();
-    CString::new(json).unwrap_or_default().into_raw()
+        let json = serde_json::to_string(&all_meta).unwrap_or_default();
+        CString::new(json).unwrap_or_default().into_raw()
+    })
+    .unwrap_or(ptr::null_mut())
 }
 
 /// Analyzes input to suggest operations.
@@ -145,14 +163,20 @@ pub extern "C" fn rxchef_get_all_metadata() -> *mut c_char {
 /// The caller must ensure input_data is valid for input_len bytes.
 #[no_mangle]
 pub unsafe extern "C" fn rxchef_magic(input_data: *const c_uchar, input_len: usize) -> *mut c_char {
-    let input = if input_len > 0 && !input_data.is_null() {
-        slice::from_raw_parts(input_data, input_len)
-    } else {
-        &[]
-    };
-    let results = crate::magic::magic(input, &crate::magic::MagicOptions::default());
-    let json = serde_json::to_string(&results).unwrap_or_default();
-    CString::new(json).unwrap_or_default().into_raw()
+    // Panics must not cross `extern "C"`: unwinding into a foreign
+    // frame is undefined behaviour. A panic is reported to the caller as
+    // the same failure value this function already uses.
+    ffi_boundary(|| {
+        let input = if input_len > 0 && !input_data.is_null() {
+            slice::from_raw_parts(input_data, input_len)
+        } else {
+            &[]
+        };
+        let results = crate::magic::magic(input, &crate::magic::MagicOptions::default());
+        let json = serde_json::to_string(&results).unwrap_or_default();
+        CString::new(json).unwrap_or_default().into_raw()
+    })
+    .unwrap_or(ptr::null_mut())
 }
 
 /// Frees a string allocated by Rust.
@@ -161,9 +185,13 @@ pub unsafe extern "C" fn rxchef_magic(input_data: *const c_uchar, input_len: usi
 /// The caller must ensure s was allocated by Rust and not already freed.
 #[no_mangle]
 pub unsafe extern "C" fn rxchef_free_string(s: *mut c_char) {
-    if !s.is_null() {
-        let _ = CString::from_raw(s);
-    }
+    // Panics must not cross `extern "C"`: unwinding into a foreign
+    // frame is undefined behaviour.
+    let _ = ffi_boundary(|| {
+        if !s.is_null() {
+            let _ = CString::from_raw(s);
+        }
+    });
 }
 
 /// Creates a string argument for rxchef.
@@ -172,12 +200,18 @@ pub unsafe extern "C" fn rxchef_free_string(s: *mut c_char) {
 /// The caller must ensure s is a valid null-terminated C string.
 #[no_mangle]
 pub unsafe extern "C" fn rxchef_arg_str(s: *const c_char) -> *mut ArgValue {
-    if s.is_null() {
-        return ptr::null_mut();
-    }
-    let c_str = CStr::from_ptr(s);
-    let string = c_str.to_string_lossy().into_owned();
-    Box::into_raw(Box::new(ArgValue::Str(string)))
+    // Panics must not cross `extern "C"`: unwinding into a foreign
+    // frame is undefined behaviour. A panic is reported to the caller as
+    // the same failure value this function already uses.
+    ffi_boundary(|| {
+        if s.is_null() {
+            return ptr::null_mut();
+        }
+        let c_str = CStr::from_ptr(s);
+        let string = c_str.to_string_lossy().into_owned();
+        Box::into_raw(Box::new(ArgValue::Str(string)))
+    })
+    .unwrap_or(ptr::null_mut())
 }
 
 /**
@@ -187,10 +221,16 @@ pub unsafe extern "C" fn rxchef_arg_str(s: *const c_char) -> *mut ArgValue {
  */
 #[no_mangle]
 pub extern "C" fn rxchef_arg_num(n: f64) -> *mut ArgValue {
-    if !n.is_finite() {
-        return ptr::null_mut();
-    }
-    Box::into_raw(Box::new(ArgValue::Num(n)))
+    // Panics must not cross `extern "C"`: unwinding into a foreign
+    // frame is undefined behaviour. A panic is reported to the caller as
+    // the same failure value this function already uses.
+    ffi_boundary(|| {
+        if !n.is_finite() {
+            return ptr::null_mut();
+        }
+        Box::into_raw(Box::new(ArgValue::Num(n)))
+    })
+    .unwrap_or(ptr::null_mut())
 }
 
 /**
@@ -200,7 +240,10 @@ pub extern "C" fn rxchef_arg_num(n: f64) -> *mut ArgValue {
  */
 #[no_mangle]
 pub extern "C" fn rxchef_arg_bool(b: bool) -> *mut ArgValue {
-    Box::into_raw(Box::new(ArgValue::Bool(b)))
+    // Panics must not cross `extern "C"`: unwinding into a foreign
+    // frame is undefined behaviour. A panic is reported to the caller as
+    // the same failure value this function already uses.
+    ffi_boundary(|| Box::into_raw(Box::new(ArgValue::Bool(b)))).unwrap_or(ptr::null_mut())
 }
 
 /// Creates a byte array argument for rxchef.
@@ -209,15 +252,21 @@ pub extern "C" fn rxchef_arg_bool(b: bool) -> *mut ArgValue {
 /// The caller must ensure data is valid for length bytes.
 #[no_mangle]
 pub unsafe extern "C" fn rxchef_arg_bytes(data: *const c_uchar, length: usize) -> *mut ArgValue {
-    if data.is_null() && length > 0 {
-        return ptr::null_mut();
-    }
-    let slice = if length > 0 {
-        slice::from_raw_parts(data, length)
-    } else {
-        &[]
-    };
-    Box::into_raw(Box::new(ArgValue::Bytes(slice.to_vec())))
+    // Panics must not cross `extern "C"`: unwinding into a foreign
+    // frame is undefined behaviour. A panic is reported to the caller as
+    // the same failure value this function already uses.
+    ffi_boundary(|| {
+        if data.is_null() && length > 0 {
+            return ptr::null_mut();
+        }
+        let slice = if length > 0 {
+            slice::from_raw_parts(data, length)
+        } else {
+            &[]
+        };
+        Box::into_raw(Box::new(ArgValue::Bytes(slice.to_vec())))
+    })
+    .unwrap_or(ptr::null_mut())
 }
 
 /// Frees an ArgValue.
@@ -226,9 +275,13 @@ pub unsafe extern "C" fn rxchef_arg_bytes(data: *const c_uchar, length: usize) -
 /// The caller must ensure arg was allocated by rxchef_arg_* functions.
 #[no_mangle]
 pub unsafe extern "C" fn rxchef_free_arg(arg: *mut ArgValue) {
-    if !arg.is_null() {
-        let _ = Box::from_raw(arg);
-    }
+    // Panics must not cross `extern "C"`: unwinding into a foreign
+    // frame is undefined behaviour.
+    let _ = ffi_boundary(|| {
+        if !arg.is_null() {
+            let _ = Box::from_raw(arg);
+        }
+    });
 }
 
 /// Executes an rxchef operation.
@@ -455,14 +508,18 @@ mod tests {
 /// The caller must ensure res was allocated by rxchef_run.
 #[no_mangle]
 pub unsafe extern "C" fn rxchef_free_result(res: *mut RxChefResult) {
-    if res.is_null() {
-        return;
-    }
-    let result = Box::from_raw(res);
-    if !result.data.is_null() {
-        let _ = Vec::from_raw_parts(result.data, result.length, result.capacity);
-    }
-    if !result.error.is_null() {
-        let _ = CString::from_raw(result.error);
-    }
+    // Panics must not cross `extern "C"`: unwinding into a foreign
+    // frame is undefined behaviour.
+    let _ = ffi_boundary(|| {
+        if res.is_null() {
+            return;
+        }
+        let result = Box::from_raw(res);
+        if !result.data.is_null() {
+            let _ = Vec::from_raw_parts(result.data, result.length, result.capacity);
+        }
+        if !result.error.is_null() {
+            let _ = CString::from_raw(result.error);
+        }
+    });
 }

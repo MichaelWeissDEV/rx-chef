@@ -74,7 +74,8 @@ Excluded from the committed representative benchmark set: No stable representati
 
 ## Known limitations
 
-- Only the Standard compression format is implemented; Base64, UTF16 and EncodedURIComponent are declared and rejected with an InvalidArgument error rather than produced.
+- The Standard format emits raw UTF-16 code units, so compressing text containing astral-plane characters produces lone surrogates that cannot be represented in UTF-8 output and is reported as an error. The UTF16, Base64 and EncodedURIComponent formats are unaffected.
+- The EncodedURIComponent format is an lz-string feature that upstream CyberChef does not expose, so it has no parity reference.
 
 ## References
 

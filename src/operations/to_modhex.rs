@@ -33,9 +33,12 @@ impl Operation for ToModhex {
     fn args_schema(&self) -> &'static [ArgSchema] {
         static SCHEMA: &[ArgSchema] = &[
             ArgSchema {
+                // Upstream lists "Space" first in TO_MODHEX_DELIM_OPTIONS,
+                // so that is its default. `From Modhex` defaults to "Auto",
+                // which accepts any delimiter, so the roundtrip still holds.
                 name: "Delimiter",
                 description: "Delimiter between modhex pairs (None, Space, Comma, Semi-colon, Colon, Line feed, CRLF)",
-                default_value: "None",
+                default_value: "Space",
                 kind: crate::operation::ArgKind::Enum,
                 required: false,
                 choices: &["None", "Space", "Comma", "Semi-colon", "Colon", "Line feed", "CRLF"],

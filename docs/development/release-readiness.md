@@ -57,6 +57,10 @@ case, so a specification vector can no longer be mistaken for CyberChef parity.
 | `To Base64` | Its alphabet expansion was a literal substring replacement for the standard alphabet only, so it **rejected `A-Za-z0-9-_`** — an alphabet `From Base64` accepted and upstream supports — with "Must be 64 chars". Encoding and decoding disagreed about which alphabets exist. It also padded unconditionally, emitting `=` for alphabets that contain no padding character. |
 | `XXTEA Decrypt` | `to_uint8_array` computed `n - 3` after `n` had already been reduced to 0 for a single-word ciphertext, **panicking on a one-byte input**. |
 | `PHP Deserialize` | The serialized byte length was used to slice a `&str`, **panicking** when it landed inside a multi-byte character. Four `0xFF` bytes were enough to reach it. |
+| `Disassemble ARM` | Same defect class as `PHP Deserialize`: the hex input was sliced as a `&str` by byte offset. Non-ASCII input becomes three-byte U+FFFD replacement characters, so the length stayed even while the slice landed inside a character and **panicked**. Only reachable with `--features disassembly`, which is why the default-feature sweep did not find it. |
+| `LZString Compress` / `Decompress` | Two defects. The bit packer **hardcoded 16 bits per output character**, so three of the four declared formats could not be produced. And both directions iterated Unicode *scalar values* where lz-string works on **UTF-16 code units**: an astral character was truncated (`😀` U+1F600 came back as U+F600) and upstream's own stream for such input could not be decompressed at all. All four formats now work and non-BMP input is byte-identical with upstream. |
+| `From Modhex` | Its `Auto` delimiter was accepted by the decoder's match but stripped nothing, so delimited input was rejected as an invalid modhex character. `Auto` is upstream's default; it now keeps only modhex symbols, which let `To Modhex`'s default be aligned to upstream's `Space` without breaking the roundtrip. |
+| `src/ffi.rs` | `ffi_boundary` (a `catch_unwind` wrapper) existed but only `rxchef_run` used it. The other **11 `extern "C"` entry points were unguarded**, including `rxchef_magic`, which runs the detection engine over arbitrary caller bytes. Unwinding across `extern "C"` is undefined behaviour. All 12 are now guarded, enforced by a test. |
 
 ### Drift
 
@@ -127,8 +131,11 @@ numbers — and fails if any of them panics. A panic crosses the FFI boundary as
 undefined behaviour, aborts the JSONL server mid-session, and kills the CLI
 without an exit code a caller can act on.
 
-The sweep found two reachable panics on first run (`XXTEA Decrypt` and
-`PHP Deserialize`, both above). It is now green. `src/operations` contains no
+The sweep found two reachable panics on first run under default features
+(`XXTEA Decrypt` and `PHP Deserialize`) and a third once it was run with
+`--all-features` (`Disassemble ARM`) — a reminder that a default-feature sweep
+does not cover the optional integrations. All three are fixed and the sweep is
+green in both configurations. `src/operations` contains no
 `todo!`, `unimplemented!` or `panic!`; the remaining `unwrap()` calls were not
 reached by any input in the sweep.
 
@@ -245,13 +252,13 @@ every `RXCHEF_BUG` must be marked fixed, and operations may not repeat.
 
 ```text
 EXACT                        168
-NOT_COMPARABLE               250
+NOT_COMPARABLE               249
 VALID_SEMANTIC_DIFFERENCE     17
 NONDETERMINISTIC              15
-RXCHEF_BUG                     8   (all fixed; a test enforces this)
+RXCHEF_BUG                    10   (all fixed; a test enforces this)
 ARGUMENT_MAPPING_DIFFERENCE    6
 REFERENCE_CAPTURE_BUG          6
-DEFAULT_MAPPING_DIFFERENCE     4
+DEFAULT_MAPPING_DIFFERENCE     3
 UNSUPPORTED_UPSTREAM_MODE      3
 ```
 
@@ -325,26 +332,84 @@ against an observed value, and `url_encode` is back to `Exact` parity.
 
 ## Operation quality
 
+### The correctness dimension is derived, not declared
+
+`implementation_status` is a trait method that returned `Partial` for **all 478**
+operations — not as a judgement, but because it is the trait default and nobody
+ever set it. 473 of them carried a benchmark skip reason reading *"operation
+remains Partial until performance evidence is reviewed"*, conflating how fast an
+operation is with whether it is correct.
+
+Correctness is now computed by the audit from evidence in the repository:
+
+```text
+unverified          no executable tests
+partially_verified  tests exist, but negative / boundary / independent
+                    reference evidence is incomplete
+verified            executable tests covering normal, negative and boundary
+                    input, plus at least one independent reference
+                    (known-answer or differential)
+```
+
+A verdict that can be raised by editing a line is not evidence, so this one can
+only be raised by adding tests. Each operation also carries a
+`correctness_gaps` list naming exactly what it still needs, which is what makes
+the remaining work enumerable instead of estimated.
+
+### Progress
+
+```text
+TOTAL:        478
+VERIFIED:      50
+PARTIAL:      411
+UNVERIFIED:    17
+
+gaps: 278 need negative tests
+      220 need boundary tests
+      253 need independent reference evidence
+```
+
+### Bulk differential capture
+
+The single largest gap was independent reference evidence. Rather than writing
+fixtures by hand, every loadable upstream operation was run against five
+standard probes — normal text, empty, UTF-8, binary and a single byte — under
+each side's own defaults, and rx-chef was run on the same inputs. Only the
+pairs that agreed were recorded, since an agreement is the evidence:
+
+```text
+1363  upstream outputs captured across 475 operations
+ 845  agreeing rx-chef/upstream pairs across 223 operations
+ 672  new fixture cases (the rest already had one)
+```
+
+The fixture now holds **863 cases**. Differential evidence rose from 173 to 225
+operations. The 232 disagreements and 204 rx-chef errors from that sweep are
+covered by the triage below rather than left as a number.
+
+
+
 From `cargo run -p xtask -- audit-operations`:
 
 ```text
 registered                   478
-with executable tests        456
-test functions total        1903   (attributes in source)
-with negative tests          195
-with boundary tests          253
+correctness: verified         50
+correctness: partial         411
+correctness: unverified       17
+with executable tests        461
+test functions total        1966   (attributes in source)
+with negative tests          200
+with boundary tests          258
 reference-verified (KAT)      22
-differential-verified        173
+differential-verified        225
 parity exact                 171
-parity compatible              5
-parity documented difference   1
 parity unverified            301
 documented divergences         2
-tests asserting only success  53
+tests asserting only success  56
 ```
 
-Differential fixture: **182 EXACT, 3 COMPATIBLE, 1 DOCUMENTED_DIFFERENCE,
-2 NOT_COMPARABLE**.
+Differential fixture: **857 EXACT, 3 COMPATIBLE, 1 DOCUMENTED_DIFFERENCE,
+2 NOT_COMPARABLE** across 863 cases.
 
 The 22 operations without executable tests each carry a reviewed
 `untested_reason` in `verification/operations.json` — network I/O, feature-gated
@@ -374,6 +439,24 @@ scripts/release-check-linux.sh --host   # portable subset on this machine
 Both print `RX-CHEF RELEASE CHECK: PASS` only when every gate passed. Host mode
 lists the Linux-only gates it skipped rather than dropping them silently. Every
 gate runs even after one fails, so the summary reports all failures at once.
+
+**Last container run**: every gate passed except `all-features tests`, which
+did not fail on a test — the linker was OOM-killed:
+
+```text
+collect2: fatal error: ld terminated with signal 9 [Killed]
+```
+
+Docker Desktop on the development host allocates 7.65 GiB, and linking the
+all-features build (1891 crates in the dependency graph, against 1461 for the
+default set) exceeds it. The same suite passes natively on the host: 2101 tests
+across 16 targets, `cargo test --workspace --all-features`, zero failures. This
+is an environment limit, not a code defect; raising the container's memory
+allocation is the fix, and the run is pending.
+
+Everything else in the container passed, including all-features **check**,
+both clippy passes, the FFI C compile/link/run, `cargo package`, `cargo install`
+and the installed-CLI smoke test.
 
 The hardcoded `jq -e "length == 478"` operation-count check was replaced with a
 count derived from the audit output.
@@ -407,46 +490,40 @@ push:
 
 **P1**
 
-* 301 operations have unverified CyberChef parity. The harness, the capture
-  tool and the triage all exist; the fixture needs cases for the operations the
-  default sweep could not compare.
-* Ten operations carry an unresolved mapping difference: four
-  `DEFAULT_MAPPING_DIFFERENCE` (`To Modhex`, `GOST Hash`, `CTPH`,
-  `Swap endianness`) and six `ARGUMENT_MAPPING_DIFFERENCE` (`Bifid Cipher`
-  encode/decode, `Enigma`, `Typex`, `Generate HOTP`, `Generate all checksums`).
-  Each has a stated cause in `verification/differential-triage.json`; none is a
-  confirmed defect.
-* `To Modhex` cannot be aligned to upstream's `Space` default until
-  `From Modhex` supports an `Auto` delimiter — changing only the encoder would
-  break the working default roundtrip, and adding `Auto` is a feature.
-* `Generate all checksums` emits five checksums where upstream emits the full
-  CRC catalogue. This is a coverage gap, not a wrong value.
-* 53 test functions assert only that an operation succeeded. The largest
-  remaining groups are `Bzip2 Compress`, `Cartesian Product`,
-  `ECDSA Signature Conversion` and `ELF Info` (4 each).
-* The remote GitHub Actions run has **not been verified**: the workflow trigger
-  is fixed, but no authenticated `gh` session was available to confirm the jobs
-  start and pass.
-
-* **FFI panic containment is incomplete.** `src/ffi.rs` defines an
-  `ffi_boundary` helper that wraps a call in `catch_unwind`, but only
-  `rxchef_run` uses it — the other 11 `extern "C"` entry points are unguarded,
-  including `rxchef_magic`, which runs the detection engine over arbitrary
-  caller-supplied bytes. Unwinding across `extern "C"` is undefined behaviour.
-  This round removed the two panics reachable from operation input, so no
-  concrete crash path is known today, but the guard is missing as defence in
-  depth. Fix: route every entry point through `ffi_boundary`.
+* **The operations audit is 10% complete by the derived correctness measure.**
+  50 of 478 operations are `verified`, 411 `partially_verified`, 17
+  `unverified`. The gaps are enumerable, not estimated: 278 operations need
+  negative tests, 220 need boundary tests, 253 need independent reference
+  evidence. `docs/_generated/operation-quality.json` names the exact gap list
+  per operation.
+* **17 operations still have no executable tests.** Each carries a reviewed
+  `untested_reason`: PGP (4, feature-gated and needing key fixtures), TLS/SSH
+  fingerprints (5, needing captured handshakes), GOST key wrap and sign (2,
+  needing published vectors), `Lorenz`, `Fuzzy Match`, `Heatmap chart`,
+  `Parse X.509 CRL`, `HTTP request` (live network) and `Play Media` (browser
+  host).
+* 301 operations have unverified CyberChef parity. The `parity()` metadata is
+  a separate, stricter claim than differential evidence: it is only raised for
+  operations with a recorded differential case *and* a reviewed decision.
+* Nine operations carry an unresolved mapping difference, each with a stated
+  cause in `verification/differential-triage.json`; none is a confirmed defect.
+* The remote GitHub Actions run has **not been verified** — no authenticated
+  `gh` session was available.
+* The all-features gate in the Linux container is **pending**: the linker is
+  OOM-killed at Docker's 7.65 GiB allocation. The same suite passes natively.
 
 **P2**
 
-* `LZString Compress` implements only the `Standard` output format. Base64,
-  UTF16 and EncodedURIComponent are declared and rejected with a structured
-  error rather than silently producing a Standard-format stream. This is now
-  recorded in the operation's `known_limitations()`, so it appears in the
-  generated documentation and the audit rather than being discovered at
-  runtime.
-* `from_base32` still keeps its own `expand_base32_alphabet`; the Base64 and
-  Base85 pairs now share `src/alphabet.rs`.
+* `LZString Compress` implements all four formats. Two limitations remain
+  recorded in `known_limitations()`: the Standard format emits raw UTF-16 code
+  units, so astral input yields lone surrogates that UTF-8 cannot hold and is
+  reported as an error (the other three formats are unaffected); and
+  `EncodedURIComponent` has no upstream counterpart, so it has no parity
+  reference.
+All six Base-N operations now share `src/alphabet.rs`. `from_base32`'s local
+copy also special-cased the two standard alphabets — both of which the general
+path produces identically — and reached `char::from_u32(..).unwrap()`, which
+panics on surrogate code points from a caller-supplied range.
 * The Linux container gate has **not been run in this round** — Docker was
   unavailable on the development host. See below.
 * `cli.rs` still holds every argument group in one module. Splitting it per

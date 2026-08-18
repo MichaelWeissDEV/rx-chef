@@ -120,9 +120,11 @@ fn decompress_generic<F>(length: usize, reset_value: u32, mut get_next_value: F)
 where
     F: FnMut(usize) -> Option<u32>,
 {
-    let mut dictionary: Vec<String> = Vec::new();
-    for i in 0..3 {
-        dictionary.push(i.to_string());
+    let mut dictionary: Vec<Vec<u16>> = Vec::new();
+    for i in 0..3u16 {
+        // Slots 0-2 are placeholders; upstream fills them with the indices
+        // themselves and never emits them as text.
+        dictionary.push(vec![i]);
     }
 
     let mut data_val = get_next_value(0).unwrap_or(0);
@@ -152,21 +154,21 @@ where
     let first_c = match bits {
         0 => read_bits(8, &mut data_val, &mut data_position, &mut data_index),
         1 => read_bits(16, &mut data_val, &mut data_position, &mut data_index),
-        2 => return Some("".to_string()),
+        2 => return Some(String::new()),
         _ => return None,
     };
 
-    let c_str = std::char::from_u32(first_c)?.to_string();
-    dictionary.push(c_str.clone());
-    let mut w = c_str.clone();
-    let mut result = c_str;
+    let first_unit = u16::try_from(first_c).ok()?;
+    dictionary.push(vec![first_unit]);
+    let mut w = vec![first_unit];
+    let mut result: Vec<u16> = vec![first_unit];
 
     let mut enlarge_in = 4;
     let mut num_bits = 3;
 
     loop {
         if data_index > length + 2 {
-            return Some(result);
+            return String::from_utf16(&result).ok();
         }
 
         let cc = read_bits(num_bits, &mut data_val, &mut data_position, &mut data_index);
@@ -175,19 +177,17 @@ where
         match current_c {
             0 => {
                 let val = read_bits(8, &mut data_val, &mut data_position, &mut data_index);
-                let s = std::char::from_u32(val)?.to_string();
-                dictionary.push(s);
+                dictionary.push(vec![u16::try_from(val).ok()?]);
                 current_c = (dictionary.len() - 1) as u32;
                 enlarge_in -= 1;
             }
             1 => {
                 let val = read_bits(16, &mut data_val, &mut data_position, &mut data_index);
-                let s = std::char::from_u32(val)?.to_string();
-                dictionary.push(s);
+                dictionary.push(vec![u16::try_from(val).ok()?]);
                 current_c = (dictionary.len() - 1) as u32;
                 enlarge_in -= 1;
             }
-            2 => return Some(result),
+            2 => return String::from_utf16(&result).ok(),
             _ => {}
         }
 
@@ -199,7 +199,10 @@ where
         let entry = if (current_c as usize) < dictionary.len() {
             dictionary[current_c as usize].clone()
         } else if current_c == (dictionary.len()) as u32 {
-            w.clone() + &w.chars().next().unwrap().to_string()
+            w.iter()
+                .copied()
+                .chain(std::iter::once(w[0]))
+                .collect::<Vec<u16>>()
         } else {
             return None;
         };
@@ -209,8 +212,8 @@ where
         {
             return None;
         }
-        result.push_str(&entry);
-        dictionary.push(w.clone() + &entry.chars().next().unwrap().to_string());
+        result.extend_from_slice(&entry);
+        dictionary.push(w.iter().copied().chain(std::iter::once(entry[0])).collect());
         enlarge_in -= 1;
         w = entry;
 

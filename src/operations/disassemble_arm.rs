@@ -139,15 +139,23 @@ impl Operation for DisassembleArm {
                 ));
             }
 
-            let bytes = (0..hex_input.len())
+            // Slice the bytes, not the `&str`. Non-ASCII input becomes U+FFFD
+            // replacement characters, which are three bytes each: the length
+            // stays even while `hex_input[i..i + 2]` lands inside a character
+            // and panics. Eight 0xFF bytes were enough to reach it.
+            let hex_bytes = hex_input.as_bytes();
+            let invalid_hex = || {
+                OperationError::InvalidInput(
+                    "Invalid hexadecimal input. Please provide valid hex characters only."
+                        .to_string(),
+                )
+            };
+            let bytes = (0..hex_bytes.len())
                 .step_by(2)
                 .map(|i| {
-                    u8::from_str_radix(&hex_input[i..i + 2], 16).map_err(|_| {
-                        OperationError::InvalidInput(
-                            "Invalid hexadecimal input. Please provide valid hex characters only."
-                                .to_string(),
-                        )
-                    })
+                    let pair =
+                        std::str::from_utf8(&hex_bytes[i..i + 2]).map_err(|_| invalid_hex())?;
+                    u8::from_str_radix(pair, 16).map_err(|_| invalid_hex())
                 })
                 .collect::<Result<Vec<u8>, OperationError>>()?;
 

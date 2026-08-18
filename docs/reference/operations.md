@@ -3180,7 +3180,7 @@ Converts a modhex byte string back into its raw value. Modhex is used in YubiKey
 
 | # | Argument | Default | Description |
 |---:|---|---|---|
-| 1 | Delimiter | `None` | Delimiter between modhex pairs (None, Space, Comma, Semi-colon, Colon, Line feed, CRLF) |
+| 1 | Delimiter | `Auto` | Delimiter between modhex pairs (None, Space, Comma, Semi-colon, Colon, Line feed, CRLF) |
 
 ### From Morse Code
 
@@ -4573,7 +4573,7 @@ Converts the input string to modhex bytes separated by the specified delimiter.
 
 | # | Argument | Default | Description |
 |---:|---|---|---|
-| 1 | Delimiter | `None` | Delimiter between modhex pairs (None, Space, Comma, Semi-colon, Colon, Line feed, CRLF) |
+| 1 | Delimiter | `Space` | Delimiter between modhex pairs (None, Space, Comma, Semi-colon, Colon, Line feed, CRLF) |
 | 2 | Bytes per line | `0` | Number of bytes per output line (0 = no limit) |
 
 ### To Morse Code

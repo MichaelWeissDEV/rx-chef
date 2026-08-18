@@ -28,7 +28,7 @@ Declared output type: `Bytes`. Redirect stdout or use `--output-file` for exact 
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Delimiter | `Enum` | no | `None` | None, Space, Comma, Semi-colon, Colon, Line feed, CRLF | no | Delimiter between modhex pairs (None, Space, Comma, Semi-colon, Colon, Line feed, CRLF) |
+| 1 | Delimiter | `Enum` | no | `Auto` | Auto, None, Space, Comma, Semi-colon, Colon, Line feed, CRLF | no | Delimiter between modhex pairs (None, Space, Comma, Semi-colon, Colon, Line feed, CRLF) |
 
 ## Implementation
 
@@ -64,6 +64,9 @@ Declared side effects: `[]`. Treat parser inputs as untrusted and apply executio
 
 Correctness tests:
 - tests/tests/operations/from_modhex.rs
+
+Differential tests:
+- tests/tests/differential.rs
 
 ## Performance classification
 

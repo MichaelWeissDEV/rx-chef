@@ -81,6 +81,10 @@ enum Expectation {
     /// The encodings need not match byte for byte, but both must decode back
     /// to the original input through rx-chef's inverse operation.
     SemanticRoundtrip,
+    /// rx-chef must reject this input. Recorded only where upstream rejects it
+    /// too, so the case pins agreement on *refusal* rather than on a value —
+    /// which is the part a decoder most easily gets wrong by accepting garbage.
+    Rejected,
     NotComparable,
     Unverified,
 }
@@ -89,6 +93,7 @@ enum Expectation {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 enum Verdict {
     Exact,
+    Rejected,
     Compatible,
     DocumentedDifference,
     Mismatch,
@@ -100,6 +105,7 @@ impl fmt::Display for Verdict {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         let text = match self {
             Verdict::Exact => "EXACT",
+            Verdict::Rejected => "REJECTED",
             Verdict::Compatible => "COMPATIBLE",
             Verdict::DocumentedDifference => "DOCUMENTED_DIFFERENCE",
             Verdict::Mismatch => "MISMATCH",
@@ -178,12 +184,27 @@ fn evaluate(case: &Case) -> (Verdict, String) {
 
     let input = case.input_encoding.decode(&case.input);
     let produced = match runtime::run_operation(&case.operation, input, &case.args) {
-        Ok(output) => output,
+        Ok(output) => {
+            if case.expect == Expectation::Rejected {
+                return (
+                    Verdict::Mismatch,
+                    format!(
+                        "rx-chef accepted input that both implementations should reject, \
+                         returning {} byte(s)",
+                        output.len()
+                    ),
+                );
+            }
+            output
+        }
         Err(error) => {
+            if case.expect == Expectation::Rejected {
+                return (Verdict::Rejected, format!("rejected as expected: {error}"));
+            }
             return (
                 Verdict::Mismatch,
                 format!("rx-chef returned an error: {error}"),
-            )
+            );
         }
     };
 

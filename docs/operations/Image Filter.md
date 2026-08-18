@@ -28,7 +28,7 @@ Declared output type: `Bytes`. Redirect stdout or use `--output-file` for exact 
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Filter type | `String` | no | `Greyscale` | — | no | The filter to apply. |
+| 1 | Filter type | `Enum` | no | `Greyscale` | Greyscale, Grayscale, Sepia | no | The filter to apply. |
 
 ## Implementation
 

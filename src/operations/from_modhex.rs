@@ -34,10 +34,11 @@ impl Operation for FromModhex {
         static SCHEMA: &[ArgSchema] = &[ArgSchema {
             name: "Delimiter",
             description: "Delimiter between modhex pairs (None, Space, Comma, Semi-colon, Colon, Line feed, CRLF)",
-            default_value: "None",
+            default_value: "Auto",
             kind: crate::operation::ArgKind::Enum,
             required: false,
-            choices: &["None", "Space", "Comma", "Semi-colon", "Colon", "Line feed", "CRLF"],
+            choices: &[
+                    "Auto","None", "Space", "Comma", "Semi-colon", "Colon", "Line feed", "CRLF"],
             minimum: None,
             maximum: None,
             sensitive: false,
@@ -64,7 +65,16 @@ impl Operation for FromModhex {
         let delim_name = args.first().and_then(|v| v.as_str()).unwrap_or("None");
 
         let clean = match delim_name {
-            "None" | "Auto" => input_str.to_lowercase(),
+            // "Auto" accepts any delimiter by keeping only modhex symbols.
+            // It used to fall through to the "None" arm, which strips nothing,
+            // so a delimited input reached the decoder with its separators
+            // still in place and was rejected as an invalid modhex character.
+            "Auto" => input_str
+                .to_lowercase()
+                .chars()
+                .filter(|character| modhex_val(*character).is_some())
+                .collect::<String>(),
+            "None" => input_str.to_lowercase(),
             "Space" => input_str.replace(' ', "").to_lowercase(),
             "Comma" => input_str.replace(',', "").to_lowercase(),
             "Semi-colon" => input_str.replace(';', "").to_lowercase(),

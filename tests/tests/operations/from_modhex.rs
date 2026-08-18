@@ -34,3 +34,68 @@ fn test_from_modhex_invalid_char() {
     let input = b"zz".to_vec();
     assert!(op.run(input, &[]).is_err());
 }
+
+// ── Auto delimiter ────────────────────────────────────────────────────────
+//
+// "Auto" is upstream's default and rx-chef's now too. It used to share the
+// "None" arm, which strips nothing, so any delimited input was rejected as an
+// invalid modhex character even though the option claimed to detect it.
+
+use rxchef::runtime;
+
+fn to_modhex(input: &[u8], delimiter: &str) -> Vec<u8> {
+    runtime::run_operation(
+        "To Modhex",
+        input.to_vec(),
+        &[delimiter.to_string(), "0".into()],
+    )
+    .expect("encoding must succeed")
+}
+
+fn from_modhex(input: Vec<u8>, delimiter: &str) -> Vec<u8> {
+    runtime::run_operation("From Modhex", input, &[delimiter.to_string()])
+        .expect("decoding must succeed")
+}
+
+#[test]
+fn test_from_modhex_auto_accepts_every_delimiter_the_encoder_emits() {
+    for delimiter in ["None", "Space", "Comma", "Semi-colon", "Colon", "Line feed"] {
+        let encoded = to_modhex(b"foobar", delimiter);
+        assert_eq!(
+            from_modhex(encoded, "Auto"),
+            b"foobar",
+            "Auto failed to decode {delimiter}-delimited modhex"
+        );
+    }
+}
+
+#[test]
+fn test_from_modhex_auto_is_the_default_and_pairs_with_the_encoder_default() {
+    // Both defaults come from upstream: encode with "Space", decode with "Auto".
+    let encoded = runtime::run_operation("To Modhex", b"foobar".to_vec(), &[])
+        .expect("default encode must succeed");
+    assert_eq!(
+        String::from_utf8(encoded.clone()).unwrap(),
+        "hh hv hv hd hb id"
+    );
+    let decoded =
+        runtime::run_operation("From Modhex", encoded, &[]).expect("default decode must succeed");
+    assert_eq!(decoded, b"foobar");
+}
+
+#[test]
+fn test_from_modhex_auto_ignores_unrelated_separators() {
+    // Anything outside the modhex alphabet is treated as separation.
+    assert_eq!(
+        from_modhex(b"hh-hv/hv|hd_hb.id".to_vec(), "Auto"),
+        b"foobar"
+    );
+}
+
+#[test]
+fn test_from_modhex_none_still_requires_an_undelimited_string() {
+    assert!(
+        runtime::run_operation("From Modhex", b"hh hv".to_vec(), &["None".to_string()]).is_err(),
+        "None must not silently strip delimiters"
+    );
+}
