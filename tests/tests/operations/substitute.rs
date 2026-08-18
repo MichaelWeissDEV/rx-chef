@@ -66,4 +66,3 @@ fn test_substitute_escapes() {
     let result = op.run(input, &args).unwrap();
     assert_eq!(String::from_utf8_lossy(&result), "XY");
 }
-

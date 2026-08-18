@@ -1187,18 +1187,6 @@
       "status": "excluded"
     },
     {
-      "operation": "Pseudo-Random Integer Generator",
-      "classification": "NONDETERMINISTIC",
-      "reason": "Operation metadata declares deterministic=False side_effects=['random']; excluded from byte comparison by the harness.",
-      "status": "excluded"
-    },
-    {
-      "operation": "Pseudo-Random Number Generator",
-      "classification": "NONDETERMINISTIC",
-      "reason": "Operation metadata declares deterministic=False side_effects=['random']; excluded from byte comparison by the harness.",
-      "status": "excluded"
-    },
-    {
       "operation": "Shuffle",
       "classification": "NONDETERMINISTIC",
       "reason": "Operation metadata declares deterministic=False side_effects=['random']; excluded from byte comparison by the harness.",
@@ -1304,18 +1292,6 @@
       "operation": "Avro to JSON",
       "classification": "NOT_COMPARABLE",
       "reason": "Upstream could not run in Node for the sweep input: Error parsing Avro file.",
-      "status": "excluded"
-    },
-    {
-      "operation": "BLAKE2b",
-      "classification": "NOT_COMPARABLE",
-      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
-      "status": "excluded"
-    },
-    {
-      "operation": "BLAKE2s",
-      "classification": "NOT_COMPARABLE",
-      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
       "status": "excluded"
     },
     {
@@ -1539,12 +1515,6 @@
       "status": "excluded"
     },
     {
-      "operation": "DES Encrypt",
-      "classification": "NOT_COMPARABLE",
-      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
-      "status": "excluded"
-    },
-    {
       "operation": "DateTime Delta",
       "classification": "NOT_COMPARABLE",
       "reason": "The sweep input 'foobar' is not valid input for this operation; rejecting it is correct behaviour.",
@@ -1568,12 +1538,6 @@
     },
     {
       "operation": "Derive HKDF key",
-      "classification": "NOT_COMPARABLE",
-      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
-      "status": "excluded"
-    },
-    {
-      "operation": "Derive PBKDF2 key",
       "classification": "NOT_COMPARABLE",
       "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
       "status": "excluded"
@@ -2397,12 +2361,6 @@
       "status": "excluded"
     },
     {
-      "operation": "RC4",
-      "classification": "NOT_COMPARABLE",
-      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'parse')",
-      "status": "excluded"
-    },
-    {
       "operation": "RC4 Drop",
       "classification": "NOT_COMPARABLE",
       "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'parse')",
@@ -2525,25 +2483,7 @@
       "status": "excluded"
     },
     {
-      "operation": "SM4 Decrypt",
-      "classification": "NOT_COMPARABLE",
-      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
-      "status": "excluded"
-    },
-    {
-      "operation": "SM4 Encrypt",
-      "classification": "NOT_COMPARABLE",
-      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
-      "status": "excluded"
-    },
-    {
       "operation": "SUB",
-      "classification": "NOT_COMPARABLE",
-      "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
-      "status": "excluded"
-    },
-    {
-      "operation": "Salsa20",
       "classification": "NOT_COMPARABLE",
       "reason": "Upstream could not run in Node for the sweep input: Cannot read properties of undefined (reading 'toLowerCase')",
       "status": "excluded"
@@ -2867,6 +2807,18 @@
       "status": "accepted"
     },
     {
+      "operation": "BLAKE2b",
+      "classification": "RXCHEF_BUG",
+      "reason": "Declared String output while offering a Raw output mode that emits raw octets, so the runtime's output contract rejected that documented mode for any non-UTF-8 result. AES Encrypt and Blowfish Encrypt already declared Bytes; these now match.",
+      "status": "fixed"
+    },
+    {
+      "operation": "BLAKE2s",
+      "classification": "RXCHEF_BUG",
+      "reason": "Declared String output while offering a Raw output mode that emits raw octets, so the runtime's output contract rejected that documented mode for any non-UTF-8 result. AES Encrypt and Blowfish Encrypt already declared Bytes; these now match.",
+      "status": "fixed"
+    },
+    {
       "operation": "Blowfish Decrypt",
       "classification": "RXCHEF_BUG",
       "reason": "ECB mode did not strip PKCS#7 padding although Blowfish Encrypt applies it and the CBC path in the same file removes it, so decryption returned the plaintext with its pad bytes attached. Upstream rejects unpadded input the same way rx-chef now does.",
@@ -2878,6 +2830,18 @@
       "reason": "Declared Number output but returned the raw IEEE-754 bytes of the score, so the runtime output contract rejected every run and the operation was unusable.",
       "reference": "329.4505208333333",
       "rxchef_error": "rxchef: step 1 (Chi Square): operation output violates its declared type: processing failed: operation declared numeric output but produced invalid UTF-8: inval",
+      "status": "fixed"
+    },
+    {
+      "operation": "DES Encrypt",
+      "classification": "RXCHEF_BUG",
+      "reason": "Declared String output while offering a Raw output mode that emits raw octets, so the runtime's output contract rejected that documented mode for any non-UTF-8 result. AES Encrypt and Blowfish Encrypt already declared Bytes; these now match.",
+      "status": "fixed"
+    },
+    {
+      "operation": "Derive PBKDF2 key",
+      "classification": "RXCHEF_BUG",
+      "reason": "The iteration count had no lower bound, so c=0 was silently treated as c=1 and returned a key. RFC 8018 requires a positive integer and upstream rejects it. The schema now enforces a minimum of 1, so the runtime rejects it centrally.",
       "status": "fixed"
     },
     {
@@ -2910,6 +2874,42 @@
       "operation": "PHP Deserialize",
       "classification": "RXCHEF_BUG",
       "reason": "The serialized byte length was used to slice a &str and panicked when it fell inside a multi-byte character; four 0xFF bytes reached it.",
+      "status": "fixed"
+    },
+    {
+      "operation": "Pseudo-Random Integer Generator",
+      "classification": "RXCHEF_BUG",
+      "reason": "Declared String output while offering a Raw output mode that emits raw octets, so the runtime's output contract rejected that documented mode for any non-UTF-8 result. AES Encrypt and Blowfish Encrypt already declared Bytes; these now match.",
+      "status": "fixed"
+    },
+    {
+      "operation": "Pseudo-Random Number Generator",
+      "classification": "RXCHEF_BUG",
+      "reason": "Declared String output while offering a Raw output mode that emits raw octets, so the runtime's output contract rejected that documented mode for any non-UTF-8 result. AES Encrypt and Blowfish Encrypt already declared Bytes; these now match.",
+      "status": "fixed"
+    },
+    {
+      "operation": "RC4",
+      "classification": "RXCHEF_BUG",
+      "reason": "Declared String output while offering a Raw output mode that emits raw octets, so the runtime's output contract rejected that documented mode for any non-UTF-8 result. AES Encrypt and Blowfish Encrypt already declared Bytes; these now match.",
+      "status": "fixed"
+    },
+    {
+      "operation": "SM4 Decrypt",
+      "classification": "RXCHEF_BUG",
+      "reason": "Declared String output while offering a Raw output mode that emits raw octets, so the runtime's output contract rejected that documented mode for any non-UTF-8 result. AES Encrypt and Blowfish Encrypt already declared Bytes; these now match.",
+      "status": "fixed"
+    },
+    {
+      "operation": "SM4 Encrypt",
+      "classification": "RXCHEF_BUG",
+      "reason": "Declared String output while offering a Raw output mode that emits raw octets, so the runtime's output contract rejected that documented mode for any non-UTF-8 result. AES Encrypt and Blowfish Encrypt already declared Bytes; these now match.",
+      "status": "fixed"
+    },
+    {
+      "operation": "Salsa20",
+      "classification": "RXCHEF_BUG",
+      "reason": "Declared String output while offering a Raw output mode that emits raw octets, so the runtime's output contract rejected that documented mode for any non-UTF-8 result. AES Encrypt and Blowfish Encrypt already declared Bytes; these now match.",
       "status": "fixed"
     },
     {

@@ -60,4 +60,3 @@ fn test_empty_input() {
     let result = op.run(b"".to_vec(), &[]).unwrap();
     assert!(result.is_empty());
 }
-

@@ -36,4 +36,3 @@ fn test_convert_to_leet_uppercase() {
     let output = String::from_utf8(result).unwrap();
     assert_eq!(output, "H3LL0");
 }
-

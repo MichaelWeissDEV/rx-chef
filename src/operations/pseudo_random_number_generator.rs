@@ -66,7 +66,12 @@ impl Operation for PseudoRandomNumberGenerator {
     }
 
     fn output_type(&self) -> DataType {
-        DataType::String
+        // Bytes, not String: the "Raw" output mode emits the cipher's/digest's
+        // raw octets, which are not valid UTF-8 in general. Declaring String
+        // made the runtime's output contract reject that documented mode for
+        // any binary result. `AES Encrypt` and `Blowfish Encrypt` already
+        // declare Bytes for the same reason.
+        DataType::Bytes
     }
 
     /// Generates fresh random bytes on every run.

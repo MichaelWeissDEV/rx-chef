@@ -134,7 +134,7 @@ fn test_from_morse_code_malformed() {
     let op = FromMorseCode;
     let args = [
         rxchef::operation::ArgValue::Str("Space".to_string()),
-        rxchef::operation::ArgValue::Str("Line feed".to_string())
+        rxchef::operation::ArgValue::Str("Line feed".to_string()),
     ];
     let result = op.run(vec![0xff, 0xff], &args);
     assert!(result.is_err());

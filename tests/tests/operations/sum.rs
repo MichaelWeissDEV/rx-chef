@@ -42,4 +42,3 @@ fn test_sum_skips_non_numbers() {
         .unwrap();
     assert_eq!(String::from_utf8(result).unwrap(), "3");
 }
-

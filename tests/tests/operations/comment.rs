@@ -22,4 +22,3 @@ fn test_comment_with_text() {
     let result = op.run(input.clone(), &args).unwrap();
     assert_eq!(result, input);
 }
-

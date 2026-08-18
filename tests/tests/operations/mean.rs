@@ -46,4 +46,3 @@ fn test_mean_single() {
         .unwrap();
     assert_eq!(String::from_utf8(result).unwrap(), "42");
 }
-

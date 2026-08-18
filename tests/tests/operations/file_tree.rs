@@ -19,4 +19,3 @@ fn test_file_tree() {
     let expected = "home\n|---user\n|   |---docs\n|   |   |---file1.txt\n|   |---pics\n|   |   |---img1.jpg\nvar\n|---log\n|   |---syslog";
     assert_eq!(out, expected);
 }
-

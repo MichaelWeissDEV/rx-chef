@@ -52,7 +52,7 @@ fn test_from_float_invalid_chars() {
     let args = [
         rxchef::operation::ArgValue::Str("Space".to_string()),
         rxchef::operation::ArgValue::Str("Float".to_string()),
-        rxchef::operation::ArgValue::Str("Big Endian".to_string())
+        rxchef::operation::ArgValue::Str("Big Endian".to_string()),
     ];
     let result = op.run(b"abc".to_vec(), &args);
     assert!(result.is_err());

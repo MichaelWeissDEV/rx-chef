@@ -35,4 +35,3 @@ fn test_power_set_single() {
     let output = String::from_utf8(result).unwrap();
     assert!(output.contains("a"));
 }
-

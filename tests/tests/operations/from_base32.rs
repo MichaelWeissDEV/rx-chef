@@ -79,7 +79,10 @@ fn test_from_base32_invalid_chars() {
     use rxchef::operations::from_base32::FromBase32;
     use rxchef::Operation;
     let op = FromBase32;
-    let args = [rxchef::operation::ArgValue::Str("Standard".to_string()), rxchef::operation::ArgValue::Bool(false)];
+    let args = [
+        rxchef::operation::ArgValue::Str("Standard".to_string()),
+        rxchef::operation::ArgValue::Bool(false),
+    ];
     let result = op.run(b"!!!!".to_vec(), &args);
     assert!(result.is_err());
 }

@@ -60,5 +60,3 @@ fn test_from_quoted_printable_space_encoding() {
     let decoded = result.unwrap();
     assert_eq!(String::from_utf8_lossy(&decoded), "Hello World");
 }
-
-

@@ -29,4 +29,3 @@ fn test_mime_decoding_mixed() {
         "Subject: Test Message and more"
     );
 }
-

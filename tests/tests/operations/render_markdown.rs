@@ -66,4 +66,3 @@ fn test_render_markdown_highlights_fenced_code() {
     assert!(html.contains("rxchef-number\">42"));
     assert!(html.contains("rxchef-comment\">// value"));
 }
-

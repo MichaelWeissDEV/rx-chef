@@ -65,4 +65,3 @@ fn test_default_args_is_named_entities_non_convert_all() {
     let result = op.run(b"<b>".to_vec(), &[]).unwrap();
     assert_eq!(String::from_utf8(result).unwrap(), "&lt;b&gt;");
 }
-

@@ -605,7 +605,7 @@ DES is a previously dominant algorithm for encryption, and was published as an o
 DES is a previously dominant algorithm for encryption, and was published as an official U.S. Federal Information Processing Standard (FIPS). It is now considered to be insecure due to its small key size.<br><br><b>Key:</b> DES uses a key length of 8 bytes (64 bits).<br><br>You can generate a password-based key using one of the KDF operations.<br><br><b>IV:</b> The Initialization Vector should be 8 bytes long. If not entered, it will default to 8 null bytes.<br><br><b>Padding:</b> In CBC and ECB mode, PKCS#7 padding will be used.
 
 - Input: `String`
-- Output: `String`
+- Output: `Bytes`
 - CLI: `rxchef run "DES Encrypt"`
 
 | # | Argument | Default | Description |
@@ -833,7 +833,7 @@ Generate an RSA key pair with a given number of bits.
 A cryptographically-secure pseudo-random number generator (PRNG). Generates random integers within a specified range. The supported range of integers is from -(2^53 - 1) to (2^53 - 1).
 
 - Input: `String`
-- Output: `String`
+- Output: `Bytes`
 - CLI: `rxchef run "Pseudo-Random Integer Generator"`
 
 | # | Argument | Default | Description |
@@ -849,7 +849,7 @@ A cryptographically-secure pseudo-random number generator (PRNG). Generates rand
 A cryptographically-secure pseudo-random number generator (PRNG). This operation uses a cryptographically secure RNG.
 
 - Input: `String`
-- Output: `String`
+- Output: `Bytes`
 - CLI: `rxchef run "Pseudo-Random Number Generator"`
 
 | # | Argument | Default | Description |
@@ -892,7 +892,7 @@ RC2 (also known as ARC2) is a symmetric-key block cipher designed by Ron Rivest 
 RC4 (also known as ARC4) is a widely-used stream cipher designed by Ron Rivest. It is used in popular protocols such as SSL and WEP. Although remarkable for its simplicity and speed, the algorithm's history doesn't inspire confidence in its security.
 
 - Input: `Bytes`
-- Output: `String`
+- Output: `Bytes`
 - CLI: `rxchef run "RC4"`
 
 | # | Argument | Default | Description |
@@ -1098,7 +1098,7 @@ Encodes Strings using the Rail fence Cipher provided a key and an offset.
 SM4 is a 128-bit block cipher, currently established as a national standard (GB/T 32907-2016) of China. Multiple block cipher modes are supported. When using CBC or ECB mode, the PKCS#7 padding scheme is used.
 
 - Input: `String`
-- Output: `String`
+- Output: `Bytes`
 - CLI: `rxchef run "SM4 Decrypt"`
 
 | # | Argument | Default | Description |
@@ -1114,7 +1114,7 @@ SM4 is a 128-bit block cipher, currently established as a national standard (GB/
 SM4 is a 128-bit block cipher, currently established as a national standard (GB/T 32907-2016) of China. Multiple block cipher modes are supported. When using CBC or ECB mode, the PKCS#7 padding scheme is used.
 
 - Input: `String`
-- Output: `String`
+- Output: `Bytes`
 - CLI: `rxchef run "SM4 Encrypt"`
 
 | # | Argument | Default | Description |
@@ -1130,7 +1130,7 @@ SM4 is a 128-bit block cipher, currently established as a national standard (GB/
 Salsa20 is a stream cipher designed by Daniel J. Bernstein and submitted to the eSTREAM project; Salsa20/8 and Salsa20/12 are round-reduced variants. It is closely related to the ChaCha stream cipher.<br><br><b>Key:</b> Salsa20 uses a key of 16 or 32 bytes (128 or 256 bits).<br><br><b>Nonce:</b> Salsa20 uses a nonce of 8 bytes (64 bits).<br><br><b>Counter:</b> Salsa uses a counter of 8 bytes (64 bits). The counter starts at zero at the start of the keystream, and is incremented at every 64 bytes.
 
 - Input: `String`
-- Output: `String`
+- Output: `Bytes`
 - CLI: `rxchef run "Salsa20"`
 
 | # | Argument | Default | Description |
@@ -5031,7 +5031,7 @@ Render a template with Handlebars/Mustache substituting variables using JSON inp
 Performs BLAKE2b hashing on the input. BLAKE2b is a flavour of the BLAKE cryptographic hash function that is optimized for 64-bit platforms and produces digests of any size between 1 and 64 bytes. Supports the use of an optional key.
 
 - Input: `Bytes`
-- Output: `String`
+- Output: `Bytes`
 - CLI: `rxchef run "BLAKE2b"`
 
 | # | Argument | Default | Description |
@@ -5045,7 +5045,7 @@ Performs BLAKE2b hashing on the input. BLAKE2b is a flavour of the BLAKE cryptog
 Performs BLAKE2s hashing on the input. BLAKE2s is a flavour of the BLAKE cryptographic hash function that is optimized for 8- to 32-bit platforms and produces digests of any size between 1 and 32 bytes. Supports the use of an optional key.
 
 - Input: `Bytes`
-- Output: `String`
+- Output: `Bytes`
 - CLI: `rxchef run "BLAKE2s"`
 
 | # | Argument | Default | Description |

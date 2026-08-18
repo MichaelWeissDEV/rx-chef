@@ -34,7 +34,10 @@ fn test_from_binary_invalid_utf8() {
     use rxchef::operations::from_binary::FromBinary;
     use rxchef::Operation;
     let op = FromBinary;
-    let args = [rxchef::operation::ArgValue::Str("Space".to_string()), rxchef::operation::ArgValue::Num(8.0)];
+    let args = [
+        rxchef::operation::ArgValue::Str("Space".to_string()),
+        rxchef::operation::ArgValue::Num(8.0),
+    ];
     let result = op.run(vec![0xFF, 0xFE], &args);
     assert!(result.is_err());
 }

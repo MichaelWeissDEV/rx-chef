@@ -29,4 +29,3 @@ fn test_digits_and_punctuation() {
 fn test_empty() {
     assert_eq!(run(""), "");
 }
-

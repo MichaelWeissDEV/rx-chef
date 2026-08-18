@@ -42,4 +42,3 @@ fn test_ctx1_encode_known_value() {
         assert!(ch >= 'A' && ch <= 'P', "char '{}' out of range", ch);
     }
 }
-

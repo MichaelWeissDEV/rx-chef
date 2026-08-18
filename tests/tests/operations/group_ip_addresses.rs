@@ -42,4 +42,3 @@ fn test_group_ips_v4_only_subnets() {
     let output = String::from_utf8(result).unwrap();
     assert_eq!(output, "10.0.0.0/24\n192.168.1.0/24\n192.168.2.0/24");
 }
-

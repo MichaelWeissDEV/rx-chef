@@ -40,4 +40,3 @@ fn test_css_minify_empty() {
     let result = op.run(vec![], &[]).unwrap();
     assert!(result.is_empty() || String::from_utf8(result).unwrap().trim().is_empty());
 }
-

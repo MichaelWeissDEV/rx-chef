@@ -43,4 +43,3 @@ fn test_tail_more_than_available() {
         .expect("should succeed");
     assert_eq!(String::from_utf8(result).unwrap(), "a\nb");
 }
-

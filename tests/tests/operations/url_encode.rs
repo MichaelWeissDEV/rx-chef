@@ -83,4 +83,3 @@ fn test_url_encode_control_characters() {
     assert_eq!(encode("a\nb", false), "a%0Ab");
     assert_eq!(encode("a\tb", false), "a%09b");
 }
-

@@ -54,4 +54,3 @@ fn test_sigaba_z_handling() {
     // And ' ' -> Z -> encrypted -> decrypted -> Z -> ' '
     assert_eq!(String::from_utf8_lossy(&decrypted), "X");
 }
-

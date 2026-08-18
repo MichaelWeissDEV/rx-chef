@@ -34,4 +34,3 @@ fn test_extract_domains_dmarc() {
     let out = String::from_utf8(result).unwrap();
     assert_eq!(out, "_dmarc.example.com");
 }
-

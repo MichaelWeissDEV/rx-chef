@@ -64,7 +64,6 @@ fn test_regex_groups() {
     assert_eq!(result_str, "key\nvalue");
 }
 
-
 #[test]
 fn test_regular_expression_invalid_pattern() {
     let op = RegularExpressionOp;

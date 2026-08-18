@@ -19,4 +19,3 @@ fn test_extract_email_addresses() {
     let out = String::from_utf8(result).unwrap();
     assert_eq!(out, "support@example.com\nsales@example.org");
 }
-

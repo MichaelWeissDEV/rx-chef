@@ -49,4 +49,3 @@ fn test_subtract_negative_result() {
         .unwrap();
     assert_eq!(String::from_utf8(result).unwrap(), "-7");
 }
-

@@ -87,4 +87,3 @@ fn test_index_of_coincidence_is_higher_for_natural_language_than_uniform_text() 
         "English {english} should exceed evenly spread text {spread}"
     );
 }
-

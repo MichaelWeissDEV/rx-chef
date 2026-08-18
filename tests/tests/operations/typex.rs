@@ -137,7 +137,7 @@ fn test_typex_invalid_plugboard() {
         ArgValue::Str("A".to_string()),
         ArgValue::Str("A".to_string()),
         ArgValue::Str("AN BC FG IE KD LU MH OR TS VZ WQ XJ YP".to_string()), // Reflector
-        ArgValue::Str("SHORT".to_string()),                                   // Plugboard
+        ArgValue::Str("SHORT".to_string()),                                  // Plugboard
         ArgValue::Str("None".to_string()),                                   // Keyboard
         ArgValue::Bool(true),                                                // Strict
     ];

@@ -1,64 +1,113 @@
 // Tests for the rc4 operation.
 // Run only these tests:
 //   cargo test -p cyberchef-rust-tests --test operations rc4::
+//
+// Known-answer vectors are the widely published RC4 test values that appear in
+// the algorithm's original description and in RFC 6229's introduction material
+// (the "Key"/"Plaintext" and "Wiki"/"pedia" pairs). They are reproduced in
+// every reference implementation and are not values captured from rx-chef.
+//
+// RC4 is a legacy stream cipher with known biases and is not suitable for new
+// designs; it is implemented here for compatibility with existing data.
 
-use rxchef::operation::ArgValue;
-use rxchef::operations::rc4::RC4;
-use rxchef::Operation;
+use rxchef::runtime::{self, RuntimeError};
 
-/// Perform RC4 key setup and generate keystream XOR'd with plaintext.
-fn rc4_crypt(key: &[u8], data: &[u8]) -> Vec<u8> {
-    // KSA
-    let mut s: [u8; 256] = [0u8; 256];
-    for i in 0..256usize {
-        s[i] = i as u8;
-    }
-    let mut j: usize = 0;
-    for i in 0..256usize {
-        j = (j + s[i] as usize + key[i % key.len()] as usize) % 256;
-        s.swap(i, j);
-    }
-
-    // PRGA
-    let mut output = Vec::with_capacity(data.len());
-    let mut i: usize = 0;
-    let mut j: usize = 0;
-    for &byte in data {
-        i = (i + 1) % 256;
-        j = (j + s[i] as usize) % 256;
-        s.swap(i, j);
-        let k = s[(s[i] as usize + s[j] as usize) % 256];
-        output.push(byte ^ k);
-    }
-    output
+fn rc4(
+    input: &[u8],
+    key: &str,
+    input_format: &str,
+    output_format: &str,
+) -> Result<String, RuntimeError> {
+    runtime::run_operation(
+        "RC4",
+        input.to_vec(),
+        &[
+            key.to_string(),
+            input_format.to_string(),
+            output_format.to_string(),
+        ],
+    )
+    .map(|out| String::from_utf8_lossy(&out).into_owned())
 }
 
 #[test]
-fn test_rc4_basic() {
-    // RC4("Key", "Plaintext") = BBF316E8D940AF0AD3
-    let op = RC4;
-    let input = b"Plaintext".to_vec();
-    let args = [
-        ArgValue::Str("Key".to_string()),
-        ArgValue::Str("Raw".to_string()),
-        ArgValue::Str("Hex".to_string()),
-    ];
-    let result = op.run(input, &args).unwrap();
-    let hex_out = String::from_utf8(result).unwrap();
-    assert_eq!(hex_out.to_uppercase(), "BBF316E8D940AF0AD3");
+fn test_rc4_published_vectors() {
+    for (key, plaintext, expected) in [
+        ("Key", "Plaintext", "bbf316e8d940af0ad3"),
+        ("Wiki", "pedia", "1021bf0420"),
+        ("Secret", "Attack at dawn", "45a01f645fc35b383552544b9bf5"),
+    ] {
+        assert_eq!(
+            rc4(plaintext.as_bytes(), key, "Raw", "Hex").unwrap(),
+            expected,
+            "RC4 vector for key {key:?} failed"
+        );
+    }
 }
+
 #[test]
-fn test_rc4_symmetric() {
-    // Encrypting twice returns original plaintext
-    let key = b"secret".to_vec();
-    let plaintext = b"Hello, World!".to_vec();
-    let ciphertext = rc4_crypt(&key, &plaintext);
-    let decrypted = rc4_crypt(&key, &ciphertext);
-    assert_eq!(decrypted, plaintext);
+fn test_rc4_is_its_own_inverse() {
+    // RC4 XORs a keystream, so applying it twice returns the plaintext.
+    let ciphertext = rc4(b"Attack at dawn", "Secret", "Raw", "Hex").unwrap();
+    let recovered = rc4(ciphertext.as_bytes(), "Secret", "Hex", "Raw").unwrap();
+    assert_eq!(recovered, "Attack at dawn");
 }
+
 #[test]
-fn test_rc4_empty_key_error() {
-    let op = RC4;
-    let result = op.run(b"data".to_vec(), &[ArgValue::Str("".to_string())]);
-    assert!(result.is_err());
+fn test_rc4_keystream_depends_on_the_key() {
+    let a = rc4(b"same plaintext", "key-a", "Raw", "Hex").unwrap();
+    let b = rc4(b"same plaintext", "key-b", "Raw", "Hex").unwrap();
+    assert_ne!(a, b);
+}
+
+#[test]
+fn test_rc4_output_length_matches_the_input_length() {
+    // A stream cipher neither pads nor truncates.
+    for length in [0usize, 1, 15, 16, 17, 256, 1000] {
+        let plaintext = vec![b'x'; length];
+        let out = rc4(&plaintext, "Key", "Raw", "Hex").unwrap();
+        assert_eq!(out.len(), length * 2, "length {length}");
+    }
+}
+
+#[test]
+fn test_rc4_empty_input_produces_empty_output() {
+    assert_eq!(rc4(b"", "Key", "Raw", "Hex").unwrap(), "");
+}
+
+#[test]
+fn test_rc4_handles_binary_input() {
+    // Every byte value must pass through the keystream unharmed.
+    let binary: Vec<u8> = (0u8..=255).collect();
+    let ciphertext = rc4(&binary, "Key", "Raw", "Hex").unwrap();
+    assert_eq!(ciphertext.len(), 512);
+    let recovered = runtime::run_operation(
+        "RC4",
+        ciphertext.into_bytes(),
+        &["Key".to_string(), "Hex".to_string(), "Raw".to_string()],
+    )
+    .unwrap();
+    assert_eq!(recovered, binary);
+}
+
+#[test]
+fn test_rc4_rejects_an_empty_key() {
+    // RC4's key schedule is undefined for a zero-length key.
+    assert!(
+        rc4(b"plaintext", "", "Raw", "Hex").is_err(),
+        "an empty key must be rejected"
+    );
+}
+
+#[test]
+fn test_rc4_rejects_malformed_hex_input() {
+    assert!(rc4(b"not hex at all", "Key", "Hex", "Raw").is_err());
+}
+
+#[test]
+fn test_rc4_is_deterministic() {
+    assert_eq!(
+        rc4(b"Plaintext", "Key", "Raw", "Hex").unwrap(),
+        rc4(b"Plaintext", "Key", "Raw", "Hex").unwrap()
+    );
 }

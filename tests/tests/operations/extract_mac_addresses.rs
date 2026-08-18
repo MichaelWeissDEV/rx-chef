@@ -32,4 +32,3 @@ fn test_extract_mac_addresses_unique_sort() {
     let out = String::from_utf8(result).unwrap();
     assert_eq!(out, "11-22-33-44-55-66\nAA:BB:CC:DD:EE:FF");
 }
-

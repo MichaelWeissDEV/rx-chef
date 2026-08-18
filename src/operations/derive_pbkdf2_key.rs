@@ -63,7 +63,11 @@ impl Operation for DerivePBKDF2Key {
                 kind: crate::operation::ArgKind::UnsignedInteger,
                 required: false,
                 choices: &[],
-                minimum: None,
+                // RFC 8018 requires the iteration count to be a positive
+                // integer. Without this bound, c=0 was silently treated as
+                // c=1 and returned a key, so a caller asking for zero work
+                // got one round without being told.
+                minimum: Some(crate::operation::NumericBound::Unsigned(1)),
                 maximum: None,
                 sensitive: false,
             },

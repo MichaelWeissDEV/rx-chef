@@ -42,4 +42,3 @@ fn test_split_no_delimiter_found() {
     let out = String::from_utf8(result).unwrap();
     assert_eq!(out, "nothinghere");
 }
-

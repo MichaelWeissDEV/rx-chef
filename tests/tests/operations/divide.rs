@@ -55,4 +55,3 @@ fn test_divide_linefeed() {
         .unwrap();
     assert_eq!(String::from_utf8(result).unwrap(), "5");
 }
-

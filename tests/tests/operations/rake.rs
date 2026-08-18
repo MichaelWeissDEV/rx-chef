@@ -19,4 +19,3 @@ fn test_rake() {
     let result_str = String::from_utf8(result).unwrap();
     assert!(result_str.contains("relative-free-commutative algebra"));
 }
-

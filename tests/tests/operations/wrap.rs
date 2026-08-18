@@ -31,4 +31,3 @@ fn test_wrap_empty() {
     let result = op.run(input, &args).unwrap();
     assert_eq!(result, b"");
 }
-

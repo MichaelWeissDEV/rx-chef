@@ -19,4 +19,3 @@ fn test_extract_urls() {
     let out = String::from_utf8(result).unwrap();
     assert_eq!(out, "https://google.com\nhttp://example.com/path?query=1");
 }
-

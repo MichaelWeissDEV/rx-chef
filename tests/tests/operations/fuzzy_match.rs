@@ -5,13 +5,13 @@ use rxchef::Operation;
 fn default_args(search: &str) -> [ArgValue; 8] {
     [
         ArgValue::Str(search.to_string()),
-        ArgValue::Num(15.0),   // sequential_bonus
-        ArgValue::Num(30.0),   // separator_bonus
-        ArgValue::Num(30.0),   // camel_bonus
-        ArgValue::Num(15.0),   // first_letter_bonus
-        ArgValue::Num(-5.0),   // leading_letter_penalty
-        ArgValue::Num(-15.0),  // max_leading_letter_penalty
-        ArgValue::Num(-1.0),   // unmatched_letter_penalty
+        ArgValue::Num(15.0),  // sequential_bonus
+        ArgValue::Num(30.0),  // separator_bonus
+        ArgValue::Num(30.0),  // camel_bonus
+        ArgValue::Num(15.0),  // first_letter_bonus
+        ArgValue::Num(-5.0),  // leading_letter_penalty
+        ArgValue::Num(-15.0), // max_leading_letter_penalty
+        ArgValue::Num(-1.0),  // unmatched_letter_penalty
     ]
 }
 
@@ -37,7 +37,12 @@ fn test_fuzzy_match_exact_match() {
     let args = default_args("hello");
     let result = op.run(b"hello".to_vec(), &args).unwrap();
     let result_str = String::from_utf8_lossy(&result);
-    assert!(result_str.contains("<b>h</b><b>e</b><b>l</b><b>l</b><b>o</b>") || result_str.contains("<b>hello</b>") || result_str.contains("<span class=\"hl1\"><b>h</b><b>e</b><b>l</b><b>l</b><b>o</b></span>"));
+    assert!(
+        result_str.contains("<b>h</b><b>e</b><b>l</b><b>l</b><b>o</b>")
+            || result_str.contains("<b>hello</b>")
+            || result_str
+                .contains("<span class=\"hl1\"><b>h</b><b>e</b><b>l</b><b>l</b><b>o</b></span>")
+    );
 }
 
 #[test]
@@ -64,7 +69,11 @@ fn test_fuzzy_match_case_insensitive() {
     let args = default_args("HELLO");
     let result = op.run(b"hello".to_vec(), &args).unwrap();
     let result_str = String::from_utf8_lossy(&result);
-    assert!(result_str.contains("<b>h</b>") || result_str.contains("<b>hello</b>") || result_str.contains("<b>h</b><b>e</b><b>l</b><b>l</b><b>o</b>"));
+    assert!(
+        result_str.contains("<b>h</b>")
+            || result_str.contains("<b>hello</b>")
+            || result_str.contains("<b>h</b><b>e</b><b>l</b><b>l</b><b>o</b>")
+    );
 }
 
 #[test]

@@ -13,4 +13,3 @@ fn test_microsoft_script_decoder_basic() {
     let result_str = String::from_utf8(result).unwrap();
     assert!(result_str.contains("var my_msg"));
 }
-

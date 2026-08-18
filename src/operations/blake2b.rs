@@ -79,7 +79,12 @@ impl Operation for BLAKE2b {
     }
 
     fn output_type(&self) -> DataType {
-        DataType::String
+        // Bytes, not String: the "Raw" output mode emits the cipher's/digest's
+        // raw octets, which are not valid UTF-8 in general. Declaring String
+        // made the runtime's output contract reject that documented mode for
+        // any binary result. `AES Encrypt` and `Blowfish Encrypt` already
+        // declare Bytes for the same reason.
+        DataType::Bytes
     }
 
     /// Conforms to the published specification; not yet compared against CyberChef.

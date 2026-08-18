@@ -39,4 +39,3 @@ fn test_extract_hashes_all() {
     assert!(output.contains("81dc9bdb52d04dc20036dbd8313ed055"));
     assert!(output.contains("7cf3273e84e55e513066a2a537021d96009ed945"));
 }
-

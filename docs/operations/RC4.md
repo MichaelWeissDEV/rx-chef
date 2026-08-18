@@ -22,7 +22,7 @@ Declared input type: `Bytes`.
 
 ## Output
 
-Declared output type: `String`. Redirect stdout or use `--output-file` for exact binary bytes.
+Declared output type: `Bytes`. Redirect stdout or use `--output-file` for exact binary bytes.
 
 ## Arguments
 
@@ -34,7 +34,7 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 ## Implementation
 
-The implementation is in `src/operations/rc4.rs` and declares `Bytes` input and `String` output. The operation module owns conversion and domain-error rules; registry resolution, argument validation, input-requirement enforcement, tracing, and output validation are performed by `rxchef::execution`.
+The implementation is in `src/operations/rc4.rs` and declares `Bytes` input and `Bytes` output. The operation module owns conversion and domain-error rules; registry resolution, argument validation, input-requirement enforcement, tracing, and output validation are performed by `rxchef::execution`.
 
 ## Command-line use
 
@@ -48,7 +48,7 @@ Arguments may be supplied positionally in the table order or by name with repeat
 
 ## Pipeline use
 
-Place the operation anywhere a `Bytes` value is valid. Its `String` result becomes the next step's input. Compact syntax uses the operation name followed by comma-separated arguments; JSON/YAML recipes use an `op` field and an `args` array.
+Place the operation anywhere a `Bytes` value is valid. Its `Bytes` result becomes the next step's input. Compact syntax uses the operation name followed by comma-separated arguments; JSON/YAML recipes use an `op` field and an `args` array.
 
 ## Error conditions
 
@@ -65,6 +65,9 @@ Declared side effects: `[]`. Treat parser inputs as untrusted and apply executio
 ## Testing evidence
 
 Correctness tests:
+- tests/tests/operations/rc4.rs
+
+Known-answer tests:
 - tests/tests/operations/rc4.rs
 
 ## Performance classification

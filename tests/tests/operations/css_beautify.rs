@@ -43,4 +43,3 @@ fn test_css_beautify_default_indent() {
     // Beautifier inserts a space after ':', so font-size:12px → "font-size: 12px;"
     assert!(s.contains("font-size: 12px;"));
 }
-

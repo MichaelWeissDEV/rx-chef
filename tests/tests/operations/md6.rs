@@ -42,7 +42,11 @@ fn test_md6_invalid_size_zero() {
     let op = MD6;
     let res = op.run(
         b"test".to_vec(),
-        &[ArgValue::Num(0.0), ArgValue::Num(64.0), ArgValue::Str("".to_string())],
+        &[
+            ArgValue::Num(0.0),
+            ArgValue::Num(64.0),
+            ArgValue::Str("".to_string()),
+        ],
     );
     assert!(res.is_err());
 }
@@ -53,7 +57,11 @@ fn test_md6_invalid_size_too_large() {
     let op = MD6;
     let res = op.run(
         b"test".to_vec(),
-        &[ArgValue::Num(513.0), ArgValue::Num(64.0), ArgValue::Str("".to_string())],
+        &[
+            ArgValue::Num(513.0),
+            ArgValue::Num(64.0),
+            ArgValue::Str("".to_string()),
+        ],
     );
     assert!(res.is_err());
 }
@@ -64,7 +72,11 @@ fn test_md6_invalid_levels() {
     let op = MD6;
     let res = op.run(
         b"test".to_vec(),
-        &[ArgValue::Num(256.0), ArgValue::Num(256.0), ArgValue::Str("".to_string())],
+        &[
+            ArgValue::Num(256.0),
+            ArgValue::Num(256.0),
+            ArgValue::Str("".to_string()),
+        ],
     );
     assert!(res.is_err());
 }

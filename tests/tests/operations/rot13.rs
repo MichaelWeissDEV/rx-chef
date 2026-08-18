@@ -28,4 +28,3 @@ fn test_double_rot13() {
 fn test_only_letters() {
     assert_eq!(rot13("ABC xyz 123"), "NOP klm 123");
 }
-

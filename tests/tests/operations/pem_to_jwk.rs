@@ -24,4 +24,3 @@ vkzxLwe3t5Y4XgHL9TYQm1+BDninupIB/zTeO1ygBGA66m6zpmkmuG7d8HXIducz\n\
     assert!(result_str.contains("\"n\":"));
     assert!(result_str.contains("\"e\":"));
 }
-

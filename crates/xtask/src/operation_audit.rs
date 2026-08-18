@@ -33,6 +33,7 @@ struct AuditTotals {
     correctness_verified: usize,
     correctness_partial: usize,
     correctness_unverified: usize,
+    negative_not_applicable: usize,
 }
 
 impl AuditTotals {
@@ -40,12 +41,19 @@ impl AuditTotals {
         &mut self,
         evidence: &TestEvidence,
         fixture: FixtureEvidence,
+        negative_policy: &NegativeTestPolicy,
         info: &runtime::OperationInfo,
         has_known_answer: bool,
         has_differential: bool,
     ) {
         self.registered += 1;
-        match Correctness::derive(evidence, fixture, has_known_answer, has_differential) {
+        match Correctness::derive(
+            evidence,
+            fixture,
+            negative_policy,
+            has_known_answer,
+            has_differential,
+        ) {
             Correctness::Verified => self.correctness_verified += 1,
             Correctness::PartiallyVerified => self.correctness_partial += 1,
             Correctness::Unverified => self.correctness_unverified += 1,
@@ -57,6 +65,9 @@ impl AuditTotals {
         }
         if evidence.has_negative_case() || fixture.rejection {
             self.negative_tested += 1;
+        }
+        if negative_policy.is_not_applicable() {
+            self.negative_not_applicable += 1;
         }
         if evidence.has_boundary_case() || fixture.empty_input || fixture.binary_or_unicode {
             self.boundary_tested += 1;
@@ -100,6 +111,10 @@ impl AuditTotals {
             "test functions total", self.total_tests
         );
         println!("  {:<28} {}", "with negative tests", self.negative_tested);
+        println!(
+            "  {:<28} {}",
+            "negative N/A (justified)", self.negative_not_applicable
+        );
         println!("  {:<28} {}", "with boundary tests", self.boundary_tested);
         println!(
             "  {:<28} {}",
@@ -155,6 +170,7 @@ impl AuditTotals {
             "tested": self.tested,
             "test_functions": self.total_tests,
             "negative_tested": self.negative_tested,
+            "negative_not_applicable": self.negative_not_applicable,
             "boundary_tested": self.boundary_tested,
             "reference_verified": self.reference_verified,
             "differential_verified": self.differential_verified,
@@ -166,6 +182,95 @@ impl AuditTotals {
             "documented_divergences": self.known_limitations,
             "tests_asserting_only_success": self.weak_ok_assertions,
         })
+    }
+}
+
+/// Whether a negative test is meaningful for this operation.
+///
+/// Some operations have no semantically invalid input: they accept arbitrary
+/// bytes and every input has a defined output. Demanding a negative test there
+/// would keep them `partially_verified` forever because of a weakness in the
+/// audit model rather than a weakness in the operation.
+///
+/// `NotApplicable` is therefore available — but it is never inferred. It must
+/// be declared per operation in `verification/operations.json` together with a
+/// justification a reviewer can check:
+///
+/// ```json
+/// "negative_test_policy": {
+///     "not_applicable": "Accepts arbitrary bytes; every input has a defined
+///                        output and the operation declares no arguments."
+/// }
+/// ```
+///
+/// "we could not find a failure case", "the test would be laborious" and
+/// "upstream does not error either" are not justifications. An operation with
+/// arguments can still reject an invalid *argument* even when it accepts any
+/// input, and that case stays `Required`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum NegativeTestPolicy {
+    Required,
+    NotApplicable { justification: String },
+}
+
+impl NegativeTestPolicy {
+    /// Read the declared policy, defaulting to `Required`.
+    fn read(verification: &Value, operation: &str, errors: &mut Vec<String>) -> Self {
+        let Some(declared) = verification.get("negative_test_policy") else {
+            return NegativeTestPolicy::Required;
+        };
+        if declared == "required" {
+            return NegativeTestPolicy::Required;
+        }
+        let justification = declared
+            .get("not_applicable")
+            .and_then(Value::as_str)
+            .unwrap_or_default()
+            .trim()
+            .to_string();
+        if justification.is_empty() {
+            errors.push(format!(
+                "{operation}: negative_test_policy must be \"required\" or \
+                 {{\"not_applicable\": \"<justification>\"}}"
+            ));
+            return NegativeTestPolicy::Required;
+        }
+        // A justification short enough to be a shrug is not a justification.
+        if justification.len() < 40 {
+            errors.push(format!(
+                "{operation}: negative_test_policy justification is too thin to review: {justification:?}"
+            ));
+            return NegativeTestPolicy::Required;
+        }
+        for excuse in [
+            "could not find",
+            "no failure case",
+            "would be laborious",
+            "too much work",
+            "cyberchef does not error",
+            "upstream does not error",
+        ] {
+            if justification.to_ascii_lowercase().contains(excuse) {
+                errors.push(format!(
+                    "{operation}: negative_test_policy justification is an excuse, not a reason: {justification:?}"
+                ));
+                return NegativeTestPolicy::Required;
+            }
+        }
+        NegativeTestPolicy::NotApplicable { justification }
+    }
+
+    fn is_not_applicable(&self) -> bool {
+        matches!(self, NegativeTestPolicy::NotApplicable { .. })
+    }
+
+    fn as_json(&self) -> Value {
+        match self {
+            NegativeTestPolicy::Required => json!("required"),
+            NegativeTestPolicy::NotApplicable { justification } => {
+                json!({ "not_applicable": justification })
+            }
+        }
     }
 }
 
@@ -243,6 +348,7 @@ impl Correctness {
     fn derive(
         evidence: &TestEvidence,
         fixture: FixtureEvidence,
+        negative_policy: &NegativeTestPolicy,
         has_known_answer: bool,
         has_differential: bool,
     ) -> Self {
@@ -252,7 +358,9 @@ impl Correctness {
             return Correctness::Unverified;
         }
         let independent = has_known_answer || has_differential;
-        let negative = evidence.has_negative_case() || fixture.rejection;
+        let negative = evidence.has_negative_case()
+            || fixture.rejection
+            || negative_policy.is_not_applicable();
         let boundary =
             evidence.has_boundary_case() || fixture.empty_input || fixture.binary_or_unicode;
         if negative && boundary && independent {
@@ -274,6 +382,7 @@ impl Correctness {
     fn missing(
         evidence: &TestEvidence,
         fixture: FixtureEvidence,
+        negative_policy: &NegativeTestPolicy,
         has_known_answer: bool,
         has_differential: bool,
     ) -> Vec<&'static str> {
@@ -282,7 +391,10 @@ impl Correctness {
             gaps.push("executable tests");
             return gaps;
         }
-        if !evidence.has_negative_case() && !fixture.rejection {
+        if !evidence.has_negative_case()
+            && !fixture.rejection
+            && !negative_policy.is_not_applicable()
+        {
             gaps.push("negative tests");
         }
         if !evidence.has_boundary_case() && !fixture.empty_input && !fixture.binary_or_unicode {
@@ -590,9 +702,12 @@ pub fn run() -> Result<(), String> {
             ));
         }
 
+        let negative_policy = NegativeTestPolicy::read(verification, info.name, &mut errors);
+
         totals.record(
             &evidence,
             fixture,
+            &negative_policy,
             &info,
             !known_answer.is_empty(),
             !differential.is_empty(),
@@ -603,12 +718,14 @@ pub fn run() -> Result<(), String> {
         let correctness_verdict = Correctness::derive(
             &evidence,
             fixture,
+            &negative_policy,
             !known_answer.is_empty(),
             !differential.is_empty(),
         );
         let correctness_gaps = Correctness::missing(
             &evidence,
             fixture,
+            &negative_policy,
             !known_answer.is_empty(),
             !differential.is_empty(),
         );
@@ -616,6 +733,7 @@ pub fn run() -> Result<(), String> {
         rows.push(json!({
             "correctness": correctness_verdict.as_str(),
             "correctness_gaps": correctness_gaps,
+            "negative_test_policy": negative_policy.as_json(),
             "fixture_empty_input": fixture.empty_input,
             "fixture_rejection": fixture.rejection,
             "fixture_binary_or_unicode": fixture.binary_or_unicode,
@@ -685,6 +803,8 @@ pub fn run() -> Result<(), String> {
     .map_err(|e| e.to_string())?;
     fs::write(&generated, format!("{json}\n")).map_err(|e| e.to_string())?;
     fs::write(&reference, render_markdown(&rows, &totals)).map_err(|e| e.to_string())?;
+    let backlog = root.join("docs/_generated/verification-backlog.md");
+    fs::write(&backlog, render_backlog(&rows, &totals)).map_err(|e| e.to_string())?;
     println!("operation audit passed ({} operations)", rows.len());
     totals.print_summary();
     Ok(())
@@ -797,10 +917,322 @@ fn render_markdown(rows: &[Value], totals: &AuditTotals) -> String {
     output
 }
 
+/// Classify why an operation is not yet `verified`.
+///
+/// The groups mirror the work each one needs, so the backlog can be picked up
+/// in batches instead of read operation by operation.
+fn backlog_group(row: &Value) -> &'static str {
+    if row["correctness"] == "verified" {
+        return "verified";
+    }
+    let gaps: Vec<&str> = row["correctness_gaps"]
+        .as_array()
+        .map(|list| list.iter().filter_map(Value::as_str).collect())
+        .unwrap_or_default();
+    let independent = gaps.contains(&"independent reference evidence");
+    let negative = gaps.contains(&"negative tests");
+    let boundary = gaps.contains(&"boundary tests");
+    let weak = row["tests_asserting_only_success"].as_u64().unwrap_or(0) > 0;
+
+    if gaps.contains(&"executable tests") {
+        return "F: no executable tests";
+    }
+    match (independent, negative, boundary) {
+        (true, false, false) if weak => "J: independent evidence missing, tests are weak",
+        (true, false, false) => "A: only independent evidence missing",
+        (false, true, false) => "B: only negative evidence missing",
+        (false, false, true) => "C: only boundary evidence missing",
+        (false, true, true) => "D: negative + boundary missing",
+        (true, true, false) | (true, false, true) => "E: independent evidence + one test class",
+        (true, true, true) => "F: multiple test classes missing",
+        (false, false, false) => "H: special semantic verification required",
+    }
+}
+
+/// Suggest how to close the gap, from what the operation looks like.
+fn recommended_strategy(row: &Value) -> String {
+    let module = row["module"].as_str().unwrap_or("");
+    let name = row["name"].as_str().unwrap_or("");
+    let gaps: Vec<&str> = row["correctness_gaps"]
+        .as_array()
+        .map(|list| list.iter().filter_map(Value::as_str).collect())
+        .unwrap_or_default();
+    let mut advice = Vec::new();
+
+    if gaps.contains(&"independent reference evidence") {
+        let standardised = matches!(
+            module,
+            "Hashing" | "Crypto" | "Ciphers" | "Encodings" | "Compression" | "PublicKey"
+        );
+        if standardised {
+            advice.push(
+                "authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison",
+            );
+        } else {
+            advice.push(
+                "CyberChef differential fixture with an input this operation actually accepts",
+            );
+        }
+    }
+    if gaps.contains(&"negative tests") {
+        advice.push(
+            "a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists",
+        );
+    }
+    if gaps.contains(&"boundary tests") {
+        advice.push("a boundary case at a real limit of this operation, not merely empty input");
+    }
+    if row["tests_asserting_only_success"].as_u64().unwrap_or(0) > 0 {
+        advice.push("replace is_ok()-only assertions with exact values or invariants");
+    }
+    if advice.is_empty() {
+        advice.push("review manually: no mechanical gap remains");
+    }
+    let _ = name;
+    advice.join("; ")
+}
+
+/// Render the generated verification backlog.
+fn render_backlog(rows: &[Value], totals: &AuditTotals) -> String {
+    let mut grouped: BTreeSet<&'static str> = BTreeSet::new();
+    for row in rows {
+        grouped.insert(backlog_group(row));
+    }
+
+    let mut output = String::from(
+        "# Verification backlog\n\n<!-- Generated by `cargo run -p xtask -- audit-operations`; do not edit. -->\n\n",
+    );
+    output.push_str(
+        "Why each operation is not yet `verified`, and what would close the gap. Groups are ordered by how much work they need, so the list can be worked in batches.\n\n",
+    );
+    output.push_str(&format!(
+        "**{} verified · {} partially verified · {} unverified** of {} registered.\n\n",
+        totals.correctness_verified,
+        totals.correctness_partial,
+        totals.correctness_unverified,
+        totals.registered
+    ));
+
+    for group in grouped {
+        if group == "verified" {
+            continue;
+        }
+        let members: Vec<&Value> = rows
+            .iter()
+            .filter(|row| backlog_group(row) == group)
+            .collect();
+        output.push_str(&format!("## {group} ({})\n\n", members.len()));
+        output.push_str(
+            "| Operation | Module | Tests | Neg | Bound | KAT | Diff | Parity | Weak | Remaining gaps | Strategy |\n|---|---|---:|:---:|:---:|:---:|:---:|---|---:|---|---|\n",
+        );
+        for row in members {
+            let gaps = row["correctness_gaps"]
+                .as_array()
+                .map(|list| {
+                    list.iter()
+                        .filter_map(Value::as_str)
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                })
+                .unwrap_or_default();
+            let negative = if row["negative_test_policy"]["not_applicable"].is_string() {
+                "n/a"
+            } else {
+                mark(
+                    row["negative_test"].as_bool().unwrap_or(false)
+                        || row["fixture_rejection"].as_bool().unwrap_or(false),
+                )
+            };
+            output.push_str(&format!(
+                "| {} | {} | {} | {} | {} | {} | {} | {} | {} | {} | {} |\n",
+                text_field(row, "name").replace('|', "\\|"),
+                text_field(row, "module"),
+                row["tests"].as_u64().unwrap_or(0),
+                negative,
+                mark(
+                    row["boundary_test"].as_bool().unwrap_or(false)
+                        || row["fixture_empty_input"].as_bool().unwrap_or(false)
+                        || row["fixture_binary_or_unicode"].as_bool().unwrap_or(false)
+                ),
+                mark(row["known_answer_test"].as_bool().unwrap_or(false)),
+                mark(row["differential_test"].as_bool().unwrap_or(false)),
+                text_field(row, "parity"),
+                row["tests_asserting_only_success"].as_u64().unwrap_or(0),
+                gaps,
+                recommended_strategy(row),
+            ));
+        }
+        output.push('\n');
+    }
+    output
+}
+
 fn mark(value: bool) -> &'static str {
     if value {
         "yes"
     } else {
         "—"
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{Correctness, FixtureEvidence, NegativeTestPolicy};
+    use crate::test_evidence::TestEvidence;
+    use serde_json::json;
+
+    fn tested() -> TestEvidence {
+        TestEvidence {
+            tests: 3,
+            value_assertions: 3,
+            ..TestEvidence::default()
+        }
+    }
+
+    fn with_boundary() -> FixtureEvidence {
+        FixtureEvidence {
+            empty_input: true,
+            any: true,
+            ..FixtureEvidence::default()
+        }
+    }
+
+    fn policy(value: serde_json::Value) -> (NegativeTestPolicy, Vec<String>) {
+        let mut errors = Vec::new();
+        let verification = json!({ "negative_test_policy": value });
+        let parsed = NegativeTestPolicy::read(&verification, "Example", &mut errors);
+        (parsed, errors)
+    }
+
+    // ── The policy may never be inferred ──────────────────────────────────
+
+    #[test]
+    fn an_absent_policy_defaults_to_required() {
+        let mut errors = Vec::new();
+        let parsed = NegativeTestPolicy::read(&json!({}), "Example", &mut errors);
+        assert_eq!(parsed, NegativeTestPolicy::Required);
+        assert!(errors.is_empty());
+    }
+
+    #[test]
+    fn not_applicable_without_a_justification_is_rejected() {
+        let (parsed, errors) = policy(json!({ "not_applicable": "" }));
+        assert_eq!(
+            parsed,
+            NegativeTestPolicy::Required,
+            "an unjustified exemption must not take effect"
+        );
+        assert_eq!(errors.len(), 1);
+    }
+
+    #[test]
+    fn a_justification_too_short_to_review_is_rejected() {
+        let (parsed, errors) = policy(json!({ "not_applicable": "accepts anything" }));
+        assert_eq!(parsed, NegativeTestPolicy::Required);
+        assert!(errors[0].contains("too thin"));
+    }
+
+    #[test]
+    fn excuses_are_not_justifications() {
+        for excuse in [
+            "We could not find a failure case for this operation at all here",
+            "Writing this test would be laborious and is not worth the effort",
+            "CyberChef does not error either so there is nothing to assert here",
+        ] {
+            let (parsed, errors) = policy(json!({ "not_applicable": excuse }));
+            assert_eq!(
+                parsed,
+                NegativeTestPolicy::Required,
+                "excuse accepted as justification: {excuse}"
+            );
+            assert!(
+                errors.iter().any(|e| e.contains("excuse")),
+                "expected an excuse diagnostic for: {excuse}"
+            );
+        }
+    }
+
+    #[test]
+    fn a_reviewed_justification_is_accepted() {
+        let (parsed, errors) = policy(json!({
+            "not_applicable":
+                "Accepts arbitrary bytes; every input has a defined output per the \
+                 specification and the operation declares no arguments."
+        }));
+        assert!(parsed.is_not_applicable());
+        assert!(errors.is_empty());
+    }
+
+    // ── The exemption must not shortcut the other dimensions ──────────────
+
+    #[test]
+    fn not_applicable_alone_does_not_make_an_operation_verified() {
+        let exempt = NegativeTestPolicy::NotApplicable {
+            justification: "Accepts arbitrary bytes; every input has a defined output.".into(),
+        };
+        // Boundary evidence and independent evidence are still required.
+        assert_eq!(
+            Correctness::derive(&tested(), FixtureEvidence::default(), &exempt, false, false),
+            Correctness::PartiallyVerified
+        );
+        assert_eq!(
+            Correctness::derive(&tested(), with_boundary(), &exempt, false, false),
+            Correctness::PartiallyVerified,
+            "independent evidence is still required"
+        );
+        assert_eq!(
+            Correctness::derive(&tested(), with_boundary(), &exempt, true, false),
+            Correctness::Verified
+        );
+    }
+
+    #[test]
+    fn an_operation_without_tests_stays_unverified_regardless_of_policy() {
+        let exempt = NegativeTestPolicy::NotApplicable {
+            justification: "Accepts arbitrary bytes; every input has a defined output.".into(),
+        };
+        assert_eq!(
+            Correctness::derive(
+                &TestEvidence::default(),
+                FixtureEvidence::default(),
+                &exempt,
+                true,
+                true
+            ),
+            Correctness::Unverified
+        );
+    }
+
+    #[test]
+    fn required_policy_still_demands_a_negative_case() {
+        assert_eq!(
+            Correctness::derive(
+                &tested(),
+                with_boundary(),
+                &NegativeTestPolicy::Required,
+                true,
+                true
+            ),
+            Correctness::PartiallyVerified,
+            "a required negative test cannot be skipped"
+        );
+    }
+
+    #[test]
+    fn the_gap_list_reflects_the_policy() {
+        let exempt = NegativeTestPolicy::NotApplicable {
+            justification: "Accepts arbitrary bytes; every input has a defined output.".into(),
+        };
+        let gaps = Correctness::missing(&tested(), with_boundary(), &exempt, false, false);
+        assert_eq!(gaps, vec!["independent reference evidence"]);
+
+        let gaps = Correctness::missing(
+            &tested(),
+            with_boundary(),
+            &NegativeTestPolicy::Required,
+            false,
+            false,
+        );
+        assert!(gaps.contains(&"negative tests"));
     }
 }

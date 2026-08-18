@@ -37,4 +37,3 @@ fn test_fang_url_combined() {
     let output = String::from_utf8(result).unwrap();
     assert_eq!(output, "http://example.com://path");
 }
-
