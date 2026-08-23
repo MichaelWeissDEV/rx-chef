@@ -16,6 +16,21 @@ use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError}
 /// Avro to JSON operation
 pub struct AvroToJSON;
 
+fn cyberchef_pretty_json(value: &Value) -> Result<String, OperationError> {
+    use serde::Serialize;
+    use serde_json::ser::{PrettyFormatter, Serializer};
+
+    let mut output = Vec::new();
+    let formatter = PrettyFormatter::with_indent(b"    ");
+    let mut serializer = Serializer::with_formatter(&mut output, formatter);
+    value.serialize(&mut serializer).map_err(|error| {
+        OperationError::InvalidInput(format!("Error serializing JSON: {error}"))
+    })?;
+    String::from_utf8(output).map_err(|error| {
+        OperationError::ProcessingError(format!("JSON serializer emitted invalid UTF-8: {error}"))
+    })
+}
+
 impl Operation for AvroToJSON {
     fn name(&self) -> &'static str {
         "Avro to JSON"
@@ -80,13 +95,9 @@ impl Operation for AvroToJSON {
 
         let output = if force_json {
             if records.len() == 1 {
-                serde_json::to_string_pretty(&records[0]).map_err(|e| {
-                    OperationError::InvalidInput(format!("Error serializing JSON: {}", e))
-                })?
+                cyberchef_pretty_json(&records[0])?
             } else {
-                serde_json::to_string_pretty(&records).map_err(|e| {
-                    OperationError::InvalidInput(format!("Error serializing JSON: {}", e))
-                })?
+                cyberchef_pretty_json(&Value::Array(records))?
             }
         } else {
             let mut s = String::new();
