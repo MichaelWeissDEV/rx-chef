@@ -77,6 +77,7 @@ nav:
       - Operations matrix: reference/operation-matrix.md
       - Feature matrix: reference/feature-matrix.md
       - JSON output: reference/json-output.md
+      - What "verified" means: reference/verification.md
       - Reference index: reference/operations.md
   - Development:
       - Building: development/building.md

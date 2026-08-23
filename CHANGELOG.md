@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Evidence provenance tracking for the operation audit: an optional
+  `evidence_provenance` array per operation in `verification/operations.json`
+  records where a specific evidence bucket's expected values actually came
+  from (published standard, upstream fixture, differential run against
+  CyberChef's own code, independent implementation, vs. self-generated
+  regression/roundtrip/property coverage that cannot alone prove
+  correctness). The audit validates the recorded type and required fields
+  and now reports "with typed provenance" and "independent evidence (typed)"
+  counts separately from the existing correctness/parity counts, without
+  retroactively changing what "478/478 verified" means. See
+  [What "verified" means](https://rx-chef.readthedocs.io/en/latest/reference/verification/)
+  for the full model.
+- Migrated evidence provenance for 394/478 operations from the differential
+  fixture's existing (and already required, already hand-checked)
+  `reference_source` field: 397/478 operations now have declared
+  differential evidence (up from 266 — 135 operations had real, passing
+  differential-fixture coverage that was simply never declared in
+  `verification/operations.json`), and all 171 operations claiming exact
+  CyberChef parity now carry a typed independent-evidence record. The
+  remaining 84 operations' evidence provenance is not yet classified and is
+  reported as such, not guessed.
+
 ### Fixed
 
 - GOST Key Wrap/Unwrap no longer silently discard User Key Material (UKM) or

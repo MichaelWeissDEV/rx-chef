@@ -34,6 +34,9 @@ struct AuditTotals {
     correctness_partial: usize,
     correctness_unverified: usize,
     negative_not_applicable: usize,
+    with_typed_provenance: usize,
+    independent_evidence_operations: usize,
+    parity_exact_missing_independent_evidence: usize,
 }
 
 impl AuditTotals {
@@ -45,8 +48,19 @@ impl AuditTotals {
         info: &runtime::OperationInfo,
         has_known_answer: bool,
         has_differential: bool,
+        provenance: &[ProvenanceRecord],
     ) {
         self.registered += 1;
+        if !provenance.is_empty() {
+            self.with_typed_provenance += 1;
+        }
+        let has_independent_evidence = provenance.iter().any(ProvenanceRecord::is_independent);
+        if has_independent_evidence {
+            self.independent_evidence_operations += 1;
+        }
+        if info.parity == ParityStatus::Exact && !has_independent_evidence {
+            self.parity_exact_missing_independent_evidence += 1;
+        }
         match Correctness::derive(
             evidence,
             fixture,
@@ -143,6 +157,20 @@ impl AuditTotals {
             "  {:<28} {}",
             "tests asserting only success", self.weak_ok_assertions
         );
+        println!(
+            "  {:<28} {}",
+            "with typed provenance", self.with_typed_provenance
+        );
+        println!(
+            "  {:<28} {}",
+            "independent evidence (typed)", self.independent_evidence_operations
+        );
+        if self.parity_exact_missing_independent_evidence > 0 {
+            println!(
+                "  {:<28} {}  (warning: exact parity without a typed independent-evidence record)",
+                "parity exact, untyped", self.parity_exact_missing_independent_evidence
+            );
+        }
         println!();
         println!("operations audit progress");
         println!("  TOTAL:        {}", self.registered);
@@ -154,10 +182,11 @@ impl AuditTotals {
         println!("  PARTIAL:      {}", self.correctness_partial);
         println!("  UNVERIFIED:   {}", self.correctness_unverified);
         println!(
-            "  gaps: {} need negative tests, {} need boundary tests, {} need independent evidence",
+            "  gaps: {} need negative tests, {} need boundary tests, {} need known-answer or differential evidence, {} need typed independent evidence",
             self.registered - self.negative_tested,
             self.registered - self.boundary_tested,
-            self.registered - self.reference_verified.max(self.differential_verified)
+            self.registered - self.reference_verified.max(self.differential_verified),
+            self.registered - self.independent_evidence_operations
         );
     }
 
@@ -181,6 +210,9 @@ impl AuditTotals {
             "parity_not_applicable": self.parity_not_applicable,
             "documented_divergences": self.known_limitations,
             "tests_asserting_only_success": self.weak_ok_assertions,
+            "with_typed_provenance": self.with_typed_provenance,
+            "independent_evidence_operations": self.independent_evidence_operations,
+            "parity_exact_missing_independent_evidence": self.parity_exact_missing_independent_evidence,
         })
     }
 }
@@ -272,6 +304,170 @@ impl NegativeTestPolicy {
             }
         }
     }
+}
+
+/// The kind of source behind a piece of verification evidence.
+///
+/// Whether an operation is "verified" (it has executable tests asserting
+/// exact values) and whether that verification is backed by *independent*
+/// evidence are different claims. A known-answer test can assert an exact
+/// value that was never checked against anything outside this repository —
+/// e.g. hardcoded by running this crate's own implementation once and
+/// pasting the result. That is real regression coverage, but it cannot prove
+/// the value is *correct*, only that it hasn't changed.
+///
+/// This enum records which kind of source a given piece of evidence actually
+/// traces back to, so the two claims can be reported separately instead of
+/// conflated. See `INDEPENDENT_PROVENANCE_TYPES` for which of these variants
+/// count as independent evidence.
+const PROVENANCE_TYPES: &[&str] = &[
+    "rfc",
+    "nist",
+    "fips",
+    "standard",
+    "published_test_vector",
+    "upstream_fixture",
+    "cyberchef_differential",
+    "independent_implementation",
+    "mathematical_invariant",
+    "property_test",
+    "internal_regression",
+    "roundtrip",
+    "self_generated_expected_value",
+];
+
+/// Provenance types that may, on their own, satisfy an "independent
+/// evidence" claim: the expected value was established by something other
+/// than running this crate's own implementation and recording the output.
+///
+/// `internal_regression`, `roundtrip`, `self_generated_expected_value`,
+/// `property_test`, and `mathematical_invariant` are deliberately excluded:
+/// each is valuable regression coverage, but none of them checks the value
+/// against anything outside this repository, so none of them alone can
+/// answer "is this correct" rather than "did this change".
+const INDEPENDENT_PROVENANCE_TYPES: &[&str] = &[
+    "rfc",
+    "nist",
+    "fips",
+    "standard",
+    "published_test_vector",
+    "upstream_fixture",
+    "cyberchef_differential",
+    "independent_implementation",
+];
+
+/// Evidence buckets a provenance record may document. Kept separate from the
+/// manifest's raw field names so a typo in `target` is caught rather than
+/// silently treated as "documents nothing".
+const PROVENANCE_TARGETS: &[&str] = &["correctness", "known_answer", "differential", "property"];
+
+/// A single sourced claim about where an evidence bucket's expected values
+/// actually came from.
+///
+/// Read from the optional `evidence_provenance` array in
+/// `verification/operations.json`:
+///
+/// ```json
+/// "evidence_provenance": [
+///   {
+///     "target": "differential",
+///     "type": "cyberchef_differential",
+///     "source": "gchq/CyberChef",
+///     "commit": "b92501ee354256a127479f93d4c31a4f1d0dd657",
+///     "path_in_source": "src/core/vendor/gost/gostCipher.mjs",
+///     "notes": "wrapKeyGOST/wrapKeyCP invoked directly under Node to
+///               generate reference vectors."
+///   }
+/// ]
+/// ```
+///
+/// This is additive and optional: an operation with no `evidence_provenance`
+/// entries is not an error. It means its evidence's origin has not been
+/// classified yet — which must be visible as "not yet classified", not
+/// silently counted as either independent or asserted to be self-generated.
+/// Nothing here is invented; an operation stays unclassified until someone
+/// checks its actual source.
+#[derive(Debug, Clone)]
+struct ProvenanceRecord {
+    target: String,
+    kind: String,
+}
+
+impl ProvenanceRecord {
+    fn is_independent(&self) -> bool {
+        INDEPENDENT_PROVENANCE_TYPES.contains(&self.kind.as_str())
+    }
+}
+
+/// Reads and validates `verification[operation]["evidence_provenance"]`.
+///
+/// `present_targets` is the set of evidence buckets (`correctness`,
+/// `known_answer`, `differential`, `property`) that are non-empty for this
+/// operation; a provenance record targeting an empty or unknown bucket is a
+/// dangling claim and is rejected rather than silently ignored.
+fn read_evidence_provenance(
+    verification: &Value,
+    operation: &str,
+    present_targets: &BTreeSet<&'static str>,
+    errors: &mut Vec<String>,
+) -> Vec<ProvenanceRecord> {
+    let Some(entries) = verification.get("evidence_provenance") else {
+        return Vec::new();
+    };
+    let Some(entries) = entries.as_array() else {
+        errors.push(format!("{operation}: evidence_provenance must be an array"));
+        return Vec::new();
+    };
+    let mut records = Vec::with_capacity(entries.len());
+    for entry in entries {
+        let target = entry["target"].as_str().unwrap_or_default().to_string();
+        let kind = entry["type"].as_str().unwrap_or_default().to_string();
+        let source = entry["source"].as_str().unwrap_or_default().trim();
+        let commit = entry["commit"].as_str().unwrap_or_default().trim();
+        let version = entry["version"].as_str().unwrap_or_default().trim();
+
+        if !PROVENANCE_TARGETS.contains(&target.as_str()) {
+            errors.push(format!(
+                "{operation}: evidence_provenance target must be one of {PROVENANCE_TARGETS:?}, got {target:?}"
+            ));
+            continue;
+        }
+        if !present_targets.contains(target.as_str()) {
+            errors.push(format!(
+                "{operation}: evidence_provenance targets '{target}', which has no evidence entries for this operation"
+            ));
+            continue;
+        }
+        if !PROVENANCE_TYPES.contains(&kind.as_str()) {
+            errors.push(format!(
+                "{operation}: evidence_provenance type must be one of {PROVENANCE_TYPES:?}, got {kind:?}"
+            ));
+            continue;
+        }
+        if matches!(
+            kind.as_str(),
+            "rfc" | "nist" | "fips" | "standard" | "published_test_vector"
+        ) && source.is_empty()
+        {
+            errors.push(format!(
+                "{operation}: evidence_provenance type '{kind}' requires a non-empty 'source'"
+            ));
+            continue;
+        }
+        if matches!(
+            kind.as_str(),
+            "cyberchef_differential" | "upstream_fixture" | "independent_implementation"
+        ) && commit.is_empty()
+            && version.is_empty()
+        {
+            errors.push(format!(
+                "{operation}: evidence_provenance type '{kind}' requires a 'commit' or 'version' identifying exactly what was checked against"
+            ));
+            continue;
+        }
+        records.push(ProvenanceRecord { target, kind });
+    }
+    records
 }
 
 /// Per-operation evidence held in the differential fixture.
@@ -704,6 +900,22 @@ pub fn run() -> Result<(), String> {
 
         let negative_policy = NegativeTestPolicy::read(verification, info.name, &mut errors);
 
+        let mut present_targets = BTreeSet::new();
+        if !correctness.is_empty() {
+            present_targets.insert("correctness");
+        }
+        if !known_answer.is_empty() {
+            present_targets.insert("known_answer");
+        }
+        if !differential.is_empty() {
+            present_targets.insert("differential");
+        }
+        if !property.is_empty() {
+            present_targets.insert("property");
+        }
+        let provenance =
+            read_evidence_provenance(verification, info.name, &present_targets, &mut errors);
+
         totals.record(
             &evidence,
             fixture,
@@ -711,7 +923,13 @@ pub fn run() -> Result<(), String> {
             &info,
             !known_answer.is_empty(),
             !differential.is_empty(),
+            &provenance,
         );
+        let has_independent_evidence = provenance.iter().any(ProvenanceRecord::is_independent);
+        let evidence_provenance_json: Vec<Value> = provenance
+            .iter()
+            .map(|record| json!({"target": record.target, "type": record.kind}))
+            .collect();
 
         // Named distinctly: `correctness` above is the manifest's list of test
         // files, which this row still serialises as `test_mapping`.
@@ -769,6 +987,8 @@ pub fn run() -> Result<(), String> {
             "benchmark_skip_reason": benchmark_skip_reason,
             "docs": docs.is_file(),
             "parity": info.parity,
+            "evidence_provenance": evidence_provenance_json,
+            "independent_evidence": has_independent_evidence,
         }));
     }
 
@@ -880,9 +1100,24 @@ fn render_markdown(rows: &[Value], totals: &AuditTotals) -> String {
         ("Parity: not applicable", totals.parity_not_applicable),
         ("Documented divergences", totals.known_limitations),
         ("Tests asserting only success", totals.weak_ok_assertions),
+        (
+            "With typed evidence provenance",
+            totals.with_typed_provenance,
+        ),
+        (
+            "With independent evidence (typed)",
+            totals.independent_evidence_operations,
+        ),
+        (
+            "Parity: exact, without typed independent evidence",
+            totals.parity_exact_missing_independent_evidence,
+        ),
     ] {
         output.push_str(&format!("| {label} | {value} |\n"));
     }
+    output.push_str(
+        "\nSee [What \"verified\" means](../reference/verification.md) for what each evidence type in `evidence_provenance` does and does not prove.\n",
+    );
     output.push('\n');
 
     let module_count = modules.len();
