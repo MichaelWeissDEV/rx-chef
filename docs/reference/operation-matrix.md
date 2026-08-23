@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2419 |
+| Test functions | 2420 |
 | With negative tests | 373 |
 | With boundary tests | 467 |
-| Reference-verified (known answer) | 186 |
+| Reference-verified (known answer) | 187 |
 | Differential-verified | 262 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -271,7 +271,7 @@
 | Extract ID3 | partial | unknown | yes | 5 | yes | yes | — | — | — | — | — | yes |
 | Fang URL | partial | exact | yes | 4 | — | — | — | yes | — | — | — | yes |
 | Fernet Decrypt | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
-| Fernet Encrypt | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
+| Fernet Encrypt | partial | unknown | yes | 4 | yes | — | yes | — | — | — | — | yes |
 | File Tree | partial | exact | yes | 1 | — | — | — | yes | — | — | — | yes |
 | Fork | partial | unknown | yes | 2 | — | yes | — | — | — | — | — | yes |
 | Format MAC addresses | partial | unknown | yes | 4 | yes | — | — | yes | — | — | — | yes |

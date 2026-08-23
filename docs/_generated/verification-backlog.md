@@ -4,9 +4,9 @@
 
 Why each operation is not yet `verified`, and what would close the gap. Groups are ordered by how much work they need, so the list can be worked in batches.
 
-**433 verified · 45 partially verified · 0 unverified** of 478 registered.
+**434 verified · 44 partially verified · 0 unverified** of 478 registered.
 
-## A: only independent evidence missing (28)
+## A: only independent evidence missing (27)
 
 | Operation | Module | Tests | Neg | Bound | KAT | Diff | Parity | Weak | Remaining gaps | Strategy |
 |---|---|---:|:---:|:---:|:---:|:---:|---|---:|---|---|
@@ -16,7 +16,6 @@ Why each operation is not yet `verified`, and what would close the gap. Groups a
 | Extract Audio Metadata | Media | 5 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Extract EXIF | Image | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Extract ID3 | Default | 5 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Fernet Encrypt | Default | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Fork | Default | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Fuzzy Match | Default | 12 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | GOST Key Unwrap | Ciphers | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |

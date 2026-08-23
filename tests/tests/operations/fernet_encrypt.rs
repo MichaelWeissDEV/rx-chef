@@ -49,3 +49,31 @@ fn test_fernet_roundtrip() {
         .expect("decrypt");
     assert_eq!(decrypted, plaintext);
 }
+
+#[test]
+fn test_fernet_token_has_spec_valid_hmac_and_layout() {
+    use base64::{engine::general_purpose::URL_SAFE, Engine as _};
+    use hmac::{Hmac, Mac};
+    use sha2::Sha256;
+
+    let key_text = "MTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTI=";
+    let token_text = String::from_utf8(
+        FernetEncrypt
+            .run(
+                b"Fernet specification validation".to_vec(),
+                &[ArgValue::Str(key_text.to_string())],
+            )
+            .unwrap(),
+    )
+    .unwrap();
+    let key = URL_SAFE.decode(key_text).unwrap();
+    let token = URL_SAFE.decode(token_text).unwrap();
+
+    assert_eq!(token[0], 0x80, "Fernet version byte");
+    assert_eq!((token.len() - 57) % 16, 0, "AES-CBC ciphertext blocks");
+    let authenticated = &token[..token.len() - 32];
+    let supplied_hmac = &token[token.len() - 32..];
+    let mut hmac = Hmac::<Sha256>::new_from_slice(&key[..16]).unwrap();
+    hmac.update(authenticated);
+    assert_eq!(hmac.finalize().into_bytes().as_slice(), supplied_hmac);
+}

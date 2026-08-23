@@ -1743,7 +1743,9 @@
       "correctness": [
         "tests/tests/operations/fernet_encrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/fernet_encrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
