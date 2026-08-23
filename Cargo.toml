@@ -2,11 +2,13 @@
 name = "rxchef"
 version.workspace = true
 edition.workspace = true
-rust-version = "1.96"
+rust-version.workspace = true
 autobins = false
 description = "CyberChef ported to Rust - cryptographic, encoding, and data transformation operations"
 license.workspace = true
 repository.workspace = true
+homepage.workspace = true
+documentation = "https://docs.rs/rxchef"
 readme = "README.md"
 keywords = ["cyberchef", "encoding", "cryptography", "forensics"]
 categories = ["command-line-utilities", "cryptography", "encoding"]
@@ -31,6 +33,8 @@ version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0"
 repository = "https://github.com/MichaelWeissDEV/rx-chef"
+homepage = "https://rx-chef.readthedocs.io/"
+rust-version = "1.96"
 
 [lib]
 name = "rxchef"

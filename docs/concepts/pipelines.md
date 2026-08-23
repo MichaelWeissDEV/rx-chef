@@ -9,7 +9,7 @@ Pipelines are the natural way to express multi-step transformations in rxchef. T
 ## Example
 
 ```bash
-cargo run -p rxchef_cli -- pipe "to_hex,Space" "sha2,256" --input "Hello"
+cargo run -p rxchef-cli -- pipe "to_hex,Space" "sha2,256" --input "Hello"
 ```
 
 This composes two steps:

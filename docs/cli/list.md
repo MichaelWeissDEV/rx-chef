@@ -5,14 +5,14 @@ The `list` command shows operations that are currently available in the registry
 ## Usage
 
 ```bash
-cargo run -p rxchef_cli -- list
+cargo run -p rxchef-cli -- list
 ```
 
 You can also filter by keyword:
 
 ```bash
-cargo run -p rxchef_cli -- list hash
-cargo run -p rxchef_cli -- list base64
+cargo run -p rxchef-cli -- list hash
+cargo run -p rxchef-cli -- list base64
 ```
 
 ## Use cases

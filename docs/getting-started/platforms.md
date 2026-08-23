@@ -70,7 +70,7 @@ normal native build:
 
 ```powershell
 rustup toolchain install stable-x86_64-pc-windows-msvc
-cargo build --release -p rxchef_cli
+cargo build --release -p rxchef-cli
 .\target\release\rxchef.exe --version
 ```
 

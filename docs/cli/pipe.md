@@ -5,7 +5,7 @@ The `pipe` command composes multiple operations in one command line without requ
 ## Usage
 
 ```bash
-cargo run -p rxchef_cli -- pipe "to_hex,Space" "sha2,256" --input "Hello"
+cargo run -p rxchef-cli -- pipe "to_hex,Space" "sha2,256" --input "Hello"
 ```
 
 The output of the first operation becomes the input of the next operation.

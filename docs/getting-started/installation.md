@@ -26,7 +26,7 @@ This produces release binaries in the `target/release` directory, including the 
 ## Run the CLI
 
 ```bash
-cargo run -p rxchef_cli -- --help
+cargo run -p rxchef-cli -- --help
 ```
 
 or directly after building:

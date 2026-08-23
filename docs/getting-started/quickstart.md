@@ -9,7 +9,7 @@ All examples run from the repository root.
 The minimum build uses only the default feature set:
 
 ```console
-cargo build --release -p rxchef_cli
+cargo build --release -p rxchef-cli
 ```
 
 The executable is:

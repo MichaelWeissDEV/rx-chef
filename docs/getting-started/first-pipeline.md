@@ -9,7 +9,7 @@ We will encode a value, then hash it, and finally inspect the result using a sim
 ## Example
 
 ```bash
-cargo run -p rxchef_cli -- pipe "to_hex,Space" "sha2,256" --input "Hello"
+cargo run -p rxchef-cli -- pipe "to_hex,Space" "sha2,256" --input "Hello"
 ```
 
 This does the following:
@@ -21,7 +21,7 @@ This does the following:
 ## A more explicit example
 
 ```bash
-echo -n "Hello" | cargo run -p rxchef_cli -- run "To Hex" --input "Hello"
+echo -n "Hello" | cargo run -p rxchef-cli -- run "To Hex" --input "Hello"
 ```
 
 Then you can feed that output into another operation or keep the workflow in a saved recipe.

@@ -98,8 +98,8 @@ fi
 
 # --- Release artefacts -----------------------------------------------------
 
-run_gate "release CLI" cargo build --locked --release -p rxchef_cli
-run_gate "release TUI" cargo build --locked --release -p rxchef_tui
+run_gate "release CLI" cargo build --locked --release -p rxchef-cli
+run_gate "release TUI" cargo build --locked --release -p rxchef-tui
 run_gate "release library/FFI" cargo build --locked --release -p rxchef
 
 rxchef="$CARGO_TARGET_DIR/release/rxchef"
@@ -160,11 +160,11 @@ if [[ "$mode" == "linux" ]]; then
         env LD_LIBRARY_PATH="$CARGO_TARGET_DIR/release" /tmp/rxchef-ffi-smoke
     run_gate "quick Linux benchmarks" cargo run --locked --package xtask -- bench-docs --quick
     run_gate "Core package" cargo package --locked -p rxchef --allow-dirty
-    run_gate "Store package" cargo package --locked -p rxchef_store --allow-dirty
+    run_gate "Store package" cargo package --locked -p rxchef-store --allow-dirty
     run_gate "CLI package contents" \
-        cargo package --locked -p rxchef_cli --allow-dirty --list >/dev/null
+        cargo package --locked -p rxchef-cli --allow-dirty --list >/dev/null
     run_gate "TUI package contents" \
-        cargo package --locked -p rxchef_tui --allow-dirty --list >/dev/null
+        cargo package --locked -p rxchef-tui --allow-dirty --list >/dev/null
     run_gate "cargo install CLI from source" \
         cargo install --path crates/cli --root /tmp/rxchef-install --force --locked
     run_gate "installed CLI smoke" /tmp/rxchef-install/bin/rxchef --version

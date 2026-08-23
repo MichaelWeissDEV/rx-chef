@@ -12,8 +12,8 @@ cargo --version
 x86_64-w64-mingw32-gcc --version | head -n 1
 
 cargo fmt --all -- --check
-cargo check --locked -p rxchef -p rxchef_store -p rxchef_cli -p rxchef_tui --target "$target"
-cargo build --locked --release -p rxchef_cli -p rxchef_tui --target "$target"
+cargo check --locked -p rxchef -p rxchef-store -p rxchef-cli -p rxchef-tui --target "$target"
+cargo build --locked --release -p rxchef-cli -p rxchef-tui --target "$target"
 
 test -f "$CARGO_TARGET_DIR/$target/release/rxchef.exe"
 test -f "$CARGO_TARGET_DIR/$target/release/rxchef_tui.exe"

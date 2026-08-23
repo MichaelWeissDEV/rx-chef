@@ -11,7 +11,7 @@ The suite covers all operation modules, typed pipelines, runtime metadata, CLI h
 Focused checks:
 
 ```console
-cargo test -p rxchef_cli
+cargo test -p rxchef-cli
 cargo test -p rxchef integration::tests --lib
 cargo test -p cyberchef-rust-tests --test pipeline
 cargo run -p xtask -- docs --check

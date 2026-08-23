@@ -18,7 +18,7 @@ cargo run --locked --package xtask -- audit-operations
 cargo run --locked --package xtask -- docs --check
 cargo run --locked --example generate_operation_docs -- --check
 mkdocs build --strict
-cargo build --locked --release -p rxchef_cli -p rxchef_tui -p rxchef
+cargo build --locked --release -p rxchef-cli -p rxchef-tui -p rxchef
 
 case "$(uname -s)" in
     MINGW*|MSYS*|CYGWIN*)
