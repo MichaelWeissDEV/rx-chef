@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2491 |
+| Test functions | 2492 |
 | With negative tests | 381 |
 | With boundary tests | 474 |
-| Reference-verified (known answer) | 199 |
+| Reference-verified (known answer) | 204 |
 | Differential-verified | 262 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -27,11 +27,11 @@
 
 | Operation | Status | Parity | Args | Tests | Neg | Bound | KAT | Diff | Property | Fuzz | Bench | Docs |
 |---|---|---|:---:|---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Bombe | partial | unknown | yes | 6 | yes | yes | — | — | — | — | — | yes |
+| Bombe | partial | unknown | yes | 6 | yes | yes | yes | — | — | — | — | yes |
 | Colossus | partial | unknown | yes | 11 | yes | yes | yes | — | — | — | — | yes |
 | Enigma | partial | unknown | yes | 6 | yes | — | — | yes | — | — | — | yes |
 | Lorenz | partial | unknown | yes | 0 | — | — | — | yes | — | — | — | yes |
-| Multiple Bombe | partial | unknown | yes | 2 | — | — | — | — | — | — | — | yes |
+| Multiple Bombe | partial | unknown | yes | 2 | — | — | yes | — | — | — | — | yes |
 | SIGABA | partial | exact | yes | 3 | yes | — | — | yes | — | — | — | yes |
 | Typex | partial | unknown | yes | 4 | yes | — | — | yes | — | — | — | yes |
 
@@ -189,7 +189,7 @@
 | CMAC | partial | unknown | yes | 8 | yes | yes | yes | — | — | — | — | yes |
 | CTPH | partial | unknown | yes | 3 | — | yes | yes | — | — | — | — | yes |
 | CipherSaber2 Decrypt | partial | unknown | yes | 3 | yes | — | yes | — | — | — | — | yes |
-| CipherSaber2 Encrypt | partial | unknown | yes | 3 | yes | yes | — | — | — | — | — | yes |
+| CipherSaber2 Encrypt | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | Compare CTPH hashes | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
 | Compare SSDEEP hashes | partial | unknown | yes | 1 | — | — | yes | — | — | — | — | yes |
 | Derive HKDF key | partial | unknown | yes | 12 | yes | yes | yes | — | — | — | — | yes |
@@ -216,10 +216,10 @@
 | JWT Verify | partial | unknown | yes | 4 | yes | — | yes | — | — | — | — | yes |
 | LM Hash | partial | unknown | yes | 3 | — | yes | yes | — | — | — | — | yes |
 | LS47 Decrypt | partial | exact | yes | 1 | — | — | — | yes | — | — | — | yes |
-| LS47 Encrypt | partial | unknown | yes | 4 | yes | yes | — | — | — | — | — | yes |
+| LS47 Encrypt | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | MD6 | partial | exact | yes | 6 | yes | yes | — | yes | — | — | — | yes |
 | NT Hash | partial | exact | yes | 2 | — | yes | — | yes | — | — | — | yes |
-| SM2 Decrypt | partial | unknown | yes | 3 | yes | yes | — | — | — | — | — | yes |
+| SM2 Decrypt | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
 | SM2 Encrypt | partial | unknown | yes | 3 | yes | yes | — | — | — | — | — | yes |
 | SSDEEP | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
 | Scrypt | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |

@@ -527,9 +527,12 @@
     },
     "bombe": {
       "correctness": [
+        "tests/tests/operations/bombe.rs",
+        "src/operations/bombe.rs"
+      ],
+      "known_answer": [
         "tests/tests/operations/bombe.rs"
       ],
-      "known_answer": [],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -827,9 +830,12 @@
     },
     "ciphersaber2_encrypt": {
       "correctness": [
-        "tests/tests/operations/cipher_saber2_encrypt.rs"
+        "tests/tests/operations/cipher_saber2_encrypt.rs",
+        "src/operations/cipher_saber2_encrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "src/operations/cipher_saber2_encrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3203,7 +3209,9 @@
       "correctness": [
         "tests/tests/operations/ls47_encrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/ls47_encrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3510,9 +3518,12 @@
     },
     "multiple_bombe": {
       "correctness": [
+        "tests/tests/operations/multiple_bombe.rs",
+        "src/operations/bombe.rs"
+      ],
+      "known_answer": [
         "tests/tests/operations/multiple_bombe.rs"
       ],
-      "known_answer": [],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4821,7 +4832,9 @@
       "correctness": [
         "tests/tests/operations/sm2_decrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/sm2_decrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],

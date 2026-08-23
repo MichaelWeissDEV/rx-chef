@@ -272,6 +272,7 @@ impl Rotor {
     }
 }
 
+#[derive(Clone)]
 struct Reflector {
     map: [usize; 26],
 }
@@ -412,6 +413,7 @@ struct BombeMachine {
     n_loops: usize,
     scramblers: [Vec<usize>; 26],
     all_scramblers: Vec<ScramblerData>,
+    indicator_idx: usize,
     test_register: usize,
     test_input: [usize; 2],
     wires: [bool; 26 * 26],
@@ -444,6 +446,7 @@ impl BombeMachine {
             n_loops: 0,
             scramblers: Default::default(),
             all_scramblers: Vec::new(),
+            indicator_idx: 0,
             test_register: 0,
             test_input: [0, 0],
             wires: [false; 26 * 26],
@@ -483,9 +486,11 @@ impl BombeMachine {
                 end2: None,
             };
             all_scramblers_data.push(data);
+            indicator_idx = Some(all_scramblers_data.len() - 1);
         }
 
         machine.all_scramblers = all_scramblers_data;
+        machine.indicator_idx = indicator_idx.expect("indicator was created above");
         machine.scramblers = scramblers_indices;
         machine.test_register = a2i(nodes[most_connected_idx].letter);
 
@@ -666,14 +671,133 @@ impl BombeMachine {
         }
     }
 
+    fn format_pair(a: usize, b: usize) -> String {
+        if a < b {
+            format!("{}{}", i2a(a), i2a(b))
+        } else {
+            format!("{}{}", i2a(b), i2a(a))
+        }
+    }
+
+    fn try_decrypt(
+        &self,
+        stecker: &str,
+        shared: &SharedScrambler,
+        scramblers: &mut [Scrambler],
+    ) -> String {
+        let indicator = &mut scramblers[self.indicator_idx];
+        let initial_pos = indicator.rotor.pos;
+        let mut plugboard: Vec<usize> = (0..26).collect();
+        for pair in stecker.split_whitespace() {
+            let letters: Vec<char> = pair.chars().collect();
+            if letters.len() == 2 && letters.iter().all(char::is_ascii_uppercase) {
+                let a = a2i(letters[0]);
+                let b = a2i(letters[1]);
+                plugboard[a] = b;
+                plugboard[b] = a;
+            }
+        }
+        let mut result = String::new();
+        for c in self.ciphertext.chars().take(26) {
+            let input = plugboard[a2i(c)];
+            let output = indicator.transform(input, shared);
+            result.push(i2a(plugboard[output]));
+            indicator.step();
+        }
+        indicator.rotor.pos = initial_pos;
+        result
+    }
+
+    fn checking_machine(
+        &mut self,
+        pair: usize,
+        shared: &SharedScrambler,
+        scramblers: &[Scrambler],
+    ) -> Option<String> {
+        if pair != self.test_input[1] {
+            self.wires.fill(false);
+            self.energise_count = 0;
+            self.energise(self.test_register, pair, shared, scramblers);
+        }
+
+        let mut results = Vec::new();
+        let first = Self::format_pair(self.test_register, pair);
+        results.push(first);
+        for i in 0..26 {
+            let mut connected = None;
+            for j in 0..26 {
+                if self.wires[26 * i + j] {
+                    if connected.is_some() {
+                        return None;
+                    }
+                    connected = Some(j);
+                }
+            }
+            if let Some(other) = connected {
+                let pair = Self::format_pair(i, other);
+                if !results.contains(&pair) {
+                    results.push(pair);
+                }
+            }
+        }
+        Some(results.join(" "))
+    }
+
+    fn check_stop(
+        &mut self,
+        shared: &SharedScrambler,
+        scramblers: &mut [Scrambler],
+    ) -> Option<(String, String, String)> {
+        let count = self.energise_count;
+        if count == 26 {
+            return None;
+        }
+
+        let stecker_pair = if count == 25 {
+            (0..26).find(|&j| !self.wires[26 * self.test_register + j])
+        } else if count == 1 {
+            Some(self.test_input[1])
+        } else {
+            None
+        };
+
+        let position = scramblers[self.indicator_idx].get_pos(shared);
+        if let Some(pair) = stecker_pair {
+            let stecker = if self.use_check {
+                self.checking_machine(pair, shared, scramblers)?
+            } else {
+                format!("{}{}", i2a(self.test_register), i2a(pair))
+            };
+            let preview = self.try_decrypt(&stecker, shared, scramblers);
+            return Some((position, stecker, preview));
+        }
+
+        if !self.use_check {
+            let preview = self.try_decrypt("", shared, scramblers);
+            return Some((position, "??".to_string(), preview));
+        }
+
+        let mut valid = None;
+        for pair in 0..26 {
+            if let Some(stecker) = self.checking_machine(pair, shared, scramblers) {
+                if valid.is_some() {
+                    let preview = self.try_decrypt("", shared, scramblers);
+                    return Some((position, "??".to_string(), preview));
+                }
+                valid = Some(stecker);
+            }
+        }
+        let stecker = valid?;
+        let preview = self.try_decrypt(&stecker, shared, scramblers);
+        Some((position, stecker, preview))
+    }
+
     fn run(&mut self) -> Vec<(String, String, String)> {
         let mut result = Vec::new();
         let mut shared = SharedScrambler::new(
             self.base_rotors[1..].iter().map(|r| r.copy()).collect(),
-            Reflector::new("").unwrap(),
+            self.reflector.clone(),
         );
-        shared.reflector = Reflector::new("AY BR CU DH EQ FS GL IP JX KN MO TZ VW").unwrap(); // Hack for now
-        shared.cache_gen();
 
         let mut scramblers: Vec<Scrambler> = self
             .all_scramblers
@@ -689,10 +813,8 @@ impl BombeMachine {
             let test_input = self.test_input;
             self.energise(test_input[0], test_input[1], &shared, &scramblers);
 
-            if self.energise_count < 26 {
-                // Simplified stop detection
-                let pos = scramblers[0].get_pos(&shared);
-                result.push((pos, "??".to_string(), "".to_string()));
+            if let Some(stop) = self.check_stop(&shared, &mut scramblers) {
+                result.push(stop);
             }
 
             let mut n = 1;

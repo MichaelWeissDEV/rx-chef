@@ -3,15 +3,15 @@
   "operation_count": 478,
   "summary": {
     "registered": 478,
-    "correctness_verified": 446,
-    "correctness_partially_verified": 32,
+    "correctness_verified": 451,
+    "correctness_partially_verified": 27,
     "correctness_unverified": 0,
     "tested": 478,
-    "test_functions": 2491,
+    "test_functions": 2492,
     "negative_tested": 381,
     "negative_not_applicable": 92,
     "boundary_tested": 474,
-    "reference_verified": 199,
+    "reference_verified": 204,
     "differential_verified": 262,
     "parity_exact": 171,
     "parity_compatible": 5,
@@ -1759,10 +1759,8 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
@@ -1771,7 +1769,7 @@
       "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 1,
       "tests_asserting_only_success": 3,
       "untested_reason": null,
       "name": "Bombe",
@@ -1785,13 +1783,16 @@
       "output": "JSON",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
+        "tests/tests/operations/bombe.rs",
+        "src/operations/bombe.rs"
+      ],
+      "known_answer": [
         "tests/tests/operations/bombe.rs"
       ],
-      "known_answer": [],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2740,19 +2741,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 3,
+      "tests": 4,
       "negative_test": true,
       "boundary_test": true,
       "empty_input_test": true,
-      "value_assertions": 2,
+      "value_assertions": 3,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "CipherSaber2 Encrypt",
@@ -2766,13 +2765,16 @@
       "output": "Bytes",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/cipher_saber2_encrypt.rs"
+        "tests/tests/operations/cipher_saber2_encrypt.rs",
+        "src/operations/cipher_saber2_encrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "src/operations/cipher_saber2_encrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -10661,10 +10663,8 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
@@ -10687,13 +10687,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/ls47_encrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/ls47_encrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -11654,10 +11656,8 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
@@ -11666,7 +11666,7 @@
       "negative_test": false,
       "boundary_test": false,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 1,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Multiple Bombe",
@@ -11680,13 +11680,16 @@
       "output": "JSON",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
+        "tests/tests/operations/multiple_bombe.rs",
+        "src/operations/bombe.rs"
+      ],
+      "known_answer": [
         "tests/tests/operations/multiple_bombe.rs"
       ],
-      "known_answer": [],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -16030,10 +16033,8 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
@@ -16056,13 +16057,15 @@
       "output": "Bytes",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/sm2_decrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/sm2_decrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
