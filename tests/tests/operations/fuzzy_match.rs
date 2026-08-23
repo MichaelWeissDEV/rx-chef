@@ -62,7 +62,7 @@ fn test_fuzzy_match_matches_documented_dpan_example() {
         .unwrap();
     assert_eq!(
         result,
-        br#"<span class="hl1"><b>D</b>on't <b>Pan</b></span>ic."#
+        br#"<span class="hl1"><b>D</b>on&#039;t <b>Pan</b></span>ic."#
     );
 }
 

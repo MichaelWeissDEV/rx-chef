@@ -5,6 +5,15 @@
 use rxchef::operations::extract_audio_metadata::ExtractAudioMetadata;
 use rxchef::Operation;
 
+fn tagged_mp3() -> Vec<u8> {
+    let mut bytes = vec![
+        b'I', b'D', b'3', 3, 0, 0, 0, 0, 0, 16, b'T', b'I', b'T', b'2', 0, 0, 0, 6, 0, 0, 0,
+        b'T', b'i', b't', b'l', b'e', 0xff, 0xfb, 0x90, 0x64,
+    ];
+    bytes.resize(10 + 16 + 417, 0);
+    bytes
+}
+
 #[test]
 fn test_extract_audio_metadata_empty_input() {
     let op = ExtractAudioMetadata;
@@ -69,4 +78,26 @@ fn test_extract_audio_metadata_large_input() {
     let result = op.run(large_data, &args);
     // Should fail to parse as audio file
     assert!(result.is_err());
+}
+
+#[test]
+fn test_extract_audio_metadata_reads_standard_id3_title() {
+    let bytes = tagged_mp3();
+    let result = ExtractAudioMetadata
+        .run(
+            bytes.clone(),
+            &[
+                rxchef::operation::ArgValue::Str("song.mp3".to_string()),
+                rxchef::operation::ArgValue::Num(524288.0),
+            ],
+        )
+        .unwrap();
+    let value: serde_json::Value = serde_json::from_slice(&result).unwrap();
+    assert_eq!(
+        value,
+        serde_json::json!({
+            "artifact": {"filename": "song.mp3", "byte_length": bytes.len()},
+            "tags": {"common": {"title": "Title"}}
+        })
+    );
 }

@@ -56,14 +56,11 @@ fn test_extract_files_png_extraction() {
         0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, // IEND chunk
         0xAE, 0x42, 0x60, 0x82, // IEND signature
     ];
-    let result = op.run(png_data, &args).unwrap();
-    // The result should contain the text header followed by binary PNG data
-    // Just check that it starts with the expected text
-    if result.len() > 20 {
-        let header = &result[..std::cmp::min(50, result.len())];
-        let header_str = String::from_utf8_lossy(header);
-        assert!(header_str.contains("--- Extracted PNG ---"));
-    }
+    let result = op.run(png_data.clone(), &args).unwrap();
+    let mut expected = b"--- Extracted PNG ---\n".to_vec();
+    expected.extend_from_slice(&png_data);
+    expected.push(b'\n');
+    assert_eq!(result, expected);
 }
 
 #[test]

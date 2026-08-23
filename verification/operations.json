@@ -1542,7 +1542,9 @@
       "correctness": [
         "tests/tests/operations/extract_audio_metadata.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/extract_audio_metadata.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -1553,7 +1555,9 @@
       "correctness": [
         "tests/tests/operations/extract_exif.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/extract_exif.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -1561,10 +1565,15 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "extract_files": {
+      "negative_test_policy": {
+        "not_applicable": "Extract Files is a total signature-carving transform over finite bytes and boolean/unsigned arguments; malformed or incomplete candidates have the defined result No files found."
+      },
       "correctness": [
         "tests/tests/operations/extract_files.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/extract_files.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -1575,7 +1584,9 @@
       "correctness": [
         "tests/tests/operations/extract_id3.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/extract_id3.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],

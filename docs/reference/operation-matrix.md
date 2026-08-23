@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2499 |
+| Test functions | 2502 |
 | With negative tests | 381 |
 | With boundary tests | 475 |
-| Reference-verified (known answer) | 210 |
+| Reference-verified (known answer) | 214 |
 | Differential-verified | 262 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -267,8 +267,8 @@
 | Escape Unicode Characters | partial | exact | yes | 3 | yes | — | — | yes | — | — | — | yes |
 | Escape string | partial | exact | yes | 3 | yes | — | — | yes | — | — | — | yes |
 | Expand alphabet range | partial | exact | yes | 4 | yes | yes | — | yes | — | — | — | yes |
-| Extract Files | partial | unknown | yes | 5 | — | yes | — | — | — | — | — | yes |
-| Extract ID3 | partial | unknown | yes | 5 | yes | yes | — | — | — | — | — | yes |
+| Extract Files | partial | unknown | yes | 5 | — | yes | yes | — | — | — | — | yes |
+| Extract ID3 | partial | unknown | yes | 6 | yes | yes | yes | — | — | — | — | yes |
 | Fang URL | partial | exact | yes | 4 | — | — | — | yes | — | — | — | yes |
 | Fernet Decrypt | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
 | Fernet Encrypt | partial | unknown | yes | 4 | yes | — | yes | — | — | — | — | yes |
@@ -500,7 +500,7 @@
 | Cover Image | partial | unknown | yes | 8 | yes | yes | yes | — | — | — | — | yes |
 | Crop Image | partial | unknown | yes | 9 | yes | yes | yes | — | — | — | — | yes |
 | Dither Image | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
-| Extract EXIF | partial | unknown | yes | 1 | yes | — | — | — | — | — | — | yes |
+| Extract EXIF | partial | unknown | yes | 2 | yes | yes | yes | — | — | — | — | yes |
 | Extract LSB | partial | unknown | yes | 6 | yes | yes | yes | — | — | — | — | yes |
 | Extract RGBA | partial | unknown | yes | 6 | yes | yes | yes | — | — | — | — | yes |
 | Flip Image | partial | unknown | yes | 7 | yes | yes | yes | — | — | — | — | yes |
@@ -538,7 +538,7 @@
 
 | Operation | Status | Parity | Args | Tests | Neg | Bound | KAT | Diff | Property | Fuzz | Bench | Docs |
 |---|---|---|:---:|---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Extract Audio Metadata | partial | unknown | yes | 5 | yes | yes | — | — | — | — | — | yes |
+| Extract Audio Metadata | partial | unknown | yes | 6 | yes | yes | yes | — | — | — | — | yes |
 
 ## OCR
 
