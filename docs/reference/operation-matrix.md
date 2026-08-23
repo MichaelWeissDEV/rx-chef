@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2396 |
-| With negative tests | 368 |
-| With boundary tests | 460 |
-| Reference-verified (known answer) | 175 |
+| Test functions | 2401 |
+| With negative tests | 369 |
+| With boundary tests | 463 |
+| Reference-verified (known answer) | 178 |
 | Differential-verified | 258 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -182,9 +182,9 @@
 | Analyse UUID | partial | unknown | yes | 3 | yes | — | yes | — | — | — | — | yes |
 | Analyse hash | partial | unknown | yes | 3 | yes | — | — | yes | — | — | — | yes |
 | Argon2 | partial | unknown | yes | 27 | — | yes | yes | — | — | — | — | yes |
-| Argon2 compare | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
-| Bcrypt | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
-| Bcrypt compare | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
+| Argon2 compare | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
+| Bcrypt | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
+| Bcrypt compare | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | Bcrypt parse | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | CMAC | partial | unknown | yes | 8 | yes | yes | yes | — | — | — | — | yes |
 | CTPH | partial | unknown | yes | 3 | — | yes | yes | — | — | — | — | yes |

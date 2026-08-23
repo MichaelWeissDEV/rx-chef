@@ -265,7 +265,9 @@
       "correctness": [
         "tests/tests/operations/argon2_compare.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/argon2_compare.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -391,9 +393,12 @@
     },
     "bcrypt": {
       "correctness": [
-        "tests/tests/operations/bcrypt.rs"
+        "tests/tests/operations/bcrypt.rs",
+        "src/operations/bcrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "src/operations/bcrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -404,7 +409,9 @@
       "correctness": [
         "tests/tests/operations/bcrypt_compare.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/bcrypt_compare.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],

@@ -32,3 +32,14 @@ fn test_bcrypt_invalid_rounds() {
     let result = operation.run(input, &args);
     assert!(result.is_err());
 }
+
+#[test]
+fn test_bcrypt_72_byte_password_boundary() {
+    let operation = Bcrypt;
+    let password = vec![b'x'; 72];
+    let args = [ArgValue::Num(4.0)];
+    let hash = String::from_utf8(operation.run(password.clone(), &args).unwrap()).unwrap();
+
+    assert_eq!(hash.len(), 60);
+    assert!(bcrypt::verify(password, &hash).unwrap());
+}
