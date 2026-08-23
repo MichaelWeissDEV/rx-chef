@@ -10,9 +10,9 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2408 |
-| With negative tests | 372 |
-| With boundary tests | 464 |
+| Test functions | 2411 |
+| With negative tests | 373 |
+| With boundary tests | 465 |
 | Reference-verified (known answer) | 180 |
 | Differential-verified | 261 |
 | Parity: exact | 171 |
@@ -368,7 +368,7 @@
 | Set Difference | partial | unknown | yes | 3 | yes | — | yes | — | — | — | — | yes |
 | Set Intersection | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
 | Set Union | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
-| Show Base64 Offsets | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
+| Show Base64 Offsets | partial | unknown | yes | 4 | yes | yes | — | — | — | — | — | yes |
 | Shuffle | partial | unknown | yes | 3 | — | yes | yes | — | — | — | — | yes |
 | Sleep | partial | exact | yes | 3 | yes | — | — | yes | — | — | — | yes |
 | Sort | partial | exact | yes | 5 | yes | — | — | yes | — | — | — | yes |
