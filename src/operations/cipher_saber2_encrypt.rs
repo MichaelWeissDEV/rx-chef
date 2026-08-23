@@ -90,14 +90,30 @@ impl Operation for CipherSaber2Encrypt {
         let mut iv = [0u8; 10];
         rand::thread_rng().fill_bytes(&mut iv);
 
-        let ciphertext = ciphersaber2_crypt(&iv, &key, rounds, &input);
+        Ok(encrypt_with_iv(&input, &key, rounds, iv))
+    }
+}
 
-        // Output: IV || ciphertext
-        let mut output = Vec::with_capacity(10 + ciphertext.len());
-        output.extend_from_slice(&iv);
-        output.extend_from_slice(&ciphertext);
+fn encrypt_with_iv(input: &[u8], key: &[u8], rounds: usize, iv: [u8; 10]) -> Vec<u8> {
+    let ciphertext = ciphersaber2_crypt(&iv, key, rounds, input);
+    let mut output = Vec::with_capacity(10 + ciphertext.len());
+    output.extend_from_slice(&iv);
+    output.extend_from_slice(&ciphertext);
+    output
+}
 
-        Ok(output)
+#[cfg(test)]
+mod tests {
+    use super::encrypt_with_iv;
+
+    #[test]
+    fn published_ciphersaber_vector_encrypts_exactly() {
+        let expected = hex::decode("6f6d0babf3aa6719031530edb677ca74e0089dd0e7b8854356bb1448e37cdbefe7f3a84f4f5fb3fd").unwrap();
+        let iv: [u8; 10] = expected[..10].try_into().unwrap();
+        assert_eq!(
+            encrypt_with_iv(b"This is a test of CipherSaber.", b"asdfg", 1, iv),
+            expected
+        );
     }
 }
 

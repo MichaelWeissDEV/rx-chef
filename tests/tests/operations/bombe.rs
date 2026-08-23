@@ -137,3 +137,22 @@ fn test_bombe_4_rotor() {
         "Bombe operation with 4-rotor should succeed"
     );
 }
+
+#[test]
+fn test_bombe_recovers_upstream_reference_stop() {
+    let args = [
+        ArgValue::Str("3-rotor".into()),
+        ArgValue::Str(String::new()),
+        ArgValue::Str("EKMFLGDQVZNTOWYHXUSPAIBRCJ<R".into()),
+        ArgValue::Str("AJDKSIRUXBLHWTMCQGZNPYFVOE<F".into()),
+        ArgValue::Str("BDFHJLCPRTXVZNYEIWGAKMUSQO<W".into()),
+        ArgValue::Str("AY BR CU DH EQ FS GL IP JX KN MO TZ VW".into()),
+        ArgValue::Str("THISISATESTMESSAGE".into()),
+        ArgValue::Num(0.0),
+        ArgValue::Bool(false),
+    ];
+    let output = String::from_utf8(Bombe.run(b"BBYFLTHHYIJQAYBBYS".to_vec(), &args).unwrap()).unwrap();
+    assert!(output.contains("LGA"));
+    assert!(output.contains("SS"));
+    assert!(output.contains("VFISUSGTKSTMPSUNAK"));
+}
