@@ -220,6 +220,10 @@ mod tests {
             true,
         )
         .unwrap();
+        assert_eq!(
+            url.as_str(),
+            "https://resolver.example/dns-query?name=example.com&type=AAAA&cd=true"
+        );
         let pairs = url.query_pairs().collect::<Vec<_>>();
         assert!(pairs
             .iter()
@@ -240,6 +244,10 @@ mod tests {
         let answers: serde_json::Value =
             serde_json::from_slice(&format_response(RESPONSE, true).unwrap()).unwrap();
         assert_eq!(answers, serde_json::json!(["192.0.2.1"]));
+        assert_eq!(
+            format_response(RESPONSE, true).unwrap(),
+            b"[\n  \"192.0.2.1\"\n]"
+        );
     }
 
     #[test]

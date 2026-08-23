@@ -1148,9 +1148,12 @@
     },
     "dns_over_https": {
       "correctness": [
-        "tests/tests/operations/dns_over_https.rs"
+        "tests/tests/operations/dns_over_https.rs",
+        "src/operations/dns_over_https.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "src/operations/dns_over_https.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2318,7 +2321,9 @@
       "correctness": [
         "tests/tests/operations/fuzzy_match.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/fuzzy_match.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2464,7 +2469,9 @@
       "correctness": [
         "tests/tests/operations/generate_lorem_ipsum.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/generate_lorem_ipsum.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3120,7 +3127,9 @@
       "correctness": [
         "tests/tests/operations/java_script_parser.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/java_script_parser.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3144,7 +3153,9 @@
       "correctness": [
         "tests/tests/operations/jsonata.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/jsonata.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -5094,9 +5105,12 @@
     },
     "show_on_map": {
       "correctness": [
-        "tests/tests/operations/show_on_map.rs"
+        "tests/tests/operations/show_on_map.rs",
+        "src/operations/show_on_map.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "src/operations/show_on_map.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],

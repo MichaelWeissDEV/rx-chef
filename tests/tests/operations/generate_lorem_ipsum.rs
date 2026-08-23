@@ -32,6 +32,17 @@ fn test_lorem_ipsum_words() {
     let s = String::from_utf8(result).expect("valid utf8");
     assert!(s.starts_with("Lorem ipsum dolor sit amet"));
 }
+
+#[test]
+fn test_lorem_ipsum_one_word_lower_boundary() {
+    let result = GenerateLoremIpsum
+        .run(
+            vec![],
+            &[ArgValue::Num(1.0), ArgValue::Str("Words".to_string())],
+        )
+        .unwrap();
+    assert_eq!(result, b"Lorem.");
+}
 #[test]
 fn test_lorem_ipsum_bytes() {
     let op = GenerateLoremIpsum;

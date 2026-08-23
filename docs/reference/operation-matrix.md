@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2492 |
+| Test functions | 2499 |
 | With negative tests | 381 |
-| With boundary tests | 474 |
-| Reference-verified (known answer) | 204 |
+| With boundary tests | 475 |
+| Reference-verified (known answer) | 210 |
 | Differential-verified | 262 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -130,8 +130,8 @@
 | JSON Minify | partial | unknown | yes | 2 | — | yes | — | yes | — | — | — | yes |
 | JavaScript Beautify | partial | unknown | yes | 1 | — | — | — | yes | — | — | — | yes |
 | JavaScript Minify | partial | unknown | yes | 4 | — | yes | — | yes | — | — | — | yes |
-| JavaScript Parser | partial | unknown | yes | 1 | yes | — | — | — | — | — | — | yes |
-| Jsonata Query | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
+| JavaScript Parser | partial | unknown | yes | 1 | yes | — | yes | — | — | — | — | yes |
+| Jsonata Query | partial | unknown | yes | 3 | yes | — | yes | — | — | — | — | yes |
 | Render Markdown | partial | unknown | yes | 4 | — | — | — | yes | — | — | — | yes |
 | SQL Beautify | partial | exact | yes | 3 | — | yes | — | yes | — | — | — | yes |
 | SQL Minify | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |
@@ -252,7 +252,7 @@
 | Convert speed | partial | unknown | yes | 27 | — | yes | yes | — | — | — | — | yes |
 | Convert to NATO alphabet | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
 | Count occurrences | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |
-| DNS over HTTPS | partial | unknown | yes | 2 | yes | yes | — | — | — | — | — | yes |
+| DNS over HTTPS | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
 | DateTime Delta | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | Dechunk HTTP response | partial | unknown | yes | 6 | yes | yes | — | yes | — | — | — | yes |
 | Decode NetBIOS Name | partial | exact | yes | 13 | yes | yes | — | yes | — | — | — | yes |
@@ -300,10 +300,10 @@
 | From Octal | partial | unknown | yes | 4 | yes | yes | — | yes | — | — | — | yes |
 | From Quoted Printable | partial | exact | yes | 5 | — | yes | — | yes | — | — | — | yes |
 | From UNIX Timestamp | partial | unknown | yes | 5 | yes | yes | — | yes | — | — | — | yes |
-| Fuzzy Match | partial | unknown | yes | 12 | yes | yes | — | — | — | — | — | yes |
+| Fuzzy Match | partial | unknown | yes | 13 | yes | yes | yes | — | — | — | — | yes |
 | Generate De Bruijn Sequence | partial | exact | yes | 4 | yes | yes | — | yes | — | — | — | yes |
 | Generate HOTP | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
-| Generate Lorem Ipsum | partial | unknown | yes | 4 | yes | — | — | — | — | — | — | yes |
+| Generate Lorem Ipsum | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
 | Generate TOTP | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | Get All Casings | partial | exact | yes | 4 | yes | yes | — | yes | — | — | — | yes |
 | Get Time | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
@@ -532,7 +532,7 @@
 
 | Operation | Status | Parity | Args | Tests | Neg | Bound | KAT | Diff | Property | Fuzz | Bench | Docs |
 |---|---|---|:---:|---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Show on map | partial | unknown | yes | 3 | yes | yes | — | — | — | — | — | yes |
+| Show on map | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
 
 ## Media
 

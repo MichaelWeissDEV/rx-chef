@@ -3,15 +3,15 @@
   "operation_count": 478,
   "summary": {
     "registered": 478,
-    "correctness_verified": 451,
-    "correctness_partially_verified": 27,
+    "correctness_verified": 457,
+    "correctness_partially_verified": 21,
     "correctness_unverified": 0,
     "tested": 478,
-    "test_functions": 2492,
+    "test_functions": 2499,
     "negative_tested": 381,
     "negative_not_applicable": 92,
-    "boundary_tested": 474,
-    "reference_verified": 204,
+    "boundary_tested": 475,
+    "reference_verified": 210,
     "differential_verified": 262,
     "parity_exact": 171,
     "parity_compatible": 5,
@@ -3769,19 +3769,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 2,
+      "tests": 5,
       "negative_test": true,
       "boundary_test": true,
       "empty_input_test": true,
-      "value_assertions": 1,
+      "value_assertions": 6,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "DNS over HTTPS",
@@ -3795,13 +3793,16 @@
       "output": "JSON",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/dns_over_https.rs"
+        "tests/tests/operations/dns_over_https.rs",
+        "src/operations/dns_over_https.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "src/operations/dns_over_https.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -7642,19 +7643,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 12,
+      "tests": 13,
       "negative_test": true,
       "boundary_test": true,
       "empty_input_test": true,
-      "value_assertions": 4,
+      "value_assertions": 5,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Fuzzy Match",
@@ -7668,13 +7667,15 @@
       "output": "HTML",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/fuzzy_match.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/fuzzy_match.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -8170,20 +8171,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "boundary tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 4,
+      "tests": 5,
       "negative_test": true,
-      "boundary_test": false,
+      "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 1,
+      "value_assertions": 2,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Generate Lorem Ipsum",
@@ -8197,13 +8195,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/generate_lorem_ipsum.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/generate_lorem_ipsum.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -10350,10 +10350,8 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": true,
@@ -10362,7 +10360,7 @@
       "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
-      "value_assertions": 1,
+      "value_assertions": 7,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "JavaScript Parser",
@@ -10376,13 +10374,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/java_script_parser.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/java_script_parser.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -10438,10 +10438,8 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
@@ -10466,13 +10464,15 @@
       "output": "JSON",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/jsonata.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/jsonata.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -16924,19 +16924,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": true,
       "fixture_binary_or_unicode": true,
-      "tests": 3,
+      "tests": 5,
       "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 2,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Show on map",
@@ -16950,13 +16948,16 @@
       "output": "HTML",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/show_on_map.rs"
+        "tests/tests/operations/show_on_map.rs",
+        "src/operations/show_on_map.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "src/operations/show_on_map.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],

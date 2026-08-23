@@ -56,6 +56,17 @@ fn test_fuzzy_match_partial_match() {
 }
 
 #[test]
+fn test_fuzzy_match_matches_documented_dpan_example() {
+    let result = FuzzyMatch
+        .run(b"Don't Panic.".to_vec(), &default_args("dpan"))
+        .unwrap();
+    assert_eq!(
+        result,
+        br#"<span class="hl1"><b>D</b>on't <b>Pan</b></span>ic."#
+    );
+}
+
+#[test]
 fn test_fuzzy_match_no_match() {
     let op = FuzzyMatch;
     let args = default_args("xyz");

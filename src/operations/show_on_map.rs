@@ -217,3 +217,24 @@ mapscript.src = "{}";
         leaflet_url
     )
 }
+
+#[cfg(test)]
+mod tests {
+    use super::parse_coordinates;
+
+    #[test]
+    fn converts_published_dms_math_to_decimal_degrees() {
+        assert_eq!(
+            parse_coordinates("51° 30' 14.4\" N, 0° 7' 33.6\" W", "Auto").unwrap(),
+            "51.504, -0.126"
+        );
+    }
+
+    #[test]
+    fn preserves_ddm_sign_and_fraction() {
+        assert_eq!(
+            parse_coordinates("33° 51.6' S; 151° 12.6' E", ";").unwrap(),
+            "-33.86, 151.21"
+        );
+    }
+}
