@@ -3,8 +3,8 @@
 //   cargo test -p cyberchef-rust-tests --test operations compare_ctph_hashes::
 
 use rxchef::operation::ArgValue;
-use rxchef::operations::ctph::CTPH;
 use rxchef::operations::compare_ctph_hashes::CompareCTPHHashes;
+use rxchef::operations::ctph::CTPH;
 use rxchef::Operation;
 
 #[test]

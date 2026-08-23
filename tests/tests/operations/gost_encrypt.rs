@@ -8,10 +8,8 @@ use rxchef::Operation;
 #[test]
 fn test_magma_gost_r_34_12_2015_vector() {
     // GOST R 34.12-2015 Magma block-cipher test vector.
-    let key = hex::decode(
-        "ffeeddccbbaa99887766554433221100f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff",
-    )
-    .unwrap();
+    let key =
+        hex::decode("ffeeddccbbaa99887766554433221100f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff").unwrap();
     let plaintext = hex::decode("fedcba9876543210").unwrap();
     let output = GostEncrypt
         .run(

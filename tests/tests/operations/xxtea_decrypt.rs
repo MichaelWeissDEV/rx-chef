@@ -11,8 +11,7 @@ use rxchef::Operation;
 fn test_xxtea_decrypt_pinned_cyberchef_vector() {
     // Ciphertext observed from CyberChef 11.4.0 at commit 2e048b029085.
     let ciphertext =
-        hex::decode("3db5a39db1663fc029bb630a38635b8de5bfef62192e52cc4bf83cda8ccbc701")
-            .unwrap();
+        hex::decode("3db5a39db1663fc029bb630a38635b8de5bfef62192e52cc4bf83cda8ccbc701").unwrap();
     let output = XxteaDecryptOp
         .run(ciphertext, &[ArgValue::Str("1234567890".into())])
         .unwrap();

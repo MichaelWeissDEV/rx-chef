@@ -48,16 +48,20 @@ fn malformed_typed_arguments_are_rejected_by_the_public_runtime() {
             .iter()
             .map(|argument| argument.default.clone())
             .collect();
-        let invalid = descriptor.args.iter().enumerate().find_map(|(index, argument)| {
-            let value = match argument.kind {
-                ArgKind::Integer | ArgKind::UnsignedInteger | ArgKind::Float => "not-a-number",
-                ArgKind::Boolean => "not-a-boolean",
-                ArgKind::Enum => "not-a-declared-enum-choice",
-                ArgKind::Regex => "(",
-                _ => return None,
-            };
-            Some((index, value))
-        });
+        let invalid = descriptor
+            .args
+            .iter()
+            .enumerate()
+            .find_map(|(index, argument)| {
+                let value = match argument.kind {
+                    ArgKind::Integer | ArgKind::UnsignedInteger | ArgKind::Float => "not-a-number",
+                    ArgKind::Boolean => "not-a-boolean",
+                    ArgKind::Enum => "not-a-declared-enum-choice",
+                    ArgKind::Regex => "(",
+                    _ => return None,
+                };
+                Some((index, value))
+            });
         let (index, invalid_value) = invalid.unwrap_or_else(|| {
             panic!("{operation} must have a typed argument suitable for this contract test")
         });

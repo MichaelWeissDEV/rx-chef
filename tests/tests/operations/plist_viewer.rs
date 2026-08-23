@@ -7,7 +7,9 @@ use rxchef::Operation;
 
 #[test]
 fn test_plist_viewer_rejects_invalid_plist() {
-    assert!(PLISTViewer.run(b"not a property list".to_vec(), &[]).is_err());
+    assert!(PLISTViewer
+        .run(b"not a property list".to_vec(), &[])
+        .is_err());
 }
 
 #[test]

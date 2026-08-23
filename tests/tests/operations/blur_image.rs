@@ -16,12 +16,13 @@ fn test_blur_preserves_uniform_field_exactly() {
         .write_to(&mut Cursor::new(&mut png), image::ImageFormat::Png)
         .unwrap();
     let output = BlurImage
-        .run(
-            png,
-            &[ArgValue::Num(2.0), ArgValue::Str("Gaussian".into())],
-        )
+        .run(png, &[ArgValue::Num(2.0), ArgValue::Str("Gaussian".into())])
         .unwrap();
-    for pixel in image::load_from_memory(&output).unwrap().to_rgba8().pixels() {
+    for pixel in image::load_from_memory(&output)
+        .unwrap()
+        .to_rgba8()
+        .pixels()
+    {
         assert_eq!(pixel.0, [17, 83, 201, 255]);
     }
 }

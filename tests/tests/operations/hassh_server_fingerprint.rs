@@ -44,7 +44,10 @@ fn test_hassh_server_canonical_string_and_digest() {
             ],
         )
         .unwrap();
-    assert_eq!(canonical, b"curve25519-sha256;aes128-ctr;hmac-sha2-256;none");
+    assert_eq!(
+        canonical,
+        b"curve25519-sha256;aes128-ctr;hmac-sha2-256;none"
+    );
 
     let digest = HASSHServerFingerprint
         .run(

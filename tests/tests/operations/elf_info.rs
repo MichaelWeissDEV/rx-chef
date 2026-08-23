@@ -75,11 +75,15 @@ fn test_elf_info_minimal_valid_elf() {
     assert!(result.is_ok());
     let result_str = String::from_utf8(result.unwrap()).unwrap();
     // Values are read from the System V ABI-defined e_ident bytes above.
-    assert!(result_str.lines().any(|line| line == "Format:                       32-bit"));
+    assert!(result_str
+        .lines()
+        .any(|line| line == "Format:                       32-bit"));
     assert!(result_str
         .lines()
         .any(|line| line == "Endianness:                   Little"));
-    assert!(result_str.lines().any(|line| line == "ABI:                          System V"));
+    assert!(result_str
+        .lines()
+        .any(|line| line == "ABI:                          System V"));
 }
 
 #[test]

@@ -88,10 +88,7 @@ pub(crate) fn digest(bytes: &[u8]) -> String {
         block_index -= 1;
         (first, second) = piecewise_hash(bytes, 3u32.wrapping_shl(block_index));
     }
-    format!(
-        "{}:{}:{}",
-        B64[block_index as usize] as char, first, second
-    )
+    format!("{}:{}:{}", B64[block_index as usize] as char, first, second)
 }
 
 fn levenshtein(left: &str, right: &str) -> usize {

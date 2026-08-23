@@ -18,9 +18,7 @@ fn test_xsalsa20_pinned_reference_vector_first_block() {
                     "hex:000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
                         .to_string(),
                 ),
-                ArgValue::Str(
-                    "hex:000102030405060708090a0b0c0d0e0f1011121314151617".to_string(),
-                ),
+                ArgValue::Str("hex:000102030405060708090a0b0c0d0e0f1011121314151617".to_string()),
                 ArgValue::Num(0.0),
                 ArgValue::Str("20".to_string()),
                 ArgValue::Str("Raw".to_string()),

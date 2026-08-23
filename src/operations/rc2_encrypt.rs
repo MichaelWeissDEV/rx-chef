@@ -43,10 +43,13 @@ fn rc2_expand_key(key: &[u8]) -> [u16; 64] {
     for i in key_len..128 {
         l[i] = PITABLE[((l[i - 1] as usize) + (l[i - key_len] as usize)) % 256];
     }
-    let t8 = key_len;
-    l[128 - t8] = PITABLE[(l[128 - t8] as usize) % 256];
-    for i in (0..128 - t8).rev() {
-        l[i] = PITABLE[(l[i + 1] as usize ^ l[i + t8] as usize) as usize];
+    // CyberChef's node-forge backend always creates its RC2 cipher with
+    // 128 effective key bits.  In RFC 2268 notation this makes T8 = 16,
+    // independently of the number of bytes in the supplied user key.
+    const T8: usize = 16;
+    l[128 - T8] = PITABLE[l[128 - T8] as usize];
+    for i in (0..128 - T8).rev() {
+        l[i] = PITABLE[l[i + 1] as usize ^ l[i + T8] as usize];
     }
     let mut k = [0u16; 64];
     for i in 0..64 {

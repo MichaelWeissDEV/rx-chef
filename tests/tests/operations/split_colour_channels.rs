@@ -28,7 +28,11 @@ fn test_split_colour_channels() {
     assert_eq!(archive.len(), expected.len());
     for (name, rgba) in expected {
         let mut bytes = Vec::new();
-        archive.by_name(name).unwrap().read_to_end(&mut bytes).unwrap();
+        archive
+            .by_name(name)
+            .unwrap()
+            .read_to_end(&mut bytes)
+            .unwrap();
         let pixels = image::load_from_memory(&bytes).unwrap().to_rgba8();
         let pixel = pixels.get_pixel(0, 0);
         assert_eq!(pixel.0, rgba, "wrong channel data in {name}");

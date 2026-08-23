@@ -8,9 +8,7 @@ use rxchef::Operation;
 
 #[test]
 fn test_bit_shift_left_rejects_amount_above_byte_width() {
-    assert!(BitShiftLeft
-        .run(vec![0xff], &[ArgValue::Num(8.0)])
-        .is_err());
+    assert!(BitShiftLeft.run(vec![0xff], &[ArgValue::Num(8.0)]).is_err());
 }
 
 #[test]

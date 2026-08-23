@@ -10,10 +10,8 @@ use rxchef::Operation;
 fn test_magma_gost_r_34_12_2015_vector() {
     // Inverse of the published GOST R 34.12-2015 Magma block-cipher vector;
     // ciphertext is fixed and was not produced by GostEncrypt in this test.
-    let key = hex::decode(
-        "ffeeddccbbaa99887766554433221100f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff",
-    )
-    .unwrap();
+    let key =
+        hex::decode("ffeeddccbbaa99887766554433221100f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff").unwrap();
     let output = GOSTDecryptOp
         .run(
             b"4ee901e5c2d8ca3d".to_vec(),

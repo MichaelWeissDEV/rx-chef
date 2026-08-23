@@ -42,9 +42,7 @@ fn test_heatmap_two_bin_geometry_exactly() {
     let mut args = default_args();
     args[2] = ArgValue::Num(2.0);
     args[3] = ArgValue::Num(2.0);
-    let output = HeatmapChart
-        .run(b"X,Y\n1,1\n2,2".to_vec(), &args)
-        .unwrap();
+    let output = HeatmapChart.run(b"X,Y\n1,1\n2,2".to_vec(), &args).unwrap();
     assert_eq!(
         String::from_utf8(output).unwrap(),
         "<svg width=\"100%\" height=\"100%\" viewBox=\"0 0 500 500\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"100%\" height=\"100%\" fill=\"white\"/><rect x=\"50\" y=\"235\" width=\"215\" height=\"215\" fill=\"rgb(0, 0, 0)\" stroke=\"none\"><title>Count: 1</title></rect><rect x=\"265\" y=\"20\" width=\"215\" height=\"215\" fill=\"rgb(0, 0, 0)\" stroke=\"none\"><title>Count: 1</title></rect><line x1=\"50\" y1=\"450\" x2=\"480\" y2=\"450\" stroke=\"black\" stroke-width=\"1\"/><line x1=\"50\" y1=\"20\" x2=\"50\" y2=\"450\" stroke=\"black\" stroke-width=\"1\"/><text x=\"265\" y=\"485\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"14\">X</text><text x=\"15\" y=\"235\" transform=\"rotate(-90, 15, 235)\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"14\">Y</text></svg>"

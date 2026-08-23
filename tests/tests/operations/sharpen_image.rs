@@ -23,7 +23,11 @@ fn test_sharpen_preserves_uniform_field_exactly() {
             &[ArgValue::Num(2.0), ArgValue::Num(1.0), ArgValue::Num(0.0)],
         )
         .unwrap();
-    for pixel in image::load_from_memory(&output).unwrap().to_rgba8().pixels() {
+    for pixel in image::load_from_memory(&output)
+        .unwrap()
+        .to_rgba8()
+        .pixels()
+    {
         assert_eq!(pixel.0, [17, 83, 201, 255]);
     }
 }
