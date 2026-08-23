@@ -52,24 +52,23 @@ native host gates are documented in the
 
 ## Installation
 
-### Build and install the CLI from source
+```bash
+cargo install rxchef-cli                       # Cargo
+brew install MichaelWeissDEV/tap/rxchef         # Homebrew (macOS/Linux)
+yay -S rxchef                                   # Arch Linux / AUR
+sudo apt install ./rxchef_<version>_<arch>.deb  # Debian/Ubuntu
+sudo dnf install ./rxchef-<version>-1.<arch>.rpm  # Fedora/RHEL/openSUSE
+```
 
-The project requires the stable Rust toolchain, Git, and a C build toolchain for
-native dependencies.
+`.deb`/`.rpm` packages and platform archives are attached to each
+[GitHub Release](https://github.com/MichaelWeissDEV/rx-chef/releases).
+Building from source only needs the stable Rust toolchain and Git:
 
 ```console
 git clone https://github.com/MichaelWeissDEV/rx-chef.git
 cd rx-chef
 cargo install --path crates/cli
 rxchef --version
-```
-
-To build the complete workspace, including the TUI:
-
-```console
-cargo build --release --workspace
-./target/release/rxchef --help
-./target/release/rxchef_tui
 ```
 
 Optional OpenPGP, JSON query, OCR, Capstone disassembly, and YARA support is

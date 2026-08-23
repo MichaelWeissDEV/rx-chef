@@ -62,6 +62,10 @@ Declared side effects: `[]`. Treat parser inputs as untrusted and apply executio
 
 Correctness tests:
 - tests/tests/operations/parse_ipv6_address.rs
+- tests/tests/differential.rs
+
+Differential tests:
+- tests/tests/differential.rs
 
 ## Performance classification
 

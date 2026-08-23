@@ -71,6 +71,9 @@ Correctness tests:
 Known-answer tests:
 - tests/tests/operations/aes_key_wrap.rs
 
+Differential tests:
+- tests/tests/differential.rs
+
 ## Performance classification
 
 Excluded from the committed representative benchmark set: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.

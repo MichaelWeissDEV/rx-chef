@@ -66,6 +66,10 @@ Declared side effects: `[Time]`. Treat parser inputs as untrusted and apply exec
 
 Correctness tests:
 - tests/tests/operations/flask_session_sign.rs
+- src/operations/flask_session_sign.rs
+
+Known-answer tests:
+- src/operations/flask_session_sign.rs
 
 ## Performance classification
 

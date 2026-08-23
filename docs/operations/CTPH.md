@@ -18,7 +18,7 @@ Context Triggered Piecewise Hashing, also called Fuzzy Hashing, can match inputs
 
 ## Input
 
-Declared input type: `Bytes`.
+Declared input type: `String`.
 
 ## Output
 
@@ -30,7 +30,7 @@ This operation has no arguments.
 
 ## Implementation
 
-The implementation is in `src/operations/ctph.rs` and declares `Bytes` input and `String` output. The operation module owns conversion and domain-error rules; registry resolution, argument validation, input-requirement enforcement, tracing, and output validation are performed by `rxchef::execution`.
+The implementation is in `src/operations/ctph.rs` and declares `String` input and `String` output. The operation module owns conversion and domain-error rules; registry resolution, argument validation, input-requirement enforcement, tracing, and output validation are performed by `rxchef::execution`.
 
 ## Command-line use
 
@@ -44,7 +44,7 @@ Arguments may be supplied positionally in the table order or by name with repeat
 
 ## Pipeline use
 
-Place the operation anywhere a `Bytes` value is valid. Its `String` result becomes the next step's input. Compact syntax uses the operation name followed by comma-separated arguments; JSON/YAML recipes use an `op` field and an `args` array.
+Place the operation anywhere a `String` value is valid. Its `String` result becomes the next step's input. Compact syntax uses the operation name followed by comma-separated arguments; JSON/YAML recipes use an `op` field and an `args` array.
 
 ## Error conditions
 
@@ -61,6 +61,9 @@ Declared side effects: `[]`. Treat parser inputs as untrusted and apply executio
 ## Testing evidence
 
 Correctness tests:
+- tests/tests/operations/ctph.rs
+
+Known-answer tests:
 - tests/tests/operations/ctph.rs
 
 ## Performance classification

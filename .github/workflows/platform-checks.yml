@@ -10,6 +10,11 @@ on:
       - master
       - main
   workflow_dispatch:
+  # Also callable from release.yml (via .github/workflows/release-gates.yml)
+  # so the release pipeline re-runs this exact gate definition on the tag
+  # commit, instead of trusting that master was green when the tag was cut
+  # or maintaining a second, drifting copy of the same checks.
+  workflow_call: {}
 
 permissions:
   contents: read

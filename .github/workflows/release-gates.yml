@@ -1,0 +1,23 @@
+name: Release gates
+
+# Called by release.yml (dist's local-artifacts-jobs extension point), after
+# custom-validate-tag and before any platform build starts. This re-runs the
+# exact same gate definition PRs and master pushes already go through
+# (.github/workflows/platform-checks.yml: the Linux release container,
+# Windows GNU cross-build, and native macOS/Windows checks), but on the tag
+# commit itself. "master was green yesterday" is not evidence the tag commit
+# is releasable — this is.
+
+on:
+  workflow_call:
+    inputs:
+      plan:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  gates:
+    uses: ./.github/workflows/platform-checks.yml

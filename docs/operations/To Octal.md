@@ -64,6 +64,7 @@ Declared side effects: `[]`. Treat parser inputs as untrusted and apply executio
 
 Correctness tests:
 - tests/tests/operations/to_octal.rs
+- tests/tests/negative_contracts.rs
 
 Differential tests:
 - tests/tests/differential.rs

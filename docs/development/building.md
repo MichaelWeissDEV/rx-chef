@@ -30,5 +30,5 @@ cargo test --workspace
 ## Related pages
 
 - [Testing](testing.md)
-- [Release process](release-process.md)
+- [Releasing](releasing.md)
 - [Architecture overview](../architecture/overview.md)

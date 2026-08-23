@@ -1,0 +1,67 @@
+name: Build .deb packages
+
+# Called by release.yml (dist's global-artifacts-jobs extension point).
+# Builds rxchef_<version>_<arch>.deb and rxchef-tui_<version>_<arch>.deb
+# natively (no cross-compilation) on amd64 and arm64 Ubuntu runners, then
+# actually installs and functionally exercises them — not just builds them —
+# before uploading. A package that merely builds proves nothing about
+# whether apt can install it.
+
+on:
+  workflow_call:
+    inputs:
+      plan:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-22.04
+            deb_arch: amd64
+          - runner: ubuntu-24.04-arm
+            deb_arch: arm64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+
+      - name: Install the pinned Rust toolchain
+        run: |
+          rustup toolchain install 1.96.1 --profile minimal
+          rustup default 1.96.1
+
+      - name: Install cargo-deb
+        run: cargo install cargo-deb --locked --version 3.7.0
+
+      - name: Build
+        run: ./scripts/build-deb.sh
+
+      - name: Install and functionally test rxchef
+        run: |
+          sudo apt-get install -y ./target/debian/rxchef_*.deb
+          rxchef --version
+          test "$(printf 'hello' | rxchef run to_base64)" = "aGVsbG8="
+          rxchef operations --json | python3 -c "import json,sys; assert len(json.load(sys.stdin)) > 0"
+          sudo apt-get remove -y rxchef
+          ! command -v rxchef
+
+      - name: Install and functionally test rxchef-tui
+        run: |
+          sudo apt-get install -y ./target/debian/rxchef-tui_*.deb
+          rxchef_tui --help >/dev/null
+          sudo apt-get remove -y rxchef-tui
+          ! command -v rxchef_tui
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: artifacts-deb-${{ matrix.deb_arch }}
+          path: target/debian/*.deb

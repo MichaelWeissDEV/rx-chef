@@ -65,6 +65,10 @@ Declared side effects: `[Random]`. Treat parser inputs as untrusted and apply ex
 
 Correctness tests:
 - tests/tests/operations/pseudo_random_number_generator.rs
+- src/operations/pseudo_random_number_generator.rs
+
+Known-answer tests:
+- src/operations/pseudo_random_number_generator.rs
 
 ## Performance classification
 

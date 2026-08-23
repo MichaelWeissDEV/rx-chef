@@ -69,6 +69,9 @@ Declared side effects: `[Network]`. Treat parser inputs as untrusted and apply e
 Correctness tests:
 - tests/tests/operations/http_request.rs
 
+Known-answer tests:
+- tests/tests/operations/http_request.rs
+
 ## Performance classification
 
 Excluded from the committed representative benchmark set: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.

@@ -6,7 +6,7 @@ use std::{
     process::Command,
 };
 
-const HELPER_MODULES: &[&str] = &["pgp", "protobuf_schema", "test_x509"];
+const HELPER_MODULES: &[&str] = &["pgp", "protobuf_schema", "test_x509", "gost_mac"];
 
 pub fn generate(check: bool) -> Result<(), String> {
     let workspace =

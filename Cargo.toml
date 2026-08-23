@@ -12,6 +12,21 @@ documentation = "https://docs.rs/rxchef"
 readme = "README.md"
 keywords = ["cyberchef", "encoding", "cryptography", "forensics"]
 categories = ["command-line-utilities", "cryptography", "encoding"]
+# The crate root is the repository root, so without an explicit allowlist
+# `cargo package` would sweep in docs/, tests/, verification/, docker/,
+# benchmarks/, .github/, and similar repo-management content that has
+# nothing to do with the published library. Keep the .crate tarball to what
+# a consumer of the library actually needs.
+#
+# Patterns without a leading slash match at any depth (gitignore semantics),
+# so an unanchored "README.md" also matches tools/cyberchef-reference/README.md
+# — anchor root-level files explicitly.
+include = [
+    "src/**",
+    "include/**",
+    "/LICENSE",
+    "/README.md",
+]
 
 [workspace]
 members = [
@@ -185,3 +200,8 @@ jsonata = ["dep:jaq-core", "dep:jaq-std", "dep:jaq-json"]
 tesseract = ["dep:tesseract-rs"]
 yara = ["dep:yara-x"]
 disassembly = ["dep:capstone"]
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"

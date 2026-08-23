@@ -1,0 +1,89 @@
+name: Publish to crates.io
+
+# Called by release.yml (dist's publish-jobs extension point) after the
+# GitHub Release is live. Publishes the four workspace crates in their
+# dependency order — rxchef-store, rxchef, rxchef-cli, rxchef-tui — since
+# the CLI and TUI both depend on the library and the store.
+#
+# Two auth modes, selected automatically:
+#
+#   Bootstrap mode: if the `release` environment has a CRATES_IO_BOOTSTRAP_TOKEN
+#   secret set, it is used directly. This is only needed for the very first
+#   publish of each crate name, because crates.io Trusted Publishing can only
+#   be configured for a crate that already exists on the registry — see
+#   docs/development/releasing.md.
+#
+#   Normal mode: crates.io Trusted Publishing via GitHub OIDC
+#   (rust-lang/crates-io-auth-action), no stored long-lived token at all.
+#
+# scripts/publish-crate.sh makes each publish idempotent (skips a
+# package@version that is already live) and waits for registry propagation
+# before the next, dependent package is published, so a re-run after a
+# partial failure does not error out on crates already published.
+
+on:
+  workflow_call:
+    inputs:
+      plan:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-22.04
+    environment: release
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      # `secrets.*` isn't a valid context inside step `if:` conditions, so
+      # lift it into `env` once here where every later step (whose `if:`
+      # can read `env`) needs to branch on whether it's set.
+      HAVE_BOOTSTRAP_TOKEN: ${{ secrets.CRATES_IO_BOOTSTRAP_TOKEN != '' }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+
+      - name: Install the pinned Rust toolchain
+        run: |
+          rustup toolchain install 1.96.1 --profile minimal
+          rustup default 1.96.1
+
+      # Bootstrap mode only exists for the very first publish of each crate
+      # name (see the workflow header comment). Once every crate has
+      # Trusted Publishing configured, this secret should be deleted from
+      # the `release` environment and every publish goes through the OIDC
+      # step below instead.
+      - name: Authenticate with crates.io (Trusted Publishing)
+        if: ${{ env.HAVE_BOOTSTRAP_TOKEN != 'true' }}
+        id: auth
+        uses: rust-lang/crates-io-auth-action@c6f97d42243bad5fab37ca0427f495c86d5b1a18 # v1.0.5
+
+      - name: Select the crates.io token
+        run: |
+          if [[ "$HAVE_BOOTSTRAP_TOKEN" == "true" ]]; then
+            echo "::notice::Bootstrap mode: using CRATES_IO_BOOTSTRAP_TOKEN. Remove this secret once Trusted Publishing is configured for every crate (see docs/development/releasing.md)."
+            echo "CARGO_REGISTRY_TOKEN=${BOOTSTRAP_TOKEN}" >> "$GITHUB_ENV"
+          else
+            echo "::notice::Normal mode: using crates.io Trusted Publishing (OIDC)."
+            echo "CARGO_REGISTRY_TOKEN=${OIDC_TOKEN}" >> "$GITHUB_ENV"
+          fi
+        env:
+          BOOTSTRAP_TOKEN: ${{ secrets.CRATES_IO_BOOTSTRAP_TOKEN }}
+          OIDC_TOKEN: ${{ steps.auth.outputs.token }}
+
+      - name: Publish rxchef-store
+        run: ./scripts/publish-crate.sh rxchef-store
+
+      - name: Publish rxchef
+        run: ./scripts/publish-crate.sh rxchef
+
+      - name: Publish rxchef-cli
+        run: ./scripts/publish-crate.sh rxchef-cli
+
+      - name: Publish rxchef-tui
+        run: ./scripts/publish-crate.sh rxchef-tui

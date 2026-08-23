@@ -65,6 +65,7 @@ Declared side effects: `[]`. Treat parser inputs as untrusted and apply executio
 
 Correctness tests:
 - tests/tests/operations/generate_all_checksums.rs
+- tests/tests/negative_contracts.rs
 
 Known-answer tests:
 - tests/tests/operations/generate_all_checksums.rs

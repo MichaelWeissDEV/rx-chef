@@ -1,0 +1,201 @@
+name: Release dry run
+
+# Manually-triggered rehearsal of the full release pipeline, safe to run at
+# any time against any branch: it exercises everything release.yml would
+# do, EXCEPT the four irreversible/external side effects — no GitHub
+# Release is created, nothing is uploaded to crates.io, nothing is pushed
+# to the AUR, nothing is pushed to the Homebrew tap.
+#
+# This is intentionally NOT part of dist-workspace.toml's generated
+# surface: dist's "publishing" logic can't distinguish a manual dry run
+# from a real tag push (both are "not a pull_request"), so folding this
+# into release.yml risks it actually publishing. Keeping it a separate,
+# hand-maintained file avoids that entirely.
+#
+# Run before cutting a real tag to catch problems for free.
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  validate-tag:
+    uses: ./.github/workflows/validate-tag.yml
+
+  release-gates:
+    needs: validate-tag
+    uses: ./.github/workflows/release-gates.yml
+    with:
+      plan: "dry-run"
+
+  dist-plan-and-build:
+    needs: validate-tag
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+
+      - name: Install the pinned Rust toolchain
+        run: |
+          rustup toolchain install 1.96.1 --profile minimal
+          rustup default 1.96.1
+
+      - name: Install dist
+        run: curl --proto '=https' --tlsv1.2 -LsSf https://github.com/axodotdev/cargo-dist/releases/download/v0.32.0/cargo-dist-installer.sh | sh
+
+      - name: dist plan
+        run: dist plan
+
+      - name: dist build (host mode — as much as this runner can build)
+        run: dist build
+
+      - name: Homebrew formula sanity check
+        run: |
+          dist build --artifacts=global
+          gem install --user-install rubocop rubocop-sorbet 2>/dev/null || true
+          for formula in target/distrib/*.rb; do
+            echo "=== $formula ==="
+            cat "$formula"
+          done
+
+  build-deb:
+    needs: validate-tag
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Install the pinned Rust toolchain
+        run: |
+          rustup toolchain install 1.96.1 --profile minimal
+          rustup default 1.96.1
+      - name: Install cargo-deb
+        run: cargo install cargo-deb --locked --version 3.7.0
+      - name: Build (no install/functional test — see build-deb.yml for that)
+        run: ./scripts/build-deb.sh
+      - name: Upload for inspection
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: dry-run-deb-packages
+          path: target/debian/*.deb
+
+  build-rpm:
+    needs: validate-tag
+    runs-on: ubuntu-22.04
+    container:
+      image: fedora:latest
+    steps:
+      - name: Install build tooling
+        run: dnf install -y gcc pkgconf-pkg-config openssl-devel curl
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Install the pinned Rust toolchain
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+            | sh -s -- -y --profile minimal --default-toolchain 1.96.1
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+      - name: Install cargo-generate-rpm
+        run: cargo install cargo-generate-rpm --locked --version 0.21.0
+      - name: Build (no install/functional test — see build-rpm.yml for that)
+        run: ./scripts/build-rpm.sh
+      - name: Upload for inspection
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: dry-run-rpm-packages
+          path: target/generate-rpm/*.rpm
+
+  build-aur:
+    needs: validate-tag
+    runs-on: ubuntu-22.04
+    container:
+      image: archlinux:latest
+    steps:
+      - name: Install build tooling
+        run: pacman -Syu --noconfirm --needed base-devel git rust cargo openssl pkgconf namcap
+      - name: Create an unprivileged build user
+        run: |
+          useradd -m builder
+          echo "builder ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/builder
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Render PKGBUILD against the current workspace version (not a real tag)
+        run: |
+          version=$(cargo metadata --locked --format-version 1 --no-deps \
+            | python3 -c "import json,sys; d=json.load(sys.stdin); print(next(p['version'] for p in d['packages'] if p['name']=='rxchef'))" 2>/dev/null \
+            || grep -m1 '^version' Cargo.toml | cut -d'"' -f2)
+          sha256=$(curl -sL "https://github.com/${{ github.repository }}/archive/${{ github.sha }}.tar.gz" | sha256sum | cut -d' ' -f1)
+          sed -i \
+            -e "s/^pkgver=.*/pkgver=${version}/" \
+            -e "s|^source=.*|source=(\"rxchef-\${pkgver}.tar.gz::https://github.com/${{ github.repository }}/archive/${{ github.sha }}.tar.gz\")|" \
+            -e "s/^sha256sums=.*/sha256sums=('${sha256}')/" \
+            packaging/aur/PKGBUILD
+      - name: Generate .SRCINFO, build, and lint
+        run: |
+          chown -R builder:builder packaging/aur
+          su builder -c '
+            set -euo pipefail
+            cd packaging/aur
+            makepkg --printsrcinfo > .SRCINFO
+            makepkg --verifysource
+            makepkg --syncdeps --noconfirm --clean
+            namcap PKGBUILD || true
+          '
+      - name: Upload for inspection
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: dry-run-aur-packages
+          path: |
+            packaging/aur/*.pkg.tar.*
+            packaging/aur/.SRCINFO
+
+  publish-crates-dry-run:
+    needs: validate-tag
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Install the pinned Rust toolchain
+        run: |
+          rustup toolchain install 1.96.1 --profile minimal
+          rustup default 1.96.1
+      - name: cargo publish --dry-run (store, then rxchef; cli/tui cannot
+          dry-run until those two are actually live — see
+          docs/development/releasing.md)
+        run: |
+          ./scripts/publish-crate.sh rxchef-store --dry-run
+          ./scripts/publish-crate.sh rxchef --dry-run
+          echo "::notice::rxchef-cli and rxchef-tui dry-runs are skipped here: cargo publish resolves path deps against the real registry even in --dry-run, so they can only be validated once rxchef/rxchef-store are actually published. cargo package -p rxchef-cli --list / -p rxchef-tui --list already validates their packaged contents."
+          cargo package --locked -p rxchef-cli --allow-dirty --list
+          cargo package --locked -p rxchef-tui --allow-dirty --list
+
+  summary:
+    needs:
+      - release-gates
+      - dist-plan-and-build
+      - build-deb
+      - build-rpm
+      - build-aur
+      - publish-crates-dry-run
+    if: always()
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Report
+        run: |
+          echo "This was a dry run: no GitHub Release, no crates.io upload, no AUR push, no Homebrew push."
+          echo "release-gates:            ${{ needs.release-gates.result }}"
+          echo "dist-plan-and-build:      ${{ needs.dist-plan-and-build.result }}"
+          echo "build-deb:                ${{ needs.build-deb.result }}"
+          echo "build-rpm:                ${{ needs.build-rpm.result }}"
+          echo "build-aur:                ${{ needs.build-aur.result }}"
+          echo "publish-crates-dry-run:   ${{ needs.publish-crates-dry-run.result }}"
+          if [[ "${{ contains(needs.*.result, 'failure') }}" == "true" ]]; then
+            echo "DRY RUN: FAIL"
+            exit 1
+          fi
+          echo "DRY RUN: PASS"

@@ -70,6 +70,13 @@ Declared side effects: `[]`. Treat parser inputs as untrusted and apply executio
 
 Correctness tests:
 - tests/tests/operations/multiple_bombe.rs
+- src/operations/bombe.rs
+
+Known-answer tests:
+- tests/tests/operations/multiple_bombe.rs
+
+Differential tests:
+- tests/tests/differential.rs
 
 ## Performance classification
 

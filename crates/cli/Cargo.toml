@@ -16,6 +16,50 @@ categories = ["command-line-utilities", "cryptography", "encoding"]
 name = "rxchef"
 path = "src/main.rs"
 
+# The package is "rxchef-cli" (to leave "rxchef" free for the library on
+# crates.io), but the user-facing Homebrew formula should match the binary
+# name: `brew install MichaelWeissDEV/tap/rxchef`, not .../rxchef-cli.
+[package.metadata.dist]
+formula = "rxchef"
+
+# Built by scripts/build-deb.sh (which generates the man page and shell
+# completions first, since they come from the binary itself, then runs
+# `cargo deb -p rxchef-cli --no-build`), not by `cargo deb` directly.
+[package.metadata.deb]
+name = "rxchef"
+maintainer = "Michael Weiss <michael.weiss.std@gmail.com>"
+copyright = "2026, Michael Weiss <michael.weiss.std@gmail.com>"
+license-file = ["../../LICENSE", "0"]
+extended-description = """\
+rx-chef is a CyberChef-style toolkit of cryptographic, encoding, and data \
+transformation operations, ported to Rust. This package installs the \
+`rxchef` command-line interface."""
+depends = "$auto"
+section = "utils"
+priority = "optional"
+assets = [
+    ["target/release/rxchef", "usr/bin/rxchef", "755"],
+    ["target/release/generated/man/rxchef.1.gz", "usr/share/man/man1/rxchef.1.gz", "644"],
+    ["target/release/generated/completions/rxchef.bash", "usr/share/bash-completion/completions/rxchef", "644"],
+    ["target/release/generated/completions/rxchef.fish", "usr/share/fish/vendor_completions.d/rxchef.fish", "644"],
+    ["target/release/generated/completions/_rxchef", "usr/share/zsh/vendor-completions/_rxchef", "644"],
+]
+
+# Built by scripts/build-rpm.sh (same generated man page/completions as the
+# .deb build), not by `cargo generate-rpm` directly.
+[package.metadata.generate-rpm]
+name = "rxchef"
+summary = "Command-line interface for rx-chef"
+license = "Apache-2.0"
+assets = [
+    { source = "target/release/rxchef", dest = "/usr/bin/rxchef", mode = "755" },
+    { source = "target/release/generated/man/rxchef.1.gz", dest = "/usr/share/man/man1/rxchef.1.gz", mode = "644", doc = true },
+    { source = "target/release/generated/completions/rxchef.bash", dest = "/usr/share/bash-completion/completions/rxchef", mode = "644" },
+    { source = "target/release/generated/completions/rxchef.fish", dest = "/usr/share/fish/vendor_completions.d/rxchef.fish", mode = "644" },
+    { source = "target/release/generated/completions/_rxchef", dest = "/usr/share/zsh/site-functions/_rxchef", mode = "644" },
+    { source = "../../LICENSE", dest = "/usr/share/licenses/rxchef/LICENSE", mode = "644", doc = true },
+]
+
 [dependencies]
 clap         = { version = "4.5", features = ["derive"] }
 clap_complete = "4.5"

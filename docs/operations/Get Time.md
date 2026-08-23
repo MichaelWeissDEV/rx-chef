@@ -64,6 +64,10 @@ Declared side effects: `[Time]`. Treat parser inputs as untrusted and apply exec
 
 Correctness tests:
 - tests/tests/operations/get_time.rs
+- src/operations/get_time.rs
+
+Known-answer tests:
+- src/operations/get_time.rs
 
 ## Performance classification
 

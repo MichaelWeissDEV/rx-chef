@@ -733,7 +733,7 @@ The GOST block cipher (Magma), defined in the standard GOST 28147-89 (RFC 5830),
 
 ### GOST Key Unwrap
 
-A decryptor for keys wrapped using one of the GOST block ciphers.
+A decryptor for keys wrapped using one of the GOST block ciphers, per RFC 4357 ("NO" and "CP"/CryptoPro key wrapping). User Key Material (UKM) must match the value used to wrap the key, and must be exactly one block long. "CP" (CryptoPro) key wrapping is only supported for 64-bit block ciphers (GOST 28147 (1989), which this operation implements as an alias for GOST R 34.12 (Magma, 2015), and GOST R 34.12 (Magma, 2015) itself); it is not supported for Kuznyechik. "SC" (SignalCom) key wrapping is not implemented.
 
 - Input: `String`
 - Output: `String`
@@ -747,11 +747,11 @@ A decryptor for keys wrapped using one of the GOST block ciphers.
 | 4 | Output type | `Raw` | Type of output data |
 | 5 | Algorithm | `GOST R 34.12 (Magma, 2015)` | GOST version |
 | 6 | sBox | `E-TEST` | S-Box to use (1989 only) |
-| 7 | Key wrapping | `NO` | Key wrapping mode |
+| 7 | Key wrapping | `NO` | The key wrapping mode. "CP" (CryptoPro diversification) is only supported for 64-bit block ciphers. "SC" is not implemented. |
 
 ### GOST Key Wrap
 
-A key wrapping algorithm for protecting keys in untrusted storage using one of the GOST block ciphers.
+A key wrapping algorithm for protecting keys in untrusted storage using one of the GOST block ciphers, per RFC 4357 ("NO" and "CP"/CryptoPro key wrapping). The content-encryption key must be a non-empty multiple of the cipher's block size, and User Key Material (UKM) must be exactly one block long. "CP" (CryptoPro) key wrapping is only supported for 64-bit block ciphers (GOST 28147 (1989), which this operation implements as an alias for GOST R 34.12 (Magma, 2015), and GOST R 34.12 (Magma, 2015) itself); it is not supported for Kuznyechik. "SC" (SignalCom) key wrapping is not implemented.
 
 - Input: `Bytes`
 - Output: `Bytes`
@@ -765,11 +765,11 @@ A key wrapping algorithm for protecting keys in untrusted storage using one of t
 | 4 | Output type | `Hex` | Output encoding (Hex, Raw) |
 | 5 | Algorithm | `GOST 28147 (1989)` | The GOST algorithm to use. |
 | 6 | sBox | `E-TEST` | The sBox to use (only for GOST 28147 (1989)). |
-| 7 | Key wrapping | `NO` | The key wrapping mode. |
+| 7 | Key wrapping | `NO` | The key wrapping mode. "CP" (CryptoPro diversification) is only supported for 64-bit block ciphers. "SC" is not implemented. |
 
 ### GOST Sign
 
-Sign a plaintext message (calculate MAC) using one of the GOST block ciphers.
+Sign a plaintext message (calculate MAC) using one of the GOST block ciphers, using the GOST R 34.13-2015 CMAC-style MAC construction. "GOST 28147 (1989)" is implemented as an alias for GOST R 34.12 (Magma, 2015) (matching this crate's GOST Encrypt/Decrypt behaviour); the original GOST 28147-89 round-reduced imitovstavka construction with selectable S-boxes is not implemented.
 
 - Input: `Bytes`
 - Output: `Bytes`
@@ -971,18 +971,21 @@ Rotates each letter by 13 positions in the alphabet. ROT13 is a simple Caesar ci
 
 ### ROT13 Brute Force
 
-Tries all 25 rotation values for ROT13 and outputs each result.
+Tries all meaningful Caesar rotation amounts, with optional character classes, sampling and a known-plaintext filter.
 
-- Input: `String`
+- Input: `Bytes`
 - Output: `String`
 - CLI: `rxchef run "ROT13 Brute Force"`
 
 | # | Argument | Default | Description |
 |---:|---|---|---|
-| 1 | Sample length | `100` | Max characters from each result to show |
-| 2 | Sample offset | `0` | Start offset in input |
-| 3 | Print spaces | `true` | Print spaces between results |
-| 4 | Print letter score | `false` | Include letter frequency score |
+| 1 | Rotate lower case chars | `true` | Rotate ASCII lower-case letters |
+| 2 | Rotate upper case chars | `true` | Rotate ASCII upper-case letters |
+| 3 | Rotate numbers | `false` | Rotate ASCII decimal digits |
+| 4 | Sample length | `100` | Maximum number of input bytes to rotate |
+| 5 | Sample offset | `0` | Byte offset at which the sample begins |
+| 6 | Print amount | `true` | Prefix each result with its rotation amount |
+| 7 | Crib (known plaintext string) | `<empty>` | Only retain rotations containing this text, case-insensitively |
 
 ### ROT47
 
@@ -1875,7 +1878,7 @@ CMAC is a block-cipher based message authentication code algorithm. AES-CMAC use
 
 Context Triggered Piecewise Hashing, also called Fuzzy Hashing, can match inputs that have homologies. Such inputs have sequences of identical bytes in the same order, although bytes in between these sequences may be different in both content and length.
 
-- Input: `Bytes`
+- Input: `String`
 - Output: `String`
 - CLI: `rxchef run "CTPH"`
 - Arguments: none
@@ -4060,8 +4063,8 @@ Show the possible Base64 offsets for a given string.
 | # | Argument | Default | Description |
 |---:|---|---|---|
 | 1 | Alphabet | `A-Za-z0-9+/=` | The Base64 alphabet to use |
-| 2 | URL Safe | `false` | Use URL-safe Base64 alphabet |
-| 3 | Format | `Base64` | The format of the input string |
+| 2 | Show variable chars and padding | `true` | Highlight characters affected by surrounding data and padding |
+| 3 | Input format | `Raw` | Whether the input is raw data or Base64 text |
 
 ### Shuffle
 

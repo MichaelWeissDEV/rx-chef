@@ -1,0 +1,73 @@
+name: Build .rpm packages
+
+# Called by release.yml (dist's global-artifacts-jobs extension point).
+# Builds rxchef-<version>-1.<arch>.rpm and rxchef-tui-<version>-1.<arch>.rpm
+# inside a real Fedora container (dnf, not apt), installs and functionally
+# exercises them, then uploads.
+
+on:
+  workflow_call:
+    inputs:
+      plan:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-22.04
+            rpm_arch: x86_64
+          - runner: ubuntu-24.04-arm
+            rpm_arch: aarch64
+    runs-on: ${{ matrix.runner }}
+    container:
+      image: fedora:latest
+    steps:
+      - name: Install build tooling
+        run: dnf install -y gcc pkgconf-pkg-config openssl-devel curl
+
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+
+      # dnf's rustc/cargo can lag behind our MSRV; install the exact pinned
+      # toolchain via rustup instead of trusting the distro package.
+      - name: Install the pinned Rust toolchain
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+            | sh -s -- -y --profile minimal --default-toolchain 1.96.1
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+
+      - name: Install cargo-generate-rpm
+        run: cargo install cargo-generate-rpm --locked --version 0.21.0
+
+      - name: Build
+        run: ./scripts/build-rpm.sh
+
+      - name: Install and functionally test rxchef
+        run: |
+          dnf install -y target/generate-rpm/rxchef-*.rpm
+          rxchef --version
+          test "$(printf 'hello' | rxchef run to_base64)" = "aGVsbG8="
+          rxchef operations --json | python3 -c "import json,sys; assert len(json.load(sys.stdin)) > 0"
+          dnf remove -y rxchef
+          ! command -v rxchef
+
+      - name: Install and functionally test rxchef-tui
+        run: |
+          dnf install -y target/generate-rpm/rxchef-tui-*.rpm
+          rxchef_tui --help >/dev/null
+          dnf remove -y rxchef-tui
+          ! command -v rxchef_tui
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: artifacts-rpm-${{ matrix.rpm_arch }}
+          path: target/generate-rpm/*.rpm

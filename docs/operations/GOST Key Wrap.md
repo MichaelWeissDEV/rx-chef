@@ -76,6 +76,7 @@ Known-answer tests:
 
 Differential tests:
 - tests/tests/operations/gost_key_wrap.rs
+- tests/tests/differential.rs
 
 ## Performance classification
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Tries all 25 rotation values for ROT13 and outputs each result.
+Tries all meaningful Caesar rotation amounts, with optional character classes, sampling and a known-plaintext filter.
 
 ## Status
 
@@ -18,7 +18,7 @@ Tries all 25 rotation values for ROT13 and outputs each result.
 
 ## Input
 
-Declared input type: `String`.
+Declared input type: `Bytes`.
 
 ## Output
 
@@ -28,14 +28,17 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Sample length | `UnsignedInteger` | no | `100` | — | no | Max characters from each result to show |
-| 2 | Sample offset | `Integer` | no | `0` | — | no | Start offset in input |
-| 3 | Print spaces | `Boolean` | no | `true` | — | no | Print spaces between results |
-| 4 | Print letter score | `Boolean` | no | `false` | — | no | Include letter frequency score |
+| 1 | Rotate lower case chars | `Boolean` | no | `true` | — | no | Rotate ASCII lower-case letters |
+| 2 | Rotate upper case chars | `Boolean` | no | `true` | — | no | Rotate ASCII upper-case letters |
+| 3 | Rotate numbers | `Boolean` | no | `false` | — | no | Rotate ASCII decimal digits |
+| 4 | Sample length | `UnsignedInteger` | no | `100` | — | no | Maximum number of input bytes to rotate |
+| 5 | Sample offset | `UnsignedInteger` | no | `0` | — | no | Byte offset at which the sample begins |
+| 6 | Print amount | `Boolean` | no | `true` | — | no | Prefix each result with its rotation amount |
+| 7 | Crib (known plaintext string) | `String` | no | `<empty>` | — | no | Only retain rotations containing this text, case-insensitively |
 
 ## Implementation
 
-The implementation is in `src/operations/rot13_brute_force.rs` and declares `String` input and `String` output. The operation module owns conversion and domain-error rules; registry resolution, argument validation, input-requirement enforcement, tracing, and output validation are performed by `rxchef::execution`.
+The implementation is in `src/operations/rot13_brute_force.rs` and declares `Bytes` input and `String` output. The operation module owns conversion and domain-error rules; registry resolution, argument validation, input-requirement enforcement, tracing, and output validation are performed by `rxchef::execution`.
 
 ## Command-line use
 
@@ -49,7 +52,7 @@ Arguments may be supplied positionally in the table order or by name with repeat
 
 ## Pipeline use
 
-Place the operation anywhere a `String` value is valid. Its `String` result becomes the next step's input. Compact syntax uses the operation name followed by comma-separated arguments; JSON/YAML recipes use an `op` field and an `args` array.
+Place the operation anywhere a `Bytes` value is valid. Its `String` result becomes the next step's input. Compact syntax uses the operation name followed by comma-separated arguments; JSON/YAML recipes use an `op` field and an `args` array.
 
 ## Error conditions
 
@@ -67,6 +70,9 @@ Declared side effects: `[]`. Treat parser inputs as untrusted and apply executio
 
 Correctness tests:
 - tests/tests/operations/rot13_brute_force.rs
+
+Differential tests:
+- tests/tests/differential.rs
 
 ## Performance classification
 

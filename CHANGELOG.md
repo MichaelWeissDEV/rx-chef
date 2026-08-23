@@ -9,6 +9,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Full release/distribution infrastructure, dry-run tested end to end (no
+  tag pushed, nothing published): `crates/cli`, `crates/store`, and
+  `crates/tui` are now published as `rxchef-cli`, `rxchef-store`, and
+  `rxchef-tui` on crates.io (alongside the existing `rxchef` library),
+  reserving all four names and completing their publish metadata.
+  `dist` (0.32.0) builds and hosts Linux (x86_64/aarch64), macOS
+  (Intel/Apple Silicon), and Windows (x86_64) archives, a shell installer,
+  and a Homebrew tap formula. `.deb` and `.rpm` packages and an AUR
+  (`packaging/aur/PKGBUILD`) split package are built, installed, and
+  functionally smoke-tested in CI before being attached to the release.
+  `scripts/check-release-tag.sh` validates a release tag (version,
+  CHANGELOG section, master ancestry, lockfile/docs/registry freshness,
+  operation audit) before any build starts, and
+  `.github/workflows/release-gates.yml` re-runs the same gates PRs already
+  go through on the tag commit itself. crates.io publishing supports both a
+  one-time bootstrap token and (once configured) Trusted Publishing via
+  GitHub OIDC, and is idempotent across a partially-failed re-run.
+  `.github/workflows/release-dry-run.yml` (`workflow_dispatch`) rehearses
+  the entire pipeline with no GitHub Release, crates.io upload, AUR push, or
+  Homebrew push. See
+  [Releasing](https://rx-chef.readthedocs.io/en/latest/development/releasing/)
+  for the full pipeline, one-time setup, and release checklist.
+
 - Evidence provenance tracking for the operation audit: an optional
   `evidence_provenance` array per operation in `verification/operations.json`
   records where a specific evidence bucket's expected values actually came

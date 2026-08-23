@@ -65,6 +65,13 @@ Declared side effects: `[]`. Treat parser inputs as untrusted and apply executio
 
 Correctness tests:
 - tests/tests/operations/jump.rs
+- src/integration.rs
+
+Known-answer tests:
+- src/integration.rs
+
+Differential tests:
+- tests/tests/differential.rs
 
 ## Performance classification
 

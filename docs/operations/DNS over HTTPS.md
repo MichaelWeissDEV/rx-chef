@@ -71,6 +71,10 @@ Declared side effects: `[Network]`. Treat parser inputs as untrusted and apply e
 
 Correctness tests:
 - tests/tests/operations/dns_over_https.rs
+- src/operations/dns_over_https.rs
+
+Known-answer tests:
+- src/operations/dns_over_https.rs
 
 ## Performance classification
 

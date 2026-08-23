@@ -64,6 +64,10 @@ Declared side effects: `[]`. Treat parser inputs as untrusted and apply executio
 
 Correctness tests:
 - tests/tests/operations/amf_encode.rs
+- tests/tests/differential.rs
+
+Differential tests:
+- tests/tests/differential.rs
 
 ## Performance classification
 

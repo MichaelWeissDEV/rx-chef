@@ -65,6 +65,10 @@ Declared side effects: `[Random]`. Treat parser inputs as untrusted and apply ex
 
 Correctness tests:
 - tests/tests/operations/cipher_saber2_encrypt.rs
+- src/operations/cipher_saber2_encrypt.rs
+
+Known-answer tests:
+- src/operations/cipher_saber2_encrypt.rs
 
 ## Performance classification
 

@@ -23,3 +23,30 @@ ratatui      = "0.28"
 crossterm    = "0.27"
 serde_json   = "1"
 chrono       = "0.4"
+
+# Built by scripts/build-deb.sh, not by `cargo deb` directly (see rxchef-cli).
+[package.metadata.deb]
+name = "rxchef-tui"
+maintainer = "Michael Weiss <michael.weiss.std@gmail.com>"
+copyright = "2026, Michael Weiss <michael.weiss.std@gmail.com>"
+license-file = ["../../LICENSE", "0"]
+extended-description = """\
+rx-chef is a CyberChef-style toolkit of cryptographic, encoding, and data \
+transformation operations, ported to Rust. This package installs the \
+`rxchef_tui` interactive terminal interface."""
+depends = "$auto"
+section = "utils"
+priority = "optional"
+assets = [
+    ["target/release/rxchef_tui", "usr/bin/rxchef_tui", "755"],
+]
+
+# Built by scripts/build-rpm.sh, not by `cargo generate-rpm` directly.
+[package.metadata.generate-rpm]
+name = "rxchef-tui"
+summary = "Interactive terminal interface for rx-chef"
+license = "Apache-2.0"
+assets = [
+    { source = "target/release/rxchef_tui", dest = "/usr/bin/rxchef_tui", mode = "755" },
+    { source = "../../LICENSE", dest = "/usr/share/licenses/rxchef-tui/LICENSE", mode = "644", doc = true },
+]

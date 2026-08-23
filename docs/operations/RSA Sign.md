@@ -67,6 +67,12 @@ Declared side effects: `[]`. Treat parser inputs as untrusted and apply executio
 Correctness tests:
 - tests/tests/operations/rsa_sign.rs
 
+Known-answer tests:
+- tests/tests/operations/rsa_sign.rs
+
+Differential tests:
+- tests/tests/differential.rs
+
 ## Performance classification
 
 Excluded from the committed representative benchmark set: No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.

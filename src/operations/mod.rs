@@ -203,7 +203,7 @@ pub mod gost_encrypt;
 pub mod gost_hash;
 pub mod gost_key_unwrap;
 pub mod gost_key_wrap;
-mod gost_mac;
+pub mod gost_mac;
 pub mod gost_sign;
 pub mod gost_verify;
 pub mod group_ip_addresses;

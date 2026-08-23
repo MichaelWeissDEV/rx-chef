@@ -1,0 +1,58 @@
+name: Release tag validation
+
+# Called by release.yml (dist's plan-jobs extension point) before anything
+# else runs. This is scripts/check-release-tag.sh: tag shape, tag version
+# matches Cargo.toml, CHANGELOG has that version, the tag commit is on
+# master, Cargo.lock/generated docs/registry are current, and the operation
+# audit is green. A failure here must stop the release before any build
+# starts — never after artifacts have already been produced.
+
+on:
+  workflow_call: {}
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-22.04
+    # dist wires this job into every trigger of release.yml, including plain
+    # pull_request runs. The tag/version/changelog/ancestor-of-master checks
+    # only make sense for an actual release (a tag push, or a manual
+    # dry-run once that trigger exists) — skip them on pull_request so an
+    # ordinary feature-branch PR isn't rejected for not being a release.
+    if: ${{ github.event_name != 'pull_request' }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+          # The ancestor-of-master check needs real history, not the
+          # single-commit shallow checkout actions/checkout does by default.
+          fetch-depth: 0
+
+      - name: Ensure origin/master is available for the ancestry check
+        run: git fetch origin master:refs/remotes/origin/master
+
+      - name: Install the pinned Rust toolchain
+        run: |
+          rustup toolchain install 1.96.1 --profile minimal
+          rustup default 1.96.1
+
+      - name: Determine the tag under test
+        id: tag
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+          else
+            # Not a tag push (e.g. a pull_request run of this reusable
+            # workflow, or a manual dry-run). Validate as if the current
+            # workspace version were about to be tagged, without requiring
+            # a real tag or asserting anything about master ancestry —
+            # that check only makes sense for a real tag push.
+            version=$(cargo metadata --locked --format-version 1 --no-deps \
+              | python3 -c "import json,sys; d=json.load(sys.stdin); print(next(p['version'] for p in d['packages'] if p['name']=='rxchef'))")
+            echo "tag=v${version}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Validate
+        run: ./scripts/check-release-tag.sh "${{ steps.tag.outputs.tag }}" "${{ github.sha }}"

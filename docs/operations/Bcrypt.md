@@ -64,6 +64,10 @@ Declared side effects: `[Random]`. Treat parser inputs as untrusted and apply ex
 
 Correctness tests:
 - tests/tests/operations/bcrypt.rs
+- src/operations/bcrypt.rs
+
+Known-answer tests:
+- src/operations/bcrypt.rs
 
 ## Performance classification
 

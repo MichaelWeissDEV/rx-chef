@@ -29,8 +29,8 @@ Declared output type: `HTML`. Redirect stdout or use `--output-file` for exact b
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
 | 1 | Alphabet | `String` | no | `A-Za-z0-9+/=` | — | no | The Base64 alphabet to use |
-| 2 | URL Safe | `Boolean` | no | `false` | — | no | Use URL-safe Base64 alphabet |
-| 3 | Format | `String` | no | `Base64` | — | no | The format of the input string |
+| 2 | Show variable chars and padding | `Boolean` | no | `true` | — | no | Highlight characters affected by surrounding data and padding |
+| 3 | Input format | `String` | no | `Raw` | — | no | Whether the input is raw data or Base64 text |
 
 ## Implementation
 
@@ -66,6 +66,9 @@ Declared side effects: `[]`. Treat parser inputs as untrusted and apply executio
 
 Correctness tests:
 - tests/tests/operations/show_base64_offsets.rs
+
+Differential tests:
+- tests/tests/differential.rs
 
 ## Performance classification
 

@@ -69,6 +69,10 @@ Declared side effects: `[Time]`. Treat parser inputs as untrusted and apply exec
 
 Correctness tests:
 - tests/tests/operations/generate_totp.rs
+- src/operations/generate_totp.rs
+
+Known-answer tests:
+- src/operations/generate_totp.rs
 
 ## Performance classification
 

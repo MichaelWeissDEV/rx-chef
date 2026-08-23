@@ -73,6 +73,9 @@ Correctness tests:
 Known-answer tests:
 - tests/tests/known_answer_vectors.rs
 
+Differential tests:
+- tests/tests/differential.rs
+
 ## Performance classification
 
 Benchmark evidence:
