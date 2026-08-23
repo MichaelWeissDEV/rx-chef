@@ -289,7 +289,7 @@
       "correctness": [
         "tests/tests/operations/avro_to_json.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/avro_to_json.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],

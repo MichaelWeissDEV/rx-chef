@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2395 |
+| Test functions | 2396 |
 | With negative tests | 368 |
 | With boundary tests | 460 |
-| Reference-verified (known answer) | 174 |
+| Reference-verified (known answer) | 175 |
 | Differential-verified | 258 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -602,7 +602,7 @@
 
 | Operation | Status | Parity | Args | Tests | Neg | Bound | KAT | Diff | Property | Fuzz | Bench | Docs |
 |---|---|---|:---:|---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Avro to JSON | partial | unknown | yes | 4 | yes | yes | — | — | — | — | — | yes |
+| Avro to JSON | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
 | BSON deserialise | partial | unknown | yes | 11 | yes | yes | — | yes | — | — | — | yes |
 | BSON serialise | partial | unknown | yes | 4 | yes | yes | — | yes | — | — | — | yes |
 | CBOR Decode | partial | unknown | yes | 10 | yes | yes | yes | — | — | — | — | yes |
