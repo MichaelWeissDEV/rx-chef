@@ -117,18 +117,19 @@ impl Operation for Sm2Decrypt {
             .map_err(|error| OperationError::InvalidInput(error.to_string()))?;
         let mut ciphertext = hex::decode(encoded.trim())
             .map_err(|error| OperationError::InvalidInput(error.to_string()))?;
-        if ciphertext.len() < 97 {
+        if ciphertext.len() < 96 {
             return Err(OperationError::InvalidInput(
                 "SM2 ciphertext must contain C1, C2, and C3".into(),
             ));
         }
         if format == "C1C3C2" {
-            let c2 = ciphertext.split_off(97);
-            let c3 = ciphertext.split_off(65);
+            let c2 = ciphertext.split_off(96);
+            let c3 = ciphertext.split_off(64);
             ciphertext.extend_from_slice(&c2);
             ciphertext.extend_from_slice(&c3);
         }
-        let message_length = ciphertext.len() - 97;
+        let message_length = ciphertext.len() - 96;
+        ciphertext.insert(0, 0x04);
         let private_key =
             Seckey::from_bytes_be(&hex::decode(private_key_hex).map_err(|error| {
                 OperationError::InvalidArgument {

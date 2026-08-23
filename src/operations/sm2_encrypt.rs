@@ -143,9 +143,17 @@ impl Operation for Sm2Encrypt {
         let mut ciphertext = EncryptCtx::new(input.len(), public_key)
             .encrypt(&input)
             .map_err(|error| OperationError::ProcessingError(error.to_string()))?;
+        // libsm uses SEC1's 0x04 uncompressed-point marker internally;
+        // CyberChef's SM2 transport format serialises C1 as X || Y only.
+        if ciphertext.first() != Some(&0x04) {
+            return Err(OperationError::ProcessingError(
+                "SM2 library returned an invalid C1 point".into(),
+            ));
+        }
+        ciphertext.remove(0);
         if format == "C1C3C2" {
             let c3 = ciphertext.split_off(ciphertext.len() - 32);
-            let c2 = ciphertext.split_off(65);
+            let c2 = ciphertext.split_off(64);
             ciphertext.extend_from_slice(&c3);
             ciphertext.extend_from_slice(&c2);
         }

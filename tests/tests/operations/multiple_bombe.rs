@@ -40,7 +40,7 @@ fn test_multiple_bombe_recovers_upstream_reference_stop() {
         ArgValue::Bool(false),
     ];
     let output = String::from_utf8(MultipleBombe.run(b"BBYFLTHHYIJQAYBBYS".to_vec(), &args).unwrap()).unwrap();
-    assert!(output.contains("LGA"));
-    assert!(output.contains("SS"));
-    assert!(output.contains("VFISUSGTKSTMPSUNAK"));
+    assert!(output.contains("LGA"), "{output}");
+    assert!(output.contains("SS"), "{output}");
+    assert!(output.contains("VFISUSGTKSTMPSUNAK"), "{output}");
 }
