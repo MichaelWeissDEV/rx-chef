@@ -6,6 +6,24 @@ use rxchef::operation::ArgValue;
 use rxchef::operations::rc2_decrypt::RC2Decrypt;
 use rxchef::Operation;
 
+#[test]
+fn test_rc2_decrypt_matches_pinned_cyberchef_ciphertext() {
+    // Fixed ciphertext captured from CyberChef 11.4.0 at 2e048b029085; this
+    // test does not obtain it from RC2Encrypt.
+    let output = RC2Decrypt
+        .run(
+            b"a90b5a222a70c7da".to_vec(),
+            &[
+                ArgValue::Str("mykey".into()),
+                ArgValue::Str(String::new()),
+                ArgValue::Str("Hex".into()),
+                ArgValue::Str("Raw".into()),
+            ],
+        )
+        .unwrap();
+    assert_eq!(output, b"hello");
+}
+
 /// RC2 key expansion (RFC 2268)
 fn rc2_expand_key(key: &[u8]) -> [u16; 64] {
     const PITABLE: [u8; 256] = [

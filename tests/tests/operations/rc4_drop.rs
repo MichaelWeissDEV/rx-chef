@@ -6,6 +6,24 @@ use rxchef::operation::ArgValue;
 use rxchef::operations::rc4_drop::RC4Drop;
 use rxchef::Operation;
 
+#[test]
+fn test_rc4_drop_matches_pinned_cyberchef() {
+    // Observed from CyberChef 11.4.0 at commit 2e048b029085 with UTF-8 key and
+    // input and the standard CryptoJS drop count of 192 dwords.
+    let output = RC4Drop
+        .run(
+            b"Hello, World!".to_vec(),
+            &[
+                ArgValue::Str("secret".into()),
+                ArgValue::Str("Raw".into()),
+                ArgValue::Str("Hex".into()),
+                ArgValue::Num(192.0),
+            ],
+        )
+        .unwrap();
+    assert_eq!(output, b"7b57f2c1274573dc11909fa87b");
+}
+
 /// Perform RC4-drop with the specified number of bytes to discard.
 fn rc4_drop_crypt(key: &[u8], data: &[u8], drop_bytes: usize) -> Vec<u8> {
     // KSA

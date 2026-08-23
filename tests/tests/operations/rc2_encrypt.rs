@@ -6,6 +6,24 @@ use rxchef::operation::ArgValue;
 use rxchef::operations::rc2_encrypt::RC2Encrypt;
 use rxchef::Operation;
 
+#[test]
+fn test_rc2_encrypt_matches_pinned_cyberchef() {
+    // Observed from CyberChef 11.4.0 at commit 2e048b029085 using UTF-8 key
+    // "mykey", ECB (empty IV), UTF-8 input, and hexadecimal output.
+    let output = RC2Encrypt
+        .run(
+            b"hello".to_vec(),
+            &[
+                ArgValue::Str("mykey".into()),
+                ArgValue::Str(String::new()),
+                ArgValue::Str("Raw".into()),
+                ArgValue::Str("Hex".into()),
+            ],
+        )
+        .unwrap();
+    assert_eq!(output, b"a90b5a222a70c7da");
+}
+
 /// Apply PKCS#7 padding to a multiple of 8 bytes
 fn pkcs7_pad_8(data: &[u8]) -> Vec<u8> {
     let pad_len = 8 - (data.len() % 8);

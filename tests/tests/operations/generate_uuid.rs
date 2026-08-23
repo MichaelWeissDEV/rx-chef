@@ -20,6 +20,14 @@ fn test_generate_uuid_v4() {
     assert_eq!(parts[2].len(), 4);
     assert_eq!(parts[3].len(), 4);
     assert_eq!(parts[4].len(), 12);
+    // RFC 9562 section 5.4 fixes the version nibble to 4 and the variant's
+    // two high bits to 10; these invariants validate a random UUID externally.
+    assert_eq!(parts[2].as_bytes()[0], b'4');
+    assert!(matches!(parts[3].as_bytes()[0], b'8' | b'9' | b'a' | b'b'));
+    assert!(s
+        .bytes()
+        .filter(|byte| *byte != b'-')
+        .all(|byte| byte.is_ascii_hexdigit()));
 }
 #[test]
 fn test_generate_uuid_invalid_version() {

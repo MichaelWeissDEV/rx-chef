@@ -483,7 +483,9 @@
       "correctness": [
         "tests/tests/operations/blowfish_decrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/blowfish_decrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2478,7 +2480,9 @@
       "correctness": [
         "tests/tests/operations/generate_uuid.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/generate_uuid.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2546,7 +2550,9 @@
       "correctness": [
         "tests/tests/operations/get_time.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/get_time.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4074,7 +4080,9 @@
       "correctness": [
         "tests/tests/operations/pseudo_random_integer_generator.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/pseudo_random_integer_generator.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4139,7 +4147,9 @@
       "correctness": [
         "tests/tests/operations/rc2_decrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/rc2_decrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4150,7 +4160,9 @@
       "correctness": [
         "tests/tests/operations/rc2_encrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/rc2_encrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4174,7 +4186,9 @@
       "correctness": [
         "tests/tests/operations/rc4_drop.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/rc4_drop.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4373,7 +4387,9 @@
       "correctness": [
         "tests/tests/operations/randomize_colour_palette.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/randomize_colour_palette.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],

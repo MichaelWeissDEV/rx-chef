@@ -107,7 +107,12 @@ fn test_randomize_colour_palette_single_colour_image() {
     // must still return a valid image rather than failing.
     let flat = png(&[(42, 42, 42); 4], 2, 2);
     let out = randomize(flat, "seed").unwrap();
-    assert!(image::load_from_memory(&out).is_ok());
+    let image = image::load_from_memory(&out).unwrap().to_rgba8();
+    // RFC 1321 MD5("seed42.42.42") begins c4 b3 7a; the operation defines
+    // the replacement RGB as those first three digest bytes.
+    assert!(image
+        .pixels()
+        .all(|pixel| pixel.0 == [0xc4, 0xb3, 0x7a, 255]));
 }
 
 #[test]

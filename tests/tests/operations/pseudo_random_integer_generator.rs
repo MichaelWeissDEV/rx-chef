@@ -6,6 +6,25 @@ use rxchef::operations::pseudo_random_integer_generator::PseudoRandomIntegerGene
 use rxchef::Operation;
 
 #[test]
+fn test_degenerate_range_has_exact_result() {
+    // An inclusive PRNG range with one member has a mathematically fixed
+    // result even though the operation is otherwise non-deterministic.
+    let output = PseudoRandomIntegerGenerator
+        .run(
+            Vec::new(),
+            &[
+                rxchef::operation::ArgValue::Num(3.0),
+                rxchef::operation::ArgValue::Num(42.0),
+                rxchef::operation::ArgValue::Num(42.0),
+                rxchef::operation::ArgValue::Str("Comma".into()),
+                rxchef::operation::ArgValue::Str("Decimal".into()),
+            ],
+        )
+        .unwrap();
+    assert_eq!(output, b"42,42,42");
+}
+
+#[test]
 fn test_pseudo_random_integer_generator_default() {
     let op = PseudoRandomIntegerGenerator;
     let args = [

@@ -7,6 +7,26 @@ use rxchef::operations::blowfish_decrypt::BlowfishDecrypt;
 use rxchef::runtime;
 use rxchef::Operation;
 
+#[test]
+fn test_blowfish_decrypt_schneier_zero_key_vector_with_padding() {
+    // Schneier's published vector maps an all-zero block/key to
+    // 4ef997456198dd78. OpenSSL independently supplies the following encrypted
+    // PKCS#7 padding block, allowing the operation's unpadding contract too.
+    let output = BlowfishDecrypt
+        .run(
+            b"4ef997456198dd78b0d4acb28aa5ebe3".to_vec(),
+            &[
+                ArgValue::Bytes(vec![0; 8]),
+                ArgValue::Bytes(Vec::new()),
+                ArgValue::Str("ECB".into()),
+                ArgValue::Str("Hex".into()),
+                ArgValue::Str("Raw".into()),
+            ],
+        )
+        .unwrap();
+    assert_eq!(output, [0u8; 8]);
+}
+
 /// Encrypt through the runtime so the ciphertext really is what this
 /// operation is expected to consume, rather than an arbitrary byte string.
 fn encrypt_hex(plaintext: &[u8], key_hex: &str, mode: &str) -> Vec<u8> {
