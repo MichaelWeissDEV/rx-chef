@@ -138,7 +138,7 @@
       "correctness": [
         "tests/tests/operations/add_text_to_image.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/add_text_to_image.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2447,7 +2447,7 @@
       "correctness": [
         "tests/tests/operations/generate_image.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/generate_image.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2480,7 +2480,7 @@
       "correctness": [
         "tests/tests/operations/generate_qr_code.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/generate_qr_code.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3243,7 +3243,7 @@
       "correctness": [
         "tests/tests/operations/lzma_compress.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/lzma_compress.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3926,9 +3926,10 @@
     },
     "parse_qr_code": {
       "correctness": [
-        "tests/tests/operations/parse_qr_code.rs"
+        "tests/tests/operations/parse_qr_code.rs",
+        "tests/tests/operations/generate_qr_code.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/generate_qr_code.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -6421,7 +6422,7 @@
       "correctness": [
         "tests/tests/operations/zip.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/zip.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],

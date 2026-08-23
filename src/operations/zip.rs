@@ -131,7 +131,12 @@ impl Operation for ZipOp {
         let method = match method_str {
             "Deflate" => CompressionMethod::Deflated,
             "None (Store)" => CompressionMethod::Stored,
-            _ => CompressionMethod::Deflated,
+            _ => {
+                return Err(OperationError::InvalidArgument {
+                    name: "Compression method".into(),
+                    reason: format!("expected Deflate or None (Store), got {method_str:?}"),
+                })
+            }
         };
 
         let mut buf = Vec::new();

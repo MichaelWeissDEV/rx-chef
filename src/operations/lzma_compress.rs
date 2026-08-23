@@ -62,6 +62,12 @@ impl Operation for LZMACompress {
                 name: "Compression Mode".to_string(),
                 reason: format!("Invalid compression mode: {}", mode_str),
             })?;
+        if !(1..=9).contains(&preset) {
+            return Err(OperationError::InvalidArgument {
+                name: "Compression Mode".into(),
+                reason: "compression mode must be between 1 and 9".into(),
+            });
+        }
 
         let mut encoder = XzEncoder::new(&input[..], preset);
 

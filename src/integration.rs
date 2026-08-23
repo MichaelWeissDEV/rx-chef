@@ -538,6 +538,18 @@ mod tests {
     }
 
     #[test]
+    fn bake_rejects_invalid_register_regex() {
+        let result = bake(
+            b"abc".to_vec(),
+            &[RecipeStep {
+                op: "Register".into(),
+                args: vec!["(".into(), "false".into()],
+            }],
+        );
+        assert!(result.is_err());
+    }
+
+    #[test]
     fn bake_honours_forward_and_bounded_backward_jumps() {
         let result = bake(
             b"abc".to_vec(),

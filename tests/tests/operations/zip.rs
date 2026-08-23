@@ -67,3 +67,31 @@ fn test_zip_password() {
     file.read_to_end(&mut decompressed).unwrap();
     assert_eq!(decompressed, input);
 }
+
+#[test]
+fn test_zip_empty_file_boundary() {
+    let args = [
+        ArgValue::Str("empty.bin".into()),
+        ArgValue::Str(String::new()),
+        ArgValue::Str(String::new()),
+        ArgValue::Str("None (Store)".into()),
+        ArgValue::Str("Unix".into()),
+        ArgValue::Str("Dynamic".into()),
+    ];
+    let output = ZipOp.run(Vec::new(), &args).unwrap();
+    let mut archive = ZipArchive::new(Cursor::new(output)).unwrap();
+    let mut contents = Vec::new();
+    archive.by_name("empty.bin").unwrap().read_to_end(&mut contents).unwrap();
+    assert_eq!(contents, Vec::<u8>::new());
+}
+
+#[test]
+fn test_zip_rejects_unknown_compression_method() {
+    let args = [
+        ArgValue::Str("file.bin".into()),
+        ArgValue::Str(String::new()),
+        ArgValue::Str(String::new()),
+        ArgValue::Str("Brotli".into()),
+    ];
+    assert!(ZipOp.run(b"data".to_vec(), &args).is_err());
+}

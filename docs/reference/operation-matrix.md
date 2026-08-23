@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2465 |
-| With negative tests | 374 |
-| With boundary tests | 468 |
-| Reference-verified (known answer) | 193 |
+| Test functions | 2483 |
+| With negative tests | 379 |
+| With boundary tests | 472 |
+| Reference-verified (known answer) | 199 |
 | Differential-verified | 262 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -154,7 +154,7 @@
 | Gzip | partial | unknown | yes | 3 | — | yes | — | yes | — | — | — | yes |
 | LZ4 Compress | partial | unknown | yes | 2 | — | yes | yes | — | — | — | — | yes |
 | LZ4 Decompress | partial | unknown | yes | 1 | — | — | yes | — | — | — | — | yes |
-| LZMA Compress | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
+| LZMA Compress | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
 | LZMA Decompress | partial | unknown | yes | 1 | — | — | yes | — | — | — | — | yes |
 | LZNT1 Decompress | partial | unknown | yes | 2 | yes | — | — | yes | — | — | — | yes |
 | LZString Compress | partial | exact | yes | 14 | yes | yes | — | yes | — | — | — | yes |
@@ -164,7 +164,7 @@
 | Tar | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | Untar | partial | unknown | yes | 3 | — | yes | yes | — | — | — | — | yes |
 | Unzip | partial | unknown | yes | 3 | — | yes | yes | — | — | — | — | yes |
-| Zip | partial | unknown | yes | 3 | — | — | — | — | — | — | — | yes |
+| Zip | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
 | Zlib Deflate | partial | unknown | yes | 2 | — | yes | — | yes | — | — | — | yes |
 | Zlib Inflate | partial | unknown | yes | 2 | yes | — | — | yes | — | — | — | yes |
 
@@ -243,7 +243,7 @@
 | Change IP format | partial | unknown | yes | 5 | yes | — | — | yes | — | — | — | yes |
 | Chi Square | partial | unknown | yes | 7 | — | yes | yes | yes | — | — | — | yes |
 | Comment | partial | exact | yes | 2 | — | — | — | yes | — | — | — | yes |
-| Conditional Jump | partial | unknown | yes | 13 | — | yes | yes | — | — | — | — | yes |
+| Conditional Jump | partial | unknown | yes | 14 | yes | yes | yes | — | — | — | — | yes |
 | Convert Leet Speak | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
 | Convert area | partial | unknown | yes | 2 | — | — | — | yes | — | — | — | yes |
 | Convert data units | partial | unknown | yes | 3 | — | — | — | yes | — | — | — | yes |
@@ -273,7 +273,7 @@
 | Fernet Decrypt | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
 | Fernet Encrypt | partial | unknown | yes | 4 | yes | — | yes | — | — | — | — | yes |
 | File Tree | partial | exact | yes | 1 | — | — | — | yes | — | — | — | yes |
-| Fork | partial | unknown | yes | 12 | — | yes | yes | — | — | — | — | yes |
+| Fork | partial | unknown | yes | 13 | yes | yes | yes | — | — | — | — | yes |
 | Format MAC addresses | partial | unknown | yes | 4 | yes | — | — | yes | — | — | — | yes |
 | Frequency distribution | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
 | From BCD | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
@@ -317,7 +317,7 @@
 | Index of Coincidence | partial | unknown | yes | 8 | — | yes | yes | yes | — | — | — | yes |
 | JSON to CSV | partial | unknown | yes | 3 | — | — | — | yes | — | — | — | yes |
 | JSON to YAML | partial | unknown | yes | 2 | — | yes | — | yes | — | — | — | yes |
-| Jump | partial | unknown | yes | 11 | — | yes | yes | — | — | — | — | yes |
+| Jump | partial | unknown | yes | 12 | yes | yes | yes | — | — | — | — | yes |
 | Label | partial | unknown | yes | 2 | — | yes | yes | — | — | — | — | yes |
 | Levenshtein Distance | partial | unknown | yes | 9 | yes | yes | — | yes | — | — | — | yes |
 | Luhn Checksum | partial | unknown | yes | 8 | yes | yes | — | yes | — | — | — | yes |
@@ -493,7 +493,7 @@
 
 | Operation | Status | Parity | Args | Tests | Neg | Bound | KAT | Diff | Property | Fuzz | Bench | Docs |
 |---|---|---|:---:|---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Add Text To Image | partial | unknown | yes | 5 | yes | yes | — | — | — | — | — | yes |
+| Add Text To Image | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
 | Blur Image | partial | unknown | yes | 6 | yes | yes | yes | — | — | — | — | yes |
 | Contain Image | partial | unknown | yes | 8 | yes | yes | yes | — | — | — | — | yes |
 | Convert Image Format | partial | unknown | yes | 10 | yes | yes | yes | — | — | — | — | yes |
@@ -504,15 +504,15 @@
 | Extract LSB | partial | unknown | yes | 6 | yes | yes | yes | — | — | — | — | yes |
 | Extract RGBA | partial | unknown | yes | 6 | yes | yes | yes | — | — | — | — | yes |
 | Flip Image | partial | unknown | yes | 7 | yes | yes | yes | — | — | — | — | yes |
-| Generate Image | partial | unknown | yes | 2 | — | — | — | — | — | — | — | yes |
-| Generate QR Code | partial | unknown | yes | 2 | — | — | — | — | — | — | — | yes |
+| Generate Image | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
+| Generate QR Code | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
 | Image Brightness / Contrast | partial | unknown | yes | 5 | — | yes | yes | — | — | — | — | yes |
 | Image Filter | partial | unknown | yes | 11 | yes | yes | yes | — | — | — | — | yes |
 | Image Hue/Saturation/Lightness | partial | unknown | yes | 4 | — | yes | yes | — | — | — | — | yes |
 | Image Opacity | partial | unknown | yes | 10 | yes | yes | yes | — | — | — | — | yes |
 | Invert Image | partial | unknown | yes | 8 | yes | yes | yes | — | — | — | — | yes |
 | Normalise Image | partial | unknown | yes | 6 | yes | yes | yes | — | — | — | — | yes |
-| Parse QR Code | partial | unknown | yes | 2 | yes | yes | — | — | — | — | — | yes |
+| Parse QR Code | partial | unknown | yes | 7 | yes | yes | yes | — | — | — | — | yes |
 | Randomize Colour Palette | partial | unknown | yes | 11 | yes | yes | yes | — | — | — | — | yes |
 | Remove EXIF | partial | unknown | yes | 2 | yes | — | — | yes | — | — | — | yes |
 | Render Image | partial | unknown | yes | 2 | — | yes | — | yes | — | — | — | yes |
@@ -594,7 +594,7 @@
 | Extract hashes | partial | exact | yes | 3 | yes | — | — | yes | — | — | — | yes |
 | Filter | partial | exact | yes | 4 | yes | yes | — | yes | — | — | — | yes |
 | Find / Replace | partial | unknown | yes | 4 | — | — | — | yes | — | — | — | yes |
-| Register | partial | unknown | yes | 16 | — | yes | yes | — | — | — | — | yes |
+| Register | partial | unknown | yes | 17 | yes | yes | yes | — | — | — | — | yes |
 | Regular expression | partial | exact | yes | 4 | yes | — | — | yes | — | — | — | yes |
 | Strings | partial | unknown | yes | 4 | yes | yes | — | yes | — | — | — | yes |
 
