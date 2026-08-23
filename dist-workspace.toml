@@ -22,8 +22,14 @@ install-updater = false
 tap = "MichaelWeissDEV/homebrew-tap"
 # publish-prereleases defaults to false, which is exactly what we want:
 # prerelease tags (v0.2.0-rc.1 etc.) build archives/installers but never
-# touch the stable Homebrew tap, AUR, or crates.io.
-publish-jobs = ["homebrew", "./publish-crates", "./publish-aur"]
+# touch the stable Homebrew tap or crates.io.
+#
+# AUR is intentionally NOT in this list. The PKGBUILD/.SRCINFO in
+# packaging/aur/ are built and functionally tested in CI (build-aur, below)
+# and attached to the GitHub Release as artifacts, but nothing is pushed to
+# the real aur.archlinux.org remote — this is a deliberate scope decision,
+# not a placeholder. See docs/development/releasing.md if that changes.
+publish-jobs = ["homebrew", "./publish-crates"]
 # Validate the tag itself (version/changelog/lockfile/docs/audit — see
 # scripts/check-release-tag.sh) before dist does anything else, and rerun
 # the full release gate on the exact tag commit rather than trusting that
@@ -34,7 +40,7 @@ local-artifacts-jobs = ["./release-gates"]
 # artifact jobs use, so the `host` job's `pattern: artifacts-*` download
 # picks these up and attaches them to the GitHub release automatically —
 # no custom hosting logic needed.
-global-artifacts-jobs = ["./build-deb", "./build-rpm"]
+global-artifacts-jobs = ["./build-deb", "./build-rpm", "./build-aur"]
 
 # Pin third-party GitHub Actions used by the generated workflow to specific
 # commits rather than trusting a mutable tag at release time.

@@ -34,13 +34,19 @@ This is a dedicated tap (`MichaelWeissDEV/homebrew-tap`), not
 
 ## Arch Linux / AUR
 
+Not yet published to the AUR. `packaging/aur/PKGBUILD` is built and
+functionally tested on every release and attached to the
+[GitHub Releases page](https://github.com/MichaelWeissDEV/rx-chef/releases)
+as `artifacts-aur`, so you can build it locally today:
+
 ```bash
-yay -S rxchef
-# or: paru -S rxchef
+curl -L -o PKGBUILD https://github.com/MichaelWeissDEV/rx-chef/releases/latest/download/PKGBUILD
+makepkg -si
 ```
 
-This builds from the tagged release source, not a binary — pacman/AUR
-helpers compile it locally. The build takes a few minutes.
+Real `yay -S rxchef` / `paru -S rxchef` support needs a maintainer AUR
+account, which does not exist yet (see
+[Releasing](../development/releasing.md)).
 
 ## Debian / Ubuntu
 

@@ -1,14 +1,17 @@
-name: Publish to AUR
+name: Build AUR package
 
-# Called by release.yml (dist's publish-jobs extension point) after the
-# GitHub Release is live. Renders packaging/aur/PKGBUILD for this exact
-# release, builds and lints it inside a real Arch Linux container, and only
-# if that succeeds pushes PKGBUILD + .SRCINFO to the AUR git remote.
+# Called by release.yml (dist's global-artifacts-jobs extension point).
+# Renders packaging/aur/PKGBUILD for this exact release, builds it inside a
+# real Arch Linux container, installs and functionally exercises the result,
+# then uploads PKGBUILD/.SRCINFO/the built packages as GitHub Release
+# artifacts.
 #
-# The AUR has no binary packages: this pushes source (PKGBUILD + .SRCINFO),
-# and users' pacman/AUR helpers build from the tagged GitHub source tarball
-# — never from a branch snapshot, so a later force-push to master cannot
-# silently change what an already-published AUR version builds.
+# This deliberately does NOT push to the real aur.archlinux.org remote —
+# that's a separate decision (see docs/development/releasing.md) requiring
+# an AUR account and registered SSH key that don't exist yet. The rendered
+# PKGBUILD/.SRCINFO here are a "local" release: versioned in this repo and
+# attached to the GitHub Release, nothing published to an external package
+# index.
 
 on:
   workflow_call:
@@ -21,15 +24,14 @@ permissions:
   contents: read
 
 jobs:
-  publish:
+  build-and-test:
     runs-on: ubuntu-22.04
-    environment: release
     container:
       image: archlinux:latest
     steps:
       - name: Install build tooling
         run: |
-          pacman -Syu --noconfirm --needed base-devel git openssh rust cargo openssl pkgconf namcap jq
+          pacman -Syu --noconfirm --needed base-devel git rust cargo openssl pkgconf namcap
 
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
@@ -94,31 +96,11 @@ jobs:
           rxchef_tui --help >/dev/null
           pacman -R --noconfirm rxchef rxchef-tui
 
-      - name: Push to AUR
-        env:
-          AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-          AUR_KNOWN_HOSTS: ${{ secrets.AUR_KNOWN_HOSTS }}
-        run: |
-          if [[ -z "$AUR_SSH_PRIVATE_KEY" || -z "$AUR_KNOWN_HOSTS" ]]; then
-            echo "::error::AUR_SSH_PRIVATE_KEY / AUR_KNOWN_HOSTS not configured in the 'release' environment; see docs/development/releasing.md" >&2
-            exit 1
-          fi
-
-          install -d -m 700 ~/.ssh
-          printf '%s\n' "$AUR_SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          printf '%s\n' "$AUR_KNOWN_HOSTS" > ~/.ssh/known_hosts
-
-          git config --global user.name "rxchef release bot"
-          git config --global user.email "michael.weiss.std@gmail.com"
-
-          git clone ssh://aur@aur.archlinux.org/rxchef.git aur-repo
-          cp packaging/aur/PKGBUILD packaging/aur/.SRCINFO aur-repo/
-          cd aur-repo
-          if git diff --quiet; then
-            echo "AUR package already up to date for this version; nothing to push."
-            exit 0
-          fi
-          git add PKGBUILD .SRCINFO
-          git commit -m "rxchef ${{ steps.meta.outputs.version }}"
-          git push origin master
+      - name: Upload artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: artifacts-aur
+          path: |
+            packaging/aur/PKGBUILD
+            packaging/aur/.SRCINFO
+            packaging/aur/*.pkg.tar.*

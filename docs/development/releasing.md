@@ -1,11 +1,20 @@
 # Releasing
 
 Pushing a signed, correctly-versioned stable tag (`vX.Y.Z`) triggers the
-entire release: platform binaries, a GitHub Release, a shell installer, a
-Homebrew tap update, `.deb` and `.rpm` packages, an AUR update, and four
-crates published to crates.io. This page is the maintainer's reference for
-how that pipeline works, what has to be set up once before the first real
-release, and the actual commands to run.
+release: platform binaries, a GitHub Release, a shell installer, `.deb` and
+`.rpm` packages, a Homebrew tap update, and four crates published to
+crates.io. This page is the maintainer's reference for how that pipeline
+works, what has to be set up once before the first real release, and the
+actual commands to run.
+
+**Scope decision:** only Homebrew and crates.io are published to an
+external package index. AUR is built and functionally tested on every
+release (`packaging/aur/PKGBUILD` inside a real Arch container) and the
+rendered `PKGBUILD`/`.SRCINFO`/built packages are attached to the GitHub
+Release as artifacts, but nothing is pushed to the real
+`aur.archlinux.org` remote — that's a deliberate "local" release: versioned
+in this repo, not published to an external index, until an AUR account and
+registered SSH key exist.
 
 ## The pipeline
 
@@ -24,28 +33,29 @@ git push origin vX.Y.Z
         ├── build-global-artifacts    checksums, shell installer, source tarball
         ├── build-deb                 .deb, built + installed + smoke-tested
         ├── build-rpm                 .rpm, built + installed + smoke-tested
+        ├── build-aur                 PKGBUILD rendered, built, smoke-tested —
+        │                             attached to the release, not pushed to AUR
         │
         ├── host                 creates the GitHub Release, uploads everything
         │
         ├── publish-homebrew-formula   MichaelWeissDEV/homebrew-tap
         ├── publish-crates             rxchef-store → rxchef → rxchef-cli → rxchef-tui
-        ├── publish-aur                aur.archlinux.org/rxchef.git
         │
         └── announce
 ```
 
-Every job above (except the four publish jobs) also runs on every pull
+Every job above (except the two publish jobs) also runs on every pull
 request and on push to `master`, gated so publishing steps only fire on a
 real tag. The publish jobs run only on tags, and only for **stable** tags
 (`v0.2.0-rc.1`-style prerelease tags get a GitHub prerelease, archives, and
-installers, but never touch the Homebrew tap, AUR, or crates.io — see
+installers, but never touch the Homebrew tap or crates.io — see
 `publish-prereleases` in `dist-workspace.toml`, which defaults to `false`).
 
 Nothing here is hand-maintained YAML you should edit directly for its
 build/host jobs: `dist-workspace.toml` configures `dist`, and
 `dist generate` regenerates `.github/workflows/release.yml` from it. The
 custom jobs (`validate-tag`, `release-gates`, `build-deb`, `build-rpm`,
-`publish-crates`, `publish-aur`) are `dist`'s documented extension points
+`build-aur`, `publish-crates`) are `dist`'s documented extension points
 (`plan-jobs`, `local-artifacts-jobs`, `global-artifacts-jobs`,
 `publish-jobs`) and live in their own workflow files under
 `.github/workflows/`, which `dist generate` does not touch.
@@ -107,17 +117,18 @@ Create `MichaelWeissDEV/homebrew-tap` (empty is fine; `dist` publishes into
 it). Create a token scoped to just that one repository's contents, add it
 to the `release` environment as `HOMEBREW_TAP_TOKEN`.
 
-### 4. AUR
+### AUR (optional, not required for a release)
 
-Create an AUR account, add its published PGP/SSH key per the AUR's own
-submission guidelines. Generate a dedicated SSH key for CI, add its
-*public* half to your AUR account, and add:
-
-- `AUR_SSH_PRIVATE_KEY` — the private half, in the `release` environment.
-- `AUR_KNOWN_HOSTS` — the output of
-  `ssh-keyscan aur.archlinux.org`, **verified against a published AUR SSH
-  host key fingerprint** before trusting it (do not blindly trust
-  `ssh-keyscan`'s output at release time — verify it once, here, and pin it).
+AUR publishing is out of scope for now (see the scope decision at the top
+of this page): `build-aur` builds and functionally tests the package on
+every release without needing any AUR account or secret. If real AUR
+publishing is wanted later, that means: creating an AUR account, adding a
+dedicated CI SSH key to it, adding `AUR_SSH_PRIVATE_KEY` and
+`AUR_KNOWN_HOSTS` (verified against a published AUR SSH host key
+fingerprint, not blindly trusted from `ssh-keyscan`) to the `release`
+environment, restoring `"./publish-aur"` to `publish-jobs` in
+`dist-workspace.toml`, and reinstating the push step this repository's
+history shows was removed from what is now `build-aur.yml`.
 
 ## Release checklist
 
@@ -141,9 +152,10 @@ submission guidelines. Generate a dedicated SSH key for CI, add its
 workflow that runs the entire pipeline — gates, `dist plan`/`dist build`,
 `.deb` and `.rpm` builds, an AUR `makepkg` build against the current commit,
 Homebrew formula generation, and `cargo publish --dry-run` for
-`rxchef-store`/`rxchef` — with **no GitHub Release, no crates.io upload, no
-AUR push, no Homebrew push**. Trigger it from the Actions tab before cutting
-a real tag.
+`rxchef-store`/`rxchef` — with **no GitHub Release and no crates.io or
+Homebrew upload** (AUR is never pushed externally regardless — see the
+scope decision above). Trigger it from the Actions tab before cutting a
+real tag.
 
 (`rxchef-cli`/`rxchef-tui` can't be dry-run publish-checked this way:
 `cargo publish` resolves path dependencies against the real registry even

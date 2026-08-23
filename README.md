@@ -53,15 +53,17 @@ native host gates are documented in the
 ## Installation
 
 ```bash
-cargo install rxchef-cli                       # Cargo
-brew install MichaelWeissDEV/tap/rxchef         # Homebrew (macOS/Linux)
-yay -S rxchef                                   # Arch Linux / AUR
-sudo apt install ./rxchef_<version>_<arch>.deb  # Debian/Ubuntu
+cargo install rxchef-cli                          # Cargo
+brew install MichaelWeissDEV/tap/rxchef           # Homebrew (macOS/Linux)
+sudo apt install ./rxchef_<version>_<arch>.deb    # Debian/Ubuntu
 sudo dnf install ./rxchef-<version>-1.<arch>.rpm  # Fedora/RHEL/openSUSE
 ```
 
-`.deb`/`.rpm` packages and platform archives are attached to each
-[GitHub Release](https://github.com/MichaelWeissDEV/rx-chef/releases).
+`.deb`/`.rpm` packages, an AUR `PKGBUILD`, and platform archives are
+attached to each
+[GitHub Release](https://github.com/MichaelWeissDEV/rx-chef/releases)
+(the AUR package isn't published to `aur.archlinux.org` yet — see the
+[installation guide](https://rx-chef.readthedocs.io/en/latest/getting-started/installation/)).
 Building from source only needs the stable Rust toolchain and Git:
 
 ```console

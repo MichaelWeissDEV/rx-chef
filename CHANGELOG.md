@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [0.1.0] - 2026-08-23
+
 ### Added
 
 - Full release/distribution infrastructure, dry-run tested end to end (no
@@ -53,32 +57,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   CyberChef parity now carry a typed independent-evidence record. The
   remaining 84 operations' evidence provenance is not yet classified and is
   reported as such, not guessed.
-
-### Fixed
-
-- GOST Key Wrap/Unwrap no longer silently discard User Key Material (UKM) or
-  substitute a placeholder ECB-encrypt-and-truncated-CBC-MAC construction.
-  They now implement RFC 4357 ("NO" and CryptoPro "CP" key wrapping) with a
-  GOST R 34.13-2015 CMAC-style checksum, validated against the vendored
-  reference implementation CyberChef itself calls
-  (`gchq/CyberChef@b92501e`, `src/core/vendor/gost/gostCipher.mjs`).
-  CryptoPro wrapping for 128-bit ciphers (Kuznyechik) and SignalCom ("SC")
-  wrapping now fail with an explicit, documented "not supported" error
-  instead of returning a value the reference implementation cannot itself
-  produce.
-- GOST Sign/Verify switched from a hand-rolled single-block CBC-MAC (whose
-  test coverage was, in effect, a raw block-cipher known-answer test) to the
-  same real GOST R 34.13-2015 MAC construction, with reference vectors that
-  exercise empty, partial, and multi-block messages.
-- "GOST 28147 (1989)" is now explicitly documented, in both operations, as
-  an alias for GOST R 34.12 (Magma, 2015) rather than a silent
-  approximation; the original round-reduced 1989 MAC construction and
-  selectable S-boxes remain unimplemented and undocumented as verified.
-
-## [0.1.0] - 2026-08-13
-
-### Added
-
 - Stable `rxchef::catalog` and `rxchef::execute` library entry points.
 - Explicit project initialization/discovery, `RXCHEF_HOME`, secret variables,
   atomic store writes, bounded History, shell completions, and manpage output.
@@ -103,6 +81,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- GOST Key Wrap/Unwrap no longer silently discard User Key Material (UKM) or
+  substitute a placeholder ECB-encrypt-and-truncated-CBC-MAC construction.
+  They now implement RFC 4357 ("NO" and CryptoPro "CP" key wrapping) with a
+  GOST R 34.13-2015 CMAC-style checksum, validated against the vendored
+  reference implementation CyberChef itself calls
+  (`gchq/CyberChef@b92501e`, `src/core/vendor/gost/gostCipher.mjs`).
+  CryptoPro wrapping for 128-bit ciphers (Kuznyechik) and SignalCom ("SC")
+  wrapping now fail with an explicit, documented "not supported" error
+  instead of returning a value the reference implementation cannot itself
+  produce.
+- GOST Sign/Verify switched from a hand-rolled single-block CBC-MAC (whose
+  test coverage was, in effect, a raw block-cipher known-answer test) to the
+  same real GOST R 34.13-2015 MAC construction, with reference vectors that
+  exercise empty, partial, and multi-block messages.
+- "GOST 28147 (1989)" is now explicitly documented, in both operations, as
+  an alias for GOST R 34.12 (Magma, 2015) rather than a silent
+  approximation; the original round-reduced 1989 MAC construction and
+  selectable S-boxes remain unimplemented and undocumented as verified.
 - HMAC literal-key ambiguity, invalid HASSH hex acceptance, Unicode preview
   slicing, scope-crossing pipeline mutations, recipe-load side effects, and
   unsafe History preview replay.
