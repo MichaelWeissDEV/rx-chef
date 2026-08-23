@@ -17,7 +17,7 @@ fn test_show_base64_offsets_basic() {
     ];
     let result = op.run(input, &args).unwrap();
     let result_str = String::from_utf8(result).unwrap();
-    assert_eq!(result_str, "SGVsbG8\nhlbGx\nIZWxs");
+    assert_eq!(result_str, "SGVsbG\nhlbGxv\nIZWxsb");
 }
 
 #[test]

@@ -11393,6 +11393,16 @@
       "reference_source": "observed: CyberChef 11.4.0 @ 2e048b029085, explicit character classes and known-plaintext crib"
     },
     {
+      "operation": "Show Base64 Offsets",
+      "input": "Man",
+      "input_encoding": "text",
+      "args": ["A-Za-z0-9+/=", "false", "Raw"],
+      "reference": "TWFu\n1hb\nNYW",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.4.0 @ 2e048b029085, raw input with variable characters hidden"
+    },
+    {
       "operation": "Lorenz",
       "input": "HELLO",
       "input_encoding": "text",

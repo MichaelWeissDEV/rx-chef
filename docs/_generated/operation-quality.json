@@ -3,8 +3,8 @@
   "operation_count": 478,
   "summary": {
     "registered": 478,
-    "correctness_verified": 426,
-    "correctness_partially_verified": 52,
+    "correctness_verified": 427,
+    "correctness_partially_verified": 51,
     "correctness_unverified": 0,
     "tested": 478,
     "test_functions": 2411,
@@ -12,7 +12,7 @@
     "negative_not_applicable": 92,
     "boundary_tested": 465,
     "reference_verified": 180,
-    "differential_verified": 261,
+    "differential_verified": 262,
     "parity_exact": 171,
     "parity_compatible": 5,
     "parity_documented_difference": 1,
@@ -16885,10 +16885,8 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
@@ -16912,13 +16910,15 @@
       "args_documented": true,
       "correctness_test": true,
       "known_answer_test": false,
-      "differential_test": false,
+      "differential_test": true,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/show_base64_offsets.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "fuzz_target": false,

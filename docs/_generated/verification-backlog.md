@@ -4,9 +4,9 @@
 
 Why each operation is not yet `verified`, and what would close the gap. Groups are ordered by how much work they need, so the list can be worked in batches.
 
-**426 verified · 52 partially verified · 0 unverified** of 478 registered.
+**427 verified · 51 partially verified · 0 unverified** of 478 registered.
 
-## A: only independent evidence missing (33)
+## A: only independent evidence missing (32)
 
 | Operation | Module | Tests | Neg | Bound | KAT | Diff | Parity | Weak | Remaining gaps | Strategy |
 |---|---|---:|:---:|:---:|:---:|:---:|---|---:|---|---|
@@ -41,7 +41,6 @@ Why each operation is not yet `verified`, and what would close the gap. Groups a
 | RSA Verify | Ciphers | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | SM2 Decrypt | Crypto | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | SM2 Encrypt | Crypto | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
-| Show Base64 Offsets | Default | 4 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Show on map | Maps | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 
 ## E: independent evidence + one test class (10)

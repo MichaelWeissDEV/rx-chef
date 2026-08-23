@@ -141,7 +141,7 @@ Offset 0: {rendered0}\nOffset 1: {rendered1}\nOffset 2: {rendered2}{script}"
 
 fn static_base64_section(encoded: &str, leading: usize) -> String {
     let padding_index = encoded.find('=').map(|index| index as isize).unwrap_or(-1);
-    let trailing = match padding_index.rem_euclid(4) {
+    let trailing = match padding_index % 4 {
         2 => 3,
         3 => 2,
         _ => 0,
@@ -154,7 +154,7 @@ fn static_base64_section(encoded: &str, leading: usize) -> String {
 
 fn highlight_offset(encoded: &str, offset: usize, alphabet: &str) -> Result<String, OperationError> {
     let padding_index = encoded.find('=').map(|index| index as isize).unwrap_or(-1);
-    let remainder = padding_index.rem_euclid(4);
+    let remainder = padding_index % 4;
     let trailing = if remainder == 2 { 3 } else if remainder == 3 { 2 } else { 0 };
     let static_end = encoded.len().saturating_sub(trailing);
     let static_part = encoded.get(offset + usize::from(offset > 0)..static_end).unwrap_or("");

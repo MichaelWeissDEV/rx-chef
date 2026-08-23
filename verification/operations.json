@@ -5048,7 +5048,9 @@
         "tests/tests/operations/show_base64_offsets.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
