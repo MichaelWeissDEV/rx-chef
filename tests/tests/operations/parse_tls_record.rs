@@ -7,7 +7,7 @@ use rxchef::Operation;
 use serde_json::Value;
 
 #[test]
-fn test_parse_tls_record_handshake() {
+fn test_parse_tls_record_minimum_handshake_boundary() {
     let op = ParseTLSRecord;
     // Simplified TLS Record: Type=22(Handshake), Version=0303, Length=0005, HandshakeType=01(ClientHello), HandshakeLen=000001, Data=00
     let input = vec![0x16, 0x03, 0x03, 0x00, 0x05, 0x01, 0x00, 0x00, 0x01, 0x00];

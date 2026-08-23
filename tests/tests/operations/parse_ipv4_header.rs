@@ -43,7 +43,7 @@ fn make_ipv4_header() -> Vec<u8> {
     h
 }
 #[test]
-fn test_parse_ipv4_header_table() {
+fn test_parse_ipv4_header_minimum_20_byte_boundary() {
     let op = ParseIPv4Header;
     let header = make_ipv4_header();
     let hex_str = hex::encode(&header);
@@ -57,9 +57,18 @@ fn test_parse_ipv4_header_table() {
         )
         .unwrap();
     let out = String::from_utf8(result).unwrap();
-    assert!(out.contains("192.168.0.1"));
-    assert!(out.contains("192.168.0.2"));
-    assert!(out.contains("correct"));
+    let reference_fields: Vec<_> = out
+        .lines()
+        .filter(|line| {
+            line.contains("192.168.0.1")
+                || line.contains("192.168.0.2")
+                || line.to_ascii_lowercase().contains("checksum")
+        })
+        .collect();
+    assert_eq!(reference_fields.len(), 3);
+    assert!(reference_fields[0].contains("correct"));
+    assert!(reference_fields[1].contains("192.168.0.1"));
+    assert!(reference_fields[2].contains("192.168.0.2"));
 }
 #[test]
 fn test_parse_ipv4_header_too_short() {

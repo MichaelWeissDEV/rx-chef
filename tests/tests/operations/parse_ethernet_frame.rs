@@ -47,3 +47,19 @@ fn test_parse_ethernet_too_short() {
         .run(b"0102".to_vec(), &[ArgValue::Str("Raw".to_string())])
         .is_err());
 }
+
+#[test]
+fn test_parse_ethernet_minimum_14_byte_frame_boundary() {
+    // IEEE 802.3 minimum parseable header: destination, source, EtherType,
+    // with an empty payload selected as hexadecimal packet data.
+    let output = ParseEthernetFrame
+        .run(
+            b"ffffffffffffaabbccddeeff0800".to_vec(),
+            &[
+                ArgValue::Str("Hex".into()),
+                ArgValue::Str("Packet data (hex)".into()),
+            ],
+        )
+        .unwrap();
+    assert_eq!(output, b"");
+}

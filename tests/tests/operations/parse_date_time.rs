@@ -40,3 +40,15 @@ fn test_parse_date_time_custom_format() {
     assert!(out.contains("June"));
     assert!(out.contains("Quarter: 2"));
 }
+
+#[test]
+fn test_parse_date_time_posix_epoch_boundary() {
+    // Gregorian/POSIX reference instant, parsed in the operation's UTC default.
+    let output = ParseDateTime
+        .run(b"01/01/1970 00:00:00".to_vec(), &[])
+        .unwrap();
+    assert_eq!(
+        output,
+        b"Date: Thursday 1st January 1970\nTime: 00:00:00\nPeriod: AM\nTimezone: UTC\nUTC offset: +0000\n\nDaylight Saving Time: false\nLeap year: false\nDays in this month: 31\n\nDay of year: 1\nWeek number: 1\nQuarter: 1"
+    );
+}

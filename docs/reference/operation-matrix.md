@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2378 |
+| Test functions | 2382 |
 | With negative tests | 361 |
-| With boundary tests | 448 |
-| Reference-verified (known answer) | 156 |
+| With boundary tests | 454 |
+| Reference-verified (known answer) | 162 |
 | Differential-verified | 258 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -338,18 +338,18 @@
 | PHP Serialize | partial | unknown | yes | 3 | — | — | — | yes | — | — | — | yes |
 | Pad lines | partial | exact | yes | 5 | yes | yes | — | yes | — | — | — | yes |
 | Parity Bit | partial | unknown | yes | 2 | — | yes | — | yes | — | — | — | yes |
-| Parse DateTime | partial | unknown | yes | 4 | yes | — | — | — | — | — | — | yes |
-| Parse Ethernet frame | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
+| Parse DateTime | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
+| Parse Ethernet frame | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | Parse IP range | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
-| Parse IPv4 header | partial | unknown | yes | 2 | yes | — | — | — | — | — | — | yes |
+| Parse IPv4 header | partial | unknown | yes | 2 | yes | yes | yes | — | — | — | — | yes |
 | Parse IPv6 address | partial | unknown | yes | 14 | yes | yes | — | yes | — | — | — | yes |
 | Parse SSH Host Key | partial | unknown | yes | 3 | — | — | yes | — | — | — | — | yes |
 | Parse TCP | partial | unknown | yes | 3 | — | — | yes | — | — | — | — | yes |
-| Parse TLS record | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
+| Parse TLS record | partial | unknown | yes | 1 | — | yes | yes | — | — | — | — | yes |
 | Parse TLV | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
 | Parse UDP | partial | unknown | yes | 1 | — | — | yes | — | — | — | — | yes |
 | Parse UNIX file permissions | partial | unknown | yes | 2 | — | — | — | yes | — | — | — | yes |
-| Parse colour code | partial | unknown | yes | 5 | yes | — | — | — | — | — | — | yes |
+| Parse colour code | partial | unknown | yes | 6 | yes | yes | yes | — | — | — | — | yes |
 | Play Media | partial | unknown | yes | 0 | — | — | — | yes | — | — | — | yes |
 | Power Set | partial | unknown | yes | 3 | — | yes | — | yes | — | — | — | yes |
 | RAKE | partial | exact | yes | 2 | yes | — | — | yes | — | — | — | yes |
@@ -620,7 +620,7 @@
 
 | Operation | Status | Parity | Args | Tests | Neg | Bound | KAT | Diff | Property | Fuzz | Bench | Docs |
 |---|---|---|:---:|---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Parse URI | partial | unknown | yes | 2 | yes | — | — | — | — | — | — | yes |
+| Parse URI | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
 | URL Decode | partial | exact | yes | 8 | — | yes | — | yes | — | — | — | yes |
 | URL Encode | partial | exact | yes | 10 | — | yes | yes | yes | — | — | — | yes |
 

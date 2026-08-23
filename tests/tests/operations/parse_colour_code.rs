@@ -45,3 +45,23 @@ fn test_cmyk() {
     let result_str = String::from_utf8(result).unwrap();
     assert!(result_str.contains("Hex:  #daedf7"));
 }
+
+#[test]
+fn test_black_channel_minimum_boundary() {
+    let output = ParseColourCode.run(b"#000000".to_vec(), &[]).unwrap();
+    let text = String::from_utf8(output).unwrap();
+    let channels: Vec<_> = text
+        .lines()
+        .filter(|line| {
+            line.starts_with("Hex:") || line.starts_with("RGB:") || line.starts_with("HSL:")
+        })
+        .collect();
+    assert_eq!(
+        channels,
+        vec![
+            "Hex:  #000000",
+            "RGB:  rgb(0, 0, 0)",
+            "HSL:  hsl(0, 0%, 0%)"
+        ]
+    );
+}

@@ -3,15 +3,15 @@
   "operation_count": 478,
   "summary": {
     "registered": 478,
-    "correctness_verified": 399,
-    "correctness_partially_verified": 79,
+    "correctness_verified": 405,
+    "correctness_partially_verified": 73,
     "correctness_unverified": 0,
     "tested": 478,
-    "test_functions": 2378,
+    "test_functions": 2382,
     "negative_tested": 361,
     "negative_not_applicable": 87,
-    "boundary_tested": 448,
-    "reference_verified": 156,
+    "boundary_tested": 454,
+    "reference_verified": 162,
     "differential_verified": 258,
     "parity_exact": 171,
     "parity_compatible": 5,
@@ -12837,20 +12837,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "boundary tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 4,
+      "tests": 5,
       "negative_test": true,
-      "boundary_test": false,
+      "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 1,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Parse DateTime",
@@ -12864,13 +12861,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/parse_date_time.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/parse_date_time.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -12882,20 +12881,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "boundary tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 3,
+      "tests": 4,
       "negative_test": true,
-      "boundary_test": false,
+      "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 1,
+      "value_assertions": 2,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Parse Ethernet frame",
@@ -12909,13 +12905,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/parse_ethernet_frame.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/parse_ethernet_frame.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -12971,20 +12969,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "boundary tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
       "tests": 2,
       "negative_test": true,
-      "boundary_test": false,
+      "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 1,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Parse IPv4 header",
@@ -12998,13 +12993,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/parse_ipv4_header.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/parse_ipv4_header.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -13237,11 +13234,8 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "boundary tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": {
         "not_applicable": "Parse TLS record is deliberately total over arbitrary finite byte strings and declares no arguments; short and truncated records are ignored or marked truncated rather than rejected."
       },
@@ -13250,7 +13244,7 @@
       "fixture_binary_or_unicode": false,
       "tests": 1,
       "negative_test": false,
-      "boundary_test": false,
+      "boundary_test": true,
       "empty_input_test": false,
       "value_assertions": 2,
       "tests_asserting_only_success": 0,
@@ -13266,13 +13260,15 @@
       "output": "JSON",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/parse_tls_record.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/parse_tls_record.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -13418,20 +13414,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "boundary tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 2,
+      "tests": 3,
       "negative_test": true,
-      "boundary_test": false,
+      "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 2,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Parse URI",
@@ -13445,13 +13438,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/parse_uri.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/parse_uri.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -13595,20 +13590,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "boundary tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 5,
+      "tests": 6,
       "negative_test": true,
-      "boundary_test": false,
+      "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 1,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Parse colour code",
@@ -13622,13 +13614,15 @@
       "output": "HTML",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/parse_colour_code.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/parse_colour_code.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
