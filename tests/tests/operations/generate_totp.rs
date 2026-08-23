@@ -23,3 +23,48 @@ fn test_generate_totp_basic() {
     assert!(output.contains("URI: otpauth://totp/TestAccount?secret=JBSWY3DPEHPK3PXP"));
     assert!(output.contains("Password: "));
 }
+
+#[test]
+fn test_generate_totp_eight_digit_upper_boundary() {
+    let output = GenerateTOTP
+        .run(
+            b"GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ".to_vec(),
+            &[
+                ArgValue::Str("RFC6238".into()),
+                ArgValue::Num(8.0),
+                ArgValue::Num(0.0),
+                ArgValue::Num(30.0),
+            ],
+        )
+        .unwrap();
+    let password = String::from_utf8(output)
+        .unwrap()
+        .lines()
+        .last()
+        .unwrap()
+        .strip_prefix("Password: ")
+        .unwrap()
+        .to_string();
+    assert_eq!(password.len(), 8);
+    assert!(password.bytes().all(|byte| byte.is_ascii_digit()));
+}
+
+#[test]
+fn test_generate_totp_rejects_zero_interval() {
+    let error = GenerateTOTP
+        .run(
+            b"GEZDGNBVGY3TQOJQ".to_vec(),
+            &[
+                ArgValue::Str("x".into()),
+                ArgValue::Num(6.0),
+                ArgValue::Num(0.0),
+                ArgValue::Num(0.0),
+            ],
+        )
+        .unwrap_err();
+    assert!(matches!(
+        error,
+        rxchef::operation::OperationError::InvalidArgument { ref name, .. }
+            if name == "Interval (T1)"
+    ));
+}

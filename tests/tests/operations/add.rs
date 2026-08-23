@@ -68,3 +68,14 @@ fn test_add_key_reuse() {
     // Key 10 is reused: (1+10)%256, (2+10)%256, (3+10)%256, (4+10)%256, (5+10)%256, (6+10)%256
     assert_eq!(result, vec![11, 12, 13, 14, 15, 16]);
 }
+
+#[test]
+fn test_add_rejects_invalid_hex_key() {
+    let error = AddOp
+        .run(vec![1], &[ArgValue::Str("0xzz".into())])
+        .unwrap_err();
+    assert!(matches!(
+        error,
+        rxchef::operation::OperationError::InvalidArgument { .. }
+    ));
+}

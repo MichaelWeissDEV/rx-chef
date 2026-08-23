@@ -1681,6 +1681,7 @@ dependencies = [
  "imageproc",
  "libsm",
  "lz4_flex 0.9.5",
+ "p256",
  "plotters",
  "regex",
  "rxchef",

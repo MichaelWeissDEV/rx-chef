@@ -48,3 +48,14 @@ fn test_or_empty_key() {
     let result = op.run(input.clone(), &args).unwrap();
     assert_eq!(result, input);
 }
+
+#[test]
+fn test_or_rejects_invalid_hex_key() {
+    let error = OrOp
+        .run(vec![1], &[ArgValue::Str("0xzz".into())])
+        .unwrap_err();
+    assert!(matches!(
+        error,
+        rxchef::operation::OperationError::InvalidArgument { .. }
+    ));
+}

@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2366 |
-| With negative tests | 354 |
-| With boundary tests | 446 |
-| Reference-verified (known answer) | 147 |
+| Test functions | 2378 |
+| With negative tests | 361 |
+| With boundary tests | 448 |
+| Reference-verified (known answer) | 156 |
 | Differential-verified | 258 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -76,9 +76,9 @@
 | DES Encrypt | partial | unknown | yes | 31 | yes | yes | yes | — | — | — | — | yes |
 | Derive EVP key | partial | unknown | yes | 2 | yes | yes | yes | — | — | — | — | yes |
 | Derive PBKDF2 key | partial | unknown | yes | 10 | yes | yes | yes | — | — | — | — | yes |
-| ECDSA Sign | partial | unknown | yes | 6 | yes | yes | — | — | — | — | — | yes |
+| ECDSA Sign | partial | unknown | yes | 7 | yes | yes | yes | — | — | — | — | yes |
 | ECDSA Signature Conversion | partial | unknown | yes | 9 | yes | — | — | yes | — | — | — | yes |
-| ECDSA Verify | partial | unknown | yes | 9 | yes | yes | — | — | — | — | — | yes |
+| ECDSA Verify | partial | unknown | yes | 10 | yes | yes | yes | — | — | — | — | yes |
 | GOST Decrypt | partial | unknown | yes | 2 | — | — | yes | — | — | — | — | yes |
 | GOST Encrypt | partial | unknown | yes | 6 | yes | yes | yes | — | — | — | — | yes |
 | GOST Key Unwrap | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
@@ -230,8 +230,8 @@
 
 | Operation | Status | Parity | Args | Tests | Neg | Bound | KAT | Diff | Property | Fuzz | Bench | Docs |
 |---|---|---|:---:|---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ADD | partial | unknown | yes | 6 | — | yes | — | — | — | — | — | yes |
-| AND | partial | unknown | yes | 4 | — | yes | — | — | — | — | — | yes |
+| ADD | partial | unknown | yes | 7 | yes | yes | yes | — | — | — | — | yes |
+| AND | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
 | Add line numbers | partial | exact | yes | 5 | — | yes | — | yes | — | — | — | yes |
 | Alternating Caps | partial | exact | yes | 5 | — | yes | — | yes | — | — | — | yes |
 | Bacon Cipher Decode | partial | exact | yes | 4 | yes | yes | — | yes | — | — | — | yes |
@@ -302,9 +302,9 @@
 | From UNIX Timestamp | partial | unknown | yes | 5 | yes | yes | — | yes | — | — | — | yes |
 | Fuzzy Match | partial | unknown | yes | 12 | yes | yes | — | — | — | — | — | yes |
 | Generate De Bruijn Sequence | partial | exact | yes | 4 | yes | yes | — | yes | — | — | — | yes |
-| Generate HOTP | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
+| Generate HOTP | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
 | Generate Lorem Ipsum | partial | unknown | yes | 4 | yes | — | — | — | — | — | — | yes |
-| Generate TOTP | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
+| Generate TOTP | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | Get All Casings | partial | exact | yes | 4 | yes | yes | — | yes | — | — | — | yes |
 | Get Time | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | Group IP addresses | partial | exact | yes | 3 | yes | — | — | yes | — | — | — | yes |
@@ -330,7 +330,7 @@
 | Multiply | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |
 | NOT | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |
 | Numberwang | partial | unknown | yes | 3 | — | yes | yes | — | — | — | — | yes |
-| OR | partial | unknown | yes | 4 | — | yes | — | — | — | — | — | yes |
+| OR | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
 | Offset checker | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | P-list Viewer | partial | unknown | yes | 2 | yes | — | — | yes | — | — | — | yes |
 | PEM to Hex | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
@@ -363,7 +363,7 @@
 | Reverse | partial | exact | yes | 6 | yes | — | — | yes | — | — | — | yes |
 | Rotate left | partial | exact | yes | 5 | — | yes | — | yes | — | — | — | yes |
 | Rotate right | partial | exact | yes | 5 | — | yes | — | yes | — | — | — | yes |
-| SUB | partial | unknown | yes | 5 | — | yes | — | — | — | — | — | yes |
+| SUB | partial | unknown | yes | 6 | yes | yes | yes | — | — | — | — | yes |
 | Scan for Embedded Files | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
 | Set Difference | partial | unknown | yes | 3 | yes | — | yes | — | — | — | — | yes |
 | Set Intersection | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
@@ -428,7 +428,7 @@
 | Windows Filetime to UNIX Timestamp | partial | unknown | yes | 5 | yes | — | — | yes | — | — | — | yes |
 | Wrap | partial | exact | yes | 3 | — | yes | — | yes | — | — | — | yes |
 | XKCD Random Number | partial | exact | yes | 5 | — | yes | — | yes | — | — | — | yes |
-| XOR | partial | unknown | yes | 4 | — | yes | — | — | — | — | — | yes |
+| XOR | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
 | XOR Brute Force | partial | unknown | yes | 5 | yes | yes | — | yes | — | — | — | yes |
 | YAML to JSON | partial | unknown | yes | 2 | — | yes | — | yes | — | — | — | yes |
 

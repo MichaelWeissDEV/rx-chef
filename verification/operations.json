@@ -34,7 +34,7 @@
       "correctness": [
         "tests/tests/operations/add.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/add.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -127,7 +127,7 @@
       "correctness": [
         "tests/tests/operations/and.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/and.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -1374,7 +1374,9 @@
       "correctness": [
         "tests/tests/operations/ecdsa_sign.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/ecdsa_sign.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -1398,7 +1400,9 @@
       "correctness": [
         "tests/tests/operations/ecdsa_verify.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/ecdsa_verify.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2407,7 +2411,9 @@
       "correctness": [
         "tests/tests/operations/generate_hotp.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/generate_hotp.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2471,9 +2477,12 @@
     },
     "generate_totp": {
       "correctness": [
-        "tests/tests/operations/generate_totp.rs"
+        "tests/tests/operations/generate_totp.rs",
+        "src/operations/generate_totp.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "src/operations/generate_totp.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3586,7 +3595,7 @@
       "correctness": [
         "tests/tests/operations/or.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/or.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4887,7 +4896,7 @@
       "correctness": [
         "tests/tests/operations/sub.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/sub.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -6242,7 +6251,7 @@
       "correctness": [
         "tests/tests/operations/xor.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/xor.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],

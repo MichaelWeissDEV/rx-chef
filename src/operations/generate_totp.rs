@@ -20,6 +20,10 @@ use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError}
 /// from a shared secret key and the current time.
 pub struct GenerateTOTP;
 
+fn totp_at(secret: &[u8], interval: u64, digits: usize, timestamp: u64) -> String {
+    totp_custom::<Sha1>(interval, digits as u32, secret, timestamp)
+}
+
 impl Operation for GenerateTOTP {
     fn name(&self) -> &'static str {
         "Generate TOTP"
@@ -108,6 +112,19 @@ impl Operation for GenerateTOTP {
         let t0 = args.get(2).and_then(|v| v.as_f64()).unwrap_or(0.0) as u64;
         let t1 = args.get(3).and_then(|v| v.as_f64()).unwrap_or(30.0) as u64;
 
+        if !(6..=8).contains(&digits) {
+            return Err(OperationError::InvalidArgument {
+                name: "Code length".to_string(),
+                reason: "Code length must be between 6 and 8 digits".to_string(),
+            });
+        }
+        if t1 == 0 {
+            return Err(OperationError::InvalidArgument {
+                name: "Interval (T1)".to_string(),
+                reason: "Interval must be at least one second".to_string(),
+            });
+        }
+
         let secret_str = String::from_utf8_lossy(&input)
             .trim()
             .to_uppercase()
@@ -135,7 +152,7 @@ impl Operation for GenerateTOTP {
 
         // totp_custom in this dependency expects 4 arguments: step, digits, secret, time.
         let adjusted_time = if now >= t0 { now - t0 } else { 0 };
-        let password = totp_custom::<Sha1>(t1, digits as u32, &secret, adjusted_time);
+        let password = totp_at(&secret, t1, digits, adjusted_time);
 
         // Simple manual URI construction as we don't have a URI library handy
         // and we want to avoid extra dependencies.
@@ -149,5 +166,16 @@ impl Operation for GenerateTOTP {
 
         let output = format!("URI: {}\n\nPassword: {}", uri, password);
         Ok(output.into_bytes())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::totp_at;
+
+    #[test]
+    fn rfc6238_sha1_timestamp_59_known_answer() {
+        // RFC 6238 Appendix B, SHA-1, T=59, 8 digits.
+        assert_eq!(totp_at(b"12345678901234567890", 30, 8, 59), "94287082");
     }
 }

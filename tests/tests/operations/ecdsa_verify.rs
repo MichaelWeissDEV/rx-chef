@@ -6,6 +6,27 @@ use rxchef::operations::ecdsa_verify::ECDSAVerify;
 use rxchef::Operation;
 
 #[test]
+fn test_ecdsa_verify_p256_sha256_upstream_known_answer() {
+    // Public key, message, and fixed ASN.1 signature from CyberChef's upstream
+    // ECDSA.mjs suite at commit 2e048b029085. No signing operation is invoked.
+    let public_key = "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEDUc8A0EDNKoCYIPWMHz1yUzqE5mJ\ngusgcAE8H6810fkJ8ZmTNiCCa6sLgR2vD1VNh2diirWgKPH4PVMKav5e6Q==\n-----END PUBLIC KEY-----";
+    let message = "A common mistake that people make when trying to design something completely foolproof is to underestimate the ingenuity of complete fools.";
+    let output = ECDSAVerify
+        .run(
+            b"3046022100e06905608a2fa7dbda9e284c2a7959dfb68fb527a5f003b2d7975ff135145127022100b6baa253793334f8b93ea1dd622bc600124d8090babd807efe3f77b8b324388d".to_vec(),
+            &[
+                rxchef::operation::ArgValue::Str("ASN.1 HEX".into()),
+                rxchef::operation::ArgValue::Str("SHA-256".into()),
+                rxchef::operation::ArgValue::Str(public_key.into()),
+                rxchef::operation::ArgValue::Str(message.into()),
+                rxchef::operation::ArgValue::Str("Raw".into()),
+            ],
+        )
+        .unwrap();
+    assert_eq!(output, b"Verified OK");
+}
+
+#[test]
 fn test_ecdsa_verify_empty_input() {
     let op = ECDSAVerify;
     let args = [

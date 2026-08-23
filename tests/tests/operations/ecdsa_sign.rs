@@ -6,6 +6,30 @@ use rxchef::operations::ecdsa_sign::ECDSASign;
 use rxchef::Operation;
 
 #[test]
+fn test_ecdsa_sign_rfc6979_p256_sha256_known_answer() {
+    use p256::pkcs8::{EncodePrivateKey, LineEnding};
+
+    // RFC 6979 section A.2.5: P-256, SHA-256, message "sample". Only the
+    // transport encoding is generated here; the scalar and expected r/s are
+    // fixed normative values.
+    let scalar =
+        hex::decode("c9afa9d845ba75166b5c215767b1d6934e50c3db36e89b127b8a622b120f6721").unwrap();
+    let secret = p256::SecretKey::from_slice(&scalar).unwrap();
+    let private_key = secret.to_pkcs8_pem(LineEnding::LF).unwrap();
+    let output = ECDSASign
+        .run(
+            b"sample".to_vec(),
+            &[
+                rxchef::operation::ArgValue::Str(private_key.to_string()),
+                rxchef::operation::ArgValue::Str("SHA-256".into()),
+                rxchef::operation::ArgValue::Str("ASN.1 HEX".into()),
+            ],
+        )
+        .unwrap();
+    assert_eq!(output, b"3046022100efd48b2aacb6a8fd1140dd9cd45e81d69d2c877b56aaf991c34d0ea84eaf3716022100f7cb1c942d657c41d436c7a1b6e29f65f3e900dbb9aff4064dc4ab2f843acda8");
+}
+
+#[test]
 fn test_ecdsa_sign_empty_input() {
     let op = ECDSASign;
     let args = [

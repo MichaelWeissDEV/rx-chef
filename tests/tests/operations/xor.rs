@@ -57,3 +57,14 @@ fn test_xor_null_preserving() {
     // 0x42 ^ 0x41 = 0x03
     assert_eq!(result, vec![0x00, 0x41, 0x03]);
 }
+
+#[test]
+fn test_xor_rejects_invalid_hex_key() {
+    let error = XorOp
+        .run(vec![1], &[ArgValue::Str("0xzz".into())])
+        .unwrap_err();
+    assert!(matches!(
+        error,
+        rxchef::operation::OperationError::InvalidArgument { .. }
+    ));
+}

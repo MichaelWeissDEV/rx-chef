@@ -53,3 +53,14 @@ fn test_sub_key_cycles() {
     let result = op.run(vec![0x03, 0x04, 0x05], &args).unwrap();
     assert_eq!(result, vec![0x02, 0x02, 0x04]);
 }
+
+#[test]
+fn test_sub_rejects_invalid_hex_key() {
+    let error = SUB
+        .run(vec![1], &[ArgValue::Str("0xzz".into())])
+        .unwrap_err();
+    assert!(matches!(
+        error,
+        rxchef::operation::OperationError::InvalidArgument { .. }
+    ));
+}

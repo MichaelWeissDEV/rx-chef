@@ -3,15 +3,15 @@
   "operation_count": 478,
   "summary": {
     "registered": 478,
-    "correctness_verified": 390,
-    "correctness_partially_verified": 88,
+    "correctness_verified": 399,
+    "correctness_partially_verified": 79,
     "correctness_unverified": 0,
     "tested": 478,
-    "test_functions": 2366,
-    "negative_tested": 354,
+    "test_functions": 2378,
+    "negative_tested": 361,
     "negative_not_applicable": 87,
-    "boundary_tested": 446,
-    "reference_verified": 147,
+    "boundary_tested": 448,
+    "reference_verified": 156,
     "differential_verified": 258,
     "parity_exact": 171,
     "parity_compatible": 5,
@@ -113,17 +113,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 6,
-      "negative_test": false,
+      "tests": 7,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
       "value_assertions": 6,
@@ -140,13 +137,15 @@
       "output": "Bytes",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/add.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/add.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -426,17 +425,14 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 4,
-      "negative_test": false,
+      "tests": 5,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
       "value_assertions": 4,
@@ -453,13 +449,15 @@
       "output": "Bytes",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/and.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/and.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4580,19 +4578,17 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
       "fixture_binary_or_unicode": true,
-      "tests": 6,
+      "tests": 7,
       "negative_test": true,
       "boundary_test": true,
       "empty_input_test": true,
-      "value_assertions": 0,
+      "value_assertions": 1,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "ECDSA Sign",
@@ -4606,13 +4602,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/ecdsa_sign.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/ecdsa_sign.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4668,19 +4666,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
       "fixture_binary_or_unicode": true,
-      "tests": 9,
+      "tests": 10,
       "negative_test": true,
       "boundary_test": true,
       "empty_input_test": true,
-      "value_assertions": 0,
+      "value_assertions": 1,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "ECDSA Verify",
@@ -4694,13 +4690,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/ecdsa_verify.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/ecdsa_verify.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -8087,21 +8085,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "boundary tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 1,
-      "negative_test": false,
-      "boundary_test": false,
+      "tests": 3,
+      "negative_test": true,
+      "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 2,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Generate HOTP",
@@ -8115,13 +8109,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/generate_hotp.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/generate_hotp.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -8361,21 +8357,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "boundary tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 1,
-      "negative_test": false,
-      "boundary_test": false,
+      "tests": 4,
+      "negative_test": true,
+      "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 2,
       "tests_asserting_only_success": 1,
       "untested_reason": null,
       "name": "Generate TOTP",
@@ -8389,13 +8381,16 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/generate_totp.rs"
+        "tests/tests/operations/generate_totp.rs",
+        "src/operations/generate_totp.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "src/operations/generate_totp.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -12033,17 +12028,14 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 4,
-      "negative_test": false,
+      "tests": 5,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
       "value_assertions": 4,
@@ -12060,13 +12052,15 @@
       "output": "Bytes",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/or.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/or.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -16464,17 +16458,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 5,
-      "negative_test": false,
+      "tests": 6,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
       "value_assertions": 5,
@@ -16491,13 +16482,15 @@
       "output": "Bytes",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/sub.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/sub.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -20865,17 +20858,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 4,
-      "negative_test": false,
+      "tests": 5,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
       "value_assertions": 4,
@@ -20892,13 +20882,15 @@
       "output": "Bytes",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/xor.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/xor.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],

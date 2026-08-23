@@ -81,6 +81,19 @@ impl Operation for GenerateHOTPOp {
         let digits = args.get(1).and_then(|a| a.as_usize()).unwrap_or(6);
         let counter = args.get(2).and_then(|a| a.as_i64()).unwrap_or(0);
 
+        if !(6..=8).contains(&digits) {
+            return Err(OperationError::InvalidArgument {
+                name: "Code length".to_string(),
+                reason: "Code length must be between 6 and 8 digits".to_string(),
+            });
+        }
+        if counter < 0 {
+            return Err(OperationError::InvalidArgument {
+                name: "Counter".to_string(),
+                reason: "Counter must not be negative".to_string(),
+            });
+        }
+
         let secret = if input.is_empty() {
             Vec::new()
         } else {
@@ -90,7 +103,7 @@ impl Operation for GenerateHOTPOp {
                 .replace(|c: char| c.is_whitespace(), "");
             data_encoding::BASE32_NOPAD
                 .decode(cleaned.as_bytes())
-                .unwrap_or_else(|_| input.clone())
+                .map_err(|_| OperationError::InvalidInput("Invalid Base32 secret".to_string()))?
         };
 
         if secret.is_empty() && !input.is_empty() {
