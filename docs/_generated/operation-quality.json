@@ -3,15 +3,15 @@
   "operation_count": 478,
   "summary": {
     "registered": 478,
-    "correctness_verified": 405,
-    "correctness_partially_verified": 73,
+    "correctness_verified": 410,
+    "correctness_partially_verified": 68,
     "correctness_unverified": 0,
     "tested": 478,
-    "test_functions": 2382,
-    "negative_tested": 361,
-    "negative_not_applicable": 87,
-    "boundary_tested": 454,
-    "reference_verified": 162,
+    "test_functions": 2391,
+    "negative_tested": 365,
+    "negative_not_applicable": 88,
+    "boundary_tested": 459,
+    "reference_verified": 167,
     "differential_verified": 258,
     "parity_exact": 171,
     "parity_compatible": 5,
@@ -12747,21 +12747,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "boundary tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 1,
-      "negative_test": false,
-      "boundary_test": false,
+      "tests": 3,
+      "negative_test": true,
+      "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 1,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Parse ASN.1 hex string",
@@ -12775,13 +12771,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/parse_asn1_hex_string.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/parse_asn1_hex_string.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -13280,21 +13278,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "boundary tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 1,
-      "negative_test": false,
-      "boundary_test": false,
+      "tests": 3,
+      "negative_test": true,
+      "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 3,
+      "value_assertions": 4,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Parse TLV",
@@ -13308,13 +13302,15 @@
       "output": "JSON",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/parse_tlv.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/parse_tlv.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -15549,21 +15545,17 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "boundary tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 3,
-      "negative_test": false,
-      "boundary_test": false,
+      "tests": 5,
+      "negative_test": true,
+      "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 5,
+      "value_assertions": 6,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Rison Decode",
@@ -15577,13 +15569,15 @@
       "output": "JSON",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/rison_decode.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/rison_decode.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -17887,21 +17881,19 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "boundary tests",
-        "independent reference evidence"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Syntax highlighter is a total HTML-escaping wrapper over every finite byte string; its only string argument is emitted as a CSS language class and has no rejected semantic domain."
+      },
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 3,
+      "tests": 4,
       "negative_test": false,
-      "boundary_test": false,
-      "empty_input_test": false,
-      "value_assertions": 2,
+      "boundary_test": true,
+      "empty_input_test": true,
+      "value_assertions": 3,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Syntax highlighter",
@@ -17915,13 +17907,15 @@
       "output": "HTML",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/syntax_highlighter.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/syntax_highlighter.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -18204,21 +18198,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "boundary tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 3,
-      "negative_test": false,
-      "boundary_test": false,
-      "empty_input_test": false,
-      "value_assertions": 2,
+      "tests": 5,
+      "negative_test": true,
+      "boundary_test": true,
+      "empty_input_test": true,
+      "value_assertions": 3,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Text Encoding Brute Force",
@@ -18232,13 +18222,15 @@
       "output": "JSON",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/text_encoding_brute_force.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/text_encoding_brute_force.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],

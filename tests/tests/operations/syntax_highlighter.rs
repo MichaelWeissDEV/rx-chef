@@ -36,3 +36,11 @@ fn test_syntax_highlighter_html_escape() {
     let result = op.run(input, &args).unwrap();
     assert!(String::from_utf8_lossy(&result).contains("&lt;script&gt;"));
 }
+
+#[test]
+fn test_syntax_highlighter_empty_input_boundary() {
+    let output = SyntaxHighlighter
+        .run(vec![], &[ArgValue::Str("auto detect".into())])
+        .unwrap();
+    assert_eq!(output, b"<pre><code></code></pre>");
+}

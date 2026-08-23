@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2382 |
-| With negative tests | 361 |
-| With boundary tests | 454 |
-| Reference-verified (known answer) | 162 |
+| Test functions | 2391 |
+| With negative tests | 365 |
+| With boundary tests | 459 |
+| Reference-verified (known answer) | 167 |
 | Differential-verified | 258 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -135,7 +135,7 @@
 | Render Markdown | partial | unknown | yes | 4 | — | — | — | yes | — | — | — | yes |
 | SQL Beautify | partial | exact | yes | 3 | — | yes | — | yes | — | — | — | yes |
 | SQL Minify | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |
-| Syntax highlighter | partial | unknown | yes | 3 | — | — | — | — | — | — | — | yes |
+| Syntax highlighter | partial | unknown | yes | 4 | — | yes | yes | — | — | — | — | yes |
 | To Camel case | partial | exact | yes | 7 | yes | yes | — | yes | — | — | — | yes |
 | To Kebab case | partial | exact | yes | 13 | yes | yes | — | yes | — | — | — | yes |
 | To MessagePack | partial | unknown | yes | 10 | yes | yes | — | yes | — | — | — | yes |
@@ -346,7 +346,7 @@
 | Parse SSH Host Key | partial | unknown | yes | 3 | — | — | yes | — | — | — | — | yes |
 | Parse TCP | partial | unknown | yes | 3 | — | — | yes | — | — | — | — | yes |
 | Parse TLS record | partial | unknown | yes | 1 | — | yes | yes | — | — | — | — | yes |
-| Parse TLV | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
+| Parse TLV | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
 | Parse UDP | partial | unknown | yes | 1 | — | — | yes | — | — | — | — | yes |
 | Parse UNIX file permissions | partial | unknown | yes | 2 | — | — | — | yes | — | — | — | yes |
 | Parse colour code | partial | unknown | yes | 6 | yes | yes | yes | — | — | — | — | yes |
@@ -451,9 +451,9 @@
 | From HTML Entity | partial | exact | yes | 6 | yes | yes | — | yes | — | — | — | yes |
 | From Punycode | partial | exact | yes | 2 | — | — | — | yes | — | — | — | yes |
 | Normalise Unicode | partial | exact | yes | 3 | yes | — | — | yes | — | — | — | yes |
-| Rison Decode | partial | unknown | yes | 3 | — | — | — | — | — | — | — | yes |
+| Rison Decode | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
 | Rison Encode | partial | unknown | yes | 3 | — | — | — | yes | — | — | — | yes |
-| Text Encoding Brute Force | partial | unknown | yes | 3 | — | — | — | — | — | — | — | yes |
+| Text Encoding Brute Force | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
 | To HTML Entity | partial | exact | yes | 8 | yes | yes | — | yes | — | — | — | yes |
 | To Punycode | partial | exact | yes | 3 | yes | — | — | yes | — | — | — | yes |
 
@@ -573,7 +573,7 @@
 | JWK to PEM | partial | unknown | yes | 1 | — | — | yes | — | — | — | — | yes |
 | Object Identifier to Hex | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | PEM to JWK | partial | exact | yes | 2 | yes | — | — | yes | — | — | — | yes |
-| Parse ASN.1 hex string | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
+| Parse ASN.1 hex string | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
 | Parse CSR | partial | unknown | yes | 2 | yes | yes | — | yes | — | — | — | yes |
 | Parse X.509 CRL | partial | unknown | yes | 0 | — | — | — | yes | — | — | — | yes |
 | Parse X.509 certificate | partial | unknown | yes | 12 | yes | yes | — | yes | — | — | — | yes |

@@ -3797,7 +3797,7 @@
       "correctness": [
         "tests/tests/operations/parse_asn1_hex_string.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/parse_asn1_hex_string.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3945,7 +3945,7 @@
       "correctness": [
         "tests/tests/operations/parse_tlv.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/parse_tlv.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4616,7 +4616,7 @@
       "correctness": [
         "tests/tests/operations/rison_decode.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/rison_decode.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -5324,10 +5324,13 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "syntax_highlighter": {
+      "negative_test_policy": {
+        "not_applicable": "Syntax highlighter is a total HTML-escaping wrapper over every finite byte string; its only string argument is emitted as a CSS language class and has no rejected semantic domain."
+      },
       "correctness": [
         "tests/tests/operations/syntax_highlighter.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/syntax_highlighter.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -5423,7 +5426,7 @@
       "correctness": [
         "tests/tests/operations/text_encoding_brute_force.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/text_encoding_brute_force.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],

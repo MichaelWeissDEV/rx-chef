@@ -34,3 +34,23 @@ fn test_text_encoding_brute_force_malformed() {
     let _results: BTreeMap<String, String> = serde_json::from_slice(&result).unwrap();
     // Just check it doesn't crash
 }
+
+#[test]
+fn test_text_encoding_empty_utf8_boundary() {
+    let output = TextEncodingBruteForce
+        .run(vec![], &[ArgValue::Str("Decode".into())])
+        .unwrap();
+    let results: BTreeMap<String, String> = serde_json::from_slice(&output).unwrap();
+    assert_eq!(results.get("UTF-8"), Some(&String::new()));
+}
+
+#[test]
+fn test_text_encoding_rejects_unknown_mode() {
+    let error = TextEncodingBruteForce
+        .run(b"x".to_vec(), &[ArgValue::Str("Transmogrify".into())])
+        .unwrap_err();
+    assert!(matches!(
+        error,
+        rxchef::operation::OperationError::InvalidArgument { ref name, .. } if name == "Mode"
+    ));
+}

@@ -55,6 +55,12 @@ impl Operation for TextEncodingBruteForce {
 
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
         let mode = args.first().and_then(|a| a.as_str()).unwrap_or("Decode");
+        if !matches!(mode, "Decode" | "Encode") {
+            return Err(OperationError::InvalidArgument {
+                name: "Mode".to_string(),
+                reason: format!("Unsupported mode: {mode}"),
+            });
+        }
         let mut results = BTreeMap::new();
 
         let encodings = [

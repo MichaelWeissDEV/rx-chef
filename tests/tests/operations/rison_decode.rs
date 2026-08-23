@@ -37,3 +37,25 @@ fn test_rison_decode_array() {
     let val: Value = serde_json::from_slice(&result).unwrap();
     assert_eq!(val, serde_json::json!([1.0, 2.0, 3.0]));
 }
+
+#[test]
+fn test_rison_empty_array_boundary() {
+    let output = RisonDecode
+        .run(b"!()".to_vec(), &[ArgValue::Str("Decode".into())])
+        .unwrap();
+    assert_eq!(
+        serde_json::from_slice::<Value>(&output).unwrap(),
+        serde_json::json!([])
+    );
+}
+
+#[test]
+fn test_rison_rejects_unterminated_object() {
+    let error = RisonDecode
+        .run(b"(a:1".to_vec(), &[ArgValue::Str("Decode".into())])
+        .unwrap_err();
+    assert!(matches!(
+        error,
+        rxchef::operation::OperationError::InvalidInput(_)
+    ));
+}
