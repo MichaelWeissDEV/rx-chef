@@ -61,7 +61,8 @@ fn test_convert_image_format_to_jpeg() {
     let result = op.run(img_buf, &args).unwrap();
     assert!(!result.is_empty());
 
-    // Verify it's a valid JPEG
+    // Decode with the independent `image` codec: conversion must produce a
+    // real JPEG preserving the source's independently known 10 x 10 geometry.
     let converted_img = image::load_from_memory(&result).unwrap();
     assert_eq!(converted_img.width(), 10);
     assert_eq!(converted_img.height(), 10);

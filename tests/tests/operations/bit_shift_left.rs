@@ -7,6 +7,13 @@ use rxchef::operations::bit_shift_left::BitShiftLeft;
 use rxchef::Operation;
 
 #[test]
+fn test_bit_shift_left_rejects_amount_above_byte_width() {
+    assert!(BitShiftLeft
+        .run(vec![0xff], &[ArgValue::Num(8.0)])
+        .is_err());
+}
+
+#[test]
 fn test_bit_shift_left_basic() {
     let op = BitShiftLeft;
     let input = vec![0b01010101, 0b10101010, 0b11111111, 0b00000000];

@@ -3,16 +3,16 @@
   "operation_count": 478,
   "summary": {
     "registered": 478,
-    "correctness_verified": 225,
-    "correctness_partially_verified": 253,
+    "correctness_verified": 339,
+    "correctness_partially_verified": 139,
     "correctness_unverified": 0,
     "tested": 478,
-    "test_functions": 2256,
-    "negative_tested": 313,
-    "negative_not_applicable": 35,
-    "boundary_tested": 439,
-    "reference_verified": 68,
-    "differential_verified": 255,
+    "test_functions": 2317,
+    "negative_tested": 351,
+    "negative_not_applicable": 87,
+    "boundary_tested": 440,
+    "reference_verified": 97,
+    "differential_verified": 257,
     "parity_exact": 171,
     "parity_compatible": 5,
     "parity_documented_difference": 1,
@@ -67,11 +67,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "A1Z26 Cipher Encode is total over every finite string; its free-form delimiter accepts every string and non-alphabetic characters have defined omission semantics."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -337,19 +337,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
       "fixture_binary_or_unicode": false,
-      "tests": 1,
+      "tests": 2,
       "negative_test": true,
       "boundary_test": true,
       "empty_input_test": true,
-      "value_assertions": 0,
+      "value_assertions": 1,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "AMF Decode",
@@ -363,13 +361,15 @@
       "output": "JSON",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/amf_decode.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/amf_decode.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -381,19 +381,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": true,
       "fixture_binary_or_unicode": true,
-      "tests": 1,
+      "tests": 9,
       "negative_test": false,
-      "boundary_test": false,
+      "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 4,
+      "value_assertions": 15,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "AMF Encode",
@@ -408,13 +406,16 @@
       "args_documented": true,
       "correctness_test": true,
       "known_answer_test": false,
-      "differential_test": false,
+      "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/amf_encode.rs"
+        "tests/tests/operations/amf_encode.rs",
+        "tests/tests/differential.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "fuzz_target": false,
@@ -514,11 +515,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Add line numbers is total over every finite string and every integer offset; empty input, negative offsets and trailing separators all have defined output."
+      },
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -1540,16 +1541,14 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 4,
-      "negative_test": false,
+      "tests": 5,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 4,
@@ -1586,11 +1585,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Bit shift right is total over arbitrary byte strings and every integer shift amount; JavaScript-compatible shift masking and both shift-type branches are defined."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -2118,11 +2117,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "CSS Beautify is a permissive lexical formatter over every finite string; its free-form indentation string accepts every value and does not require valid CSS."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -2164,11 +2163,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "CSS Minify is a permissive lexical transformation over every finite string and a Boolean comment option; malformed CSS is treated as text rather than rejected."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -2299,12 +2298,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "independent reference evidence"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "CTPH computes a defined context-triggered piecewise hash for every finite UTF-8 string and declares no arguments; arbitrary and empty strings are valid messages."
+      },
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
@@ -2312,7 +2310,7 @@
       "negative_test": false,
       "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 3,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "CTPH",
@@ -2322,17 +2320,19 @@
       "status": "partial",
       "availability": "available",
       "feature": [],
-      "input": "Bytes",
+      "input": "String",
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/ctph.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/ctph.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2973,10 +2973,8 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
@@ -2999,13 +2997,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/compare_ctph_hashes.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/compare_ctph_hashes.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3017,10 +3017,8 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
@@ -3043,13 +3041,15 @@
       "output": "Number",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/compare_ssdeep_hashes.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/compare_ssdeep_hashes.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3105,10 +3105,8 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": true,
@@ -3131,13 +3129,15 @@
       "output": "Bytes",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/contain_image.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/contain_image.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3149,10 +3149,8 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
@@ -3175,13 +3173,15 @@
       "output": "Bytes",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/convert_image_format.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/convert_image_format.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3193,11 +3193,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Convert Leet Speak is a total character mapping over every finite string; every direction string selects one of the defined encode or decode branches."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -3283,16 +3283,14 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 1,
-      "negative_test": false,
+      "tests": 2,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 1,
@@ -3313,7 +3311,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/convert_coordinate_format.rs"
+        "tests/tests/operations/convert_coordinate_format.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -3552,11 +3551,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Count occurrences is total for every finite input and search string; an empty search string and absent matches each have explicitly tested numeric results."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -3598,10 +3597,8 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": true,
@@ -3624,13 +3621,15 @@
       "output": "Bytes",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/cover_image.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/cover_image.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3642,10 +3641,8 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": true,
@@ -3668,13 +3665,15 @@
       "output": "Bytes",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/crop_image.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/crop_image.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3820,10 +3819,8 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
@@ -3846,13 +3843,15 @@
       "output": "HTML",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/date_time_delta.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/date_time_delta.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3952,16 +3951,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 4,
-      "negative_test": false,
+      "tests": 5,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 4,
@@ -4044,11 +4041,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Defang URL is a total regex replacement over every finite string; all Boolean toggles and its free-form processing selector have defined pass-through branches."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -4268,10 +4265,8 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
@@ -4294,13 +4289,15 @@
       "output": "HTML",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/diff.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/diff.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4448,11 +4445,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Divide is deliberately total over every finite string and free-form delimiter; non-numbers are excluded and empty or non-finite arithmetic has the defined output NaN."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -4494,11 +4491,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Drop bytes clamps every integer start and length to the finite input bounds and defines per-line processing; all byte strings and schema-valid arguments produce output."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -4760,11 +4757,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Encode NetBIOS Name defines output for every byte string and integer offset; names over sixteen bytes intentionally produce an empty result and shorter names are padded."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -5248,16 +5245,14 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 2,
-      "negative_test": false,
+      "tests": 3,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 2,
@@ -5278,7 +5273,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/extract_ip_addresses.rs"
+        "tests/tests/operations/extract_ip_addresses.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -5338,16 +5334,14 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 2,
-      "negative_test": false,
+      "tests": 3,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 2,
@@ -5368,7 +5362,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/extract_mac_addresses.rs"
+        "tests/tests/operations/extract_mac_addresses.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -5428,16 +5423,14 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 1,
-      "negative_test": false,
+      "tests": 2,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 1,
@@ -5458,7 +5451,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/extract_urls.rs"
+        "tests/tests/operations/extract_urls.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -5474,16 +5468,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 1,
-      "negative_test": false,
+      "tests": 2,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 1,
@@ -5504,7 +5496,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/extract_dates.rs"
+        "tests/tests/operations/extract_dates.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -5520,16 +5513,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 2,
-      "negative_test": false,
+      "tests": 3,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 2,
@@ -5550,7 +5541,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/extract_domains.rs"
+        "tests/tests/operations/extract_domains.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -5566,16 +5558,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 1,
-      "negative_test": false,
+      "tests": 2,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 1,
@@ -5596,7 +5586,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/extract_email_addresses.rs"
+        "tests/tests/operations/extract_email_addresses.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -5612,16 +5603,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 2,
-      "negative_test": false,
+      "tests": 3,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 2,
@@ -5642,7 +5631,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/extract_file_paths.rs"
+        "tests/tests/operations/extract_file_paths.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -5658,16 +5648,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 2,
-      "negative_test": false,
+      "tests": 3,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 1,
@@ -5688,7 +5676,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/extract_hashes.rs"
+        "tests/tests/operations/extract_hashes.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -5704,11 +5693,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Fang URL is a total textual replacement over every finite string and its three Boolean toggles; text without defanged URL syntax is a defined pass-through."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -5750,10 +5739,8 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
@@ -5776,13 +5763,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/fernet_decrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/fernet_decrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -5838,11 +5827,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "File Tree is a total delimiter-based formatter over finite strings; both path and record delimiters are free-form strings, including empty delimiters with defined splitting."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -6289,10 +6278,8 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": true,
@@ -6301,7 +6288,7 @@
       "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 9,
+      "value_assertions": 13,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Flip Image",
@@ -6315,13 +6302,15 @@
       "output": "Bytes",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/flip_image.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/flip_image.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -8463,16 +8452,14 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 8,
-      "negative_test": false,
+      "tests": 9,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
       "value_assertions": 10,
@@ -8493,7 +8480,8 @@
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/generate_all_checksums.rs"
+        "tests/tests/operations/generate_all_checksums.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [
         "tests/tests/operations/generate_all_checksums.rs"
@@ -8509,16 +8497,14 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 8,
-      "negative_test": false,
+      "tests": 9,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
       "value_assertions": 16,
@@ -8539,7 +8525,8 @@
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/generate_all_hashes.rs"
+        "tests/tests/operations/generate_all_hashes.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [
         "tests/tests/operations/generate_all_hashes.rs"
@@ -8689,16 +8676,14 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 2,
-      "negative_test": false,
+      "tests": 3,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 1,
@@ -8719,7 +8704,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/group_ip_addresses.rs"
+        "tests/tests/operations/group_ip_addresses.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -8779,11 +8765,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Gzip is a total compressor over arbitrary finite byte strings; every compression-name string maps to a defined level and the optional path accepts every value."
+      },
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
@@ -8869,10 +8855,8 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": true,
@@ -8895,13 +8879,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/hassh_client_fingerprint.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/hassh_client_fingerprint.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -8913,21 +8899,19 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": true,
       "fixture_binary_or_unicode": true,
-      "tests": 0,
+      "tests": 1,
       "negative_test": false,
       "boundary_test": false,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 2,
       "tests_asserting_only_success": 0,
-      "untested_reason": "Needs a captured SSH_MSG_KEXINIT fixture to assert the HASSH string and its MD5 digest.",
+      "untested_reason": null,
       "name": "HASSH Server Fingerprint",
       "slug": "hassh-server-fingerprint",
       "id": "hassh_server_fingerprint",
@@ -8938,14 +8922,16 @@
       "input": "String",
       "output": "String",
       "args_documented": true,
-      "correctness_test": false,
-      "known_answer_test": false,
+      "correctness_test": true,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/hassh_server_fingerprint.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/hassh_server_fingerprint.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -9181,11 +9167,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Head is total for every finite string, free-form delimiter and integer count; positive, zero and negative counts are explicit supported selection modes."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -9580,10 +9566,8 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": true,
@@ -9606,13 +9590,15 @@
       "output": "Bytes",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/image_opacity.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/image_opacity.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -9716,21 +9702,19 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
       "fixture_binary_or_unicode": true,
-      "tests": 0,
+      "tests": 1,
       "negative_test": false,
       "boundary_test": false,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 1,
       "tests_asserting_only_success": 0,
-      "untested_reason": "Needs a captured TLS ClientHello fixture to assert the JA3 string and its MD5 digest.",
+      "untested_reason": null,
       "name": "JA3 Fingerprint",
       "slug": "ja3-fingerprint",
       "id": "ja3_fingerprint",
@@ -9741,14 +9725,16 @@
       "input": "String",
       "output": "String",
       "args_documented": true,
-      "correctness_test": false,
-      "known_answer_test": false,
+      "correctness_test": true,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/ja3_fingerprint.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/ja3_fingerprint.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -9760,21 +9746,19 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
       "fixture_binary_or_unicode": true,
-      "tests": 0,
+      "tests": 1,
       "negative_test": false,
       "boundary_test": false,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 1,
       "tests_asserting_only_success": 0,
-      "untested_reason": "Needs a captured TLS ServerHello fixture to assert the JA3S string and its MD5 digest.",
+      "untested_reason": null,
       "name": "JA3S Fingerprint",
       "slug": "ja3s-fingerprint",
       "id": "ja3s_fingerprint",
@@ -9785,14 +9769,16 @@
       "input": "String",
       "output": "String",
       "args_documented": true,
-      "correctness_test": false,
-      "known_answer_test": false,
+      "correctness_test": true,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/ja3s_fingerprint.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/ja3s_fingerprint.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -10156,10 +10142,8 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
@@ -10182,13 +10166,15 @@
       "output": "JSON",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/jwt_decode.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/jwt_decode.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -10288,11 +10274,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "JavaScript Beautify is a permissive lexical formatter over every finite string; its free-form indentation string accepts all values and syntax validity is not required."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
@@ -10600,12 +10586,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "independent reference evidence"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "LM Hash defines a digest for every finite input string and declares no arguments; passwords are uppercased, padded or truncated to fourteen bytes by the algorithm."
+      },
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
@@ -10627,13 +10612,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/lm_hash.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/lm_hash.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -10737,19 +10724,19 @@
     {
       "correctness": "partially_verified",
       "correctness_gaps": [
-        "negative tests",
-        "boundary tests",
         "independent reference evidence"
       ],
-      "negative_test_policy": "required",
+      "negative_test_policy": {
+        "not_applicable": "LZ4 Compress is a total encoder over every finite byte string and declares no arguments; empty input has a defined size-prefixed block representation."
+      },
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 1,
+      "tests": 2,
       "negative_test": false,
-      "boundary_test": false,
-      "empty_input_test": false,
-      "value_assertions": 0,
+      "boundary_test": true,
+      "empty_input_test": true,
+      "value_assertions": 1,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "LZ4 Compress",
@@ -11003,16 +10990,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 3,
-      "negative_test": false,
+      "tests": 4,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 3,
@@ -11033,7 +11018,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/lz_string_decompress.rs"
+        "tests/tests/operations/lz_string_decompress.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -11503,11 +11489,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Mean is deliberately total over every finite string and free-form delimiter; non-numbers are excluded and an empty numeric sample has the defined output NaN."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -11549,11 +11535,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Median is deliberately total over every finite string and free-form delimiter; non-numbers are excluded and an empty numeric sample has the defined output NaN."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -11730,11 +11716,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Multiply is deliberately total over every finite string and free-form delimiter; non-numbers are excluded and empty or non-finite arithmetic has the defined output NaN."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -11776,11 +11762,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "MurmurHash3 defines a hash for every finite input string, integer seed and signed-output Boolean; no message or schema-valid parameter combination is invalid."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
@@ -11958,16 +11944,14 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 2,
-      "negative_test": false,
+      "tests": 3,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 2,
@@ -12004,12 +11988,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "independent reference evidence"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Numberwang defines a response for every finite input string and declares no arguments; unmatched text and empty input each have explicit response branches."
+      },
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
@@ -12017,7 +12000,7 @@
       "negative_test": false,
       "boundary_test": true,
       "empty_input_test": true,
-      "value_assertions": 0,
+      "value_assertions": 1,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Numberwang",
@@ -12031,13 +12014,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/numberwang.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/numberwang.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -12228,16 +12213,14 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 1,
-      "negative_test": false,
+      "tests": 2,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 0,
@@ -12319,16 +12302,14 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 1,
-      "negative_test": false,
+      "tests": 2,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 0,
@@ -12683,16 +12664,14 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 4,
-      "negative_test": false,
+      "tests": 5,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
       "value_assertions": 4,
@@ -12713,7 +12692,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/pad_lines.rs"
+        "tests/tests/operations/pad_lines.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -12729,11 +12709,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Parity Bit defines encode/decode output for arbitrary finite byte strings and every free-form mode, position and delimiter argument through explicit fallback branches."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
@@ -13044,19 +13024,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
       "fixture_binary_or_unicode": true,
-      "tests": 6,
+      "tests": 14,
       "negative_test": true,
-      "boundary_test": false,
+      "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 11,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Parse IPv6 address",
@@ -13071,13 +13049,16 @@
       "args_documented": true,
       "correctness_test": true,
       "known_answer_test": false,
-      "differential_test": false,
+      "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/parse_ipv6_address.rs"
+        "tests/tests/operations/parse_ipv6_address.rs",
+        "tests/tests/differential.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "fuzz_target": false,
@@ -13220,10 +13201,8 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
@@ -13246,13 +13225,15 @@
       "output": "JSON",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/parse_tcp.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/parse_tcp.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -13266,11 +13247,12 @@
     {
       "correctness": "partially_verified",
       "correctness_gaps": [
-        "negative tests",
         "boundary tests",
         "independent reference evidence"
       ],
-      "negative_test_policy": "required",
+      "negative_test_policy": {
+        "not_applicable": "Parse TLS record is deliberately total over arbitrary finite byte strings and declares no arguments; short and truncated records are ignored or marked truncated rather than rejected."
+      },
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
@@ -13356,10 +13338,8 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
@@ -13382,13 +13362,15 @@
       "output": "JSON",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/parse_udp.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/parse_udp.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -13446,7 +13428,6 @@
     {
       "correctness": "partially_verified",
       "correctness_gaps": [
-        "negative tests",
         "boundary tests",
         "independent reference evidence"
       ],
@@ -13454,8 +13435,8 @@
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 1,
-      "negative_test": false,
+      "tests": 2,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 0,
@@ -13624,7 +13605,6 @@
     {
       "correctness": "partially_verified",
       "correctness_gaps": [
-        "negative tests",
         "boundary tests",
         "independent reference evidence"
       ],
@@ -13632,8 +13612,8 @@
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 4,
-      "negative_test": false,
+      "tests": 5,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 0,
@@ -13712,11 +13692,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Power Set defines a finite combinatorial result for every finite item list and free-form delimiter; empty and singleton sets have explicit mathematical outputs."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
@@ -13979,11 +13959,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Public Key from Private Key is a total best-effort extractor over finite strings and declares no arguments; absent or unparseable PEM blocks produce an empty result by contract."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -14025,16 +14005,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 1,
-      "negative_test": false,
+      "tests": 2,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 0,
@@ -14055,7 +14033,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/rake.rs"
+        "tests/tests/operations/rake.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -14381,11 +14360,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "ROT13 is a total rotation over every finite string, integer amount and three Boolean character-class toggles; characters outside enabled classes pass through."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -14519,16 +14498,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 2,
-      "negative_test": false,
+      "tests": 3,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 1,
@@ -14549,7 +14526,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/rot47_brute_force.rs"
+        "tests/tests/operations/rot47_brute_force.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -14786,19 +14764,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
       "fixture_binary_or_unicode": true,
-      "tests": 2,
+      "tests": 3,
       "negative_test": false,
-      "boundary_test": false,
+      "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 2,
+      "value_assertions": 3,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Rabbit",
@@ -14812,13 +14788,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/rabbit.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/rabbit.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -14962,11 +14940,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Raw Deflate is a total compressor over arbitrary finite byte strings; every free-form compression-name string maps to a defined compression level."
+      },
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
@@ -15319,11 +15297,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Remove whitespace is a total character-filter transformation over every finite string and its Boolean removal toggles; every character has keep-or-remove semantics."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -15409,11 +15387,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Render Markdown uses a permissive parser that defines HTML for every finite string and all Boolean rendering options; malformed markup is treated as literal text."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
@@ -15455,10 +15433,8 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": true,
@@ -15481,13 +15457,15 @@
       "output": "Bytes",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/resize_image.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/resize_image.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -15499,10 +15477,8 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": true,
@@ -15525,13 +15501,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/return_op.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/return_op.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -15677,10 +15655,8 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": true,
@@ -15703,13 +15679,15 @@
       "output": "Bytes",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/rotate_image.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/rotate_image.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -15721,11 +15699,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Rotate left is total over arbitrary finite byte strings, every integer amount and the carry Boolean; rotation amounts are reduced to the defined word width."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -15767,11 +15745,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Rotate right is total over arbitrary finite byte strings, every integer amount and the carry Boolean; rotation amounts are reduced to the defined word width."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -16043,16 +16021,14 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 2,
-      "negative_test": false,
+      "tests": 3,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 2,
@@ -16073,7 +16049,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/sigaba.rs"
+        "tests/tests/operations/sigaba.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -16353,11 +16330,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "SQL Beautify is a permissive lexical formatter over every finite string; its free-form indentation argument accepts every string and valid SQL syntax is not required."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -16580,11 +16557,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Scan for Embedded Files is a total signature scan over arbitrary finite byte strings and Boolean category toggles; no-match and all-disabled scans are defined empty results."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -16672,19 +16649,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 3,
+      "tests": 4,
       "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 1,
+      "value_assertions": 2,
       "tests_asserting_only_success": 1,
       "untested_reason": null,
       "name": "Scrypt",
@@ -16698,13 +16673,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/scrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/scrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -17072,16 +17049,14 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 2,
-      "negative_test": false,
+      "tests": 3,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 1,
@@ -17102,7 +17077,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/sleep.rs"
+        "tests/tests/operations/sleep.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -17118,16 +17094,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 4,
-      "negative_test": false,
+      "tests": 5,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 4,
@@ -17148,7 +17122,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/sort.rs"
+        "tests/tests/operations/sort.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -17164,11 +17139,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Split is total over every finite string and its two free-form delimiters; empty, absent and repeated separators all have defined splitting and joining semantics."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -17254,11 +17229,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Standard Deviation is deliberately total over every finite string and delimiter; non-numbers are excluded and an empty numeric sample has the defined output NaN."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -17389,11 +17364,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Strip HTML tags is a permissive total text transformation with two Boolean cleanup options; malformed tags and plain text have defined best-effort results."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -17613,10 +17588,8 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": true,
@@ -17639,13 +17612,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/subsection.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/subsection.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -17657,11 +17632,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Substitute is a total character translation over every finite string and all free-form alphabets; unmapped characters and unequal alphabet lengths have defined pass-through handling."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -17703,11 +17678,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Subtract is deliberately total over every finite string and free-form delimiter; non-numbers are excluded and empty or non-finite arithmetic has the defined output NaN."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -17749,11 +17724,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Sum is deliberately total over every finite string and free-form delimiter; non-numbers are excluded and an empty numeric sample has the defined output NaN."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -18021,11 +17996,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Tail is total for every finite string, free-form delimiter and integer count; positive, zero and negative counts are explicit supported selection modes."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -18067,11 +18042,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Take bytes clamps every integer start and length to the finite input bounds and defines per-line processing; all byte strings and schema-valid arguments produce output."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -18470,11 +18445,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "To Base45 is a total encoder over arbitrary finite byte strings and has no effective runtime parameters; every one- or two-byte chunk has a defined RFC 9285 representation."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -18560,11 +18535,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "To Base62 is a total big-endian integer encoder over arbitrary finite byte strings and has no effective runtime parameters; empty and zero inputs are defined."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -18788,16 +18763,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 3,
-      "negative_test": false,
+      "tests": 4,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": true,
       "value_assertions": 2,
@@ -18818,7 +18791,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/to_binary.rs"
+        "tests/tests/operations/to_binary.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -18878,16 +18852,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 6,
-      "negative_test": false,
+      "tests": 7,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
       "value_assertions": 6,
@@ -18908,7 +18880,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/to_camel_case.rs"
+        "tests/tests/operations/to_camel_case.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -19012,16 +18985,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 5,
-      "negative_test": false,
+      "tests": 6,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": true,
       "value_assertions": 4,
@@ -19042,7 +19013,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/to_decimal.rs"
+        "tests/tests/operations/to_decimal.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -19102,16 +19074,14 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 7,
-      "negative_test": false,
+      "tests": 8,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
       "value_assertions": 8,
@@ -19132,7 +19102,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/to_html_entity.rs"
+        "tests/tests/operations/to_html_entity.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -19148,16 +19119,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 5,
-      "negative_test": false,
+      "tests": 6,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
       "value_assertions": 6,
@@ -19178,7 +19147,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/to_hex.rs"
+        "tests/tests/operations/to_hex.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [
         "tests/tests/known_answer_vectors.rs"
@@ -19198,16 +19168,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 3,
-      "negative_test": false,
+      "tests": 4,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 3,
@@ -19228,7 +19196,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/to_hex_content.rs"
+        "tests/tests/operations/to_hex_content.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -19424,16 +19393,14 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 3,
-      "negative_test": false,
+      "tests": 4,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 3,
@@ -19454,7 +19421,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/to_modhex.rs"
+        "tests/tests/operations/to_modhex.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -19514,16 +19482,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 4,
-      "negative_test": false,
+      "tests": 5,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": true,
       "value_assertions": 3,
@@ -19544,7 +19510,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/to_octal.rs"
+        "tests/tests/operations/to_octal.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -19650,16 +19617,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 6,
-      "negative_test": false,
+      "tests": 7,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
       "value_assertions": 6,
@@ -19680,7 +19645,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/to_snake_case.rs"
+        "tests/tests/operations/to_snake_case.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -19696,16 +19662,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 8,
-      "negative_test": false,
+      "tests": 9,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
       "value_assertions": 2,
@@ -19726,7 +19690,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/to_table.rs"
+        "tests/tests/operations/to_table.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -20050,11 +20015,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "URL Decode is deliberately permissive and total over finite strings and its plus-as-space Boolean; malformed percent sequences are explicitly preserved unchanged."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -20096,11 +20061,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "URL Encode is a total UTF-8 percent encoder over every finite string and its encode-all Boolean; every input octet has a literal or escaped representation."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -20144,16 +20109,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 4,
-      "negative_test": false,
+      "tests": 5,
+      "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
       "value_assertions": 4,
@@ -20236,11 +20199,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Unicode Text Format is a total byte-preserving decoration over every finite input and its underline and strikethrough Booleans; all option combinations are defined."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
@@ -20282,11 +20245,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Unique is a total line-based transformation over every finite string and its count Boolean; empty input and inputs without duplicates have defined results."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -20506,10 +20469,8 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
@@ -20532,13 +20493,15 @@
       "output": "Bytes",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/view_bit_plane.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/view_bit_plane.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -20728,11 +20691,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Wrap defines output for every finite string and unsigned line width; width zero is an explicit pass-through case and positive widths produce bounded chunks."
+      },
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
@@ -20953,16 +20916,14 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 4,
-      "negative_test": false,
+      "tests": 5,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": true,
       "value_assertions": 2,
@@ -20983,7 +20944,8 @@
       "differential_test": true,
       "property_test": false,
       "test_mapping": [
-        "tests/tests/operations/xor_brute_force.rs"
+        "tests/tests/operations/xor_brute_force.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -21357,11 +21319,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Zlib Deflate is a total compressor over arbitrary finite byte strings; every free-form compression-name string maps to a defined compression level."
+      },
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,

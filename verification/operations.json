@@ -15,6 +15,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "a1z26_cipher_encode": {
+      "negative_test_policy": {
+        "not_applicable": "A1Z26 Cipher Encode is total over every finite string; its free-form delimiter accepts every string and non-alphabetic characters have defined omission semantics."
+      },
       "correctness": [
         "tests/tests/operations/a1z26_cipher_encode.rs"
       ],
@@ -97,7 +100,9 @@
       "correctness": [
         "tests/tests/operations/amf_decode.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/amf_decode.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -106,10 +111,13 @@
     },
     "amf_encode": {
       "correctness": [
-        "tests/tests/operations/amf_encode.rs"
+        "tests/tests/operations/amf_encode.rs",
+        "tests/tests/differential.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -138,6 +146,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "add_line_numbers": {
+      "negative_test_policy": {
+        "not_applicable": "Add line numbers is total over every finite string and every integer offset; empty input, negative offsets and trailing separators all have defined output."
+      },
       "correctness": [
         "tests/tests/operations/add_line_numbers.rs"
       ],
@@ -327,10 +338,13 @@
     },
     "bson_deserialise": {
       "correctness": [
-        "tests/tests/operations/bson_deserialise.rs"
+        "tests/tests/operations/bson_deserialise.rs",
+        "tests/tests/differential.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -450,6 +464,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "bit_shift_right": {
+      "negative_test_policy": {
+        "not_applicable": "Bit shift right is total over arbitrary byte strings and every integer shift amount; JavaScript-compatible shift masking and both shift-type branches are defined."
+      },
       "correctness": [
         "tests/tests/operations/bit_shift_right.rs"
       ],
@@ -596,6 +613,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "css_beautify": {
+      "negative_test_policy": {
+        "not_applicable": "CSS Beautify is a permissive lexical formatter over every finite string; its free-form indentation string accepts every value and does not require valid CSS."
+      },
       "correctness": [
         "tests/tests/operations/css_beautify.rs"
       ],
@@ -609,6 +629,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "css_minify": {
+      "negative_test_policy": {
+        "not_applicable": "CSS Minify is a permissive lexical transformation over every finite string and a Boolean comment option; malformed CSS is treated as text rather than rejected."
+      },
       "correctness": [
         "tests/tests/operations/css_minify.rs"
       ],
@@ -647,7 +670,7 @@
     },
     "ctph": {
       "negative_test_policy": {
-        "not_applicable": "CTPH computes a defined context-triggered piecewise hash for every finite byte string and declares no arguments; arbitrary and empty byte sequences are valid messages."
+        "not_applicable": "CTPH computes a defined context-triggered piecewise hash for every finite UTF-8 string and declares no arguments; arbitrary and empty strings are valid messages."
       },
       "correctness": [
         "tests/tests/operations/ctph.rs"
@@ -778,7 +801,9 @@
       "correctness": [
         "tests/tests/operations/cipher_saber2_decrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/cipher_saber2_decrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -893,7 +918,9 @@
       "correctness": [
         "tests/tests/operations/contain_image.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/contain_image.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -904,7 +931,9 @@
       "correctness": [
         "tests/tests/operations/convert_image_format.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/convert_image_format.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -912,6 +941,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "convert_leet_speak": {
+      "negative_test_policy": {
+        "not_applicable": "Convert Leet Speak is a total character mapping over every finite string; every direction string selects one of the defined encode or decode branches."
+      },
       "correctness": [
         "tests/tests/operations/convert_leet_speak.rs"
       ],
@@ -939,7 +971,8 @@
     },
     "convert_co_ordinate_format": {
       "correctness": [
-        "tests/tests/operations/convert_coordinate_format.rs"
+        "tests/tests/operations/convert_coordinate_format.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -1020,6 +1053,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "count_occurrences": {
+      "negative_test_policy": {
+        "not_applicable": "Count occurrences is total for every finite input and search string; an empty search string and absent matches each have explicitly tested numeric results."
+      },
       "correctness": [
         "tests/tests/operations/count_occurrences.rs"
       ],
@@ -1036,7 +1072,9 @@
       "correctness": [
         "tests/tests/operations/cover_image.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/cover_image.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -1047,7 +1085,9 @@
       "correctness": [
         "tests/tests/operations/crop_image.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/crop_image.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -1162,6 +1202,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "defang_url": {
+      "negative_test_policy": {
+        "not_applicable": "Defang URL is a total regex replacement over every finite string; all Boolean toggles and its free-form processing selector have defined pass-through branches."
+      },
       "correctness": [
         "tests/tests/operations/defang_url.rs"
       ],
@@ -1269,6 +1312,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "divide": {
+      "negative_test_policy": {
+        "not_applicable": "Divide is deliberately total over every finite string and free-form delimiter; non-numbers are excluded and empty or non-finite arithmetic has the defined output NaN."
+      },
       "correctness": [
         "tests/tests/operations/divide.rs"
       ],
@@ -1282,6 +1328,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "drop_bytes": {
+      "negative_test_policy": {
+        "not_applicable": "Drop bytes clamps every integer start and length to the finite input bounds and defines per-line processing; all byte strings and schema-valid arguments produce output."
+      },
       "correctness": [
         "tests/tests/operations/drop_bytes.rs"
       ],
@@ -1354,6 +1403,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "encode_netbios_name": {
+      "negative_test_policy": {
+        "not_applicable": "Encode NetBIOS Name defines output for every byte string and integer offset; names over sixteen bytes intentionally produce an empty result and shorter names are padded."
+      },
       "correctness": [
         "tests/tests/operations/encode_netbios_name.rs"
       ],
@@ -1488,7 +1540,8 @@
     },
     "extract_ip_addresses": {
       "correctness": [
-        "tests/tests/operations/extract_ip_addresses.rs"
+        "tests/tests/operations/extract_ip_addresses.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -1512,7 +1565,8 @@
     },
     "extract_mac_addresses": {
       "correctness": [
-        "tests/tests/operations/extract_mac_addresses.rs"
+        "tests/tests/operations/extract_mac_addresses.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -1536,7 +1590,8 @@
     },
     "extract_urls": {
       "correctness": [
-        "tests/tests/operations/extract_urls.rs"
+        "tests/tests/operations/extract_urls.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -1549,7 +1604,8 @@
     },
     "extract_dates": {
       "correctness": [
-        "tests/tests/operations/extract_dates.rs"
+        "tests/tests/operations/extract_dates.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -1562,7 +1618,8 @@
     },
     "extract_domains": {
       "correctness": [
-        "tests/tests/operations/extract_domains.rs"
+        "tests/tests/operations/extract_domains.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -1575,7 +1632,8 @@
     },
     "extract_email_addresses": {
       "correctness": [
-        "tests/tests/operations/extract_email_addresses.rs"
+        "tests/tests/operations/extract_email_addresses.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -1588,7 +1646,8 @@
     },
     "extract_file_paths": {
       "correctness": [
-        "tests/tests/operations/extract_file_paths.rs"
+        "tests/tests/operations/extract_file_paths.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -1601,7 +1660,8 @@
     },
     "extract_hashes": {
       "correctness": [
-        "tests/tests/operations/extract_hashes.rs"
+        "tests/tests/operations/extract_hashes.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -1613,6 +1673,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "fang_url": {
+      "negative_test_policy": {
+        "not_applicable": "Fang URL is a total textual replacement over every finite string and its three Boolean toggles; text without defanged URL syntax is a defined pass-through."
+      },
       "correctness": [
         "tests/tests/operations/fang_url.rs"
       ],
@@ -1650,6 +1713,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "file_tree": {
+      "negative_test_policy": {
+        "not_applicable": "File Tree is a total delimiter-based formatter over finite strings; both path and record delimiters are free-form strings, including empty delimiters with defined splitting."
+      },
       "correctness": [
         "tests/tests/operations/file_tree.rs"
       ],
@@ -1793,7 +1859,9 @@
       "correctness": [
         "tests/tests/operations/flip_image.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/flip_image.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2208,7 +2276,9 @@
       "correctness": [
         "tests/tests/operations/gost_decrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/gost_decrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2219,7 +2289,9 @@
       "correctness": [
         "tests/tests/operations/gost_encrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/gost_encrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2230,7 +2302,9 @@
       "correctness": [
         "tests/tests/operations/gost_hash.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/gost_hash.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2397,7 +2471,8 @@
     },
     "generate_all_checksums": {
       "correctness": [
-        "tests/tests/operations/generate_all_checksums.rs"
+        "tests/tests/operations/generate_all_checksums.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [
         "tests/tests/operations/generate_all_checksums.rs"
@@ -2410,7 +2485,8 @@
     },
     "generate_all_hashes": {
       "correctness": [
-        "tests/tests/operations/generate_all_hashes.rs"
+        "tests/tests/operations/generate_all_hashes.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [
         "tests/tests/operations/generate_all_hashes.rs"
@@ -2463,7 +2539,8 @@
     },
     "group_ip_addresses": {
       "correctness": [
-        "tests/tests/operations/group_ip_addresses.rs"
+        "tests/tests/operations/group_ip_addresses.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -2488,6 +2565,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "gzip": {
+      "negative_test_policy": {
+        "not_applicable": "Gzip is a total compressor over arbitrary finite byte strings; every compression-name string maps to a defined level and the optional path accepts every value."
+      },
       "correctness": [
         "tests/tests/operations/gzip.rs"
       ],
@@ -2517,7 +2597,9 @@
       "correctness": [
         "tests/tests/operations/hassh_client_fingerprint.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/hassh_client_fingerprint.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2528,13 +2610,14 @@
       "correctness": [
         "tests/tests/operations/hassh_server_fingerprint.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/hassh_server_fingerprint.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
-      "untested_reason": "Needs a captured SSH_MSG_KEXINIT fixture to assert the HASSH string and its MD5 digest."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "hmac": {
       "correctness": [
@@ -2605,6 +2688,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "head": {
+      "negative_test_policy": {
+        "not_applicable": "Head is total for every finite string, free-form delimiter and integer count; positive, zero and negative counts are explicit supported selection modes."
+      },
       "correctness": [
         "tests/tests/operations/head.rs"
       ],
@@ -2715,7 +2801,9 @@
       "correctness": [
         "tests/tests/operations/image_opacity.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/image_opacity.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2757,25 +2845,27 @@
       "correctness": [
         "tests/tests/operations/ja3_fingerprint.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/ja3_fingerprint.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
-      "untested_reason": "Needs a captured TLS ClientHello fixture to assert the JA3 string and its MD5 digest."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "ja3s_fingerprint": {
       "correctness": [
         "tests/tests/operations/ja3s_fingerprint.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/ja3s_fingerprint.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
-      "untested_reason": "Needs a captured TLS ServerHello fixture to assert the JA3S string and its MD5 digest."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "ja4_fingerprint": {
       "correctness": [
@@ -2870,7 +2960,9 @@
       "correctness": [
         "tests/tests/operations/jwk_to_pem.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/jwk_to_pem.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2894,7 +2986,9 @@
       "correctness": [
         "tests/tests/operations/jwt_sign.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/jwt_sign.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2905,7 +2999,9 @@
       "correctness": [
         "tests/tests/operations/jwt_verify.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/jwt_verify.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2913,6 +3009,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "javascript_beautify": {
+      "negative_test_policy": {
+        "not_applicable": "JavaScript Beautify is a permissive lexical formatter over every finite string; its free-form indentation string accepts all values and syntax validity is not required."
+      },
       "correctness": [
         "tests/tests/operations/java_script_beautify.rs"
       ],
@@ -3044,7 +3143,9 @@
       "correctness": [
         "tests/tests/operations/lz4_compress.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/lz4_compress.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3116,7 +3217,8 @@
     },
     "lzstring_decompress": {
       "correctness": [
-        "tests/tests/operations/lz_string_decompress.rs"
+        "tests/tests/operations/lz_string_decompress.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -3266,6 +3368,9 @@
       "benchmark_skip_reason": null
     },
     "mean": {
+      "negative_test_policy": {
+        "not_applicable": "Mean is deliberately total over every finite string and free-form delimiter; non-numbers are excluded and an empty numeric sample has the defined output NaN."
+      },
       "correctness": [
         "tests/tests/operations/mean.rs"
       ],
@@ -3279,6 +3384,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "median": {
+      "negative_test_policy": {
+        "not_applicable": "Median is deliberately total over every finite string and free-form delimiter; non-numbers are excluded and an empty numeric sample has the defined output NaN."
+      },
       "correctness": [
         "tests/tests/operations/median.rs"
       ],
@@ -3330,6 +3438,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "multiply": {
+      "negative_test_policy": {
+        "not_applicable": "Multiply is deliberately total over every finite string and free-form delimiter; non-numbers are excluded and empty or non-finite arithmetic has the defined output NaN."
+      },
       "correctness": [
         "tests/tests/operations/multiply.rs"
       ],
@@ -3343,6 +3454,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "murmurhash3": {
+      "negative_test_policy": {
+        "not_applicable": "MurmurHash3 defines a hash for every finite input string, integer seed and signed-output Boolean; no message or schema-valid parameter combination is invalid."
+      },
       "correctness": [
         "tests/tests/operations/murmur_hash3.rs"
       ],
@@ -3597,7 +3711,8 @@
     },
     "pad_lines": {
       "correctness": [
-        "tests/tests/operations/pad_lines.rs"
+        "tests/tests/operations/pad_lines.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -3609,6 +3724,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "parity_bit": {
+      "negative_test_policy": {
+        "not_applicable": "Parity Bit defines encode/decode output for arbitrary finite byte strings and every free-form mode, position and delimiter argument through explicit fallback branches."
+      },
       "correctness": [
         "tests/tests/operations/parity_bit.rs"
       ],
@@ -3691,10 +3809,13 @@
     },
     "parse_ipv6_address": {
       "correctness": [
-        "tests/tests/operations/parse_ipv6_address.rs"
+        "tests/tests/operations/parse_ipv6_address.rs",
+        "tests/tests/differential.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -3876,6 +3997,9 @@
       "untested_reason": "Emits a media player payload for a browser host; there is no headless assertion that is not a restatement of the implementation."
     },
     "power_set": {
+      "negative_test_policy": {
+        "not_applicable": "Power Set defines a finite combinatorial result for every finite item list and free-form delimiter; empty and singleton sets have explicit mathematical outputs."
+      },
       "correctness": [
         "tests/tests/operations/power_set.rs"
       ],
@@ -3967,7 +4091,8 @@
     },
     "rake": {
       "correctness": [
-        "tests/tests/operations/rake.rs"
+        "tests/tests/operations/rake.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -4060,6 +4185,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "rot13": {
+      "negative_test_policy": {
+        "not_applicable": "ROT13 is a total rotation over every finite string, integer amount and three Boolean character-class toggles; characters outside enabled classes pass through."
+      },
       "correctness": [
         "tests/tests/operations/rot13.rs"
       ],
@@ -4101,7 +4229,8 @@
     },
     "rot47_brute_force": {
       "correctness": [
-        "tests/tests/operations/rot47_brute_force.rs"
+        "tests/tests/operations/rot47_brute_force.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -4173,7 +4302,9 @@
       "correctness": [
         "tests/tests/operations/rabbit.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/rabbit.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4218,6 +4349,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "raw_deflate": {
+      "negative_test_policy": {
+        "not_applicable": "Raw Deflate is a total compressor over arbitrary finite byte strings; every free-form compression-name string maps to a defined compression level."
+      },
       "correctness": [
         "tests/tests/operations/raw_deflate.rs"
       ],
@@ -4323,6 +4457,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "remove_whitespace": {
+      "negative_test_policy": {
+        "not_applicable": "Remove whitespace is a total character-filter transformation over every finite string and its Boolean removal toggles; every character has keep-or-remove semantics."
+      },
       "correctness": [
         "tests/tests/operations/remove_whitespace.rs"
       ],
@@ -4349,6 +4486,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "render_markdown": {
+      "negative_test_policy": {
+        "not_applicable": "Render Markdown uses a permissive parser that defines HTML for every finite string and all Boolean rendering options; malformed markup is treated as literal text."
+      },
       "correctness": [
         "tests/tests/operations/render_markdown.rs"
       ],
@@ -4365,7 +4505,9 @@
       "correctness": [
         "tests/tests/operations/resize_image.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/resize_image.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4426,7 +4568,9 @@
       "correctness": [
         "tests/tests/operations/rotate_image.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/rotate_image.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4434,6 +4578,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "rotate_left": {
+      "negative_test_policy": {
+        "not_applicable": "Rotate left is total over arbitrary finite byte strings, every integer amount and the carry Boolean; rotation amounts are reduced to the defined word width."
+      },
       "correctness": [
         "tests/tests/operations/rotate_left.rs"
       ],
@@ -4447,6 +4594,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "rotate_right": {
+      "negative_test_policy": {
+        "not_applicable": "Rotate right is total over arbitrary finite byte strings, every integer amount and the carry Boolean; rotation amounts are reduced to the defined word width."
+      },
       "correctness": [
         "tests/tests/operations/rotate_right.rs"
       ],
@@ -4536,7 +4686,8 @@
     },
     "sigaba": {
       "correctness": [
-        "tests/tests/operations/sigaba.rs"
+        "tests/tests/operations/sigaba.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -4622,6 +4773,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "sql_beautify": {
+      "negative_test_policy": {
+        "not_applicable": "SQL Beautify is a permissive lexical formatter over every finite string; its free-form indentation argument accepts every string and valid SQL syntax is not required."
+      },
       "correctness": [
         "tests/tests/operations/sql_beautify.rs"
       ],
@@ -4691,6 +4845,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "scan_for_embedded_files": {
+      "negative_test_policy": {
+        "not_applicable": "Scan for Embedded Files is a total signature scan over arbitrary finite byte strings and Boolean category toggles; no-match and all-disabled scans are defined empty results."
+      },
       "correctness": [
         "tests/tests/operations/scan_for_embedded_files.rs"
       ],
@@ -4718,7 +4875,9 @@
       "correctness": [
         "tests/tests/operations/scrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/scrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4821,7 +4980,8 @@
     },
     "sleep": {
       "correctness": [
-        "tests/tests/operations/sleep.rs"
+        "tests/tests/operations/sleep.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -4834,7 +4994,8 @@
     },
     "sort": {
       "correctness": [
-        "tests/tests/operations/sort.rs"
+        "tests/tests/operations/sort.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -4846,6 +5007,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "split": {
+      "negative_test_policy": {
+        "not_applicable": "Split is total over every finite string and its two free-form delimiters; empty, absent and repeated separators all have defined splitting and joining semantics."
+      },
       "correctness": [
         "tests/tests/operations/split.rs"
       ],
@@ -4870,6 +5034,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "standard_deviation": {
+      "negative_test_policy": {
+        "not_applicable": "Standard Deviation is deliberately total over every finite string and delimiter; non-numbers are excluded and an empty numeric sample has the defined output NaN."
+      },
       "correctness": [
         "tests/tests/operations/standard_deviation.rs"
       ],
@@ -4907,6 +5074,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "strip_html_tags": {
+      "negative_test_policy": {
+        "not_applicable": "Strip HTML tags is a permissive total text transformation with two Boolean cleanup options; malformed tags and plain text have defined best-effort results."
+      },
       "correctness": [
         "tests/tests/operations/strip_html_tags.rs"
       ],
@@ -4988,6 +5158,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "substitute": {
+      "negative_test_policy": {
+        "not_applicable": "Substitute is a total character translation over every finite string and all free-form alphabets; unmapped characters and unequal alphabet lengths have defined pass-through handling."
+      },
       "correctness": [
         "tests/tests/operations/substitute.rs"
       ],
@@ -5001,6 +5174,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "subtract": {
+      "negative_test_policy": {
+        "not_applicable": "Subtract is deliberately total over every finite string and free-form delimiter; non-numbers are excluded and empty or non-finite arithmetic has the defined output NaN."
+      },
       "correctness": [
         "tests/tests/operations/subtract.rs"
       ],
@@ -5014,6 +5190,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "sum": {
+      "negative_test_policy": {
+        "not_applicable": "Sum is deliberately total over every finite string and free-form delimiter; non-numbers are excluded and an empty numeric sample has the defined output NaN."
+      },
       "correctness": [
         "tests/tests/operations/sum.rs"
       ],
@@ -5096,6 +5275,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "tail": {
+      "negative_test_policy": {
+        "not_applicable": "Tail is total for every finite string, free-form delimiter and integer count; positive, zero and negative counts are explicit supported selection modes."
+      },
       "correctness": [
         "tests/tests/operations/tail.rs"
       ],
@@ -5109,6 +5291,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "take_bytes": {
+      "negative_test_policy": {
+        "not_applicable": "Take bytes clamps every integer start and length to the finite input bounds and defines per-line processing; all byte strings and schema-valid arguments produce output."
+      },
       "correctness": [
         "tests/tests/operations/take_bytes.rs"
       ],
@@ -5224,6 +5409,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "to_base45": {
+      "negative_test_policy": {
+        "not_applicable": "To Base45 is a total encoder over arbitrary finite byte strings and has no effective runtime parameters; every one- or two-byte chunk has a defined RFC 9285 representation."
+      },
       "correctness": [
         "tests/tests/operations/to_base45.rs"
       ],
@@ -5250,6 +5438,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "to_base62": {
+      "negative_test_policy": {
+        "not_applicable": "To Base62 is a total big-endian integer encoder over arbitrary finite byte strings and has no effective runtime parameters; empty and zero inputs are defined."
+      },
       "correctness": [
         "tests/tests/operations/to_base62.rs"
       ],
@@ -5323,7 +5514,8 @@
     },
     "to_binary": {
       "correctness": [
-        "tests/tests/operations/to_binary.rs"
+        "tests/tests/operations/to_binary.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -5349,7 +5541,8 @@
     },
     "to_camel_case": {
       "correctness": [
-        "tests/tests/operations/to_camel_case.rs"
+        "tests/tests/operations/to_camel_case.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -5388,7 +5581,8 @@
     },
     "to_decimal": {
       "correctness": [
-        "tests/tests/operations/to_decimal.rs"
+        "tests/tests/operations/to_decimal.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -5414,7 +5608,8 @@
     },
     "to_html_entity": {
       "correctness": [
-        "tests/tests/operations/to_html_entity.rs"
+        "tests/tests/operations/to_html_entity.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -5427,7 +5622,8 @@
     },
     "to_hex": {
       "correctness": [
-        "tests/tests/operations/to_hex.rs"
+        "tests/tests/operations/to_hex.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [
         "tests/tests/known_answer_vectors.rs"
@@ -5444,7 +5640,8 @@
     },
     "to_hex_content": {
       "correctness": [
-        "tests/tests/operations/to_hex_content.rs"
+        "tests/tests/operations/to_hex_content.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -5514,7 +5711,8 @@
     },
     "to_modhex": {
       "correctness": [
-        "tests/tests/operations/to_modhex.rs"
+        "tests/tests/operations/to_modhex.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -5540,7 +5738,8 @@
     },
     "to_octal": {
       "correctness": [
-        "tests/tests/operations/to_octal.rs"
+        "tests/tests/operations/to_octal.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -5582,7 +5781,8 @@
     },
     "to_snake_case": {
       "correctness": [
-        "tests/tests/operations/to_snake_case.rs"
+        "tests/tests/operations/to_snake_case.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -5595,7 +5795,8 @@
     },
     "to_table": {
       "correctness": [
-        "tests/tests/operations/to_table.rs"
+        "tests/tests/operations/to_table.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -5694,6 +5895,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "url_decode": {
+      "negative_test_policy": {
+        "not_applicable": "URL Decode is deliberately permissive and total over finite strings and its plus-as-space Boolean; malformed percent sequences are explicitly preserved unchanged."
+      },
       "correctness": [
         "tests/tests/operations/url_decode.rs"
       ],
@@ -5707,6 +5911,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "url_encode": {
+      "negative_test_policy": {
+        "not_applicable": "URL Encode is a total UTF-8 percent encoder over every finite string and its encode-all Boolean; every input octet has a literal or escaped representation."
+      },
       "correctness": [
         "tests/tests/operations/url_encode.rs"
       ],
@@ -5751,6 +5958,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "unicode_text_format": {
+      "negative_test_policy": {
+        "not_applicable": "Unicode Text Format is a total byte-preserving decoration over every finite input and its underline and strikethrough Booleans; all option combinations are defined."
+      },
       "correctness": [
         "tests/tests/operations/unicode_text_format.rs"
       ],
@@ -5764,6 +5974,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "unique": {
+      "negative_test_policy": {
+        "not_applicable": "Unique is a total line-based transformation over every finite string and its count Boolean; empty input and inputs without duplicates have defined results."
+      },
       "correctness": [
         "tests/tests/operations/unique.rs"
       ],
@@ -5780,7 +5993,9 @@
       "correctness": [
         "tests/tests/operations/untar.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/untar.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -5791,7 +6006,9 @@
       "correctness": [
         "tests/tests/operations/unzip.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/unzip.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -5831,7 +6048,9 @@
       "correctness": [
         "tests/tests/operations/view_bit_plane.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/view_bit_plane.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -5887,6 +6106,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "wrap": {
+      "negative_test_policy": {
+        "not_applicable": "Wrap defines output for every finite string and unsigned line width; width zero is an explicit pass-through case and positive widths produce bounded chunks."
+      },
       "correctness": [
         "tests/tests/operations/wrap.rs"
       ],
@@ -5954,7 +6176,8 @@
     },
     "xor_brute_force": {
       "correctness": [
-        "tests/tests/operations/xor_brute_force.rs"
+        "tests/tests/operations/xor_brute_force.rs",
+        "tests/tests/negative_contracts.rs"
       ],
       "known_answer": [],
       "differential": [
@@ -6008,7 +6231,9 @@
       "correctness": [
         "tests/tests/operations/xxtea_decrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/xxtea_decrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -6019,7 +6244,9 @@
       "correctness": [
         "tests/tests/operations/xxtea_encrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/xxtea_encrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -6062,6 +6289,9 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "zlib_deflate": {
+      "negative_test_policy": {
+        "not_applicable": "Zlib Deflate is a total compressor over arbitrary finite byte strings; every free-form compression-name string maps to a defined compression level."
+      },
       "correctness": [
         "tests/tests/operations/zlib_deflate.rs"
       ],

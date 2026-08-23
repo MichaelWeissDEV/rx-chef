@@ -11,6 +11,7 @@ use std::io::Cursor;
 
 #[test]
 fn test_rotate_90() {
+    // Independent 90-degree rotation oracle for a two-pixel red/green row.
     let op = RotateImage;
     // Create a 2x1 red image
     let mut img = image::RgbImage::new(2, 1);

@@ -8,9 +8,8 @@
  * -----------------------------------------------------------------------------
  */
 
-use fuzzyhash::FuzzyHash;
-
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
+use crate::operations::ctph::similarity;
 
 /// Compare CTPH Hashes operation
 ///
@@ -73,8 +72,7 @@ impl Operation for CompareCTPHHashes {
         let hash1 = samples[0].trim();
         let hash2 = samples[1].trim();
 
-        let score = FuzzyHash::compare(hash1, hash2)
-            .map_err(|e| OperationError::InvalidInput(format!("CTPH compare error: {}", e)))?;
+        let score = similarity(hash1, hash2);
 
         Ok(score.to_string().into_bytes())
     }

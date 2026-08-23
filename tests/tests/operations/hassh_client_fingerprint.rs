@@ -97,6 +97,9 @@ fn test_hassh_client_fingerprint_full_details() {
         rxchef::operation::ArgValue::Str("Full details".to_string()),
     ];
     let result = String::from_utf8(op.run(packet_hex().into_bytes(), &args).unwrap()).unwrap();
+    // Salesforce's HASSH specification hashes the four semicolon-separated
+    // client algorithm lists with MD5.  The packet is built independently
+    // above and its canonical algorithms string is asserted below as well.
     assert!(result.contains("Hash digest:\ne97d07603350d1111ec2b64bf25413c9"));
     assert!(result.contains("curve25519-sha256;aes128-ctr;hmac-sha2-256;none"));
 }

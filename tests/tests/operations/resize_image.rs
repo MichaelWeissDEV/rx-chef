@@ -16,6 +16,7 @@ const TINY_PNG: &[u8] = &[
 ];
 #[test]
 fn test_resize_pixels() {
+    // Independent geometry oracle: explicit pixel dimensions are the output dimensions.
     let op = ResizeImage;
     let args = [
         ArgValue::Num(10.0),

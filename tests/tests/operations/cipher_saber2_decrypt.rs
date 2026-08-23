@@ -6,6 +6,23 @@ use rxchef::operation::ArgValue;
 use rxchef::operations::cipher_saber2_decrypt::CipherSaber2Decrypt;
 use rxchef::Operation;
 
+#[test]
+fn test_ciphersaber2_published_decryption_vector() {
+    // Published CipherSaber example from https://ciphersaber.gurus.org/ and
+    // mirrored in CyberChef's upstream regression suite.
+    let ciphertext = hex::decode(
+        "6f6d0babf3aa6719031530edb677ca74e0089dd0e7b8854356bb1448e37cdbefe7f3a84f4f5fb3fd",
+    )
+    .unwrap();
+    let plaintext = CipherSaber2Decrypt
+        .run(
+            ciphertext,
+            &[ArgValue::Str("asdfg".into()), ArgValue::Num(1.0)],
+        )
+        .unwrap();
+    assert_eq!(plaintext, b"This is a test of CipherSaber.");
+}
+
 /// RC4-based CipherSaber2 encrypt/decrypt (symmetric).
 fn ciphersaber2_crypt(iv: &[u8], key: &[u8], rounds: usize, data: &[u8]) -> Vec<u8> {
     let combined: Vec<u8> = key.iter().chain(iv.iter()).copied().collect();

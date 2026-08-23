@@ -2,18 +2,17 @@
 // Run only these tests:
 //   cargo test -p cyberchef-rust-tests --test operations compare_ctph_hashes::
 
-use fuzzyhash::FuzzyHash;
 use rxchef::operation::ArgValue;
+use rxchef::operations::ctph::CTPH;
 use rxchef::operations::compare_ctph_hashes::CompareCTPHHashes;
 use rxchef::Operation;
 
 #[test]
 fn test_compare_identical_hashes() {
     let op = CompareCTPHHashes;
-    // The ssdeep/CTPH comparison contract defines identity as similarity 100.
-    // Generate a real ssdeep hash and compare it with itself.
+    // The CTPH comparison contract defines identity as similarity 100.
     let data = vec![b'A'; 1024];
-    let hash = FuzzyHash::new(&data).to_string();
+    let hash = String::from_utf8(CTPH.run(data, &[]).unwrap()).unwrap();
     let input = format!("{}\n{}", hash, hash);
     let result = op
         .run(
@@ -32,8 +31,8 @@ fn test_compare_different_hashes() {
     let op = CompareCTPHHashes;
     let data1 = vec![b'A'; 1024];
     let data2 = vec![b'Z'; 1024];
-    let hash1 = FuzzyHash::new(&data1).to_string();
-    let hash2 = FuzzyHash::new(&data2).to_string();
+    let hash1 = String::from_utf8(CTPH.run(data1, &[]).unwrap()).unwrap();
+    let hash2 = String::from_utf8(CTPH.run(data2, &[]).unwrap()).unwrap();
     let input = format!("{}\n{}", hash1, hash2);
     let result = op
         .run(

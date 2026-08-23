@@ -7,6 +7,13 @@ use rxchef::operations::normalise_unicode::NormaliseUnicode;
 use rxchef::Operation;
 
 #[test]
+fn test_normalise_unicode_rejects_unknown_form() {
+    assert!(NormaliseUnicode
+        .run(b"text".to_vec(), &[ArgValue::Str("NFX".to_string())])
+        .is_err());
+}
+
+#[test]
 fn test_normalise_unicode_nfc() {
     let op = NormaliseUnicode;
     // '' can be represented as U+00E9 (NFC) or U+0065 U+0301 (NFD)

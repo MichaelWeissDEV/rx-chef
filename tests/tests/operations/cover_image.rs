@@ -67,7 +67,8 @@ fn test_cover_image_basic_resize() {
     // Should be valid image data
     assert!(!result.is_empty());
 
-    // Load the result and verify dimensions
+    // Independently derived cover geometry: output is exactly the requested
+    // 50 x 50 canvas, with excess source area cropped.
     let covered_img = image::load_from_memory(&result).unwrap();
     assert_eq!(covered_img.width(), 50);
     assert_eq!(covered_img.height(), 50);

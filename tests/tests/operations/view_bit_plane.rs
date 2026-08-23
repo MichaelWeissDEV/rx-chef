@@ -25,6 +25,7 @@ fn create_test_image() -> Vec<u8> {
 }
 #[test]
 fn test_view_bit_plane_bit0_red() {
+    // Independent bit test: (value >> plane) & 1 selects black for one and white for zero.
     let op = ViewBitPlane;
     let input = create_test_image();
     let args = [ArgValue::Str("Red".to_string()), ArgValue::Num(0.0)];

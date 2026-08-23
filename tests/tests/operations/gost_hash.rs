@@ -20,6 +20,24 @@ fn hash(input: &[u8], algorithm: &str, digest_length: &str, sbox: &str) -> Strin
 }
 
 #[test]
+fn test_streebog_256_standard_empty_vector() {
+    // GOST R 34.11-2012 / RFC 6986-compatible empty-message vector.
+    assert_eq!(
+        hash(b"", "GOST R 34.11 (2012)", "256", "E-TEST"),
+        "3f539a213e97c802cc229d474c6aa32a825a360b2a933a949fd925208d9ce1bb"
+    );
+}
+
+#[test]
+fn test_gost94_cryptopro_empty_vector() {
+    // GOST R 34.11-94 CryptoPro/D-A empty-message regression vector.
+    assert_eq!(
+        hash(b"", "GOST 28147 (1994)", "256", "D-A"),
+        "981e5f3ca30c841487830f84fb433e13ac1101569b9c13584ac483234cd656c0"
+    );
+}
+
+#[test]
 fn test_gost_hash_gost94_produces_256_bit_digest() {
     // GOST R 34.11-94 is defined as a 256-bit hash: 64 hexadecimal digits.
     let digest = hash(b"", "GOST 28147 (1994)", "256", "E-TEST");

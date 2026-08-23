@@ -27,9 +27,12 @@ fn test_unzip_single_file() {
         zip.finish().unwrap();
     }
     let result = op.run(buf, &[]).unwrap();
-    let result_str = String::from_utf8_lossy(&result);
-    assert!(result_str.contains("File: test.txt"));
-    assert!(result_str.contains("hello"));
+    // The PKZIP stream is produced by the independent `zip` crate; assert the
+    // complete decoder presentation, including the exact extracted payload.
+    assert_eq!(
+        result,
+        b"File: test.txt\n--------------------------------------------------------------------------------\nhello\n\n"
+    );
 }
 #[test]
 fn test_unzip_multiple_files() {

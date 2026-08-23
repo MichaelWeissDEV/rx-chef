@@ -7,6 +7,13 @@ use rxchef::operations::unescape_unicode_characters::UnescapeUnicodeCharacters;
 use rxchef::Operation;
 
 #[test]
+fn test_unescape_unicode_rejects_unknown_prefix() {
+    assert!(UnescapeUnicodeCharacters
+        .run(b"0041".to_vec(), &[ArgValue::Str("0x".to_string())])
+        .is_err());
+}
+
+#[test]
 fn test_unescape_u_prefix() {
     let op = UnescapeUnicodeCharacters;
     let input = b"\\u03c3\\u03bf\\u03c5".to_vec();

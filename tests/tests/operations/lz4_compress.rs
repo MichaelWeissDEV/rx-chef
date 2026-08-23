@@ -15,6 +15,11 @@ fn test_lz4_compress_basic() {
 
 #[test]
 fn test_lz4_compress_empty_input_boundary() {
-    // The block wrapper prepends the uncompressed length as little-endian u32.
-    assert_eq!(LZ4Compress.run(Vec::new(), &[]).unwrap(), vec![0, 0, 0, 0]);
+    // lz4_flex's documented size-prepended block convention uses a four-byte
+    // little-endian original length; the LZ4 block for empty input is the
+    // zero token. This is therefore the complete canonical empty encoding.
+    assert_eq!(
+        LZ4Compress.run(Vec::new(), &[]).unwrap(),
+        vec![0, 0, 0, 0, 0]
+    );
 }

@@ -71,8 +71,8 @@ impl Operation for BitShiftRight {
     }
 
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
-        let amount = if args.len() > 0 {
-            args[0].as_f64().unwrap_or(1.0) as u8
+        let amount = if !args.is_empty() {
+            args[0].as_f64().unwrap_or(1.0) as u32 & 31
         } else {
             1
         };
@@ -92,7 +92,7 @@ impl Operation for BitShiftRight {
         let result: Vec<u8> = input
             .iter()
             .map(|b| {
-                let logical_shift = *b >> amount;
+                let logical_shift = (u32::from(*b) >> amount) as u8;
                 // Preserve the MSB if it was set and we're doing arithmetic shift
                 (logical_shift ^ (*b & mask)) as u8
             })

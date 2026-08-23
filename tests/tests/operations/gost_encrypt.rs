@@ -6,6 +6,33 @@ use rxchef::operations::gost_encrypt::GostEncrypt;
 use rxchef::Operation;
 
 #[test]
+fn test_magma_gost_r_34_12_2015_vector() {
+    // GOST R 34.12-2015 Magma block-cipher test vector.
+    let key = hex::decode(
+        "ffeeddccbbaa99887766554433221100f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff",
+    )
+    .unwrap();
+    let plaintext = hex::decode("fedcba9876543210").unwrap();
+    let output = GostEncrypt
+        .run(
+            plaintext,
+            &[
+                rxchef::operation::ArgValue::Bytes(key),
+                rxchef::operation::ArgValue::Bytes(vec![]),
+                rxchef::operation::ArgValue::Str("Raw".into()),
+                rxchef::operation::ArgValue::Str("Hex".into()),
+                rxchef::operation::ArgValue::Str("GOST R 34.12 (Magma, 2015)".into()),
+                rxchef::operation::ArgValue::Str("E-TEST".into()),
+                rxchef::operation::ArgValue::Str("ECB".into()),
+                rxchef::operation::ArgValue::Str("NO".into()),
+                rxchef::operation::ArgValue::Str("None".into()),
+            ],
+        )
+        .unwrap();
+    assert_eq!(output, b"4ee901e5c2d8ca3d");
+}
+
+#[test]
 fn test_gost_encrypt_empty_input() {
     let op = GostEncrypt;
     let args = [

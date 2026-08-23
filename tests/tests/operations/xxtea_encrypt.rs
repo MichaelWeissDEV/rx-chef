@@ -6,6 +6,22 @@ use rxchef::operation::ArgValue;
 use rxchef::operations::xxtea_encrypt::XxteaEncryptOp;
 use rxchef::Operation;
 
+const CYBERCHEF_XXTEA_VECTOR: &str =
+    "3db5a39db1663fc029bb630a38635b8de5bfef62192e52cc4bf83cda8ccbc701";
+
+#[test]
+fn test_xxtea_encrypt_pinned_cyberchef_vector() {
+    // Observed from CyberChef 11.4.0 at commit 2e048b029085; this is the
+    // upstream fixed XXTEA regression vector, not a local round-trip value.
+    let output = XxteaEncryptOp
+        .run(
+            "ნუ პანიკას".as_bytes().to_vec(),
+            &[ArgValue::Str("1234567890".into())],
+        )
+        .unwrap();
+    assert_eq!(hex::encode(output), CYBERCHEF_XXTEA_VECTOR);
+}
+
 #[test]
 fn test_xxtea_encrypt_basic() {
     let op = XxteaEncryptOp;

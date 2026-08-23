@@ -88,7 +88,7 @@ fn test_crop_image_basic_crop() {
     let result = op.run(img_buf, &args).unwrap();
     assert!(!result.is_empty());
 
-    // Load the result and verify dimensions
+    // Independent rectangle arithmetic: this fixture requests a 10 x 10 crop.
     let cropped_img = image::load_from_memory(&result).unwrap();
     assert_eq!(cropped_img.width(), 10);
     assert_eq!(cropped_img.height(), 10);

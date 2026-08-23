@@ -70,7 +70,8 @@ fn test_contain_image_basic_resize() {
     // Should be valid image data
     assert!(!result.is_empty());
 
-    // Load the result and verify dimensions
+    // Independently derived contain geometry: the canvas is exactly the
+    // requested 50 x 50 pixels while preserving the source aspect ratio.
     let contained_img = image::load_from_memory(&result).unwrap();
     assert_eq!(contained_img.width(), 50);
     assert_eq!(contained_img.height(), 50);

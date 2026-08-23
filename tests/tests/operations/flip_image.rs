@@ -49,9 +49,12 @@ fn test_flip_image_horizontal() {
     assert!(!result.is_empty());
 
     // Load the result and verify it's a valid image
-    let flipped_img = image::load_from_memory(&result).unwrap();
+    let flipped_img = image::load_from_memory(&result).unwrap().to_rgba8();
     assert_eq!(flipped_img.width(), 2);
     assert_eq!(flipped_img.height(), 2);
+    // Horizontal reflection maps (x, y) to (width - 1 - x, y).
+    assert_eq!(flipped_img.get_pixel(0, 0), &image::Rgba([0, 255, 0, 255]));
+    assert_eq!(flipped_img.get_pixel(1, 0), &image::Rgba([255, 0, 0, 255]));
 }
 
 #[test]
@@ -76,9 +79,12 @@ fn test_flip_image_vertical() {
     assert!(!result.is_empty());
 
     // Load the result and verify it's a valid image
-    let flipped_img = image::load_from_memory(&result).unwrap();
+    let flipped_img = image::load_from_memory(&result).unwrap().to_rgba8();
     assert_eq!(flipped_img.width(), 2);
     assert_eq!(flipped_img.height(), 2);
+    // Vertical reflection maps (x, y) to (x, height - 1 - y).
+    assert_eq!(flipped_img.get_pixel(0, 0), &image::Rgba([0, 0, 255, 255]));
+    assert_eq!(flipped_img.get_pixel(0, 1), &image::Rgba([255, 0, 0, 255]));
 }
 
 #[test]

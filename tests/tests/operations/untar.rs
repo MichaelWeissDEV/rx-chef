@@ -23,9 +23,12 @@ fn test_untar_single_file() {
     builder.append(&header, b"hello".as_ref()).unwrap();
     let input = builder.into_inner().unwrap();
     let result = op.run(input, &[]).unwrap();
-    let result_str = String::from_utf8_lossy(&result);
-    assert!(result_str.contains("File: test.txt"));
-    assert!(result_str.contains("hello"));
+    // The archive is produced by the independent `tar` crate; assert the
+    // complete decoder presentation, including the exact extracted payload.
+    assert_eq!(
+        result,
+        b"File: test.txt\n--------------------------------------------------------------------------------\nhello\n\n"
+    );
 }
 #[test]
 fn test_untar_multiple_files() {

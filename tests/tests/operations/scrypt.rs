@@ -7,6 +7,29 @@ use rxchef::operations::scrypt::ScryptOp;
 use rxchef::Operation;
 
 #[test]
+fn test_scrypt_rfc_7914_vector_1() {
+    // RFC 7914 section 12: P="", S="", N=16, r=1, p=1, dkLen=64.
+    let output = ScryptOp
+        .run(
+            Vec::new(),
+            &[
+                ArgValue::Str(String::new()),
+                ArgValue::Num(16.0),
+                ArgValue::Num(1.0),
+                ArgValue::Num(1.0),
+                ArgValue::Num(64.0),
+            ],
+        )
+        .unwrap();
+    assert_eq!(
+        String::from_utf8(output).unwrap(),
+        "77d6576238657b203b19ca42c18a0497f16b4844e3074ae8dfdffa3fede21442f\
+         cd0069ded0948f8326a753a0fc81f17e8d3e0fb2e0d3628cf35e20c38d18906"
+            .replace(' ', "")
+    );
+}
+
+#[test]
 fn test_scrypt_basic() {
     let op = ScryptOp;
     let input = b"password".to_vec();

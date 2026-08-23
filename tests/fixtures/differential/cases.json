@@ -22373,6 +22373,36 @@
       "reference_encoding": "text",
       "expect": "exact",
       "reference_source": "observed: CyberChef 11.4.0 @ 2e048b029085, simple-string mode with explicit flags"
+    },
+    {
+      "operation": "AMF Encode",
+      "input": "{\"x\":1,\"ok\":true}",
+      "input_encoding": "text",
+      "args": ["AMF0"],
+      "reference": "03000178003ff000000000000000026f6b0101000009",
+      "reference_encoding": "hex",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.4.0 @ 2e048b029085, AMF0 object"
+    },
+    {
+      "operation": "Parse IPv6 address",
+      "input": "::1",
+      "input_encoding": "text",
+      "args": [],
+      "reference": "Longhand:  0000:0000:0000:0000:0000:0000:0000:0001\nShorthand: ::1\n\nLoopback address to the local host corresponding to 127.0.0.1/8 in IPv4.\nLoopback addresses range: ::1/128",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.4.0 @ 2e048b029085, loopback address"
+    },
+    {
+      "operation": "BSON deserialise",
+      "input": "1e000000026e616d650006000000416c6963650010616765001e00000000",
+      "input_encoding": "hex",
+      "args": [],
+      "reference": "{\n  \"name\": \"Alice\",\n  \"age\": 30\n}",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.4.0 @ 2e048b029085, canonical BSON document"
     }
   ],
   "reference_provenance": {

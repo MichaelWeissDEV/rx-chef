@@ -7,6 +7,29 @@ use rxchef::operations::rabbit::RabbitOp;
 use rxchef::Operation;
 
 #[test]
+fn test_rabbit_rfc_4503_zero_key_vector() {
+    // RFC 4503 appendix A.1: first 48 octets for an all-zero key and no IV.
+    let output = RabbitOp
+        .run(
+            vec![0; 48],
+            &[
+                ArgValue::Str("hex:00000000000000000000000000000000".into()),
+                ArgValue::Str("hex:".into()),
+                ArgValue::Str("Big".into()),
+                ArgValue::Str("Raw".into()),
+                ArgValue::Str("Hex".into()),
+            ],
+        )
+        .unwrap();
+    assert_eq!(
+        String::from_utf8(output).unwrap(),
+        "b15754f036a5d6ecf56b45261c4af70288e8d815c59c0c397b696c4789c68aa7\
+         f416a1c3700cd451da68d1881673d696"
+            .replace(' ', "")
+    );
+}
+
+#[test]
 fn test_rabbit_basic() {
     let op = RabbitOp;
     let input = b"Hello".to_vec();

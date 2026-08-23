@@ -19,9 +19,8 @@ fn test_ctph_basic() {
 fn test_ctph_empty() {
     let op = CTPH;
     let input = b"".to_vec();
-    let result = op.run(input, &[]);
-    // Empty input may succeed or fail depending on ssdeep crate behaviour
-    let _ = result;
+    let result = op.run(input, &[]).unwrap();
+    assert_eq!(result, b"A::");
 }
 #[test]
 fn test_ctph_longer_input() {
@@ -29,5 +28,6 @@ fn test_ctph_longer_input() {
     let input = b"The quick brown fox jumps over the lazy dog".to_vec();
     let result = op.run(input, &[]).expect("CTPH should succeed");
     let output = String::from_utf8(result).expect("valid utf8");
-    assert!(output.contains(':'));
+    // Pinned CyberChef 11.4.0 result at commit 2e048b0290854781db61e20638dca62978379032.
+    assert_eq!(output, "A:5ELdJ9Ludf:5TJ1n");
 }

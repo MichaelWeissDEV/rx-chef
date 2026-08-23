@@ -37,7 +37,7 @@ impl Operation for BitShiftLeft {
             required: false,
             choices: &[],
             minimum: None,
-            maximum: None,
+            maximum: Some(crate::operation::NumericBound::Integer(7)),
             sensitive: false,
         }];
         SCHEMA
@@ -58,13 +58,23 @@ impl Operation for BitShiftLeft {
     }
 
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
-        let amount = if args.len() > 0 {
-            args[0].as_f64().unwrap_or(1.0) as u8
+        let amount = if !args.is_empty() {
+            args[0].as_f64().unwrap_or(1.0) as u32
         } else {
             1
         };
 
-        let result: Vec<u8> = input.iter().map(|b| ((b << amount) & 0xff) as u8).collect();
+        if amount > 7 {
+            return Err(OperationError::InvalidArgument {
+                name: "Amount".to_string(),
+                reason: "Amount must be between 0 and 7".to_string(),
+            });
+        }
+
+        let result: Vec<u8> = input
+            .iter()
+            .map(|byte| ((u32::from(*byte) << amount) & 0xff) as u8)
+            .collect();
 
         Ok(result)
     }

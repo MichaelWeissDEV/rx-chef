@@ -8,6 +8,16 @@ use rxchef::operations::decode_text::DecodeText;
 use rxchef::Operation;
 
 #[test]
+fn test_decode_text_rejects_unknown_encoding() {
+    assert!(DecodeText
+        .run(
+            b"data".to_vec(),
+            &[ArgValue::Str("definitely-not-an-encoding".to_string())],
+        )
+        .is_err());
+}
+
+#[test]
 fn test_decode_text_nothing() {
     let op = DecodeText;
     let args = [ArgValue::Str("UTF-8 (65001)".to_string())];
