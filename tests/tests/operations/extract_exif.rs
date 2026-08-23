@@ -27,6 +27,6 @@ fn test_extract_exif_minimal_little_endian_tiff_make_tag() {
     ];
     assert_eq!(
         ExtractEXIF.run(tiff, &[]).unwrap(),
-        b"Found 1 tags.\n\nMake: Canon"
+        b"Found 1 tags.\n\nMake: \"Canon\""
     );
 }

@@ -13,6 +13,8 @@ fn tagged_mp3() -> Vec<u8> {
         b'T', b'i', b't', b'l', b'e', 0xff, 0xfb, 0x90, 0x64,
     ];
     bytes.resize(10 + 16 + 417, 0);
+    bytes.extend_from_slice(&[0xff, 0xfb, 0x90, 0x64]);
+    bytes.resize(10 + 16 + 2 * 417, 0);
     bytes
 }
 
