@@ -34,18 +34,26 @@ fn test_gost_verify_accepts_valid_and_rejects_invalid_mac() {
     assert_eq!(GOSTVerifyOp.run(message, &args).unwrap(), b"false");
 }
 
+// This vector was produced by directly invoking `processMAC15` in the
+// vendored reference implementation used by CyberChef (gchq/CyberChef,
+// src/core/vendor/gost/gostCipher.mjs, as of commit
+// b92501ee354256a127479f93d4c31a4f1d0dd657, fetched 2026-08-23). It uses a
+// 5-byte (non-block-aligned) message specifically because a single exact
+// block would make this MAC construction indistinguishable from a raw
+// block-cipher known-answer test and would not exercise the padding logic
+// that GOST Verify actually depends on.
 #[test]
-fn test_gost_verify_accepts_published_kuznyechik_vector() {
+fn test_gost_verify_accepts_cyberchef_reference_vector_kuznyechik() {
     let result = GOSTVerifyOp
         .run(
-            hex::decode("1122334455667700ffeeddccbbaa9988").unwrap(),
+            b"hello".to_vec(),
             &[
                 ArgValue::Bytes(
                     hex::decode("8899aabbccddeeff0011223344556677fedcba98765432100123456789abcdef")
                         .unwrap(),
                 ),
                 ArgValue::Bytes(Vec::new()),
-                ArgValue::Str("7f679d90bebc24305a468d42b9d4edcd".into()),
+                ArgValue::Str("7ab3961cfac88f5f".into()),
                 ArgValue::Str("Raw".into()),
                 ArgValue::Str("GOST R 34.12 (Kuznyechik, 2015)".into()),
                 ArgValue::Str("E-Z".into()),
@@ -53,4 +61,26 @@ fn test_gost_verify_accepts_published_kuznyechik_vector() {
         )
         .unwrap();
     assert_eq!(result, b"true");
+}
+
+#[test]
+fn test_gost_verify_rejects_tampered_mac() {
+    let result = GOSTVerifyOp
+        .run(
+            b"hello".to_vec(),
+            &[
+                ArgValue::Bytes(
+                    hex::decode("8899aabbccddeeff0011223344556677fedcba98765432100123456789abcdef")
+                        .unwrap(),
+                ),
+                ArgValue::Bytes(Vec::new()),
+                // last byte flipped relative to the correct MAC
+                ArgValue::Str("7ab3961cfac88fa0".into()),
+                ArgValue::Str("Raw".into()),
+                ArgValue::Str("GOST R 34.12 (Kuznyechik, 2015)".into()),
+                ArgValue::Str("E-Z".into()),
+            ],
+        )
+        .unwrap();
+    assert_eq!(result, b"false");
 }

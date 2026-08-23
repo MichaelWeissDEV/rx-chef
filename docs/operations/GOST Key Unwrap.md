@@ -2,7 +2,7 @@
 
 ## Overview
 
-A decryptor for keys wrapped using one of the GOST block ciphers.
+A decryptor for keys wrapped using one of the GOST block ciphers, per RFC 4357 ("NO" and "CP"/CryptoPro key wrapping). User Key Material (UKM) must match the value used to wrap the key, and must be exactly one block long. "CP" (CryptoPro) key wrapping is only supported for 64-bit block ciphers (GOST 28147 (1989), which this operation implements as an alias for GOST R 34.12 (Magma, 2015), and GOST R 34.12 (Magma, 2015) itself); it is not supported for Kuznyechik. "SC" (SignalCom) key wrapping is not implemented.
 
 ## Status
 
@@ -34,7 +34,7 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 | 4 | Output type | `String` | no | `Raw` | — | no | Type of output data |
 | 5 | Algorithm | `String` | no | `GOST R 34.12 (Magma, 2015)` | — | no | GOST version |
 | 6 | sBox | `String` | no | `E-TEST` | — | no | S-Box to use (1989 only) |
-| 7 | Key wrapping | `String` | no | `NO` | — | no | Key wrapping mode |
+| 7 | Key wrapping | `Enum` | no | `NO` | NO, CP, SC | no | The key wrapping mode. "CP" (CryptoPro diversification) is only supported for 64-bit block ciphers. "SC" is not implemented. |
 
 ## Implementation
 
@@ -69,6 +69,12 @@ Declared side effects: `[]`. Treat parser inputs as untrusted and apply executio
 ## Testing evidence
 
 Correctness tests:
+- tests/tests/operations/gost_key_unwrap.rs
+
+Known-answer tests:
+- tests/tests/operations/gost_key_unwrap.rs
+
+Differential tests:
 - tests/tests/operations/gost_key_unwrap.rs
 
 ## Performance classification

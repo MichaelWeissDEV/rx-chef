@@ -8,11 +8,12 @@
  * -----------------------------------------------------------------------------
  */
 
-use cipher::{BlockCipher, BlockEncrypt, KeyInit};
+use cipher::{BlockCipher, BlockEncrypt, BlockSizeUser, KeyInit};
 use generic_array::GenericArray;
 use kuznyechik::Kuznyechik;
 use magma::Magma;
 
+use super::gost_mac::{diversify_kek_64, gost_cmac};
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
 
 /// GOST Key Wrap operation
@@ -28,7 +29,7 @@ impl Operation for GostKeyWrap {
     }
 
     fn description(&self) -> &'static str {
-        "A key wrapping algorithm for protecting keys in untrusted storage using one of the GOST block ciphers."
+        "A key wrapping algorithm for protecting keys in untrusted storage using one of the GOST block ciphers, per RFC 4357 (\"NO\" and \"CP\"/CryptoPro key wrapping). The content-encryption key must be a non-empty multiple of the cipher's block size, and User Key Material (UKM) must be exactly one block long. \"CP\" (CryptoPro) key wrapping is only supported for 64-bit block ciphers (GOST 28147 (1989), which this operation implements as an alias for GOST R 34.12 (Magma, 2015), and GOST R 34.12 (Magma, 2015) itself); it is not supported for Kuznyechik. \"SC\" (SignalCom) key wrapping is not implemented."
     }
 
     fn args_schema(&self) -> &'static [ArgSchema] {
@@ -101,11 +102,11 @@ impl Operation for GostKeyWrap {
             },
             ArgSchema {
                 name: "Key wrapping",
-                description: "The key wrapping mode.",
+                description: "The key wrapping mode. \"CP\" (CryptoPro diversification) is only supported for 64-bit block ciphers. \"SC\" is not implemented.",
                 default_value: "NO",
-                kind: crate::operation::ArgKind::String,
+                kind: crate::operation::ArgKind::Enum,
                 required: false,
-                choices: &[],
+                choices: &["NO", "CP", "SC"],
                 minimum: None,
                 maximum: None,
                 sensitive: false,
@@ -131,6 +132,7 @@ impl Operation for GostKeyWrap {
             .get(4)
             .and_then(|a| a.as_str())
             .unwrap_or("GOST 28147 (1989)");
+        let key_wrapping = args.get(6).and_then(|a| a.as_str()).unwrap_or("NO");
 
         let input_bytes = if input_type == "Hex" {
             hex::decode(&input).map_err(|e| OperationError::InvalidInput(e.to_string()))?
@@ -146,7 +148,7 @@ impl Operation for GostKeyWrap {
                         reason: "KEK must be 32 bytes".to_string(),
                     });
                 }
-                self.wrap::<Magma>(&kek, &ukm, &input_bytes)?
+                self.wrap::<Magma>(&kek, &ukm, &input_bytes, key_wrapping)?
             }
             "GOST R 34.12 (Kuznyechik, 2015)" => {
                 if kek.len() != 32 {
@@ -155,7 +157,7 @@ impl Operation for GostKeyWrap {
                         reason: "KEK must be 32 bytes".to_string(),
                     });
                 }
-                self.wrap::<Kuznyechik>(&kek, &ukm, &input_bytes)?
+                self.wrap::<Kuznyechik>(&kek, &ukm, &input_bytes, key_wrapping)?
             }
             _ => {
                 return Err(OperationError::InvalidArgument {
@@ -195,44 +197,64 @@ impl GostKeyWrap {
         }
     }
 
-    fn wrap<C>(&self, kek: &[u8], _ukm: &[u8], cek: &[u8]) -> Result<Vec<u8>, OperationError>
+    /// Wraps `cek` under `kek`, following RFC 4357 section 6.1 (`key_wrapping
+    /// == "NO"`) or section 6.3 (`key_wrapping == "CP"`, CryptoPro key
+    /// diversification). The wrapped output is `CEK_ENC || CEK_MAC`, matching
+    /// the reference implementation (UKM is a required side parameter, not
+    /// embedded in the returned bytes — see the module-level docs in
+    /// `gost_mac`).
+    fn wrap<C>(
+        &self,
+        kek: &[u8],
+        ukm: &[u8],
+        cek: &[u8],
+        key_wrapping: &str,
+    ) -> Result<Vec<u8>, OperationError>
     where
-        C: BlockCipher + cipher::BlockSizeUser + KeyInit + BlockEncrypt,
+        C: BlockCipher + BlockSizeUser + KeyInit + BlockEncrypt,
     {
         let block_size = C::block_size();
-        let key_arr = GenericArray::from_slice(kek);
-        let cipher = C::new(key_arr);
-
-        // Simple implementation of key wrapping:
-        // In GOST, it often involves encrypting the CEK with KEK and appending a MAC.
-        // For now, we'll do ECB encryption of CEK and append a simple CBC-MAC.
-
-        let mut encrypted_cek = Vec::with_capacity(cek.len());
-        let mut padded_cek = cek.to_vec();
-        if padded_cek.len() % block_size != 0 {
-            let pad_len = block_size - (padded_cek.len() % block_size);
-            padded_cek.extend(vec![0u8; pad_len]);
+        if cek.is_empty() || cek.len() % block_size != 0 {
+            return Err(OperationError::InvalidInput(format!(
+                "Content-encryption key must be a non-empty multiple of {block_size} bytes"
+            )));
+        }
+        if ukm.len() != block_size {
+            return Err(OperationError::InvalidArgument {
+                name: "User Key Material".to_string(),
+                reason: format!("UKM must be {block_size} bytes for this algorithm"),
+            });
         }
 
-        for chunk in padded_cek.chunks(block_size) {
+        let dek: Vec<u8> = match key_wrapping {
+            "NO" | "" => kek.to_vec(),
+            "CP" => diversify_kek_64::<C>(kek, ukm)?,
+            "SC" => {
+                return Err(OperationError::InvalidArgument {
+                    name: "Key wrapping".to_string(),
+                    reason: "SC (SignalCom) key wrapping is not implemented".to_string(),
+                })
+            }
+            other => {
+                return Err(OperationError::InvalidArgument {
+                    name: "Key wrapping".to_string(),
+                    reason: format!("Unsupported key wrapping mode: {other}"),
+                })
+            }
+        };
+
+        let cipher = C::new(GenericArray::from_slice(&dek));
+        let mut encrypted_cek = Vec::with_capacity(cek.len());
+        for chunk in cek.chunks(block_size) {
             let mut block = GenericArray::clone_from_slice(chunk);
             cipher.encrypt_block(&mut block);
             encrypted_cek.extend_from_slice(block.as_slice());
         }
 
-        // Calculate MAC
-        let mut register = vec![0u8; block_size];
-        for chunk in padded_cek.chunks(block_size) {
-            let mut block = GenericArray::clone_from_slice(chunk);
-            for i in 0..block_size {
-                block[i] ^= register[i];
-            }
-            cipher.encrypt_block(&mut block);
-            register.copy_from_slice(block.as_slice());
-        }
+        let mac = gost_cmac::<C>(&dek, Some(ukm), cek);
 
         let mut result = encrypted_cek;
-        result.extend_from_slice(&register[..block_size / 2]); // Usually half block MAC
+        result.extend_from_slice(&mac[..block_size / 2]);
         Ok(result)
     }
 }

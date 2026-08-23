@@ -8,11 +8,11 @@
  * -----------------------------------------------------------------------------
  */
 
-use cipher::{BlockCipher, BlockEncrypt, KeyInit};
-use generic_array::GenericArray;
+use cipher::{BlockCipher, BlockEncrypt, BlockSizeUser, KeyInit};
 use kuznyechik::Kuznyechik;
 use magma::Magma;
 
+use super::gost_mac::gost_cmac;
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
 
 /// GOST Sign operation
@@ -28,7 +28,7 @@ impl Operation for GostSign {
     }
 
     fn description(&self) -> &'static str {
-        "Sign a plaintext message (calculate MAC) using one of the GOST block ciphers."
+        "Sign a plaintext message (calculate MAC) using one of the GOST block ciphers, using the GOST R 34.13-2015 CMAC-style MAC construction. \"GOST 28147 (1989)\" is implemented as an alias for GOST R 34.12 (Magma, 2015) (matching this crate's GOST Encrypt/Decrypt behaviour); the original GOST 28147-89 round-reduced imitovstavka construction with selectable S-boxes is not implemented."
     }
 
     fn args_schema(&self) -> &'static [ArgSchema] {
@@ -197,6 +197,11 @@ impl GostSign {
         }
     }
 
+    /// Computes the GOST R 34.13-2015 MAC of `input` under `key`, with `iv`
+    /// as the initial register (defaults to an all-zero block, matching the
+    /// reference implementation). See `gost_mac` for the algorithm this is
+    /// ported from and its documented divergence from the original GOST
+    /// 28147-89 round-reduced "imitovstavka" construction.
     fn calculate_mac<C>(
         &self,
         key: &[u8],
@@ -205,47 +210,18 @@ impl GostSign {
         mac_length: usize,
     ) -> Result<Vec<u8>, OperationError>
     where
-        C: BlockCipher + cipher::BlockSizeUser + KeyInit + BlockEncrypt,
+        C: BlockCipher + BlockSizeUser + KeyInit + BlockEncrypt,
     {
         let block_size = C::block_size();
-        let key_arr = GenericArray::from_slice(key);
-        let cipher = C::new(key_arr);
-
-        let mut register = if iv.is_empty() {
-            vec![0u8; block_size]
-        } else if iv.len() != block_size {
+        if !iv.is_empty() && iv.len() != block_size {
             return Err(OperationError::InvalidArgument {
                 name: "IV".to_string(),
                 reason: format!("IV must be {} bytes", block_size),
             });
-        } else {
-            iv.to_vec()
-        };
-
-        // GOST MAC (Imitovstavka)
-        // For each block: register = Encrypt(register XOR block)
-        // If the last block is partial, it is zero-padded.
-        let mut padded_input = input.to_vec();
-        if padded_input.is_empty() {
-            // If input is empty, return zeros or handle accordingly.
-            // Usually MAC of empty input is Encrypt(0) or similar.
-            padded_input.resize(block_size, 0);
-        } else if padded_input.len() % block_size != 0 {
-            let pad_len = block_size - (padded_input.len() % block_size);
-            padded_input.extend(vec![0u8; pad_len]);
         }
-
-        for chunk in padded_input.chunks(block_size) {
-            let mut block = GenericArray::clone_from_slice(chunk);
-            for i in 0..block_size {
-                block[i] ^= register[i];
-            }
-            cipher.encrypt_block(&mut block);
-            register.copy_from_slice(block.as_slice());
-        }
-
-        let mut mac = register;
-        mac.truncate(mac_length);
+        let iv_opt = if iv.is_empty() { None } else { Some(iv) };
+        let mut mac = gost_cmac::<C>(key, iv_opt, input);
+        mac.truncate(mac_length.min(mac.len()));
         Ok(mac)
     }
 }

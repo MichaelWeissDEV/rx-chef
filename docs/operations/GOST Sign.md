@@ -2,7 +2,7 @@
 
 ## Overview
 
-Sign a plaintext message (calculate MAC) using one of the GOST block ciphers.
+Sign a plaintext message (calculate MAC) using one of the GOST block ciphers, using the GOST R 34.13-2015 CMAC-style MAC construction. "GOST 28147 (1989)" is implemented as an alias for GOST R 34.12 (Magma, 2015) (matching this crate's GOST Encrypt/Decrypt behaviour); the original GOST 28147-89 round-reduced imitovstavka construction with selectable S-boxes is not implemented.
 
 ## Status
 
@@ -69,6 +69,12 @@ Declared side effects: `[]`. Treat parser inputs as untrusted and apply executio
 ## Testing evidence
 
 Correctness tests:
+- tests/tests/operations/gost_sign.rs
+
+Known-answer tests:
+- tests/tests/operations/gost_sign.rs
+
+Differential tests:
 - tests/tests/operations/gost_sign.rs
 
 ## Performance classification

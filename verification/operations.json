@@ -2385,7 +2385,7 @@
         "tests/tests/operations/gost_key_unwrap.rs"
       ],
       "known_answer": ["tests/tests/operations/gost_key_unwrap.rs"],
-      "differential": [],
+      "differential": ["tests/tests/operations/gost_key_unwrap.rs"],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2396,7 +2396,7 @@
         "tests/tests/operations/gost_key_wrap.rs"
       ],
       "known_answer": ["tests/tests/operations/gost_key_wrap.rs"],
-      "differential": [],
+      "differential": ["tests/tests/operations/gost_key_wrap.rs"],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2407,7 +2407,7 @@
         "tests/tests/operations/gost_sign.rs"
       ],
       "known_answer": ["tests/tests/operations/gost_sign.rs"],
-      "differential": [],
+      "differential": ["tests/tests/operations/gost_sign.rs"],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -2418,7 +2418,7 @@
         "tests/tests/operations/gost_verify.rs"
       ],
       "known_answer": ["tests/tests/operations/gost_verify.rs"],
-      "differential": [],
+      "differential": ["tests/tests/operations/gost_verify.rs"],
       "property": [],
       "fuzz": [],
       "benchmark": [],
