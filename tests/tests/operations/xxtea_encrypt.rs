@@ -6,6 +6,16 @@ use rxchef::operation::ArgValue;
 use rxchef::operations::xxtea_encrypt::XxteaEncryptOp;
 use rxchef::Operation;
 
+#[test]
+fn test_xxtea_encrypt_rejects_missing_key() {
+    let error = XxteaEncryptOp.run(b"x".to_vec(), &[]).unwrap_err();
+    assert!(matches!(
+        error,
+        rxchef::operation::OperationError::InvalidArgument { ref name, .. }
+            if name == "Key"
+    ));
+}
+
 const CYBERCHEF_XXTEA_VECTOR: &str =
     "3db5a39db1663fc029bb630a38635b8de5bfef62192e52cc4bf83cda8ccbc701";
 

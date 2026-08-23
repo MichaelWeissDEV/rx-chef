@@ -3,15 +3,15 @@
   "operation_count": 478,
   "summary": {
     "registered": 478,
-    "correctness_verified": 377,
-    "correctness_partially_verified": 101,
+    "correctness_verified": 382,
+    "correctness_partially_verified": 96,
     "correctness_unverified": 0,
     "tested": 478,
-    "test_functions": 2350,
-    "negative_tested": 351,
+    "test_functions": 2355,
+    "negative_tested": 352,
     "negative_not_applicable": 87,
     "boundary_tested": 440,
-    "reference_verified": 135,
+    "reference_verified": 139,
     "differential_verified": 258,
     "parity_exact": 171,
     "parity_compatible": 5,
@@ -19,7 +19,7 @@
     "parity_unverified": 301,
     "parity_not_applicable": 0,
     "documented_divergences": 2,
-    "tests_asserting_only_success": 53
+    "tests_asserting_only_success": 52
   },
   "operations": [
     {
@@ -9792,21 +9792,19 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
       "fixture_binary_or_unicode": true,
-      "tests": 0,
+      "tests": 1,
       "negative_test": false,
       "boundary_test": false,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 1,
       "tests_asserting_only_success": 0,
-      "untested_reason": "Needs a captured TLS ClientHello fixture to assert the JA4 fingerprint fields.",
+      "untested_reason": null,
       "name": "JA4 Fingerprint",
       "slug": "ja4-fingerprint",
       "id": "ja4_fingerprint",
@@ -9817,14 +9815,16 @@
       "input": "String",
       "output": "String",
       "args_documented": true,
-      "correctness_test": false,
-      "known_answer_test": false,
+      "correctness_test": true,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/ja4_fingerprint.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/ja4_fingerprint.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -9836,21 +9836,19 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
       "fixture_binary_or_unicode": true,
-      "tests": 0,
+      "tests": 1,
       "negative_test": false,
       "boundary_test": false,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 1,
       "tests_asserting_only_success": 0,
-      "untested_reason": "Needs a captured TLS ServerHello fixture to assert the JA4S fingerprint fields.",
+      "untested_reason": null,
       "name": "JA4Server Fingerprint",
       "slug": "ja4server-fingerprint",
       "id": "ja4server_fingerprint",
@@ -9861,14 +9859,16 @@
       "input": "String",
       "output": "String",
       "args_documented": true,
-      "correctness_test": false,
-      "known_answer_test": false,
+      "correctness_test": true,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/ja4_server_fingerprint.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/ja4_server_fingerprint.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -19841,19 +19841,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
       "fixture_binary_or_unicode": true,
-      "tests": 6,
+      "tests": 7,
       "negative_test": true,
       "boundary_test": true,
       "empty_input_test": true,
-      "value_assertions": 4,
+      "value_assertions": 5,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Triple DES Decrypt",
@@ -19867,13 +19865,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/triple_des_decrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/triple_des_decrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -19885,20 +19885,18 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
       "fixture_binary_or_unicode": true,
-      "tests": 4,
+      "tests": 5,
       "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 1,
-      "tests_asserting_only_success": 2,
+      "value_assertions": 4,
+      "tests_asserting_only_success": 1,
       "untested_reason": null,
       "name": "Triple DES Encrypt",
       "slug": "triple-des-encrypt",
@@ -19911,13 +19909,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/triple_des_encrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/triple_des_encrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -21139,16 +21139,14 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 3,
-      "negative_test": false,
+      "tests": 4,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": true,
       "value_assertions": 3,

@@ -2902,25 +2902,27 @@
       "correctness": [
         "tests/tests/operations/ja4_fingerprint.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/ja4_fingerprint.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
-      "untested_reason": "Needs a captured TLS ClientHello fixture to assert the JA4 fingerprint fields."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "ja4server_fingerprint": {
       "correctness": [
         "tests/tests/operations/ja4_server_fingerprint.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/ja4_server_fingerprint.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
-      "untested_reason": "Needs a captured TLS ServerHello fixture to assert the JA4S fingerprint fields."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "jpath_expression": {
       "correctness": [
@@ -5903,7 +5905,9 @@
       "correctness": [
         "tests/tests/operations/triple_des_decrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/triple_des_decrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -5914,7 +5918,9 @@
       "correctness": [
         "tests/tests/operations/triple_des_encrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/triple_des_encrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],

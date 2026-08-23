@@ -2,9 +2,30 @@
 // Run only these tests:
 //   cargo test -p cyberchef-rust-tests --test operations triple_des_decrypt::
 
-use rxchef::operation::OperationError;
+use rxchef::operation::{ArgValue, OperationError};
 use rxchef::operations::triple_des_decrypt::TripleDESDecrypt;
 use rxchef::Operation;
+
+#[test]
+fn test_ede3_nist_known_answer_decrypt() {
+    // Inverse of the fixed NIST/CAVP EDE3 ECB vector; ciphertext is not
+    // produced by TripleDESEncrypt in this test.
+    let output = TripleDESDecrypt
+        .run(
+            b"0737f6c53750d4a4".to_vec(),
+            &[
+                ArgValue::Str("0123456789abcdef23456789abcdef01456789abcdef0123".into()),
+                ArgValue::Str("Hex".into()),
+                ArgValue::Str(String::new()),
+                ArgValue::Str("Hex".into()),
+                ArgValue::Str("ECB/NoPadding".into()),
+                ArgValue::Str("Hex".into()),
+                ArgValue::Str("Hex".into()),
+            ],
+        )
+        .unwrap();
+    assert_eq!(output, b"fedcba9876543210");
+}
 
 // Helper functions copied from the operation file
 fn extend_key_to_24(key: Vec<u8>) -> Result<Vec<u8>, OperationError> {

@@ -7,6 +7,30 @@ use rxchef::operations::triple_des_encrypt::TripleDESEncrypt;
 use rxchef::Operation;
 
 #[test]
+fn test_ede3_nist_known_answer_first_block() {
+    // NIST/CAVP EDE3 ECB known-answer vector. TripleDESEncrypt always appends
+    // PKCS#7, so the first output block is the normative block-cipher result
+    // and a second block encrypts the padding.
+    let output = TripleDESEncrypt
+        .run(
+            b"fedcba9876543210".to_vec(),
+            &[
+                ArgValue::Str("0123456789abcdef23456789abcdef01456789abcdef0123".into()),
+                ArgValue::Str("Hex".into()),
+                ArgValue::Str(String::new()),
+                ArgValue::Str("Hex".into()),
+                ArgValue::Str("ECB".into()),
+                ArgValue::Str("Hex".into()),
+                ArgValue::Str("Hex".into()),
+            ],
+        )
+        .unwrap();
+    let encoded = String::from_utf8(output).unwrap();
+    assert_eq!(&encoded[..16], "0737f6c53750d4a4");
+    assert_eq!(encoded.len(), 32);
+}
+
+#[test]
 fn test_encrypt_empty_input() {
     let op = TripleDESEncrypt;
     let result = op.run(
@@ -39,7 +63,6 @@ fn test_encrypt_cbc_produces_output() {
             ArgValue::Str("Hex".to_string()),
         ],
     );
-    assert!(result.is_ok());
     let out = String::from_utf8(result.unwrap()).unwrap();
     // 8 bytes of plaintext with PKCS7 padding -> 16 bytes ciphertext -> 32 hex chars
     assert_eq!(out.len(), 32);
@@ -76,5 +99,5 @@ fn test_ecb_encrypt() {
             ArgValue::Str("Hex".to_string()),
         ],
     );
-    assert!(result.is_ok());
+    assert_eq!(result.unwrap().len(), 32);
 }

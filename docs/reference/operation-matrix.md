@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2350 |
-| With negative tests | 351 |
+| Test functions | 2355 |
+| With negative tests | 352 |
 | With boundary tests | 440 |
-| Reference-verified (known answer) | 135 |
+| Reference-verified (known answer) | 139 |
 | Differential-verified | 258 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -21,7 +21,7 @@
 | Parity: unverified | 301 |
 | Parity: not applicable | 0 |
 | Documented divergences | 2 |
-| Tests asserting only success | 53 |
+| Tests asserting only success | 52 |
 
 ## Bletchley
 
@@ -108,13 +108,13 @@
 | SM4 Decrypt | partial | unknown | yes | 4 | yes | — | yes | — | — | — | — | yes |
 | SM4 Encrypt | partial | unknown | yes | 10 | yes | — | yes | — | — | — | — | yes |
 | Salsa20 | partial | unknown | yes | 4 | yes | — | yes | — | — | — | — | yes |
-| Triple DES Decrypt | partial | unknown | yes | 6 | yes | yes | — | — | — | — | — | yes |
-| Triple DES Encrypt | partial | unknown | yes | 4 | yes | yes | — | — | — | — | — | yes |
+| Triple DES Decrypt | partial | unknown | yes | 7 | yes | yes | yes | — | — | — | — | yes |
+| Triple DES Encrypt | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
 | Vigenre Decode | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
 | Vigenre Encode | partial | unknown | yes | 4 | yes | — | — | — | — | — | — | yes |
 | XSalsa20 | partial | unknown | yes | 5 | yes | — | yes | — | — | — | — | yes |
 | XXTEA Decrypt | partial | unknown | yes | 2 | — | — | yes | — | — | — | — | yes |
-| XXTEA Encrypt | partial | unknown | yes | 3 | — | yes | yes | — | — | — | — | yes |
+| XXTEA Encrypt | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 
 ## Code
 
@@ -209,8 +209,8 @@
 | HMAC | partial | compatible | yes | 16 | yes | yes | yes | — | — | — | — | yes |
 | JA3 Fingerprint | partial | unknown | yes | 1 | — | — | yes | — | — | — | — | yes |
 | JA3S Fingerprint | partial | unknown | yes | 1 | — | — | yes | — | — | — | — | yes |
-| JA4 Fingerprint | partial | unknown | yes | 0 | — | — | — | — | — | — | — | yes |
-| JA4Server Fingerprint | partial | unknown | yes | 0 | — | — | — | — | — | — | — | yes |
+| JA4 Fingerprint | partial | unknown | yes | 1 | — | — | yes | — | — | — | — | yes |
+| JA4Server Fingerprint | partial | unknown | yes | 1 | — | — | yes | — | — | — | — | yes |
 | JWT Decode | partial | unknown | yes | 2 | yes | — | yes | — | — | — | — | yes |
 | JWT Sign | partial | unknown | yes | 5 | yes | — | yes | — | — | — | — | yes |
 | JWT Verify | partial | unknown | yes | 4 | yes | — | yes | — | — | — | — | yes |
