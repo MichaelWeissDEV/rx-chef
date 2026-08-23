@@ -9,6 +9,8 @@
  */
 
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
+use cipher::{generic_array::GenericArray, BlockEncrypt};
+use rc2::Rc2;
 
 /// RC2 Encrypt operation.
 ///
@@ -17,6 +19,7 @@ use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError}
 pub struct RC2Encrypt;
 
 /// RC2 key expansion (RFC 2268)
+#[allow(dead_code)]
 fn rc2_expand_key(key: &[u8]) -> [u16; 64] {
     const PITABLE: [u8; 256] = [
         217, 120, 249, 196, 25, 221, 181, 237, 40, 233, 253, 121, 74, 160, 216, 157, 198, 126, 55,
@@ -59,39 +62,11 @@ fn rc2_expand_key(key: &[u8]) -> [u16; 64] {
 }
 
 /// RC2 encrypt a single 8-byte block (RFC 2268)
-fn rc2_encrypt_block(block: &[u8; 8], k: &[u16; 64]) -> [u8; 8] {
-    let mut r = [0u16; 4];
-    for i in 0..4 {
-        r[i] = (block[2 * i] as u16) | ((block[2 * i + 1] as u16) << 8);
-    }
-
-    for j in 0..16usize {
-        // Mix round
-        for i in 0..4usize {
-            let s = [1u16, 2, 3, 5][i];
-            let prev = r[(i + 3) % 4];
-            let next = r[(i + 1) % 4];
-            let mut ri = r[i];
-            ri = ri
-                .wrapping_add(k[4 * j + i])
-                .wrapping_add((prev & next).wrapping_add((!prev) & r[(i + 2) % 4]));
-            // Rotate left by s
-            ri = (ri << s) | (ri >> (16 - s));
-            r[i] = ri;
-        }
-        // Mash after rounds 4 and 9
-        if j == 4 || j == 9 {
-            for i in 0..4usize {
-                r[i] = r[i].wrapping_add(k[(r[(i + 3) % 4] & 63) as usize]);
-            }
-        }
-    }
-
+fn rc2_encrypt_block(block: &[u8; 8], cipher: &Rc2) -> [u8; 8] {
+    let mut encrypted = GenericArray::clone_from_slice(block);
+    cipher.encrypt_block(&mut encrypted);
     let mut out = [0u8; 8];
-    for i in 0..4 {
-        out[2 * i] = (r[i] & 0xff) as u8;
-        out[2 * i + 1] = (r[i] >> 8) as u8;
-    }
+    out.copy_from_slice(&encrypted);
     out
 }
 
@@ -195,6 +170,12 @@ impl Operation for RC2Encrypt {
                 reason: "Key must not be empty".to_string(),
             });
         }
+        if key_bytes.len() > 128 {
+            return Err(OperationError::InvalidArgument {
+                name: "Key".to_string(),
+                reason: "Key must not exceed 128 bytes".to_string(),
+            });
+        }
 
         let iv_bytes: Vec<u8> = if iv_str.is_empty() {
             vec![]
@@ -222,7 +203,9 @@ impl Operation for RC2Encrypt {
         };
 
         let padded = pkcs7_pad_8(&plain_bytes);
-        let k = rc2_expand_key(&key_bytes);
+        // CyberChef's node-forge backend fixes RC2's effective key length at
+        // 128 bits, even when the supplied user key contains fewer bytes.
+        let cipher = Rc2::new_with_eff_key_len(&key_bytes, 128);
         let mut ciphertext = Vec::with_capacity(padded.len());
 
         if iv_bytes.is_empty() {
@@ -230,7 +213,7 @@ impl Operation for RC2Encrypt {
             for chunk in padded.chunks(8) {
                 let mut block = [0u8; 8];
                 block.copy_from_slice(chunk);
-                let enc = rc2_encrypt_block(&block, &k);
+                let enc = rc2_encrypt_block(&block, &cipher);
                 ciphertext.extend_from_slice(&enc);
             }
         } else {
@@ -242,7 +225,7 @@ impl Operation for RC2Encrypt {
                 for i in 0..8 {
                     block[i] = chunk[i] ^ prev[i];
                 }
-                let enc = rc2_encrypt_block(&block, &k);
+                let enc = rc2_encrypt_block(&block, &cipher);
                 prev.copy_from_slice(&enc);
                 ciphertext.extend_from_slice(&enc);
             }
