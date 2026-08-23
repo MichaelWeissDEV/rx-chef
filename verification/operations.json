@@ -4352,7 +4352,9 @@
       "correctness": [
         "tests/tests/operations/rsa_decrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/rsa_decrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4363,7 +4365,9 @@
       "correctness": [
         "tests/tests/operations/rsa_encrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/rsa_encrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4374,7 +4378,9 @@
       "correctness": [
         "tests/tests/operations/rsa_sign.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/rsa_sign.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4385,7 +4391,9 @@
       "correctness": [
         "tests/tests/operations/rsa_verify.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/rsa_verify.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],

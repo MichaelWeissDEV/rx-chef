@@ -50,3 +50,17 @@ u7Y1O+m7y3X4p+h8N8u3fvE7D1C3m1R7Y/oX4U9Z8u5k9u7Y1O+m7y3X4p+h8N8u\n\
         Err(_) => {} // Also fine if it fails key parsing
     }
 }
+
+#[test]
+fn test_rsa_verify_accepts_openssl_pkcs1_v15_signature() {
+    let public_key = include_str!("../../fixtures/known_answer/rsa_public_1024.pem");
+    let signature = hex::decode("6b12c60f17510170b4ddc82c6c6cda55cc07c0fee1096a9b53f418a21b7c17374bd83ffa8c539e8939862f2ed1c278626d35a097732e06b78b0a9b43c103d9295eb3cada989cb734507849c73666c8d0a3e17e13a0af584c31976765bbe03ec660bc2577ba60060ccf8caf55fa9dc0b8a5531e24dbcd551e5c1e5bf7b59c6412").unwrap();
+    let args = [
+        ArgValue::Str(public_key.to_string()),
+        ArgValue::Str("RSA known-answer message\n".to_string()),
+        ArgValue::Str("Raw".to_string()),
+        ArgValue::Str("SHA-256".to_string()),
+    ];
+
+    assert_eq!(RSAVerify.run(signature, &args).unwrap(), b"Verified OK");
+}

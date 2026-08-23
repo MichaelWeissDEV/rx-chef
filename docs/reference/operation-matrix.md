@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2411 |
+| Test functions | 2416 |
 | With negative tests | 373 |
-| With boundary tests | 465 |
-| Reference-verified (known answer) | 180 |
+| With boundary tests | 466 |
+| Reference-verified (known answer) | 184 |
 | Differential-verified | 262 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -98,10 +98,10 @@
 | ROT13 | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
 | ROT13 Brute Force | partial | unknown | yes | 5 | yes | yes | — | yes | — | — | — | yes |
 | ROT47 | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
-| RSA Decrypt | partial | unknown | yes | 1 | yes | — | — | — | — | — | — | yes |
-| RSA Encrypt | partial | unknown | yes | 1 | yes | — | — | — | — | — | — | yes |
-| RSA Sign | partial | unknown | yes | 2 | yes | — | — | — | — | — | — | yes |
-| RSA Verify | partial | unknown | yes | 2 | yes | — | — | — | — | — | — | yes |
+| RSA Decrypt | partial | unknown | yes | 2 | yes | — | yes | — | — | — | — | yes |
+| RSA Encrypt | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
+| RSA Sign | partial | unknown | yes | 3 | yes | — | yes | — | — | — | — | yes |
+| RSA Verify | partial | unknown | yes | 3 | yes | — | yes | — | — | — | — | yes |
 | Rabbit | partial | unknown | yes | 3 | — | yes | yes | — | — | — | — | yes |
 | Rail Fence Cipher Decode | partial | exact | yes | 2 | yes | — | — | yes | — | — | — | yes |
 | Rail Fence Cipher Encode | partial | exact | yes | 2 | yes | — | — | yes | — | — | — | yes |

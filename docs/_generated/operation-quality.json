@@ -3,15 +3,15 @@
   "operation_count": 478,
   "summary": {
     "registered": 478,
-    "correctness_verified": 427,
-    "correctness_partially_verified": 51,
+    "correctness_verified": 431,
+    "correctness_partially_verified": 47,
     "correctness_unverified": 0,
     "tested": 478,
-    "test_functions": 2411,
+    "test_functions": 2416,
     "negative_tested": 373,
     "negative_not_applicable": 92,
-    "boundary_tested": 465,
-    "reference_verified": 180,
+    "boundary_tested": 466,
+    "reference_verified": 184,
     "differential_verified": 262,
     "parity_exact": 171,
     "parity_compatible": 5,
@@ -14561,19 +14561,17 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
       "fixture_binary_or_unicode": true,
-      "tests": 1,
+      "tests": 2,
       "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 1,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "RSA Decrypt",
@@ -14587,13 +14585,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/rsa_decrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/rsa_decrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -14605,20 +14605,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "boundary tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 1,
+      "tests": 3,
       "negative_test": true,
-      "boundary_test": false,
-      "empty_input_test": false,
-      "value_assertions": 0,
+      "boundary_test": true,
+      "empty_input_test": true,
+      "value_assertions": 2,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "RSA Encrypt",
@@ -14632,13 +14629,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/rsa_encrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/rsa_encrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -14650,19 +14649,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
       "fixture_binary_or_unicode": true,
-      "tests": 2,
+      "tests": 3,
       "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 1,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "RSA Sign",
@@ -14676,13 +14673,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/rsa_sign.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/rsa_sign.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -14694,19 +14693,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
       "fixture_binary_or_unicode": true,
-      "tests": 2,
+      "tests": 3,
       "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
-      "value_assertions": 1,
+      "value_assertions": 2,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "RSA Verify",
@@ -14720,13 +14717,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/rsa_verify.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/rsa_verify.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],

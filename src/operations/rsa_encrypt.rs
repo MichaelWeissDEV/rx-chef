@@ -144,7 +144,8 @@ impl Operation for RSAEncrypt {
                 }
                 let c = m.modpow(&e_big, &n_big);
                 let mut c_bytes = c.to_bytes_be();
-                let key_size = (pub_key.size() + 7) / 8;
+                // `PublicKeyParts::size` is already expressed in bytes.
+                let key_size = pub_key.size();
                 if c_bytes.len() < key_size {
                     let mut padded = vec![0u8; key_size - c_bytes.len()];
                     padded.extend(c_bytes);
