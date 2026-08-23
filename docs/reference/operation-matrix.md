@@ -13,7 +13,7 @@
 | Test functions | 2514 |
 | With negative tests | 385 |
 | With boundary tests | 478 |
-| Reference-verified (known answer) | 220 |
+| Reference-verified (known answer) | 221 |
 | Differential-verified | 262 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -220,7 +220,7 @@
 | MD6 | partial | exact | yes | 6 | yes | yes | — | yes | — | — | — | yes |
 | NT Hash | partial | exact | yes | 2 | — | yes | — | yes | — | — | — | yes |
 | SM2 Decrypt | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
-| SM2 Encrypt | partial | unknown | yes | 3 | yes | yes | — | — | — | — | — | yes |
+| SM2 Encrypt | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
 | SSDEEP | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
 | Scrypt | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | TCP/IP Checksum | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |

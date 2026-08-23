@@ -53,6 +53,9 @@ fn test_sm2_roundtrip() {
                 ],
             )
             .unwrap();
+        let transport = String::from_utf8(ciphertext.clone()).unwrap();
+        assert_eq!(transport.len(), 2 * (64 + 32 + b"SM2 round trip".len()));
+        assert!(!transport.starts_with("04"));
         let plaintext = Sm2Decrypt
             .run(
                 ciphertext,

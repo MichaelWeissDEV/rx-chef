@@ -4872,7 +4872,10 @@
       "correctness": [
         "tests/tests/operations/sm2_encrypt.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/sm2_encrypt.rs",
+        "tests/tests/operations/sm2_decrypt.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
