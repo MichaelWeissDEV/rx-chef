@@ -1809,9 +1809,12 @@
     },
     "flask_session_sign": {
       "correctness": [
-        "tests/tests/operations/flask_session_sign.rs"
+        "tests/tests/operations/flask_session_sign.rs",
+        "src/operations/flask_session_sign.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "src/operations/flask_session_sign.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],

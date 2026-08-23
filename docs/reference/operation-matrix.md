@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2420 |
+| Test functions | 2423 |
 | With negative tests | 373 |
-| With boundary tests | 467 |
-| Reference-verified (known answer) | 187 |
+| With boundary tests | 468 |
+| Reference-verified (known answer) | 188 |
 | Differential-verified | 262 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -194,7 +194,7 @@
 | Compare SSDEEP hashes | partial | unknown | yes | 1 | — | — | yes | — | — | — | — | yes |
 | Derive HKDF key | partial | unknown | yes | 12 | yes | yes | yes | — | — | — | — | yes |
 | Flask Session Decode | partial | unknown | yes | 3 | yes | — | yes | — | — | — | — | yes |
-| Flask Session Sign | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
+| Flask Session Sign | partial | unknown | yes | 6 | yes | yes | yes | — | — | — | — | yes |
 | Flask Session Verify | partial | unknown | yes | 5 | yes | — | yes | — | — | — | — | yes |
 | Fletcher-16 Checksum | partial | exact | yes | 1 | — | — | — | yes | — | — | — | yes |
 | Fletcher-32 Checksum | partial | exact | yes | 1 | — | — | — | yes | — | — | — | yes |

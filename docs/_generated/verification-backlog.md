@@ -4,7 +4,7 @@
 
 Why each operation is not yet `verified`, and what would close the gap. Groups are ordered by how much work they need, so the list can be worked in batches.
 
-**434 verified · 44 partially verified · 0 unverified** of 478 registered.
+**435 verified · 43 partially verified · 0 unverified** of 478 registered.
 
 ## A: only independent evidence missing (27)
 
@@ -38,12 +38,11 @@ Why each operation is not yet `verified`, and what would close the gap. Groups a
 | SM2 Encrypt | Crypto | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | Show on map | Maps | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 
-## E: independent evidence + one test class (8)
+## E: independent evidence + one test class (7)
 
 | Operation | Module | Tests | Neg | Bound | KAT | Diff | Parity | Weak | Remaining gaps | Strategy |
 |---|---|---:|:---:|:---:|:---:|:---:|---|---:|---|---|
 | Extract Files | Default | 5 | — | yes | — | — | unknown | 0 | negative tests, independent reference evidence | CyberChef differential fixture with an input this operation actually accepts; a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| Flask Session Sign | Crypto | 3 | yes | — | — | — | unknown | 0 | boundary tests, independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison; a boundary case at a real limit of this operation, not merely empty input |
 | Generate Lorem Ipsum | Default | 4 | yes | — | — | — | unknown | 0 | boundary tests, independent reference evidence | CyberChef differential fixture with an input this operation actually accepts; a boundary case at a real limit of this operation, not merely empty input |
 | HTTP request | Default | 0 | — | yes | — | — | unknown | 0 | negative tests, independent reference evidence | CyberChef differential fixture with an input this operation actually accepts; a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Pseudo-Random Number Generator | Ciphers | 8 | — | yes | — | — | unknown | 1 | negative tests, independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison; a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists; replace is_ok()-only assertions with exact values or invariants |

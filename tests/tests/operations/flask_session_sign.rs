@@ -52,3 +52,13 @@ fn test_flask_sign_sha256_produces_valid_token() {
     let parts: Vec<&str> = token.split('.').collect();
     assert_eq!(parts.len(), 3);
 }
+
+#[test]
+fn test_flask_sign_rejects_unknown_algorithm() {
+    let args = [
+        ArgValue::Str("secret".to_string()),
+        ArgValue::Str("cookie-session".to_string()),
+        ArgValue::Str("md5".to_string()),
+    ];
+    assert!(FlaskSessionSign.run(b"{}".to_vec(), &args).is_err());
+}

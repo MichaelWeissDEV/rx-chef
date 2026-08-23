@@ -130,20 +130,35 @@ impl Operation for FlaskSessionSign {
             .to_ascii_lowercase();
 
         // Parse JSON input
-        let input_str = String::from_utf8_lossy(&input).trim().to_string();
-        // Validate it is valid JSON
-        let _: serde_json::Value = serde_json::from_str(&input_str)
+        let input_str = String::from_utf8(input)
+            .map_err(|error| OperationError::InvalidInput(error.to_string()))?;
+        // CyberChef receives JSON and serialises it compactly before signing.
+        let value: serde_json::Value = serde_json::from_str(input_str.trim())
             .map_err(|e| OperationError::InvalidInput(format!("Input is not valid JSON: {}", e)))?;
+        let input_str = serde_json::to_string(&value)
+            .map_err(|error| OperationError::ProcessingError(error.to_string()))?;
 
-        // Encode payload as standard base64, then convert to url-safe without padding
-        let payload_b64 = STANDARD.encode(input_str.as_bytes());
+        let elapsed = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map_err(|e| OperationError::ProcessingError(e.to_string()))?;
+        // Upstream uses Math.ceil(Date.now()/1000), not a truncating floor.
+        let now = elapsed.as_secs() + u64::from(elapsed.subsec_nanos() != 0);
+        sign_session_at(&input_str, &key, salt, &algorithm, now as u32)
+    }
+}
+
+fn sign_session_at(
+    compact_json: &str,
+    key: &[u8],
+    salt: &str,
+    algorithm: &str,
+    timestamp: u32,
+) -> Result<Vec<u8>, OperationError> {
+        let payload_b64 = STANDARD.encode(compact_json.as_bytes());
         let payload = b64_to_urlsafe_nopad(&payload_b64);
 
-        // Build timestamp: current time as big-endian 32-bit int, base64url-encoded
-        let now = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_err(|e| OperationError::ProcessingError(e.to_string()))?
-            .as_secs() as u32;
+        // Build timestamp as an unsigned big-endian 32-bit integer.
+        let now = timestamp;
         let ts_bytes = now.to_be_bytes();
         let ts_b64 = STANDARD.encode(ts_bytes);
         let time = b64_to_urlsafe_nopad(&ts_b64);
@@ -151,9 +166,15 @@ impl Operation for FlaskSessionSign {
         // Data to sign: "payload.timestamp"
         let data = format!("{}.{}", payload, time);
 
-        let sig_bytes = match algorithm.as_str() {
+        let sig_bytes = match algorithm {
             "sha256" => sign_itsdangerous_sha256(&key, salt.as_bytes(), data.as_bytes())?,
-            _ => sign_itsdangerous_sha1(&key, salt.as_bytes(), data.as_bytes())?,
+            "sha1" => sign_itsdangerous_sha1(&key, salt.as_bytes(), data.as_bytes())?,
+            _ => {
+                return Err(OperationError::InvalidArgument {
+                    name: "Algorithm".into(),
+                    reason: format!("expected sha1 or sha256, got {algorithm:?}"),
+                })
+            }
         };
 
         let sig_b64 = STANDARD.encode(&sig_bytes);
@@ -161,7 +182,6 @@ impl Operation for FlaskSessionSign {
 
         let token = format!("{}.{}.{}", payload, time, sig);
         Ok(token.into_bytes())
-    }
 }
 
 /// Convert standard base64 to url-safe base64 with no padding
@@ -205,4 +225,32 @@ pub(crate) fn sign_itsdangerous_sha256(
         .map_err(|e| OperationError::ProcessingError(format!("HMAC init error: {}", e)))?;
     mac2.update(data);
     Ok(mac2.finalize().into_bytes().to_vec())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{sign_itsdangerous_sha1, sign_session_at};
+
+    #[test]
+    fn hmac_sha1_matches_openssl_known_answer() {
+        // Independently evaluated with OpenSSL 3's HMAC implementation.
+        let signature = sign_itsdangerous_sha1(
+            b"secret",
+            b"cookie-session",
+            b"eyJ1c2VyIjoiYWRtaW4ifQ.AAAAAA",
+        )
+        .unwrap();
+        assert_eq!(
+            hex::encode(signature),
+            "becbd06cd6068ec2e4db671a37175986847385ae"
+        );
+    }
+
+    #[test]
+    fn unix_epoch_and_empty_object_boundary() {
+        let token = sign_session_at("{}", b"secret", "cookie-session", "sha1", 0).unwrap();
+        let token = String::from_utf8(token).unwrap();
+        assert!(token.starts_with("e30.AAAAAA."));
+        assert_eq!(token.split('.').count(), 3);
+    }
 }
