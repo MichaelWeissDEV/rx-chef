@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2355 |
-| With negative tests | 352 |
-| With boundary tests | 440 |
-| Reference-verified (known answer) | 139 |
+| Test functions | 2358 |
+| With negative tests | 353 |
+| With boundary tests | 441 |
+| Reference-verified (known answer) | 141 |
 | Differential-verified | 258 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -93,8 +93,8 @@
 | RC2 Encrypt | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | RC4 | partial | unknown | yes | 9 | yes | yes | yes | — | — | — | — | yes |
 | RC4 Drop | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
-| RC6 Decrypt | partial | unknown | yes | 1 | yes | — | — | — | — | — | — | yes |
-| RC6 Encrypt | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
+| RC6 Decrypt | partial | unknown | yes | 2 | yes | — | yes | — | — | — | — | yes |
+| RC6 Encrypt | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
 | ROT13 | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
 | ROT13 Brute Force | partial | unknown | yes | 2 | — | — | — | — | — | — | — | yes |
 | ROT47 | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |

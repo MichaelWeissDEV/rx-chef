@@ -4,9 +4,9 @@
 
 Why each operation is not yet `verified`, and what would close the gap. Groups are ordered by how much work they need, so the list can be worked in batches.
 
-**382 verified · 96 partially verified · 0 unverified** of 478 registered.
+**384 verified · 94 partially verified · 0 unverified** of 478 registered.
 
-## A: only independent evidence missing (38)
+## A: only independent evidence missing (37)
 
 | Operation | Module | Tests | Neg | Bound | KAT | Diff | Parity | Weak | Remaining gaps | Strategy |
 |---|---|---:|:---:|:---:|:---:|:---:|---|---:|---|---|
@@ -41,7 +41,6 @@ Why each operation is not yet `verified`, and what would close the gap. Groups a
 | PGP Encrypt and Sign | PGP | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | PGP Verify | PGP | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Parse QR Code | Image | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| RC6 Decrypt | Ciphers | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | RSA Decrypt | Ciphers | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | RSA Sign | Ciphers | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | RSA Verify | Ciphers | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
@@ -91,7 +90,7 @@ Why each operation is not yet `verified`, and what would close the gap. Groups a
 | XOR | Default | 4 | — | yes | — | — | unknown | 0 | negative tests, independent reference evidence | CyberChef differential fixture with an input this operation actually accepts; a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | YARA Rules | Yara | 3 | yes | — | — | — | unknown | 0 | boundary tests, independent reference evidence | CyberChef differential fixture with an input this operation actually accepts; a boundary case at a real limit of this operation, not merely empty input |
 
-## F: multiple test classes missing (20)
+## F: multiple test classes missing (19)
 
 | Operation | Module | Tests | Neg | Bound | KAT | Diff | Parity | Weak | Remaining gaps | Strategy |
 |---|---|---:|:---:|:---:|:---:|:---:|---|---:|---|---|
@@ -107,7 +106,6 @@ Why each operation is not yet `verified`, and what would close the gap. Groups a
 | Magic | Default | 1 | — | — | — | — | unknown | 0 | negative tests, boundary tests, independent reference evidence | CyberChef differential fixture with an input this operation actually accepts; a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists; a boundary case at a real limit of this operation, not merely empty input |
 | Parse ASN.1 hex string | PublicKey | 1 | — | — | — | — | unknown | 0 | negative tests, boundary tests, independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison; a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists; a boundary case at a real limit of this operation, not merely empty input |
 | Parse TLV | Default | 1 | — | — | — | — | unknown | 0 | negative tests, boundary tests, independent reference evidence | CyberChef differential fixture with an input this operation actually accepts; a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists; a boundary case at a real limit of this operation, not merely empty input |
-| RC6 Encrypt | Ciphers | 1 | — | — | — | — | unknown | 0 | negative tests, boundary tests, independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison; a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists; a boundary case at a real limit of this operation, not merely empty input |
 | ROT13 Brute Force | Ciphers | 2 | — | — | — | — | unknown | 0 | negative tests, boundary tests, independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison; a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists; a boundary case at a real limit of this operation, not merely empty input |
 | Rison Decode | Encodings | 3 | — | — | — | — | unknown | 0 | negative tests, boundary tests, independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison; a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists; a boundary case at a real limit of this operation, not merely empty input |
 | Scatter chart | Charts | 3 | — | — | — | — | unknown | 0 | negative tests, boundary tests, independent reference evidence | CyberChef differential fixture with an input this operation actually accepts; a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists; a boundary case at a real limit of this operation, not merely empty input |
