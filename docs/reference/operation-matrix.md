@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2510 |
-| With negative tests | 384 |
+| Test functions | 2512 |
+| With negative tests | 385 |
 | With boundary tests | 477 |
-| Reference-verified (known answer) | 217 |
+| Reference-verified (known answer) | 218 |
 | Differential-verified | 262 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -309,7 +309,7 @@
 | Get Time | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | Group IP addresses | partial | exact | yes | 3 | yes | — | — | yes | — | — | — | yes |
 | HTML To Text | partial | exact | yes | 3 | — | yes | — | yes | — | — | — | yes |
-| HTTP request | partial | unknown | yes | 0 | — | — | — | — | — | — | — | yes |
+| HTTP request | partial | unknown | yes | 2 | yes | — | yes | — | — | — | — | yes |
 | Hamming Distance | partial | unknown | yes | 2 | — | yes | — | yes | — | — | — | yes |
 | Haversine distance | partial | unknown | yes | 28 | yes | yes | yes | — | — | — | — | yes |
 | Head | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |

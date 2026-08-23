@@ -221,10 +221,21 @@ impl Operation for ScatterChart {
         let width = dimension - margin_left - margin_right;
         let height = dimension - margin_top - margin_bottom;
 
-        let scale_x =
-            |x: f64| margin_left + (x - x_range_min) / (x_range_max - x_range_min) * width;
-        let scale_y =
-            |y: f64| margin_top + height - (y - y_range_min) / (y_range_max - y_range_min) * height;
+        let scale_x = |x: f64| {
+            if x_max == x_min {
+                margin_left + width / 2.0
+            } else {
+                margin_left + (x - x_range_min) / (x_range_max - x_range_min) * width
+            }
+        };
+        let scale_y = |y: f64| {
+            if y_max == y_min {
+                margin_top + height / 2.0
+            } else {
+                margin_top + height
+                    - (y - y_range_min) / (y_range_max - y_range_min) * height
+            }
+        };
 
         let mut svg = format!(
             r#"<svg width="100%" height="100%" viewBox="0 0 {0} {0}" xmlns="http://www.w3.org/2000/svg">"#,

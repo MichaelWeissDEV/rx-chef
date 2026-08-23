@@ -2737,13 +2737,14 @@
       "correctness": [
         "tests/tests/operations/http_request.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/http_request.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
-      "untested_reason": "Performs live network I/O. Covering it needs a local HTTP stub, which the test suite deliberately does not start."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "hamming_distance": {
       "correctness": [
