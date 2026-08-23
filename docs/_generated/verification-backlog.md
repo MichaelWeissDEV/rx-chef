@@ -4,15 +4,14 @@
 
 Why each operation is not yet `verified`, and what would close the gap. Groups are ordered by how much work they need, so the list can be worked in batches.
 
-**362 verified · 116 partially verified · 0 unverified** of 478 registered.
+**377 verified · 101 partially verified · 0 unverified** of 478 registered.
 
-## A: only independent evidence missing (53)
+## A: only independent evidence missing (41)
 
 | Operation | Module | Tests | Neg | Bound | KAT | Diff | Parity | Weak | Remaining gaps | Strategy |
 |---|---|---:|:---:|:---:|:---:|:---:|---|---:|---|---|
 | Add Text To Image | Image | 5 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Avro to JSON | Serialise | 4 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Blowfish Decrypt | Ciphers | 6 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | Colossus | Bletchley | 10 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Conditional Jump | Default | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | DNS over HTTPS | Default | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
@@ -23,7 +22,6 @@ Why each operation is not yet `verified`, and what would close the gap. Groups a
 | Extract ID3 | Default | 5 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Fernet Encrypt | Default | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Fork | Default | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Frequency distribution | Default | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Fuzzy Match | Default | 12 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | GOST Key Unwrap | Ciphers | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | GOST Key Wrap | Ciphers | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
@@ -31,10 +29,6 @@ Why each operation is not yet `verified`, and what would close the gap. Groups a
 | GOST Verify | Ciphers | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | Generate ECDSA Key Pair | Ciphers | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | Generate PGP Key Pair | PGP | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Generate UUID | Crypto | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
-| Get Time | Default | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Heatmap chart | Charts | 12 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Hex Density chart | Charts | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | JA4 Fingerprint | Crypto | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | JA4Server Fingerprint | Crypto | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | JavaScript Parser | Code | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
@@ -48,13 +42,7 @@ Why each operation is not yet `verified`, and what would close the gap. Groups a
 | PGP Encrypt | PGP | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | PGP Encrypt and Sign | PGP | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | PGP Verify | PGP | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Parse IP range | Default | 4 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Parse QR Code | Image | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Parse User Agent | UserAgent | 10 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Pseudo-Random Integer Generator | Ciphers | 10 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
-| RC2 Decrypt | Ciphers | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
-| RC2 Encrypt | Ciphers | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
-| RC4 Drop | Ciphers | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | RC6 Decrypt | Ciphers | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | RSA Decrypt | Ciphers | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | RSA Sign | Ciphers | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
@@ -137,13 +125,10 @@ Why each operation is not yet `verified`, and what would close the gap. Groups a
 | Text Encoding Brute Force | Encodings | 3 | — | — | — | — | unknown | 0 | negative tests, boundary tests, independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison; a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists; a boundary case at a real limit of this operation, not merely empty input |
 | Zip | Compression | 3 | — | — | — | — | unknown | 0 | negative tests, boundary tests, independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison; a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists; a boundary case at a real limit of this operation, not merely empty input |
 
-## J: independent evidence missing, tests are weak (5)
+## J: independent evidence missing, tests are weak (2)
 
 | Operation | Module | Tests | Neg | Bound | KAT | Diff | Parity | Weak | Remaining gaps | Strategy |
 |---|---|---:|:---:|:---:|:---:|:---:|---|---:|---|---|
 | Bombe | Bletchley | 5 | yes | yes | — | — | unknown | 3 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts; replace is_ok()-only assertions with exact values or invariants |
-| ELF Info | Default | 7 | yes | yes | — | — | unknown | 4 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts; replace is_ok()-only assertions with exact values or invariants |
-| Offset checker | Default | 4 | yes | yes | — | — | unknown | 1 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts; replace is_ok()-only assertions with exact values or invariants |
-| Randomize Colour Palette | Image | 11 | yes | yes | — | — | unknown | 3 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts; replace is_ok()-only assertions with exact values or invariants |
 | Triple DES Encrypt | Ciphers | 4 | yes | yes | — | — | unknown | 2 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison; replace is_ok()-only assertions with exact values or invariants |
 

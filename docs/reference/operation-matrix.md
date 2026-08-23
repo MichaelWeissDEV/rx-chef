@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2342 |
+| Test functions | 2350 |
 | With negative tests | 351 |
 | With boundary tests | 440 |
-| Reference-verified (known answer) | 120 |
+| Reference-verified (known answer) | 135 |
 | Differential-verified | 258 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -21,7 +21,7 @@
 | Parity: unverified | 301 |
 | Parity: not applicable | 0 |
 | Documented divergences | 2 |
-| Tests asserting only success | 55 |
+| Tests asserting only success | 53 |
 
 ## Bletchley
 
@@ -40,8 +40,8 @@
 | Operation | Status | Parity | Args | Tests | Neg | Bound | KAT | Diff | Property | Fuzz | Bench | Docs |
 |---|---|---|:---:|---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | Entropy | partial | unknown | yes | 5 | — | yes | — | — | — | — | — | yes |
-| Heatmap chart | partial | unknown | yes | 12 | yes | yes | — | — | — | — | — | yes |
-| Hex Density chart | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
+| Heatmap chart | partial | unknown | yes | 13 | yes | yes | yes | — | — | — | — | yes |
+| Hex Density chart | partial | unknown | yes | 2 | — | — | yes | — | — | — | — | yes |
 | Scatter chart | partial | unknown | yes | 3 | — | — | — | — | — | — | — | yes |
 | Series chart | partial | unknown | yes | 3 | — | yes | — | — | — | — | — | yes |
 
@@ -66,7 +66,7 @@
 | Atbash Cipher | partial | exact | yes | 5 | yes | yes | — | yes | — | — | — | yes |
 | Bifid Cipher Decode | partial | unknown | yes | 4 | yes | yes | — | yes | — | — | — | yes |
 | Bifid Cipher Encode | partial | unknown | yes | 4 | yes | yes | — | yes | — | — | — | yes |
-| Blowfish Decrypt | partial | unknown | yes | 6 | yes | yes | — | — | — | — | — | yes |
+| Blowfish Decrypt | partial | unknown | yes | 7 | yes | yes | yes | — | — | — | — | yes |
 | Blowfish Encrypt | partial | unknown | yes | 8 | yes | yes | yes | — | — | — | — | yes |
 | Caesar Box Cipher | partial | exact | yes | 7 | yes | yes | — | yes | — | — | — | yes |
 | Cetacean Cipher Decode | partial | unknown | yes | 10 | yes | yes | — | yes | — | — | — | yes |
@@ -87,12 +87,12 @@
 | GOST Verify | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
 | Generate ECDSA Key Pair | partial | unknown | yes | 2 | yes | yes | — | — | — | — | — | yes |
 | Generate RSA Key Pair | partial | unknown | yes | 5 | yes | — | — | — | — | — | — | yes |
-| Pseudo-Random Integer Generator | partial | unknown | yes | 10 | yes | yes | — | — | — | — | — | yes |
+| Pseudo-Random Integer Generator | partial | unknown | yes | 11 | yes | yes | yes | — | — | — | — | yes |
 | Pseudo-Random Number Generator | partial | unknown | yes | 8 | — | yes | — | — | — | — | — | yes |
-| RC2 Decrypt | partial | unknown | yes | 3 | yes | yes | — | — | — | — | — | yes |
-| RC2 Encrypt | partial | unknown | yes | 3 | yes | yes | — | — | — | — | — | yes |
+| RC2 Decrypt | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
+| RC2 Encrypt | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | RC4 | partial | unknown | yes | 9 | yes | yes | yes | — | — | — | — | yes |
-| RC4 Drop | partial | unknown | yes | 3 | yes | yes | — | — | — | — | — | yes |
+| RC4 Drop | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | RC6 Decrypt | partial | unknown | yes | 1 | yes | — | — | — | — | — | — | yes |
 | RC6 Encrypt | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
 | ROT13 | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
@@ -200,7 +200,7 @@
 | Fletcher-32 Checksum | partial | exact | yes | 1 | — | — | — | yes | — | — | — | yes |
 | Fletcher-64 Checksum | partial | exact | yes | 1 | — | — | — | yes | — | — | — | yes |
 | Fletcher-8 Checksum | partial | exact | yes | 1 | — | — | — | yes | — | — | — | yes |
-| Generate UUID | partial | unknown | yes | 3 | yes | yes | — | — | — | — | — | yes |
+| Generate UUID | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
 | Generate all checksums | partial | unknown | yes | 9 | yes | yes | yes | — | — | — | — | yes |
 | Generate all hashes | partial | unknown | yes | 9 | yes | yes | yes | — | — | — | — | yes |
 | HAS-160 | partial | exact | yes | 3 | yes | yes | — | yes | — | — | — | yes |
@@ -262,7 +262,7 @@
 | Divide | partial | exact | yes | 5 | — | yes | — | yes | — | — | — | yes |
 | Drop bytes | partial | exact | yes | 4 | — | — | — | yes | — | — | — | yes |
 | Drop nth bytes | partial | exact | yes | 5 | yes | — | — | yes | — | — | — | yes |
-| ELF Info | partial | unknown | yes | 7 | yes | yes | — | — | — | — | — | yes |
+| ELF Info | partial | unknown | yes | 7 | yes | yes | yes | — | — | — | — | yes |
 | Encode NetBIOS Name | partial | exact | yes | 5 | — | yes | — | yes | — | — | — | yes |
 | Escape Unicode Characters | partial | exact | yes | 3 | yes | — | — | yes | — | — | — | yes |
 | Escape string | partial | exact | yes | 3 | yes | — | — | yes | — | — | — | yes |
@@ -275,7 +275,7 @@
 | File Tree | partial | exact | yes | 1 | — | — | — | yes | — | — | — | yes |
 | Fork | partial | unknown | yes | 2 | — | yes | — | — | — | — | — | yes |
 | Format MAC addresses | partial | unknown | yes | 4 | yes | — | — | yes | — | — | — | yes |
-| Frequency distribution | partial | unknown | yes | 3 | yes | yes | — | — | — | — | — | yes |
+| Frequency distribution | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
 | From BCD | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
 | From Base | partial | exact | yes | 4 | yes | — | — | yes | — | — | — | yes |
 | From Base32 | partial | exact | yes | 6 | yes | yes | yes | yes | — | — | — | yes |
@@ -306,7 +306,7 @@
 | Generate Lorem Ipsum | partial | unknown | yes | 4 | yes | — | — | — | — | — | — | yes |
 | Generate TOTP | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
 | Get All Casings | partial | exact | yes | 4 | yes | yes | — | yes | — | — | — | yes |
-| Get Time | partial | unknown | yes | 3 | yes | yes | — | — | — | — | — | yes |
+| Get Time | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | Group IP addresses | partial | exact | yes | 3 | yes | — | — | yes | — | — | — | yes |
 | HTML To Text | partial | exact | yes | 3 | — | yes | — | yes | — | — | — | yes |
 | HTTP request | partial | unknown | yes | 0 | — | — | — | — | — | — | — | yes |
@@ -331,7 +331,7 @@
 | NOT | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |
 | Numberwang | partial | unknown | yes | 3 | — | yes | yes | — | — | — | — | yes |
 | OR | partial | unknown | yes | 4 | — | yes | — | — | — | — | — | yes |
-| Offset checker | partial | unknown | yes | 4 | yes | yes | — | — | — | — | — | yes |
+| Offset checker | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | P-list Viewer | partial | unknown | yes | 2 | yes | — | — | yes | — | — | — | yes |
 | PEM to Hex | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
 | PHP Deserialize | partial | unknown | yes | 2 | — | — | yes | — | — | — | — | yes |
@@ -340,7 +340,7 @@
 | Parity Bit | partial | unknown | yes | 2 | — | yes | — | yes | — | — | — | yes |
 | Parse DateTime | partial | unknown | yes | 4 | yes | — | — | — | — | — | — | yes |
 | Parse Ethernet frame | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
-| Parse IP range | partial | unknown | yes | 4 | yes | yes | — | — | — | — | — | yes |
+| Parse IP range | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | Parse IPv4 header | partial | unknown | yes | 2 | yes | — | — | — | — | — | — | yes |
 | Parse IPv6 address | partial | unknown | yes | 14 | yes | yes | — | yes | — | — | — | yes |
 | Parse SSH Host Key | partial | unknown | yes | 3 | — | — | yes | — | — | — | — | yes |
@@ -513,7 +513,7 @@
 | Invert Image | partial | unknown | yes | 8 | yes | yes | yes | — | — | — | — | yes |
 | Normalise Image | partial | unknown | yes | 6 | yes | yes | yes | — | — | — | — | yes |
 | Parse QR Code | partial | unknown | yes | 2 | yes | yes | — | — | — | — | — | yes |
-| Randomize Colour Palette | partial | unknown | yes | 11 | yes | yes | — | — | — | — | — | yes |
+| Randomize Colour Palette | partial | unknown | yes | 11 | yes | yes | yes | — | — | — | — | yes |
 | Remove EXIF | partial | unknown | yes | 2 | yes | — | — | yes | — | — | — | yes |
 | Render Image | partial | unknown | yes | 2 | — | yes | — | yes | — | — | — | yes |
 | Resize Image | partial | unknown | yes | 4 | yes | — | yes | — | — | — | — | yes |
@@ -628,7 +628,7 @@
 
 | Operation | Status | Parity | Args | Tests | Neg | Bound | KAT | Diff | Property | Fuzz | Bench | Docs |
 |---|---|---|:---:|---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Parse User Agent | partial | unknown | yes | 10 | yes | yes | — | — | — | — | — | yes |
+| Parse User Agent | partial | unknown | yes | 10 | yes | yes | yes | — | — | — | — | yes |
 
 ## Yara
 

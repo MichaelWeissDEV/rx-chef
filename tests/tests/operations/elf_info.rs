@@ -74,16 +74,27 @@ fn test_elf_info_minimal_valid_elf() {
     let result = op.run(elf_data, &args);
     assert!(result.is_ok());
     let result_str = String::from_utf8(result.unwrap()).unwrap();
-    // Values are read from the System V ABI-defined e_ident bytes above.
-    assert!(result_str
+    // Exact values are derived from the System V ABI-defined e_ident bytes.
+    let identity_fields: Vec<_> = result_str
         .lines()
-        .any(|line| line == "Format:                       32-bit"));
-    assert!(result_str
-        .lines()
-        .any(|line| line == "Endianness:                   Little"));
-    assert!(result_str
-        .lines()
-        .any(|line| line == "ABI:                          System V"));
+        .filter(|line| {
+            line.starts_with("Format:")
+                || line.starts_with("Endianness:")
+                || line.starts_with("Version:")
+                || line.starts_with("ABI:")
+                || line.starts_with("ABI Version:")
+        })
+        .collect();
+    assert_eq!(
+        identity_fields,
+        vec![
+            "Format:                       32-bit",
+            "Endianness:                   Little",
+            "Version:                      1",
+            "ABI:                          System V",
+            "ABI Version:                  0",
+        ]
+    );
 }
 
 #[test]

@@ -2546,12 +2546,13 @@
       "benchmark": [],
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
-    "get_time": {
-      "correctness": [
-        "tests/tests/operations/get_time.rs"
-      ],
-      "known_answer": [
-        "tests/tests/operations/get_time.rs"
+  "get_time": {
+    "correctness": [
+      "tests/tests/operations/get_time.rs",
+      "src/operations/get_time.rs"
+    ],
+    "known_answer": [
+      "src/operations/get_time.rs"
       ],
       "differential": [],
       "property": [],

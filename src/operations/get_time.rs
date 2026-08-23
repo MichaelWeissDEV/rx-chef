@@ -8,7 +8,7 @@
  * -----------------------------------------------------------------------------
  */
 
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
 
@@ -16,6 +16,19 @@ use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError}
 ///
 /// Returns the current Unix timestamp in the chosen granularity.
 pub struct GetTime;
+
+fn timestamp_value(duration: Duration, granularity: &str) -> Result<u128, OperationError> {
+    match granularity {
+        "Nanoseconds (ns)" => Ok(duration.as_nanos()),
+        "Microseconds (us)" => Ok(duration.as_micros()),
+        "Milliseconds (ms)" => Ok(duration.as_millis()),
+        "Seconds (s)" => Ok(duration.as_secs() as u128),
+        other => Err(OperationError::InvalidArgument {
+            name: "Granularity".to_string(),
+            reason: format!("Unknown granularity: {}", other),
+        }),
+    }
+}
 
 impl Operation for GetTime {
     fn name(&self) -> &'static str {
@@ -79,19 +92,31 @@ impl Operation for GetTime {
             .duration_since(UNIX_EPOCH)
             .map_err(|e| OperationError::ProcessingError(e.to_string()))?;
 
-        let value: u128 = match granularity {
-            "Nanoseconds (ns)" => now.as_nanos(),
-            "Microseconds (us)" => now.as_micros(),
-            "Milliseconds (ms)" => now.as_millis(),
-            "Seconds (s)" => now.as_secs() as u128,
-            other => {
-                return Err(OperationError::InvalidArgument {
-                    name: "Granularity".to_string(),
-                    reason: format!("Unknown granularity: {}", other),
-                })
-            }
-        };
+        let value = timestamp_value(now, granularity)?;
 
         Ok(value.to_string().into_bytes())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::timestamp_value;
+    use std::time::Duration;
+
+    #[test]
+    fn fixed_posix_duration_has_exact_values_in_every_unit() {
+        // 1.5 seconds after the POSIX epoch is exactly representable in all
+        // four units and independently defines the expected conversions.
+        let fixed = Duration::new(1, 500_000_000);
+        assert_eq!(timestamp_value(fixed, "Seconds (s)").unwrap(), 1);
+        assert_eq!(timestamp_value(fixed, "Milliseconds (ms)").unwrap(), 1_500);
+        assert_eq!(
+            timestamp_value(fixed, "Microseconds (us)").unwrap(),
+            1_500_000
+        );
+        assert_eq!(
+            timestamp_value(fixed, "Nanoseconds (ns)").unwrap(),
+            1_500_000_000
+        );
     }
 }
