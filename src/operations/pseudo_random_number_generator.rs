@@ -92,19 +92,34 @@ impl Operation for PseudoRandomNumberGenerator {
         let mut bytes = vec![0u8; num_bytes];
         rand::thread_rng().fill_bytes(&mut bytes);
 
-        match output_as {
-            "Hex" => Ok(hex::encode(bytes).into_bytes()),
-            "Integer" => {
-                let val = BigUint::from_bytes_le(&bytes);
-                Ok(val.to_string().into_bytes())
-            }
-            "Byte array" => {
-                let json = serde_json::to_string(&bytes)
-                    .map_err(|e| OperationError::ProcessingError(e.to_string()))?;
-                Ok(json.into_bytes())
-            }
-            "Raw" => Ok(bytes),
-            _ => Ok(hex::encode(bytes).into_bytes()),
-        }
+        format_bytes(bytes, output_as)
+    }
+}
+
+fn format_bytes(bytes: Vec<u8>, output_as: &str) -> Result<Vec<u8>, OperationError> {
+    match output_as {
+        "Hex" => Ok(hex::encode(bytes).into_bytes()),
+        "Integer" => Ok(BigUint::from_bytes_le(&bytes).to_string().into_bytes()),
+        "Byte array" => serde_json::to_vec(&bytes)
+            .map_err(|e| OperationError::ProcessingError(e.to_string())),
+        "Raw" => Ok(bytes),
+        _ => Err(OperationError::InvalidArgument {
+            name: "Output as".into(),
+            reason: format!("unsupported random-number output format {output_as:?}"),
+        }),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::format_bytes;
+
+    #[test]
+    fn fixed_octets_have_exact_documented_encodings() {
+        let octets = vec![0x00, 0x01, 0xff];
+        assert_eq!(format_bytes(octets.clone(), "Hex").unwrap(), b"0001ff");
+        assert_eq!(format_bytes(octets.clone(), "Integer").unwrap(), b"16711936");
+        assert_eq!(format_bytes(octets.clone(), "Byte array").unwrap(), b"[0,1,255]");
+        assert_eq!(format_bytes(octets.clone(), "Raw").unwrap(), octets);
     }
 }

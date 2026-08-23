@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2423 |
-| With negative tests | 373 |
+| Test functions | 2465 |
+| With negative tests | 374 |
 | With boundary tests | 468 |
-| Reference-verified (known answer) | 188 |
+| Reference-verified (known answer) | 193 |
 | Differential-verified | 262 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -88,7 +88,7 @@
 | Generate ECDSA Key Pair | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
 | Generate RSA Key Pair | partial | unknown | yes | 7 | yes | yes | yes | — | — | — | — | yes |
 | Pseudo-Random Integer Generator | partial | unknown | yes | 11 | yes | yes | yes | — | — | — | — | yes |
-| Pseudo-Random Number Generator | partial | unknown | yes | 8 | — | yes | — | — | — | — | — | yes |
+| Pseudo-Random Number Generator | partial | unknown | yes | 10 | yes | yes | yes | — | — | — | — | yes |
 | RC2 Decrypt | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | RC2 Encrypt | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | RC4 | partial | unknown | yes | 9 | yes | yes | yes | — | — | — | — | yes |
@@ -243,7 +243,7 @@
 | Change IP format | partial | unknown | yes | 5 | yes | — | — | yes | — | — | — | yes |
 | Chi Square | partial | unknown | yes | 7 | — | yes | yes | yes | — | — | — | yes |
 | Comment | partial | exact | yes | 2 | — | — | — | yes | — | — | — | yes |
-| Conditional Jump | partial | unknown | yes | 3 | — | — | — | — | — | — | — | yes |
+| Conditional Jump | partial | unknown | yes | 13 | — | yes | yes | — | — | — | — | yes |
 | Convert Leet Speak | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
 | Convert area | partial | unknown | yes | 2 | — | — | — | yes | — | — | — | yes |
 | Convert data units | partial | unknown | yes | 3 | — | — | — | yes | — | — | — | yes |
@@ -273,7 +273,7 @@
 | Fernet Decrypt | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
 | Fernet Encrypt | partial | unknown | yes | 4 | yes | — | yes | — | — | — | — | yes |
 | File Tree | partial | exact | yes | 1 | — | — | — | yes | — | — | — | yes |
-| Fork | partial | unknown | yes | 2 | — | yes | — | — | — | — | — | yes |
+| Fork | partial | unknown | yes | 12 | — | yes | yes | — | — | — | — | yes |
 | Format MAC addresses | partial | unknown | yes | 4 | yes | — | — | yes | — | — | — | yes |
 | Frequency distribution | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
 | From BCD | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
@@ -317,7 +317,7 @@
 | Index of Coincidence | partial | unknown | yes | 8 | — | yes | yes | yes | — | — | — | yes |
 | JSON to CSV | partial | unknown | yes | 3 | — | — | — | yes | — | — | — | yes |
 | JSON to YAML | partial | unknown | yes | 2 | — | yes | — | yes | — | — | — | yes |
-| Jump | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
+| Jump | partial | unknown | yes | 11 | — | yes | yes | — | — | — | — | yes |
 | Label | partial | unknown | yes | 2 | — | yes | yes | — | — | — | — | yes |
 | Levenshtein Distance | partial | unknown | yes | 9 | yes | yes | — | yes | — | — | — | yes |
 | Luhn Checksum | partial | unknown | yes | 8 | yes | yes | — | yes | — | — | — | yes |
@@ -594,7 +594,7 @@
 | Extract hashes | partial | exact | yes | 3 | yes | — | — | yes | — | — | — | yes |
 | Filter | partial | exact | yes | 4 | yes | yes | — | yes | — | — | — | yes |
 | Find / Replace | partial | unknown | yes | 4 | — | — | — | yes | — | — | — | yes |
-| Register | partial | unknown | yes | 6 | — | yes | — | — | — | — | — | yes |
+| Register | partial | unknown | yes | 16 | — | yes | yes | — | — | — | — | yes |
 | Regular expression | partial | exact | yes | 4 | yes | — | — | yes | — | — | — | yes |
 | Strings | partial | unknown | yes | 4 | yes | yes | — | yes | — | — | — | yes |
 

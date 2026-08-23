@@ -922,9 +922,10 @@
     },
     "conditional_jump": {
       "correctness": [
-        "tests/tests/operations/conditional_jump.rs"
+        "tests/tests/operations/conditional_jump.rs",
+        "src/integration.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["src/integration.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -1913,9 +1914,10 @@
     },
     "fork": {
       "correctness": [
-        "tests/tests/operations/fork.rs"
+        "tests/tests/operations/fork.rs",
+        "src/integration.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["src/integration.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3145,9 +3147,10 @@
     },
     "jump": {
       "correctness": [
-        "tests/tests/operations/jump.rs"
+        "tests/tests/operations/jump.rs",
+        "src/integration.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["src/integration.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4142,9 +4145,10 @@
     },
     "pseudo_random_number_generator": {
       "correctness": [
-        "tests/tests/operations/pseudo_random_number_generator.rs"
+        "tests/tests/operations/pseudo_random_number_generator.rs",
+        "src/operations/pseudo_random_number_generator.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["src/operations/pseudo_random_number_generator.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4492,9 +4496,10 @@
     },
     "register": {
       "correctness": [
-        "tests/tests/operations/register.rs"
+        "tests/tests/operations/register.rs",
+        "src/integration.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["src/integration.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],

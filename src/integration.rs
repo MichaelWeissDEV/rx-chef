@@ -573,6 +573,33 @@ mod tests {
     }
 
     #[test]
+    fn bake_honours_conditional_jump_match() {
+        let result = bake(
+            b"abc".to_vec(),
+            &[
+                RecipeStep {
+                    op: "Conditional Jump".into(),
+                    args: vec!["^abc$".into(), "false".into(), "finish".into(), "10".into()],
+                },
+                RecipeStep {
+                    op: "Reverse".into(),
+                    args: vec![],
+                },
+                RecipeStep {
+                    op: "Label".into(),
+                    args: vec!["finish".into()],
+                },
+                RecipeStep {
+                    op: "To Upper case".into(),
+                    args: vec![],
+                },
+            ],
+        )
+        .unwrap();
+        assert_eq!(result.into_bytes().unwrap(), b"ABC");
+    }
+
+    #[test]
     fn jsonl_server_is_persistent_binary_safe_and_recovers_from_bad_json() {
         let requests = concat!(
             "{bad json}\n",

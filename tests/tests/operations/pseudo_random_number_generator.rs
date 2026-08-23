@@ -96,3 +96,9 @@ fn test_prng_ignores_its_input() {
         .unwrap();
     assert_eq!(from_input.len(), 16);
 }
+
+#[test]
+fn test_prng_rejects_unknown_output_format() {
+    let args = [ArgValue::Str("4".into()), ArgValue::Str("Octal".into())];
+    assert!(PseudoRandomNumberGenerator.run(Vec::new(), &args).is_err());
+}
