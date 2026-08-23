@@ -34,9 +34,8 @@ fn test_disassemble_x86_simple_64bit() {
     // Simple MOV instruction: 48 89 C8 (mov rax, rcx)
     let result = op.run("4889C8".as_bytes().to_vec(), &args).unwrap();
     let result_str = String::from_utf8(result).unwrap();
-    assert!(result_str.contains("mov"));
-    assert!(result_str.contains("rax"));
-    assert!(result_str.contains("rcx"));
+    // Intel SDM encoding 48 89 c8 is MOV rax,rcx in 64-bit mode.
+    assert_eq!(result_str, "00000000  4889c8               mov rax, rcx\n");
 }
 
 #[test]

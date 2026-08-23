@@ -5,6 +5,26 @@
 use rxchef::operation::ArgValue;
 use rxchef::operations::blur_image::BlurImage;
 use rxchef::Operation;
+use std::io::Cursor;
+
+#[test]
+fn test_blur_preserves_uniform_field_exactly() {
+    // A normalized convolution kernel preserves a constant field.
+    let image = image::RgbaImage::from_pixel(5, 5, image::Rgba([17, 83, 201, 255]));
+    let mut png = Vec::new();
+    image::DynamicImage::ImageRgba8(image)
+        .write_to(&mut Cursor::new(&mut png), image::ImageFormat::Png)
+        .unwrap();
+    let output = BlurImage
+        .run(
+            png,
+            &[ArgValue::Num(2.0), ArgValue::Str("Gaussian".into())],
+        )
+        .unwrap();
+    for pixel in image::load_from_memory(&output).unwrap().to_rgba8().pixels() {
+        assert_eq!(pixel.0, [17, 83, 201, 255]);
+    }
+}
 
 #[test]
 fn test_blur_image_basic() {

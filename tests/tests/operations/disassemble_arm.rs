@@ -183,7 +183,8 @@ fn test_arm64_ret() {
         ArgValue::Bool(true),
     ];
     let output = run_test("c0 03 5f d6", &args);
-    assert!(output.contains("ret"));
+    // Arm A64 encoding D65F03C0 is RET X30 (the operand is implicit).
+    assert_eq!(output, "0x00000000  c0035fd6          ret");
 }
 #[test]
 fn test_arm64_mov() {

@@ -6,6 +6,7 @@ use image::{ImageBuffer, Rgba};
 use rxchef::operations::split_colour_channels::SplitColourChannels;
 use rxchef::Operation;
 use std::io::Cursor;
+use std::io::Read;
 
 #[test]
 fn test_split_colour_channels() {
@@ -18,10 +19,20 @@ fn test_split_colour_channels() {
         .write_to(&mut Cursor::new(&mut input), image::ImageFormat::Png)
         .unwrap();
     let result = op.run(input, &[]).unwrap();
-    // Basic check: result should be a zip file (starts with PK)
-    assert!(result.starts_with(b"PK"));
-    // We could use zip crate to verify contents but that might be overkill for a unit test
-    // if we trust the zip crate.
+    let mut archive = zip::ZipArchive::new(Cursor::new(result)).unwrap();
+    let expected = [
+        ("red.png", [255, 0, 0, 255]),
+        ("green.png", [0, 128, 0, 255]),
+        ("blue.png", [0, 0, 64, 255]),
+    ];
+    assert_eq!(archive.len(), expected.len());
+    for (name, rgba) in expected {
+        let mut bytes = Vec::new();
+        archive.by_name(name).unwrap().read_to_end(&mut bytes).unwrap();
+        let pixels = image::load_from_memory(&bytes).unwrap().to_rgba8();
+        let pixel = pixels.get_pixel(0, 0);
+        assert_eq!(pixel.0, rgba, "wrong channel data in {name}");
+    }
 }
 #[test]
 fn test_split_colour_channels_empty() {

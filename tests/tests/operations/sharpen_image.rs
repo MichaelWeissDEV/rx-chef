@@ -10,6 +10,25 @@ use rxchef::Operation;
 use std::io::Cursor;
 
 #[test]
+fn test_sharpen_preserves_uniform_field_exactly() {
+    // Unsharp masking has a zero detail mask on a constant field.
+    let image = RgbaImage::from_pixel(5, 5, Rgba([17, 83, 201, 255]));
+    let mut png = Vec::new();
+    DynamicImage::ImageRgba8(image)
+        .write_to(&mut Cursor::new(&mut png), ImageFormat::Png)
+        .unwrap();
+    let output = SharpenImage
+        .run(
+            png,
+            &[ArgValue::Num(2.0), ArgValue::Num(1.0), ArgValue::Num(0.0)],
+        )
+        .unwrap();
+    for pixel in image::load_from_memory(&output).unwrap().to_rgba8().pixels() {
+        assert_eq!(pixel.0, [17, 83, 201, 255]);
+    }
+}
+
+#[test]
 fn test_sharpen_image_invalid_input() {
     let op = SharpenImage;
     let input = b"not an image".to_vec();

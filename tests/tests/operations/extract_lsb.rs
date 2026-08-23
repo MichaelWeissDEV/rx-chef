@@ -4,6 +4,34 @@
 
 use rxchef::operations::extract_lsb::ExtractLSB;
 use rxchef::Operation;
+use std::io::Cursor;
+
+#[test]
+fn test_extract_lsb_exact_byte() {
+    // Red-channel LSBs 1,0,1,0,0,1,0,1 form 0b10100101 (0xa5).
+    let mut image = image::RgbaImage::new(8, 1);
+    for (x, bit) in [1u8, 0, 1, 0, 0, 1, 0, 1].into_iter().enumerate() {
+        image.put_pixel(x as u32, 0, image::Rgba([100 + bit, 0, 0, 255]));
+    }
+    let mut png = Vec::new();
+    image::DynamicImage::ImageRgba8(image)
+        .write_to(&mut Cursor::new(&mut png), image::ImageFormat::Png)
+        .unwrap();
+    let output = ExtractLSB
+        .run(
+            png,
+            &[
+                rxchef::operation::ArgValue::Str("R".into()),
+                rxchef::operation::ArgValue::Str(String::new()),
+                rxchef::operation::ArgValue::Str(String::new()),
+                rxchef::operation::ArgValue::Str(String::new()),
+                rxchef::operation::ArgValue::Str("Row".into()),
+                rxchef::operation::ArgValue::Num(0.0),
+            ],
+        )
+        .unwrap();
+    assert_eq!(output, [0xa5]);
+}
 
 #[test]
 fn test_extract_lsb_empty_input() {

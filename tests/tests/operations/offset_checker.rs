@@ -12,8 +12,8 @@ fn test_offset_checker_basic() {
     // Two identical samples -> all chars should match
     let input = b"abc\n\nabc".to_vec();
     let result = op.run(input, &[]).unwrap();
-    let out = String::from_utf8(result).unwrap();
-    assert!(out.contains('['));
+    // Every position agrees, so the complete samples form one match span.
+    assert_eq!(result, b"[abc]\n\n[abc]");
 }
 #[test]
 fn test_offset_checker_no_match() {

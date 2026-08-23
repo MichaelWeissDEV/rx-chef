@@ -4,6 +4,22 @@
 
 use rxchef::operations::normalise_image::NormaliseImage;
 use rxchef::Operation;
+use std::io::Cursor;
+
+#[test]
+fn test_normalise_stretches_each_channel_to_full_range() {
+    let mut image = image::RgbImage::new(2, 1);
+    image.put_pixel(0, 0, image::Rgb([10, 20, 30]));
+    image.put_pixel(1, 0, image::Rgb([110, 220, 130]));
+    let mut png = Vec::new();
+    image::DynamicImage::ImageRgb8(image)
+        .write_to(&mut Cursor::new(&mut png), image::ImageFormat::Png)
+        .unwrap();
+    let output = NormaliseImage.run(png, &[]).unwrap();
+    let pixels = image::load_from_memory(&output).unwrap().to_rgb8();
+    assert_eq!(pixels.get_pixel(0, 0).0, [0, 0, 0]);
+    assert_eq!(pixels.get_pixel(1, 0).0, [255, 255, 255]);
+}
 
 #[test]
 fn test_normalise_image_empty_input() {

@@ -4,6 +4,28 @@
 
 use rxchef::operations::extract_rgba::ExtractRGBA;
 use rxchef::Operation;
+use std::io::Cursor;
+
+#[test]
+fn test_extract_rgba_exact_pixel_sequence() {
+    let mut image = image::RgbaImage::new(2, 1);
+    image.put_pixel(0, 0, image::Rgba([1, 2, 3, 4]));
+    image.put_pixel(1, 0, image::Rgba([250, 251, 252, 253]));
+    let mut png = Vec::new();
+    image::DynamicImage::ImageRgba8(image)
+        .write_to(&mut Cursor::new(&mut png), image::ImageFormat::Png)
+        .unwrap();
+    let output = ExtractRGBA
+        .run(
+            png,
+            &[
+                rxchef::operation::ArgValue::Str(",".into()),
+                rxchef::operation::ArgValue::Bool(true),
+            ],
+        )
+        .unwrap();
+    assert_eq!(output, b"1,2,3,4,250,251,252,253");
+}
 
 #[test]
 fn test_extract_rgba_empty_input() {

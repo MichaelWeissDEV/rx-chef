@@ -507,7 +507,9 @@
       "correctness": [
         "tests/tests/operations/blur_image.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/blur_image.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -1282,7 +1284,9 @@
       "correctness": [
         "tests/tests/operations/disassemble_arm.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/disassemble_arm.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -1293,7 +1297,9 @@
       "correctness": [
         "tests/tests/operations/disassemble_x86.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/disassemble_x86.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -1304,7 +1310,9 @@
       "correctness": [
         "tests/tests/operations/dither_image.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/dither_image.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -1395,7 +1403,9 @@
       "correctness": [
         "tests/tests/operations/elf_info.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/elf_info.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -1556,7 +1566,9 @@
       "correctness": [
         "tests/tests/operations/extract_lsb.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/extract_lsb.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -1581,7 +1593,9 @@
       "correctness": [
         "tests/tests/operations/extract_rgba.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/extract_rgba.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -1896,7 +1910,9 @@
       "correctness": [
         "tests/tests/operations/frequency_distribution.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/frequency_distribution.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2707,7 +2723,9 @@
       "correctness": [
         "tests/tests/operations/heatmap_chart.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/heatmap_chart.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2718,7 +2736,9 @@
       "correctness": [
         "tests/tests/operations/hex_density_chart.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/hex_density_chart.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2766,7 +2786,9 @@
       "correctness": [
         "tests/tests/operations/image_brightness_contrast.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/image_brightness_contrast.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2790,7 +2812,9 @@
       "correctness": [
         "tests/tests/operations/image_hue_saturation_lightness.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/image_hue_saturation_lightness.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3505,7 +3529,9 @@
       "correctness": [
         "tests/tests/operations/normalise_image.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/normalise_image.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3569,7 +3595,9 @@
       "correctness": [
         "tests/tests/operations/offset_checker.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/offset_checker.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3789,7 +3817,9 @@
       "correctness": [
         "tests/tests/operations/parse_ip_range.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/parse_ip_range.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3937,7 +3967,9 @@
       "correctness": [
         "tests/tests/operations/parse_user_agent.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/parse_user_agent.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4938,7 +4970,9 @@
       "correctness": [
         "tests/tests/operations/sharpen_image.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/sharpen_image.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -5026,7 +5060,9 @@
       "correctness": [
         "tests/tests/operations/split_colour_channels.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/split_colour_channels.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],

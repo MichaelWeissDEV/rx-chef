@@ -15,9 +15,20 @@ fn test_cidr_slash30() {
         ArgValue::Bool(false),
     ];
     let result = op.run(b"192.168.1.0/30".to_vec(), &args).unwrap();
-    let out = String::from_utf8(result).unwrap();
-    assert!(out.contains("192.168.1.0"));
-    assert!(out.contains("192.168.1.3"));
+    // RFC 4632: /30 leaves two host bits, hence four addresses and mask /30.
+    assert_eq!(
+        String::from_utf8(result).unwrap(),
+        "Network: 192.168.1.0/30\n\
+CIDR Notation: 192.168.1.0/30\n\
+Mask: 255.255.255.252\n\
+Hosts: 4\n\
+First: 192.168.1.0\n\
+Last: 192.168.1.3\n\n\
+192.168.1.0\n\
+192.168.1.1\n\
+192.168.1.2\n\
+192.168.1.3"
+    );
 }
 #[test]
 fn test_hyphenated_range() {

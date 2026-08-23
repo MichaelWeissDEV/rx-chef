@@ -9,6 +9,22 @@ use rxchef::operations::image_brightness_contrast::ImageBrightnessContrast;
 use rxchef::Operation;
 use std::io::Cursor;
 
+#[test]
+fn test_brightness_exact_pixel_value() {
+    // The documented mapping is brightness/100*255 added per channel.
+    let img = image::RgbaImage::from_pixel(1, 1, image::Rgba([10, 20, 30, 255]));
+    let mut input = Vec::new();
+    DynamicImage::ImageRgba8(img)
+        .write_to(&mut Cursor::new(&mut input), ImageFormat::Png)
+        .unwrap();
+    let output = ImageBrightnessContrast
+        .run(input, &[ArgValue::Num(20.0), ArgValue::Num(0.0)])
+        .unwrap();
+    let pixels = image::load_from_memory(&output).unwrap().to_rgba8();
+    let pixel = pixels.get_pixel(0, 0);
+    assert_eq!(pixel.0, [61, 71, 81, 255]);
+}
+
 // Helper to create a 1x1 white PNG image
 fn create_test_image() -> Vec<u8> {
     let img = DynamicImage::new_rgb8(1, 1);
