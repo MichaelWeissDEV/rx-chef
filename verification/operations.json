@@ -3702,7 +3702,9 @@
       "correctness": [
         "tests/tests/operations/optical_character_recognition.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/optical_character_recognition.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -6456,7 +6458,9 @@
       "correctness": [
         "tests/tests/operations/yara_rules.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/yara_rules.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],

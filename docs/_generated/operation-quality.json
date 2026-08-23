@@ -3,15 +3,15 @@
   "operation_count": 478,
   "summary": {
     "registered": 478,
-    "correctness_verified": 465,
-    "correctness_partially_verified": 13,
+    "correctness_verified": 467,
+    "correctness_partially_verified": 11,
     "correctness_unverified": 0,
     "tested": 478,
-    "test_functions": 2512,
+    "test_functions": 2514,
     "negative_tested": 385,
     "negative_not_applicable": 93,
-    "boundary_tested": 477,
-    "reference_verified": 218,
+    "boundary_tested": 478,
+    "reference_verified": 220,
     "differential_verified": 262,
     "parity_exact": 171,
     "parity_compatible": 5,
@@ -12149,19 +12149,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
       "fixture_binary_or_unicode": true,
-      "tests": 2,
+      "tests": 3,
       "negative_test": true,
       "boundary_test": false,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 1,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Optical Character Recognition",
@@ -12177,13 +12175,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/optical_character_recognition.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/optical_character_recognition.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -21179,20 +21179,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "boundary tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 3,
+      "tests": 4,
       "negative_test": true,
-      "boundary_test": false,
+      "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 2,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "YARA Rules",
@@ -21208,13 +21205,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/yara_rules.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/yara_rules.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],

@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2512 |
+| Test functions | 2514 |
 | With negative tests | 385 |
-| With boundary tests | 477 |
-| Reference-verified (known answer) | 218 |
+| With boundary tests | 478 |
+| Reference-verified (known answer) | 220 |
 | Differential-verified | 262 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -544,7 +544,7 @@
 
 | Operation | Status | Parity | Args | Tests | Neg | Bound | KAT | Diff | Property | Fuzz | Bench | Docs |
 |---|---|---|:---:|---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Optical Character Recognition | partial | unknown | yes | 2 | yes | — | — | — | — | — | — | yes |
+| Optical Character Recognition | partial | unknown | yes | 3 | yes | — | yes | — | — | — | — | yes |
 
 ## PGP
 
@@ -634,4 +634,4 @@
 
 | Operation | Status | Parity | Args | Tests | Neg | Bound | KAT | Diff | Property | Fuzz | Bench | Docs |
 |---|---|---|:---:|---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| YARA Rules | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
+| YARA Rules | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |

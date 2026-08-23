@@ -28,8 +28,23 @@ fn test_yara_rules_simple_match() {
         ArgValue::Bool(true),
     ];
     let result = op.run(input, &args).unwrap();
-    let result_str = String::from_utf8_lossy(&result);
-    assert!(result_str.contains("Input matches rule \"TestRule\" (1 time)."));
+    assert_eq!(result, b"Input matches rule \"TestRule\" (1 time).\n");
+}
+
+#[test]
+fn test_yara_rules_empty_input_filesize_boundary() {
+    let rules = r#"rule Empty { condition: filesize == 0 }"#;
+    let result = YARARules
+        .run(
+            Vec::new(),
+            &[
+                ArgValue::Str(rules.into()), ArgValue::Bool(false), ArgValue::Bool(false),
+                ArgValue::Bool(false), ArgValue::Bool(true), ArgValue::Bool(true),
+                ArgValue::Bool(true),
+            ],
+        )
+        .unwrap();
+    assert_eq!(result, b"Input matches rule \"Empty\".\n");
 }
 #[test]
 fn test_yara_rules_show_strings() {
