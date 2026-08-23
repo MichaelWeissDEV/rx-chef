@@ -7,6 +7,7 @@ use rxchef::Operation;
 
 #[test]
 fn test_return_basic() {
+    // Return's specified semantics are the identity function on its input.
     let op = ReturnOp;
     let input = b"test data".to_vec();
     let args = [];

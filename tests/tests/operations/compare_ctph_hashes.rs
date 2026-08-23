@@ -10,7 +10,8 @@ use rxchef::Operation;
 #[test]
 fn test_compare_identical_hashes() {
     let op = CompareCTPHHashes;
-    // Generate a real ssdeep hash and compare it with itself
+    // The ssdeep/CTPH comparison contract defines identity as similarity 100.
+    // Generate a real ssdeep hash and compare it with itself.
     let data = vec![b'A'; 1024];
     let hash = FuzzyHash::new(&data).to_string();
     let input = format!("{}\n{}", hash, hash);

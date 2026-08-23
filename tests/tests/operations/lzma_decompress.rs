@@ -11,6 +11,8 @@ use xz2::read::XzEncoder;
 fn test_lzma_decompress_basic() {
     let op = LZMADecompress;
     let original = b"Hello, world! Hello, world! Hello, world!".to_vec();
+    // `xz2` delegates to the independently maintained liblzma reference
+    // implementation. Its XZ stream is the external encoder oracle here.
     let mut encoder = XzEncoder::new(&original[..], 6);
     let mut compressed = Vec::new();
     encoder.read_to_end(&mut compressed).unwrap();

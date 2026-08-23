@@ -7,6 +7,35 @@ use rxchef::operations::salsa20::Salsa20Op;
 use rxchef::Operation;
 
 #[test]
+fn test_salsa20_ecrypt_set_1_vector_0_first_block() {
+    // eSTREAM/ECRYPT Salsa20 verified test set 1, vector 0. This is also
+    // exercised by CyberChef 11.4.0 at commit 2e048b0290854781db61e20638dca62978379032.
+    let result = Salsa20Op
+        .run(
+            vec![0; 64],
+            &[
+                ArgValue::Str(
+                    "hex:8000000000000000000000000000000000000000000000000000000000000000"
+                        .to_string(),
+                ),
+                ArgValue::Str("hex:0000000000000000".to_string()),
+                ArgValue::Num(0.0),
+                ArgValue::Str("20".to_string()),
+                ArgValue::Str("Raw".to_string()),
+                ArgValue::Str("Hex".to_string()),
+            ],
+        )
+        .unwrap();
+    assert_eq!(
+        String::from_utf8(result).unwrap(),
+        concat!(
+            "e3be8fdd8beca2e3ea8ef9475b29a6e7003951e1097a5c38d23b7a5fad9f6844",
+            "b22c97559e2723c7cbbd3fe4fc8d9a0744652a83e72a9c461876af4d7ef1a117"
+        )
+    );
+}
+
+#[test]
 fn test_salsa20_basic() {
     let op = Salsa20Op;
     let input = b"Hello World".to_vec();

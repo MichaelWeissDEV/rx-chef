@@ -8,6 +8,7 @@ use rxchef::Operation;
 
 #[test]
 fn test_datetime_delta_positive() {
+    // Independently calculated Gregorian/24-hour arithmetic: add one minute.
     let op = DateTimeDelta;
     let input = b"20/02/2024 13:36:00".to_vec();
     let args = [

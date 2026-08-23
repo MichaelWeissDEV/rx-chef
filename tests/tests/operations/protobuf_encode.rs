@@ -10,6 +10,8 @@ fn test_protobuf_encode_basic() {
     let op = ProtobufEncode;
     let input = br#"{"1": 123, "2": "hello"}"#.to_vec();
     let result = op.run(input, &[]).unwrap();
+    // Protocol Buffers encoding specification: tag = field_number << 3 |
+    // wire_type, varints are base-128, and strings are length-delimited.
     // Field 1, wire type 0, value 123 -> 0x08, 0x7b
     // Field 2, wire type 2, len 5, value "hello" -> 0x12, 0x05, 0x68, 0x65, 0x6c, 0x6c, 0x6f
     assert_eq!(

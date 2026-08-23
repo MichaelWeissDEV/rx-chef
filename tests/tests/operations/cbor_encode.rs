@@ -18,7 +18,7 @@ fn test_cbor_encode_simple_integer() {
     let op = CBOREncode;
     let input = b"42".to_vec();
     let result = op.run(input, &[]).unwrap();
-    // CBOR encoding of integer 42 should be 0x18 0x2a
+    // RFC 8949 Appendix A: 42 is encoded as 0x18 0x2a.
     assert_eq!(result, vec![0x18, 0x2a]);
 }
 
@@ -27,7 +27,7 @@ fn test_cbor_encode_simple_string() {
     let op = CBOREncode;
     let input = b"\"hello\"".to_vec();
     let result = op.run(input, &[]).unwrap();
-    // CBOR encoding of string "hello" should be 0x65 0x68 0x65 0x6c 0x6c 0x6f
+    // RFC 8949 section 3.1, major type 3: a five-byte text string starts 0x65.
     assert_eq!(result, vec![0x65, 0x68, 0x65, 0x6c, 0x6c, 0x6f]);
 }
 
@@ -36,7 +36,7 @@ fn test_cbor_encode_array() {
     let op = CBOREncode;
     let input = b"[1, 2, 3]".to_vec();
     let result = op.run(input, &[]).unwrap();
-    // CBOR encoding of array [1, 2, 3] should be 0x83 0x01 0x02 0x03
+    // RFC 8949 Appendix A: [1, 2, 3] is 83 01 02 03.
     assert_eq!(result, vec![0x83, 0x01, 0x02, 0x03]);
 }
 

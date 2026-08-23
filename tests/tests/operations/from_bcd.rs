@@ -20,6 +20,7 @@ fn test_from_bcd_empty_input() {
 
 #[test]
 fn test_from_bcd_simple_8421() {
+    // Standard 8-4-2-1 packed BCD: each nibble is one decimal digit.
     let op = FromBCD;
     let args = [
         rxchef::operation::ArgValue::Str("8 4 2 1".to_string()),

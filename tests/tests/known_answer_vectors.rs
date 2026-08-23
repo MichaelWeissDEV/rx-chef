@@ -487,3 +487,169 @@ fn nist_sp800_38a_aes128_ofb_first_block() {
         "OFB-AES128 block 1 mismatch: {output}"
     );
 }
+
+fn aes_decrypt_hex(key: &str, iv: &str, mode: &str, ciphertext_hex: &str) -> String {
+    use rxchef::operations::aes_decrypt::AesDecrypt;
+
+    let args = [
+        ArgValue::Bytes(hex::decode(key).unwrap()),
+        ArgValue::Bytes(hex::decode(iv).unwrap()),
+        str_arg(mode),
+        str_arg("Hex"),
+        str_arg("Hex"),
+        ArgValue::Bytes(Vec::new()),
+        ArgValue::Bytes(Vec::new()),
+    ];
+    text(&AesDecrypt, ciphertext_hex.as_bytes(), &args).to_ascii_lowercase()
+}
+
+#[test]
+fn nist_sp800_38a_aes128_ecb_decrypt_first_block() {
+    // NIST SP 800-38A F.1.2 ECB-AES128.Decrypt, block #1. NoPadding is
+    // required because the published example is exactly one AES block.
+    assert_eq!(
+        aes_decrypt_hex(
+            NIST_AES128_KEY,
+            "",
+            "ECB/NoPadding",
+            "3ad77bb40d7a3660a89ecaf32466ef97",
+        ),
+        NIST_BLOCK1_PLAINTEXT
+    );
+}
+
+// ---------------------------------------------------------------------------
+// NIST CAVP DES ECB Variable Plaintext Known Answer Test
+// ---------------------------------------------------------------------------
+
+const NIST_DES_KEY: &str = "0101010101010101";
+const NIST_DES_PLAINTEXT: &str = "8000000000000000";
+const NIST_DES_CIPHERTEXT: &str = "95f8a5e5dd31d900";
+
+#[test]
+fn nist_cavp_des_ecb_encrypt_first_block() {
+    use rxchef::operations::des_encrypt::DesEncrypt;
+
+    let args = [
+        ArgValue::Bytes(hex::decode(NIST_DES_KEY).unwrap()),
+        ArgValue::Bytes(Vec::new()),
+        str_arg("ECB"),
+        str_arg("Hex"),
+        str_arg("Hex"),
+    ];
+    // DES Encrypt applies PKCS#7, so it emits a second block. The first block
+    // is still the exact CAVP single-block result and is checked independently.
+    let output = text(&DesEncrypt, NIST_DES_PLAINTEXT.as_bytes(), &args);
+    assert_eq!(&output[..16], NIST_DES_CIPHERTEXT);
+}
+
+#[test]
+fn nist_cavp_des_ecb_decrypt_single_block() {
+    use rxchef::operations::des_decrypt::DesDecrypt;
+
+    let args = [
+        ArgValue::Bytes(hex::decode(NIST_DES_KEY).unwrap()),
+        ArgValue::Bytes(Vec::new()),
+        str_arg("ECB/NoPadding"),
+        str_arg("Hex"),
+        str_arg("Hex"),
+    ];
+    assert_eq!(
+        text(&DesDecrypt, NIST_DES_CIPHERTEXT.as_bytes(), &args),
+        NIST_DES_PLAINTEXT
+    );
+}
+
+// ---------------------------------------------------------------------------
+// RFC 8439 section 2.3.2 — ChaCha20 block-function test vector
+// ---------------------------------------------------------------------------
+
+#[test]
+fn rfc8439_chacha20_block_function_vector() {
+    use rxchef::operations::chacha::ChaCha;
+
+    let args = [
+        str_arg("0x000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"),
+        str_arg("0x000000090000004a00000000"),
+        ArgValue::Num(1.0),
+        str_arg("20"),
+        str_arg("Hex"),
+        str_arg("Hex"),
+    ];
+    let zero_block = "00".repeat(64);
+    assert_eq!(
+        text(&ChaCha, zero_block.as_bytes(), &args),
+        "10f1e7e4d13b5915500fdd1fa32071c4c7d1f4c733c068030422aa9ac3d46c4e\
+         d2826446079faa0914c2d705d98b02a2b5129cd1de164eb9cbd083e8a2503c4e"
+            .replace([' ', '\n'], "")
+    );
+}
+
+// ---------------------------------------------------------------------------
+// BLAKE3 official test vectors (test_vectors.json, input length 0)
+// ---------------------------------------------------------------------------
+
+#[test]
+fn blake3_official_empty_input_vector() {
+    use rxchef::operations::blake3::BLAKE3;
+
+    assert_eq!(
+        text(&BLAKE3, b"", &[]),
+        "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Haversine formula — quarter of a great circle at the mean Earth radius
+// ---------------------------------------------------------------------------
+
+#[test]
+fn haversine_equatorial_quarter_circle() {
+    use rxchef::operations::haversine_distance::HaversineDistance;
+
+    // The operation documents the conventional mean Earth radius 6,371,000 m.
+    // Two equatorial points 90 degrees apart are therefore pi*R/2 metres apart.
+    // The literal below was evaluated independently at high precision; the
+    // tolerance only accommodates binary floating-point rounding.
+    let actual: f64 = text(&HaversineDistance, b"0,0,0,90", &[]).parse().unwrap();
+    assert!((actual - 10_007_543.398_010_286).abs() < 1e-8);
+}
+
+#[test]
+fn nist_international_mile_speed_conversion() {
+    use rxchef::operations::convert_speed::ConvertSpeed;
+
+    // NIST Handbook 44 Appendix C defines one international mile as exactly
+    // 1.609344 km. Therefore 60 mph is exactly 96.56064 km/h.
+    let args = [
+        str_arg("Miles per hour (mph)"),
+        str_arg("Kilometres per hour (km/h)"),
+    ];
+    let actual: f64 = text(&ConvertSpeed, b"60", &args).parse().unwrap();
+    assert!((actual - 96.56064).abs() < 1e-12);
+}
+
+// ---------------------------------------------------------------------------
+// Argon2 reference implementation / draft-irtf-cfrg-argon2-12 KAT
+// ---------------------------------------------------------------------------
+
+#[test]
+fn argon2i_v13_reference_vector() {
+    use rxchef::operations::argon2::Argon2;
+
+    // Argon2 reference KAT: password="password", salt="somesalt", v=19,
+    // m=65536 KiB, t=2, p=1, 32-byte raw tag.
+    let args = [
+        str_arg("somesalt"),
+        ArgValue::Num(2.0),
+        ArgValue::Num(65_536.0),
+        ArgValue::Num(1.0),
+        ArgValue::Num(32.0),
+        str_arg("Argon2i"),
+        str_arg("Hex hash"),
+    ];
+    assert_eq!(
+        text(&Argon2, b"password", &args),
+        "c1628832147d9720c5bd1cfd61367078729f6dfb6f8fea9ff98158e0d7816ed0"
+    );
+}

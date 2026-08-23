@@ -8,6 +8,7 @@ use rxchef::Operation;
 
 #[test]
 fn test_compare_ssdeep_hashes() {
+    // The ssdeep comparison contract defines identical valid hashes as score 100.
     let op = CompareSSDEEPHashes;
     let input = b"3:Hn:Hn\n3:Hn:Hn".to_vec();
     let args = vec![ArgValue::Str("Line feed".to_string())];

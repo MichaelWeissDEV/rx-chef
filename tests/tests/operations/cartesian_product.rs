@@ -15,17 +15,13 @@ fn test_cartesian_product_basic() {
         ArgValue::Str(",".to_string()),
     ];
 
-    let result = op.run(input.into_bytes(), &args);
+    let result = op.run(input.into_bytes(), &args).unwrap();
 
-    assert!(result.is_ok(), "Cartesian product should succeed");
-    if let Ok(output) = result {
-        let output_str = String::from_utf8_lossy(&output);
-        // Expected: (1,3),(1,4),(2,3),(2,4)
-        assert!(output_str.contains("(1,3)"), "Should contain (1,3)");
-        assert!(output_str.contains("(1,4)"), "Should contain (1,4)");
-        assert!(output_str.contains("(2,3)"), "Should contain (2,3)");
-        assert!(output_str.contains("(2,4)"), "Should contain (2,4)");
-    }
+    // By the definition A x B = {(a,b) | a in A and b in B}.
+    assert_eq!(
+        String::from_utf8(result).unwrap(),
+        "(1,3),(1,4),(2,3),(2,4)"
+    );
 }
 
 #[test]

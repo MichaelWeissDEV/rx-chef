@@ -7,7 +7,9 @@ use rxchef::Operation;
 
 #[test]
 fn test_oid_rsassa_pkcs1_v1_5_sha256() {
-    // 1.2.840.113549.1.1.11 -> sha256WithRSAEncryption
+    // RFC 8017 Appendix A.2.4 assigns 1.2.840.113549.1.1.11 to
+    // sha256WithRSAEncryption; ITU-T X.690 section 8.19 defines the DER
+    // base-128 value-octet encoding checked here.
     let op = ObjectIdentifierToHex;
     let result = op.run(b"1.2.840.113549.1.1.11".to_vec(), &[]).unwrap();
     let hex = String::from_utf8(result).unwrap();

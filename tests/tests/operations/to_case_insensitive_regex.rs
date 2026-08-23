@@ -6,6 +6,11 @@ use rxchef::operations::to_case_insensitive_regex::ToCaseInsensitiveRegex;
 use rxchef::Operation;
 
 #[test]
+fn test_to_case_insensitive_regex_rejects_invalid_regex() {
+    assert!(ToCaseInsensitiveRegex.run(b"(".to_vec(), &[]).is_err());
+}
+
+#[test]
 fn test_basic_string() {
     let op = ToCaseInsensitiveRegex;
     let input = b"Mozilla".to_vec();

@@ -4,27 +4,19 @@
 
 Why each operation is not yet `verified`, and what would close the gap. Groups are ordered by how much work they need, so the list can be worked in batches.
 
-**141 verified · 337 partially verified · 0 unverified** of 478 registered.
+**225 verified · 253 partially verified · 0 unverified** of 478 registered.
 
-## A: only independent evidence missing (146)
+## A: only independent evidence missing (101)
 
 | Operation | Module | Tests | Neg | Bound | KAT | Diff | Parity | Weak | Remaining gaps | Strategy |
 |---|---|---:|:---:|:---:|:---:|:---:|---|---:|---|---|
-| AES Decrypt | Ciphers | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | AMF Decode | Encodings | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | AMF Encode | Encodings | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | Add Text To Image | Image | 5 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Analyse UUID | Crypto | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
-| Argon2 | Crypto | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | Avro to JSON | Serialise | 4 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| BLAKE3 | Hashing | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | BSON deserialise | Serialise | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Bcrypt parse | Crypto | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | Blowfish Decrypt | Ciphers | 6 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | Blur Image | Image | 5 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| CBOR Decode | Serialise | 10 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| CBOR Encode | Serialise | 11 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| ChaCha | Ciphers | 11 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | CipherSaber2 Decrypt | Crypto | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | Colossus | Bletchley | 10 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Compare CTPH hashes | Crypto | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
@@ -32,15 +24,8 @@ Why each operation is not yet `verified`, and what would close the gap. Groups a
 | Conditional Jump | Default | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Contain Image | Image | 8 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Convert Image Format | Image | 10 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Convert area | Default | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Convert data units | Default | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Convert distance | Default | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Convert mass | Default | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Convert speed | Default | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Cover Image | Image | 8 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Crop Image | Image | 9 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| DES Decrypt | Ciphers | 6 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
-| DES Encrypt | Ciphers | 6 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | DNS over HTTPS | Default | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | DateTime Delta | Default | 4 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Diff | Diff | 9 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
@@ -56,9 +41,6 @@ Why each operation is not yet `verified`, and what would close the gap. Groups a
 | Extract RGBA | Image | 5 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Fernet Decrypt | Default | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Fernet Encrypt | Default | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Find / Replace | Regex | 4 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Flask Session Decode | Crypto | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
-| Flask Session Verify | Crypto | 5 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | Flip Image | Image | 7 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Fork | Default | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Frequency distribution | Default | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
@@ -75,20 +57,15 @@ Why each operation is not yet `verified`, and what would close the gap. Groups a
 | Get Time | Default | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | HASSH Client Fingerprint | Crypto | 8 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | HASSH Server Fingerprint | Crypto | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
-| Hamming Distance | Default | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Haversine distance | Default | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Heatmap chart | Charts | 12 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Hex Density chart | Charts | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Image Brightness / Contrast | Image | 4 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Image Filter | Image | 11 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Image Hue/Saturation/Lightness | Image | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Image Opacity | Image | 10 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Invert Image | Image | 8 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | JA3 Fingerprint | Crypto | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | JA3S Fingerprint | Crypto | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | JA4 Fingerprint | Crypto | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | JA4Server Fingerprint | Crypto | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
-| JSON to CSV | Default | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | JWK to PEM | PublicKey | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | JWT Decode | Crypto | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | JWT Sign | Crypto | 4 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
@@ -96,30 +73,21 @@ Why each operation is not yet `verified`, and what would close the gap. Groups a
 | JavaScript Parser | Code | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Jsonata Query | Code | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Jump | Default | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| LZ4 Decompress | Compression | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
-| LZMA Decompress | Compression | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
-| Levenshtein Distance | Default | 9 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Lorenz | Bletchley | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Multiple Bombe | Bletchley | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Normalise Image | Image | 5 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Object Identifier to Hex | PublicKey | 4 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | Optical Character Recognition | OCR | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | PGP Decrypt | PGP | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | PGP Decrypt and Verify | PGP | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | PGP Encrypt | PGP | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | PGP Encrypt and Sign | PGP | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | PGP Verify | PGP | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| PHP Deserialize | Default | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Parse IP range | Default | 4 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Parse IPv6 address | Default | 6 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Parse ObjectID timestamp | Serialise | 5 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Parse QR Code | Image | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Parse SSH Host Key | Default | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Parse TCP | Default | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Parse UDP | Default | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Parse User Agent | UserAgent | 10 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Protobuf Decode | Protobuf | 9 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Protobuf Encode | Protobuf | 4 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Pseudo-Random Integer Generator | Ciphers | 10 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | RC2 Decrypt | Ciphers | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | RC2 Encrypt | Ciphers | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
@@ -132,53 +100,32 @@ Why each operation is not yet `verified`, and what would close the gap. Groups a
 | Resize Image | Image | 4 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Return | Default | 5 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Rotate Image | Image | 5 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| SHAKE | Hashing | 6 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | SM2 Decrypt | Crypto | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | SM2 Encrypt | Crypto | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
-| SM4 Decrypt | Ciphers | 4 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
-| SM4 Encrypt | Ciphers | 10 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
-| SNEFRU | Hashing | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
-| Salsa20 | Ciphers | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
-| Set Difference | Default | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Set Intersection | Default | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Set Union | Default | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Sharpen Image | Image | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Show on map | Maps | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Split Colour Channels | Image | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Subsection | Default | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| Symmetric Difference | Default | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| To BCD | Default | 4 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| To Base | Default | 5 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 | Triple DES Decrypt | Ciphers | 6 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | Untar | Compression | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | Unzip | Compression | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | View Bit Plane | Image | 4 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| XPath expression | Code | 2 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| XSalsa20 | Ciphers | 4 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | XXTEA Decrypt | Ciphers | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 
-## B: only negative evidence missing (120)
+## B: only negative evidence missing (83)
 
 | Operation | Module | Tests | Neg | Bound | KAT | Diff | Parity | Weak | Remaining gaps | Strategy |
 |---|---|---:|:---:|:---:|:---:|:---:|---|---:|---|---|
 | A1Z26 Cipher Encode | Ciphers | 6 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Add line numbers | Default | 5 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| Adler-32 Checksum | Crypto | 3 | — | yes | yes | yes | compatible | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| Alternating Caps | Default | 5 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Bit shift left | Default | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Bit shift right | Default | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | CSS Beautify | Code | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | CSS Minify | Code | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| Caret/M-decode | Default | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| Chi Square | Default | 7 | — | yes | yes | yes | unknown | 1 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists; replace is_ok()-only assertions with exact values or invariants |
-| Citrix CTX1 Encode | Encodings | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| Comment | Default | 2 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Convert Leet Speak | Default | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Convert co-ordinate format | Hashing | 1 | — | yes | — | yes | unknown | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| Convert to NATO alphabet | Default | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Count occurrences | Default | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Decode text | Encodings | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| Defang IP Addresses | Default | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Defang URL | Default | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Divide | Default | 5 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Drop bytes | Default | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
@@ -193,32 +140,17 @@ Why each operation is not yet `verified`, and what would close the gap. Groups a
 | Extract hashes | Regex | 2 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Fang URL | Default | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | File Tree | Default | 1 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| Fletcher-16 Checksum | Crypto | 1 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| Fletcher-32 Checksum | Crypto | 1 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| Fletcher-64 Checksum | Crypto | 1 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| Fletcher-8 Checksum | Crypto | 1 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| From Quoted Printable | Default | 5 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Generate all checksums | Crypto | 8 | — | yes | yes | — | unknown | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Generate all hashes | Crypto | 8 | — | yes | yes | — | unknown | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| Generic Code Beautify | Code | 1 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Group IP addresses | Default | 2 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Gzip | Compression | 3 | — | yes | — | yes | unknown | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| HTML To Text | Default | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Head | Default | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| Index of Coincidence | Default | 8 | — | yes | yes | yes | unknown | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | JavaScript Beautify | Code | 1 | — | yes | — | yes | unknown | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | LZString Decompress | Compression | 3 | — | yes | — | yes | unknown | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| MD2 | Hashing | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| MD4 | Hashing | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| MD5 | Hashing | 3 | — | yes | yes | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| MIME Decoding | Default | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Mean | Default | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Median | Default | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| Microsoft Script Decoder | Default | 1 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Multiply | Default | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | MurmurHash3 | Hashing | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| NOT | Default | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| NT Hash | Crypto | 2 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Normalise Unicode | Encodings | 2 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | P-list Viewer | Default | 1 | — | yes | — | yes | unknown | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | PEM to JWK | PublicKey | 1 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
@@ -228,57 +160,43 @@ Why each operation is not yet `verified`, and what would close the gap. Groups a
 | Public Key from Private Key | PublicKey | 2 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | RAKE | Default | 1 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | ROT13 | Ciphers | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| ROT47 | Ciphers | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | ROT47 Brute Force | Default | 2 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Raw Deflate | Compression | 2 | — | yes | — | yes | unknown | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| Remove null bytes | Default | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Remove whitespace | Default | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Render Markdown | Code | 4 | — | yes | — | yes | unknown | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Rotate left | Default | 5 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Rotate right | Default | 5 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | SIGABA | Bletchley | 2 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | SQL Beautify | Code | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| SQL Minify | Code | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| SSDEEP | Crypto | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Scan for Embedded Files | Default | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Sleep | Default | 2 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Sort | Default | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Split | Default | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Standard Deviation | Default | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Strip HTML tags | Default | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| Strip HTTP headers | Default | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Substitute | Default | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Subtract | Default | 5 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Sum | Default | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| Swap case | Default | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| TCP/IP Checksum | Crypto | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Tail | Default | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Take bytes | Default | 6 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | To Base45 | Default | 6 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | To Base62 | Default | 12 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| To Base92 | Default | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | To Binary | Default | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | To Camel case | Code | 6 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| To Case Insensitive Regex | Default | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | To Decimal | Default | 5 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | To HTML Entity | Encodings | 7 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | To Hex | Default | 5 | — | yes | yes | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | To Hex Content | Default | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| To Lower case | Default | 5 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | To Modhex | Default | 3 | — | yes | — | yes | unknown | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | To Octal | Default | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| To Quoted Printable | Default | 8 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | To Snake case | Code | 6 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | To Table | Default | 8 | — | yes | — | yes | unknown | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | URL Decode | URL | 8 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | URL Encode | URL | 10 | — | yes | yes | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Unescape Unicode Characters | Default | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| Unescape string | Default | 4 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Unicode Text Format | Default | 4 | — | yes | — | yes | unknown | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Unique | Default | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| VarInt Decode | Default | 8 | — | yes | — | yes | intentional_difference | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Wrap | Default | 3 | — | yes | — | yes | exact | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
-| XKCD Random Number | Default | 5 | — | yes | — | yes | exact | 1 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists; replace is_ok()-only assertions with exact values or invariants |
 | XOR Brute Force | Default | 4 | — | yes | — | yes | unknown | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 | Zlib Deflate | Compression | 2 | — | yes | — | yes | unknown | 0 | negative tests | a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists |
 
@@ -354,14 +272,12 @@ Why each operation is not yet `verified`, and what would close the gap. Groups a
 | Text Encoding Brute Force | Encodings | 3 | — | — | — | — | unknown | 0 | negative tests, boundary tests, independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison; a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists; a boundary case at a real limit of this operation, not merely empty input |
 | Zip | Compression | 3 | — | — | — | — | unknown | 0 | negative tests, boundary tests, independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison; a negative case asserting the error variant, or a reviewed negative_test_policy.not_applicable if no invalid input class exists; a boundary case at a real limit of this operation, not merely empty input |
 
-## J: independent evidence missing, tests are weak (9)
+## J: independent evidence missing, tests are weak (7)
 
 | Operation | Module | Tests | Neg | Bound | KAT | Diff | Parity | Weak | Remaining gaps | Strategy |
 |---|---|---:|:---:|:---:|:---:|:---:|---|---:|---|---|
 | Bombe | Bletchley | 5 | yes | yes | — | — | unknown | 3 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts; replace is_ok()-only assertions with exact values or invariants |
-| Cartesian Product | Default | 6 | yes | yes | — | — | unknown | 4 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts; replace is_ok()-only assertions with exact values or invariants |
 | ELF Info | Default | 7 | yes | yes | — | — | unknown | 4 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts; replace is_ok()-only assertions with exact values or invariants |
-| From BCD | Default | 5 | yes | yes | — | — | unknown | 2 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts; replace is_ok()-only assertions with exact values or invariants |
 | GOST Encrypt | Ciphers | 5 | yes | yes | — | — | unknown | 3 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison; replace is_ok()-only assertions with exact values or invariants |
 | Offset checker | Default | 4 | yes | yes | — | — | unknown | 1 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts; replace is_ok()-only assertions with exact values or invariants |
 | Randomize Colour Palette | Image | 11 | yes | yes | — | — | unknown | 3 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts; replace is_ok()-only assertions with exact values or invariants |

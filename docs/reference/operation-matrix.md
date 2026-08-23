@@ -10,18 +10,18 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2049 |
-| With negative tests | 311 |
+| Test functions | 2256 |
+| With negative tests | 313 |
 | With boundary tests | 439 |
-| Reference-verified (known answer) | 28 |
-| Differential-verified | 248 |
+| Reference-verified (known answer) | 68 |
+| Differential-verified | 255 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
 | Parity: documented difference | 1 |
 | Parity: unverified | 301 |
 | Parity: not applicable | 0 |
 | Documented divergences | 2 |
-| Tests asserting only success | 56 |
+| Tests asserting only success | 55 |
 
 ## Bletchley
 
@@ -57,7 +57,7 @@
 |---|---|---|:---:|---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | A1Z26 Cipher Decode | partial | unknown | yes | 7 | yes | yes | — | yes | — | — | — | yes |
 | A1Z26 Cipher Encode | partial | exact | yes | 6 | — | yes | — | yes | — | — | — | yes |
-| AES Decrypt | partial | unknown | yes | 2 | yes | — | — | — | — | — | — | yes |
+| AES Decrypt | partial | unknown | yes | 27 | yes | yes | yes | — | — | — | — | yes |
 | AES Encrypt | partial | compatible | yes | 6 | yes | — | yes | — | — | — | yes | yes |
 | AES Key Unwrap | partial | unknown | yes | 6 | yes | — | yes | — | — | — | — | yes |
 | AES Key Wrap | partial | unknown | yes | 8 | yes | yes | yes | — | — | — | — | yes |
@@ -71,9 +71,9 @@
 | Caesar Box Cipher | partial | exact | yes | 7 | yes | yes | — | yes | — | — | — | yes |
 | Cetacean Cipher Decode | partial | unknown | yes | 10 | yes | yes | — | yes | — | — | — | yes |
 | Cetacean Cipher Encode | partial | exact | yes | 11 | yes | yes | — | yes | — | — | — | yes |
-| ChaCha | partial | unknown | yes | 11 | yes | yes | — | — | — | — | — | yes |
-| DES Decrypt | partial | unknown | yes | 6 | yes | yes | — | — | — | — | — | yes |
-| DES Encrypt | partial | unknown | yes | 6 | yes | yes | — | — | — | — | — | yes |
+| ChaCha | partial | unknown | yes | 36 | yes | yes | yes | — | — | — | — | yes |
+| DES Decrypt | partial | unknown | yes | 31 | yes | yes | yes | — | — | — | — | yes |
+| DES Encrypt | partial | unknown | yes | 31 | yes | yes | yes | — | — | — | — | yes |
 | Derive EVP key | partial | unknown | yes | 1 | — | yes | — | — | — | — | — | yes |
 | Derive PBKDF2 key | partial | unknown | yes | 10 | yes | yes | yes | — | — | — | — | yes |
 | ECDSA Sign | partial | unknown | yes | 6 | yes | yes | — | — | — | — | — | yes |
@@ -105,14 +105,14 @@
 | Rabbit | partial | unknown | yes | 2 | — | — | — | — | — | — | — | yes |
 | Rail Fence Cipher Decode | partial | exact | yes | 2 | yes | — | — | yes | — | — | — | yes |
 | Rail Fence Cipher Encode | partial | exact | yes | 2 | yes | — | — | yes | — | — | — | yes |
-| SM4 Decrypt | partial | unknown | yes | 4 | yes | — | — | — | — | — | — | yes |
-| SM4 Encrypt | partial | unknown | yes | 10 | yes | — | — | — | — | — | — | yes |
-| Salsa20 | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
+| SM4 Decrypt | partial | unknown | yes | 4 | yes | — | yes | — | — | — | — | yes |
+| SM4 Encrypt | partial | unknown | yes | 10 | yes | — | yes | — | — | — | — | yes |
+| Salsa20 | partial | unknown | yes | 4 | yes | — | yes | — | — | — | — | yes |
 | Triple DES Decrypt | partial | unknown | yes | 6 | yes | yes | — | — | — | — | — | yes |
 | Triple DES Encrypt | partial | unknown | yes | 4 | yes | yes | — | — | — | — | — | yes |
 | Vigenre Decode | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
 | Vigenre Encode | partial | unknown | yes | 4 | yes | — | — | — | — | — | — | yes |
-| XSalsa20 | partial | unknown | yes | 4 | yes | — | — | — | — | — | — | yes |
+| XSalsa20 | partial | unknown | yes | 5 | yes | — | yes | — | — | — | — | yes |
 | XXTEA Decrypt | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
 | XXTEA Encrypt | partial | unknown | yes | 2 | — | yes | — | — | — | — | — | yes |
 
@@ -142,7 +142,7 @@
 | To Snake case | partial | exact | yes | 6 | — | yes | — | yes | — | — | — | yes |
 | XML Beautify | partial | exact | yes | 9 | yes | yes | — | yes | — | — | — | yes |
 | XML Minify | partial | exact | yes | 10 | yes | yes | — | yes | — | — | — | yes |
-| XPath expression | partial | unknown | yes | 2 | — | — | — | — | — | — | — | yes |
+| XPath expression | partial | unknown | yes | 2 | — | — | yes | — | — | — | — | yes |
 
 ## Compression
 
@@ -153,9 +153,9 @@
 | Gunzip | partial | unknown | yes | 3 | yes | yes | — | yes | — | — | — | yes |
 | Gzip | partial | unknown | yes | 3 | — | yes | — | yes | — | — | — | yes |
 | LZ4 Compress | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
-| LZ4 Decompress | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
+| LZ4 Decompress | partial | unknown | yes | 1 | — | — | yes | — | — | — | — | yes |
 | LZMA Compress | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
-| LZMA Decompress | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
+| LZMA Decompress | partial | unknown | yes | 1 | — | — | yes | — | — | — | — | yes |
 | LZNT1 Decompress | partial | unknown | yes | 2 | yes | — | — | yes | — | — | — | yes |
 | LZString Compress | partial | exact | yes | 14 | yes | yes | — | yes | — | — | — | yes |
 | LZString Decompress | partial | unknown | yes | 3 | — | — | — | yes | — | — | — | yes |
@@ -179,13 +179,13 @@
 | Operation | Status | Parity | Args | Tests | Neg | Bound | KAT | Diff | Property | Fuzz | Bench | Docs |
 |---|---|---|:---:|---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | Adler-32 Checksum | partial | compatible | yes | 3 | — | yes | yes | yes | — | — | — | yes |
-| Analyse UUID | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
+| Analyse UUID | partial | unknown | yes | 3 | yes | — | yes | — | — | — | — | yes |
 | Analyse hash | partial | unknown | yes | 3 | yes | — | — | yes | — | — | — | yes |
-| Argon2 | partial | unknown | yes | 2 | — | yes | — | — | — | — | — | yes |
+| Argon2 | partial | unknown | yes | 27 | — | yes | yes | — | — | — | — | yes |
 | Argon2 compare | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
 | Bcrypt | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
 | Bcrypt compare | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
-| Bcrypt parse | partial | unknown | yes | 3 | yes | yes | — | — | — | — | — | yes |
+| Bcrypt parse | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | CMAC | partial | unknown | yes | 8 | yes | yes | yes | — | — | — | — | yes |
 | CTPH | partial | unknown | yes | 3 | — | yes | — | — | — | — | — | yes |
 | CipherSaber2 Decrypt | partial | unknown | yes | 2 | yes | — | — | — | — | — | — | yes |
@@ -193,9 +193,9 @@
 | Compare CTPH hashes | partial | unknown | yes | 3 | yes | yes | — | — | — | — | — | yes |
 | Compare SSDEEP hashes | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
 | Derive HKDF key | partial | unknown | yes | 12 | yes | yes | yes | — | — | — | — | yes |
-| Flask Session Decode | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
+| Flask Session Decode | partial | unknown | yes | 3 | yes | — | yes | — | — | — | — | yes |
 | Flask Session Sign | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
-| Flask Session Verify | partial | unknown | yes | 5 | yes | — | — | — | — | — | — | yes |
+| Flask Session Verify | partial | unknown | yes | 5 | yes | — | yes | — | — | — | — | yes |
 | Fletcher-16 Checksum | partial | exact | yes | 1 | — | — | — | yes | — | — | — | yes |
 | Fletcher-32 Checksum | partial | exact | yes | 1 | — | — | — | yes | — | — | — | yes |
 | Fletcher-64 Checksum | partial | exact | yes | 1 | — | — | — | yes | — | — | — | yes |
@@ -239,17 +239,17 @@
 | Bit shift left | partial | exact | yes | 4 | — | — | — | yes | — | — | — | yes |
 | Bit shift right | partial | exact | yes | 4 | — | — | — | yes | — | — | — | yes |
 | Caret/M-decode | partial | exact | yes | 4 | — | — | — | yes | — | — | — | yes |
-| Cartesian Product | partial | unknown | yes | 6 | yes | yes | — | — | — | — | — | yes |
+| Cartesian Product | partial | unknown | yes | 6 | yes | yes | yes | — | — | — | — | yes |
 | Change IP format | partial | unknown | yes | 5 | yes | — | — | yes | — | — | — | yes |
 | Chi Square | partial | unknown | yes | 7 | — | yes | yes | yes | — | — | — | yes |
 | Comment | partial | exact | yes | 2 | — | — | — | yes | — | — | — | yes |
 | Conditional Jump | partial | unknown | yes | 3 | — | — | — | — | — | — | — | yes |
 | Convert Leet Speak | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
-| Convert area | partial | unknown | yes | 2 | — | — | — | — | — | — | — | yes |
-| Convert data units | partial | unknown | yes | 3 | — | — | — | — | — | — | — | yes |
-| Convert distance | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
-| Convert mass | partial | unknown | yes | 2 | — | — | — | — | — | — | — | yes |
-| Convert speed | partial | unknown | yes | 2 | — | — | — | — | — | — | — | yes |
+| Convert area | partial | unknown | yes | 2 | — | — | — | yes | — | — | — | yes |
+| Convert data units | partial | unknown | yes | 3 | — | — | — | yes | — | — | — | yes |
+| Convert distance | partial | unknown | yes | 3 | yes | — | — | yes | — | — | — | yes |
+| Convert mass | partial | unknown | yes | 2 | — | — | yes | — | — | — | — | yes |
+| Convert speed | partial | unknown | yes | 27 | — | yes | yes | — | — | — | — | yes |
 | Convert to NATO alphabet | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
 | Count occurrences | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |
 | DNS over HTTPS | partial | unknown | yes | 2 | yes | yes | — | — | — | — | — | yes |
@@ -276,7 +276,7 @@
 | Fork | partial | unknown | yes | 2 | — | yes | — | — | — | — | — | yes |
 | Format MAC addresses | partial | unknown | yes | 4 | yes | — | — | yes | — | — | — | yes |
 | Frequency distribution | partial | unknown | yes | 3 | yes | yes | — | — | — | — | — | yes |
-| From BCD | partial | unknown | yes | 5 | yes | yes | — | — | — | — | — | yes |
+| From BCD | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
 | From Base | partial | exact | yes | 4 | yes | — | — | yes | — | — | — | yes |
 | From Base32 | partial | exact | yes | 6 | yes | yes | yes | yes | — | — | — | yes |
 | From Base45 | partial | exact | yes | 5 | yes | yes | — | yes | — | — | — | yes |
@@ -310,18 +310,18 @@
 | Group IP addresses | partial | exact | yes | 2 | — | — | — | yes | — | — | — | yes |
 | HTML To Text | partial | exact | yes | 3 | — | yes | — | yes | — | — | — | yes |
 | HTTP request | partial | unknown | yes | 0 | — | — | — | — | — | — | — | yes |
-| Hamming Distance | partial | unknown | yes | 2 | — | yes | — | — | — | — | — | yes |
-| Haversine distance | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
+| Hamming Distance | partial | unknown | yes | 2 | — | yes | — | yes | — | — | — | yes |
+| Haversine distance | partial | unknown | yes | 28 | yes | yes | yes | — | — | — | — | yes |
 | Head | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
 | IPv6 Transition Addresses | partial | unknown | yes | 8 | yes | yes | — | yes | — | — | — | yes |
 | Index of Coincidence | partial | unknown | yes | 8 | — | yes | yes | yes | — | — | — | yes |
-| JSON to CSV | partial | unknown | yes | 3 | — | — | — | — | — | — | — | yes |
+| JSON to CSV | partial | unknown | yes | 3 | — | — | — | yes | — | — | — | yes |
 | JSON to YAML | partial | unknown | yes | 2 | — | yes | — | yes | — | — | — | yes |
 | Jump | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
 | Label | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
-| Levenshtein Distance | partial | unknown | yes | 9 | yes | yes | — | — | — | — | — | yes |
+| Levenshtein Distance | partial | unknown | yes | 9 | yes | yes | — | yes | — | — | — | yes |
 | Luhn Checksum | partial | unknown | yes | 8 | yes | yes | — | yes | — | — | — | yes |
-| MIME Decoding | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
+| MIME Decoding | partial | exact | yes | 4 | yes | — | — | yes | — | — | — | yes |
 | Magic | partial | unknown | yes | 1 | — | — | — | — | — | — | yes | yes |
 | Mean | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |
 | Median | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |
@@ -334,7 +334,7 @@
 | Offset checker | partial | unknown | yes | 4 | yes | yes | — | — | — | — | — | yes |
 | P-list Viewer | partial | unknown | yes | 1 | — | — | — | yes | — | — | — | yes |
 | PEM to Hex | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
-| PHP Deserialize | partial | unknown | yes | 2 | — | — | — | — | — | — | — | yes |
+| PHP Deserialize | partial | unknown | yes | 2 | — | — | yes | — | — | — | — | yes |
 | PHP Serialize | partial | unknown | yes | 3 | — | — | — | yes | — | — | — | yes |
 | Pad lines | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |
 | Parity Bit | partial | unknown | yes | 2 | — | yes | — | yes | — | — | — | yes |
@@ -343,7 +343,7 @@
 | Parse IP range | partial | unknown | yes | 4 | yes | yes | — | — | — | — | — | yes |
 | Parse IPv4 header | partial | unknown | yes | 2 | yes | — | — | — | — | — | — | yes |
 | Parse IPv6 address | partial | unknown | yes | 6 | yes | — | — | — | — | — | — | yes |
-| Parse SSH Host Key | partial | unknown | yes | 3 | — | — | — | — | — | — | — | yes |
+| Parse SSH Host Key | partial | unknown | yes | 3 | — | — | yes | — | — | — | — | yes |
 | Parse TCP | partial | unknown | yes | 3 | — | — | — | — | — | — | — | yes |
 | Parse TLS record | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
 | Parse TLV | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
@@ -365,9 +365,9 @@
 | Rotate right | partial | exact | yes | 5 | — | yes | — | yes | — | — | — | yes |
 | SUB | partial | unknown | yes | 5 | — | yes | — | — | — | — | — | yes |
 | Scan for Embedded Files | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
-| Set Difference | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
-| Set Intersection | partial | unknown | yes | 3 | yes | yes | — | — | — | — | — | yes |
-| Set Union | partial | unknown | yes | 3 | yes | yes | — | — | — | — | — | yes |
+| Set Difference | partial | unknown | yes | 3 | yes | — | yes | — | — | — | — | yes |
+| Set Intersection | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
+| Set Union | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
 | Show Base64 Offsets | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
 | Shuffle | partial | unknown | yes | 3 | — | yes | — | — | — | — | — | yes |
 | Sleep | partial | exact | yes | 2 | — | — | — | yes | — | — | — | yes |
@@ -385,13 +385,13 @@
 | Sum | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |
 | Swap case | partial | exact | yes | 4 | — | — | — | yes | — | — | — | yes |
 | Swap endianness | partial | unknown | yes | 6 | yes | — | — | yes | — | — | — | yes |
-| Symmetric Difference | partial | unknown | yes | 3 | — | — | — | — | — | — | — | yes |
+| Symmetric Difference | partial | unknown | yes | 3 | — | — | yes | — | — | — | — | yes |
 | Tail | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
 | Take bytes | partial | exact | yes | 6 | — | yes | — | yes | — | — | — | yes |
 | Take nth bytes | partial | exact | yes | 8 | yes | yes | — | yes | — | — | — | yes |
 | Text-Integer Conversion | partial | exact | yes | 11 | yes | yes | — | yes | — | — | — | yes |
-| To BCD | partial | unknown | yes | 4 | — | yes | — | — | — | — | — | yes |
-| To Base | partial | unknown | yes | 5 | yes | yes | — | — | — | — | — | yes |
+| To BCD | partial | unknown | yes | 4 | — | yes | yes | — | — | — | — | yes |
+| To Base | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
 | To Base32 | partial | exact | yes | 6 | yes | yes | yes | yes | — | — | — | yes |
 | To Base45 | partial | exact | yes | 6 | — | yes | — | yes | — | — | — | yes |
 | To Base58 | partial | exact | yes | 10 | yes | yes | — | yes | — | — | — | yes |
@@ -402,7 +402,7 @@
 | To Bech32 | partial | exact | yes | 4 | yes | — | — | yes | — | — | — | yes |
 | To Binary | partial | exact | yes | 3 | — | yes | — | yes | — | — | — | yes |
 | To Braille | partial | exact | yes | 4 | yes | — | — | yes | — | — | — | yes |
-| To Case Insensitive Regex | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
+| To Case Insensitive Regex | partial | exact | yes | 4 | yes | — | — | yes | — | — | — | yes |
 | To Charcode | partial | exact | yes | 5 | yes | yes | — | yes | — | — | — | yes |
 | To Decimal | partial | exact | yes | 5 | — | yes | — | yes | — | — | — | yes |
 | To Float | partial | unknown | yes | 2 | yes | — | — | yes | — | — | — | yes |
@@ -469,7 +469,7 @@
 |---|---|---|:---:|---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | BLAKE2b | partial | compatible | yes | 6 | yes | yes | yes | — | — | — | — | yes |
 | BLAKE2s | partial | compatible | yes | 6 | yes | yes | yes | — | — | — | — | yes |
-| BLAKE3 | partial | unknown | yes | 3 | — | yes | — | — | — | — | — | yes |
+| BLAKE3 | partial | unknown | yes | 28 | — | yes | yes | — | — | — | — | yes |
 | CRC Checksum | partial | unknown | yes | 5 | yes | — | — | — | — | — | — | yes |
 | Convert co-ordinate format | partial | unknown | yes | 1 | — | — | — | yes | — | — | — | yes |
 | GOST Hash | partial | unknown | yes | 9 | yes | yes | — | — | — | — | — | yes |
@@ -483,9 +483,9 @@
 | SHA1 | partial | exact | yes | 4 | yes | yes | yes | yes | — | — | — | yes |
 | SHA2 | partial | exact | yes | 10 | yes | yes | yes | yes | — | — | yes | yes |
 | SHA3 | partial | exact | yes | 6 | yes | yes | yes | yes | — | — | — | yes |
-| SHAKE | partial | unknown | yes | 6 | yes | yes | — | — | — | — | — | yes |
+| SHAKE | partial | unknown | yes | 8 | yes | yes | yes | — | — | — | — | yes |
 | SM3 | partial | exact | yes | 7 | yes | yes | — | yes | — | — | — | yes |
-| SNEFRU | partial | unknown | yes | 2 | yes | yes | — | — | — | — | — | yes |
+| SNEFRU | partial | unknown | yes | 2 | yes | yes | yes | — | — | — | — | yes |
 | Streebog | partial | exact | yes | 4 | yes | yes | — | yes | — | — | — | yes |
 | Whirlpool | partial | exact | yes | 4 | yes | yes | — | yes | — | — | — | yes |
 
@@ -507,10 +507,10 @@
 | Generate Image | partial | unknown | yes | 2 | — | — | — | — | — | — | — | yes |
 | Generate QR Code | partial | unknown | yes | 2 | — | — | — | — | — | — | — | yes |
 | Image Brightness / Contrast | partial | unknown | yes | 4 | — | yes | — | — | — | — | — | yes |
-| Image Filter | partial | unknown | yes | 11 | yes | yes | — | — | — | — | — | yes |
+| Image Filter | partial | unknown | yes | 11 | yes | yes | yes | — | — | — | — | yes |
 | Image Hue/Saturation/Lightness | partial | unknown | yes | 3 | — | yes | — | — | — | — | — | yes |
 | Image Opacity | partial | unknown | yes | 10 | yes | yes | — | — | — | — | — | yes |
-| Invert Image | partial | unknown | yes | 8 | yes | yes | — | — | — | — | — | yes |
+| Invert Image | partial | unknown | yes | 8 | yes | yes | yes | — | — | — | — | yes |
 | Normalise Image | partial | unknown | yes | 5 | yes | yes | — | — | — | — | — | yes |
 | Parse QR Code | partial | unknown | yes | 2 | yes | yes | — | — | — | — | — | yes |
 | Randomize Colour Palette | partial | unknown | yes | 11 | yes | yes | — | — | — | — | — | yes |
@@ -561,8 +561,8 @@
 
 | Operation | Status | Parity | Args | Tests | Neg | Bound | KAT | Diff | Property | Fuzz | Bench | Docs |
 |---|---|---|:---:|---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Protobuf Decode | partial | unknown | yes | 9 | yes | yes | — | — | — | — | — | yes |
-| Protobuf Encode | partial | unknown | yes | 4 | — | — | — | — | — | — | — | yes |
+| Protobuf Decode | partial | unknown | yes | 9 | yes | yes | yes | — | — | — | — | yes |
+| Protobuf Encode | partial | unknown | yes | 4 | — | — | yes | — | — | — | — | yes |
 
 ## PublicKey
 
@@ -571,7 +571,7 @@
 | Hex to Object Identifier | partial | unknown | yes | 5 | yes | yes | — | yes | — | — | — | yes |
 | Hex to PEM | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
 | JWK to PEM | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
-| Object Identifier to Hex | partial | unknown | yes | 4 | yes | yes | — | — | — | — | — | yes |
+| Object Identifier to Hex | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | PEM to JWK | partial | exact | yes | 1 | — | — | — | yes | — | — | — | yes |
 | Parse ASN.1 hex string | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
 | Parse CSR | partial | unknown | yes | 2 | yes | yes | — | yes | — | — | — | yes |
@@ -593,7 +593,7 @@
 | Extract file paths | partial | exact | yes | 2 | — | — | — | yes | — | — | — | yes |
 | Extract hashes | partial | exact | yes | 2 | — | — | — | yes | — | — | — | yes |
 | Filter | partial | exact | yes | 4 | yes | yes | — | yes | — | — | — | yes |
-| Find / Replace | partial | unknown | yes | 4 | — | — | — | — | — | — | — | yes |
+| Find / Replace | partial | unknown | yes | 4 | — | — | — | yes | — | — | — | yes |
 | Register | partial | unknown | yes | 6 | — | yes | — | — | — | — | — | yes |
 | Regular expression | partial | exact | yes | 4 | yes | — | — | yes | — | — | — | yes |
 | Strings | partial | unknown | yes | 3 | — | yes | — | — | — | — | — | yes |
@@ -605,9 +605,9 @@
 | Avro to JSON | partial | unknown | yes | 4 | yes | yes | — | — | — | — | — | yes |
 | BSON deserialise | partial | unknown | yes | 3 | yes | yes | — | — | — | — | — | yes |
 | BSON serialise | partial | unknown | yes | 4 | yes | yes | — | yes | — | — | — | yes |
-| CBOR Decode | partial | unknown | yes | 10 | yes | yes | — | — | — | — | — | yes |
-| CBOR Encode | partial | unknown | yes | 11 | yes | yes | — | — | — | — | — | yes |
-| Parse ObjectID timestamp | partial | unknown | yes | 5 | yes | yes | — | — | — | — | — | yes |
+| CBOR Decode | partial | unknown | yes | 10 | yes | yes | yes | — | — | — | — | yes |
+| CBOR Encode | partial | unknown | yes | 11 | yes | yes | yes | — | — | — | — | yes |
+| Parse ObjectID timestamp | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
 
 ## Shellcode
 

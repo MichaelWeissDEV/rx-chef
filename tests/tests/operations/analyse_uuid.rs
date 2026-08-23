@@ -11,7 +11,13 @@ fn test_analyse_uuid_v1() {
     let input = b"6ba7b810-9dad-11d1-80b4-00c04fd430c8".to_vec();
     let result = operation.run(input, &[]).unwrap();
     let output = String::from_utf8(result).unwrap();
-    assert!(output.contains("Version:\n1"));
+    // RFC 4122 Appendix C defines this namespace-DNS UUID. Its version nibble
+    // is 1 and therefore exercises the normative UUID version layout.
+    assert_eq!(
+        output,
+        "Version:\n1\n\nThis UUID is version 1 or 6 (time-based).\n\
+         Timestamp and node information is available."
+    );
 }
 #[test]
 fn test_analyse_uuid_v4() {

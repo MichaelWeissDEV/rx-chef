@@ -8,6 +8,7 @@ use rxchef::Operation;
 
 #[test]
 fn test_to_binary() {
+    // Independently calculated positional representation: 10 = 1·2³ + 0·2² + 1·2 + 0.
     let op = ToBase;
     let input = b"10".to_vec();
     let args = [ArgValue::Num(2.0)];

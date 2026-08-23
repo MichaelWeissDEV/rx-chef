@@ -6,6 +6,11 @@ use rxchef::operations::parse_uri::ParseURI;
 use rxchef::Operation;
 
 #[test]
+fn test_parse_uri_rejects_relative_non_uri() {
+    assert!(ParseURI.run(b"not a URI".to_vec(), &[]).is_err());
+}
+
+#[test]
 fn test_parse_uri() {
     let op = ParseURI;
     let input = b"https://user:pass@example.com:8080/path?a=1&b=2#hash".to_vec();

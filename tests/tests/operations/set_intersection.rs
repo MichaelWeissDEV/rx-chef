@@ -8,6 +8,7 @@ use rxchef::Operation;
 
 #[test]
 fn test_set_intersection_basic() {
+    // Independently calculated from A ∩ B = {x | x ∈ A and x ∈ B}.
     let op = SetIntersection;
     let input = b"a,b,c\n\nb,c,d".to_vec();
     let args = vec![

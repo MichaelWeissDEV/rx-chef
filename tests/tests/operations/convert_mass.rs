@@ -20,5 +20,7 @@ fn test_kg_to_g() {
 }
 #[test]
 fn test_lb_to_kg() {
-    assert!((run("1", "Pounds (lb)", "Kilograms (kg)") - 0.45359237).abs() < 1e-6);
+    // The international avoirdupois pound is exactly 0.45359237 kg (NIST
+    // Handbook 44, Appendix C, General Tables of Units of Measurement).
+    assert_eq!(run("1", "Pounds (lb)", "Kilograms (kg)"), 0.45359237);
 }

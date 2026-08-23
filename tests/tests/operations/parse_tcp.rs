@@ -8,6 +8,8 @@ use serde_json::Value;
 
 #[test]
 fn test_parse_tcp_basic() {
+    // RFC 9293 section 3.1: source/destination are the first two big-endian
+    // 16-bit words and the data offset is the high nibble of byte 12.
     let op = ParseTcp;
     let mut data = vec![0; 20];
     data[0..2].copy_from_slice(&80u16.to_be_bytes()); // src port

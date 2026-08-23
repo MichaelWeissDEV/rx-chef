@@ -23,6 +23,7 @@
 import { execFileSync } from "child_process";
 import fs from "fs";
 import path from "path";
+import { pathToFileURL } from "url";
 
 const CAPTURE_TOOL_VERSION = "2";
 
@@ -34,6 +35,10 @@ if (!cyberchefDir) {
 
 const pkg = JSON.parse(fs.readFileSync(path.join(cyberchefDir, "package.json"), "utf8"));
 const operationsDir = path.join(cyberchefDir, "src/core/operations");
+const BigNumber = (await import(pathToFileURL(path.join(
+    cyberchefDir,
+    "node_modules/bignumber.js/dist/bignumber.mjs"
+)))).default;
 
 /**
  * Run git in the checkout.
@@ -145,6 +150,8 @@ function coerceForOperation(buffer, inputType) {
             return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
         case "number":
             return Number(buffer.toString("utf8"));
+        case "BigNumber":
+            return new BigNumber(buffer.toString("utf8"));
         case "JSON":
             return JSON.parse(buffer.toString("utf8") || "null");
         default:
@@ -154,6 +161,7 @@ function coerceForOperation(buffer, inputType) {
 
 /** Normalise whatever the operation returned into a Buffer. */
 function toBuffer(result, outputType) {
+    if (outputType === "BigNumber") return Buffer.from(result.toString(10), "utf8");
     if (result instanceof ArrayBuffer) return Buffer.from(result);
     if (Array.isArray(result)) return Buffer.from(result);
     if (typeof result === "string") return Buffer.from(result, "utf8");

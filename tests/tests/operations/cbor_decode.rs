@@ -16,7 +16,7 @@ fn test_cbor_decode_empty_input() {
 #[test]
 fn test_cbor_decode_simple_integer() {
     let op = CBORDecode;
-    // CBOR encoding of integer 42
+    // RFC 8949 Appendix A: 42 is encoded as 0x18 0x2a.
     let input = vec![0x18, 0x2a]; // Major type 1 (unsigned int), value 42
     let result = op.run(input, &[]).unwrap();
     let result_str = String::from_utf8(result).unwrap();
@@ -26,7 +26,7 @@ fn test_cbor_decode_simple_integer() {
 #[test]
 fn test_cbor_decode_simple_string() {
     let op = CBORDecode;
-    // CBOR encoding of string "hello"
+    // RFC 8949 section 3.1, major type 3: a five-byte text string starts 0x65.
     let input = vec![0x65, 0x68, 0x65, 0x6c, 0x6c, 0x6f]; // Major type 3 (text string), length 5, "hello"
     let result = op.run(input, &[]).unwrap();
     let result_str = String::from_utf8(result).unwrap();
@@ -36,7 +36,7 @@ fn test_cbor_decode_simple_string() {
 #[test]
 fn test_cbor_decode_array() {
     let op = CBORDecode;
-    // CBOR encoding of array [1, 2, 3]
+    // RFC 8949 Appendix A: [1, 2, 3] is 83 01 02 03.
     let input = vec![0x83, 0x01, 0x02, 0x03]; // Major type 4 (array), length 3, values 1, 2, 3
     let result = op.run(input, &[]).unwrap();
     let result_str = String::from_utf8(result).unwrap();

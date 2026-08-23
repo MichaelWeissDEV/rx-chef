@@ -8,6 +8,8 @@ use rxchef::Operation;
 
 #[test]
 fn test_parse_udp_hex() {
+    // RFC 768: source port, destination port, length and checksum are four
+    // consecutive big-endian 16-bit words, followed by payload data.
     let op = ParseUDP;
     let input = b"04d20050000c1234deadbeef".to_vec(); // src: 1234, dst: 80, len: 12, checksum: 0x1234, data: deadbeef
     let args = [ArgValue::Str("Hex".to_string())];

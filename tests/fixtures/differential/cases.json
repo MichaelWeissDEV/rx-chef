@@ -22303,6 +22303,76 @@
       "reference_encoding": "text",
       "expect": "exact",
       "reference_source": "observed: CyberChef 11.0.0 @ 0bb5472e50e1, inverse input, operation defaults"
+    },
+    {
+      "operation": "Convert area",
+      "input": "1000000",
+      "input_encoding": "text",
+      "args": ["Square metre (sq m)", "Square kilometre (sq km)"],
+      "reference": "1",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.4.0 @ 2e048b029085, explicit units"
+    },
+    {
+      "operation": "Convert data units",
+      "input": "1",
+      "input_encoding": "text",
+      "args": ["Bytes (B)", "Bits (b)"],
+      "reference": "8",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.4.0 @ 2e048b029085, explicit units"
+    },
+    {
+      "operation": "Convert distance",
+      "input": "1",
+      "input_encoding": "text",
+      "args": ["Miles (mi)", "Kilometers (km)"],
+      "reference": "1.609344",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.4.0 @ 2e048b029085, explicit units"
+    },
+    {
+      "operation": "Hamming Distance",
+      "input": "karolin\nkathrin",
+      "input_encoding": "text",
+      "args": ["\n", "Byte", "Raw string"],
+      "reference": "3",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.4.0 @ 2e048b029085, byte distance"
+    },
+    {
+      "operation": "JSON to CSV",
+      "input": "[[\"a\",\"b\"],[\"c\",\"d\"]]",
+      "input_encoding": "text",
+      "args": [",", "\r\n"],
+      "reference": "a,b\r\nc,d\r\n",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.4.0 @ 2e048b029085, explicit RFC 4180 delimiters"
+    },
+    {
+      "operation": "Levenshtein Distance",
+      "input": "kitten\nsitting",
+      "input_encoding": "text",
+      "args": ["\n", "1", "1", "1"],
+      "reference": "3",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.4.0 @ 2e048b029085, unit edit costs"
+    },
+    {
+      "operation": "Find / Replace",
+      "input": "hello world",
+      "input_encoding": "text",
+      "args": ["world", "Simple string", "Rust", "true", "false", "true", "false"],
+      "reference": "hello Rust",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.4.0 @ 2e048b029085, simple-string mode with explicit flags"
     }
   ],
   "reference_provenance": {

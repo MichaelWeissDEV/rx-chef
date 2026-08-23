@@ -11,8 +11,9 @@ fn test_ctph_basic() {
     let input = b"Hello, World!".to_vec();
     let result = op.run(input, &[]).expect("CTPH should succeed");
     let output = String::from_utf8(result).expect("valid utf8");
-    // ssdeep format: blocksize:hash1:hash2
-    assert!(output.contains(':'), "expected ssdeep format with ':'");
+    // Pinned independent CyberChef 11.4.0 result at commit
+    // 2e048b0290854781db61e20638dca62978379032.
+    assert_eq!(output, "A:YXWV:YN");
 }
 #[test]
 fn test_ctph_empty() {

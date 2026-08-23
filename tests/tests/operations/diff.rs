@@ -29,6 +29,7 @@ fn run_op(
 }
 #[test]
 fn test_diff_identical_strings() {
+    // By the definition of a textual diff, identical samples have no edits.
     let result = run_op("hello\n\nhello", "\n\n", true, true, false, false, false);
     assert_eq!(result, "hello");
 }

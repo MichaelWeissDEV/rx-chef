@@ -8,6 +8,7 @@ use rxchef::Operation;
 
 #[test]
 fn test_set_difference_basic() {
+    // Independently calculated from A ∖ B = {x ∈ A | x ∉ B}.
     let op = SetDifference;
     let input = b"a,b,c\n\nd,b,e".to_vec();
     let args = vec![

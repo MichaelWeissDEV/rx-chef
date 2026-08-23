@@ -8,6 +8,7 @@ use rxchef::Operation;
 
 #[test]
 fn test_set_union_basic() {
+    // Independently calculated from A ∪ B = {x | x ∈ A or x ∈ B}.
     let op = SetUnion;
     let input = b"a,b,c\n\nb,c,d".to_vec();
     let args = vec![

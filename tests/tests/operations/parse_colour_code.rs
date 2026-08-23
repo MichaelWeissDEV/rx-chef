@@ -6,6 +6,11 @@ use rxchef::operations::parse_colour_code::ParseColourCode;
 use rxchef::Operation;
 
 #[test]
+fn test_parse_colour_code_rejects_unsupported_format() {
+    assert!(ParseColourCode.run(b"red".to_vec(), &[]).is_err());
+}
+
+#[test]
 fn test_hex() {
     let op = ParseColourCode;
     let input = b"#d9edf7".to_vec();

@@ -21,6 +21,8 @@ fn test_ms_to_kmh() {
 }
 #[test]
 fn test_mph_to_kmh() {
-    let r = run("60", "Miles per hour (mph)", "Kilometres per hour (km/h)");
-    assert!((r - 96.56064).abs() < 1e-4);
+    // One international mile is exactly 1.609344 km, so 60 mph is exactly
+    // 96.56064 km/h (NIST Handbook 44, Appendix C).
+    let actual = run("60", "Miles per hour (mph)", "Kilometres per hour (km/h)");
+    assert!((actual - 96.56064).abs() < 1e-12);
 }

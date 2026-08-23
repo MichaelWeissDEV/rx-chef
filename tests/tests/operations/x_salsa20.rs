@@ -7,6 +7,37 @@ use rxchef::operations::x_salsa20::XSalsa20Op;
 use rxchef::Operation;
 
 #[test]
+fn test_xsalsa20_pinned_reference_vector_first_block() {
+    // Pinned CyberChef 11.4.0 reference vector at commit
+    // 2e048b0290854781db61e20638dca62978379032, independently implemented in JS.
+    let result = XSalsa20Op
+        .run(
+            vec![0; 64],
+            &[
+                ArgValue::Str(
+                    "hex:000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+                        .to_string(),
+                ),
+                ArgValue::Str(
+                    "hex:000102030405060708090a0b0c0d0e0f1011121314151617".to_string(),
+                ),
+                ArgValue::Num(0.0),
+                ArgValue::Str("20".to_string()),
+                ArgValue::Str("Raw".to_string()),
+                ArgValue::Str("Hex".to_string()),
+            ],
+        )
+        .unwrap();
+    assert_eq!(
+        String::from_utf8(result).unwrap(),
+        concat!(
+            "7cb660afdd9ec6468f57dd6d2433f93428fd82cd7386c5471a24d8ad2a525b6e",
+            "5eff384fc7caa210bb3c8f3e688f4a9752a546df8c253fef17a2679455c7a1e1"
+        )
+    );
+}
+
+#[test]
 fn test_xsalsa20_encryption() {
     let op = XSalsa20Op;
     // Key: 32 bytes of 0x01

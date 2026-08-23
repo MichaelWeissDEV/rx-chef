@@ -17,7 +17,12 @@ fn test_numberwang_match() {
     let op = Numberwang;
     let result = op.run(b"42".to_vec(), &[]).unwrap();
     let result_str = String::from_utf8(result).unwrap();
-    assert!(result_str.contains("42! That's Numberwang!"));
+    // The fact is intentionally random, while the answer paragraph is the
+    // deterministic Numberwang reference behaviour.
+    assert_eq!(
+        result_str.split("\n\n").next(),
+        Some("42! That's Numberwang!")
+    );
 }
 #[test]
 fn test_alphanumericwang_match() {

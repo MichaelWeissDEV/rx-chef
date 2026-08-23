@@ -8,6 +8,8 @@ use rxchef::Operation;
 
 #[test]
 fn test_xpath_expression_selects_all_nodes() {
+    // W3C XPath 1.0 location path /root/item selects both item children in
+    // document order; their string-values are "one" and "two".
     let op = XPathExpression;
     let input = b"<root><item>one</item><item>two</item></root>".to_vec();
     let args = [

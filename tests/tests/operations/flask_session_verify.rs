@@ -6,7 +6,8 @@ use rxchef::operation::ArgValue;
 use rxchef::operations::flask_session_verify::FlaskSessionVerify;
 use rxchef::Operation;
 
-// From CyberChef test suite
+// From CyberChef 11.4.0 official FlaskSession test suite at commit
+// 2e048b0290854781db61e20638dca62978379032.
 const VALID_TOKEN_SHA1: &str =
     "eyJyb2xlIjoic3VwZXJ1c2VyIiwidXNlciI6ImFkbWluIn0.aZ-KEw.E_x6bOhA4GU9t72pMinJUjN-O3I";
 const VALID_TOKEN_SHA256: &str =

@@ -6,6 +6,11 @@ use rxchef::operations::plist_viewer::PLISTViewer;
 use rxchef::Operation;
 
 #[test]
+fn test_plist_viewer_rejects_invalid_plist() {
+    assert!(PLISTViewer.run(b"not a property list".to_vec(), &[]).is_err());
+}
+
+#[test]
 fn test_plist_viewer_basic() {
     let op = PLISTViewer;
     let input = r#"<?xml version="1.0" encoding="UTF-8"?>

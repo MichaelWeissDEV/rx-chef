@@ -6,6 +6,12 @@ use rxchef::operations::pem_to_jwk::PEMToJWK;
 use rxchef::Operation;
 
 #[test]
+fn test_pem_to_jwk_rejects_invalid_base64_block() {
+    let malformed = b"-----BEGIN PUBLIC KEY-----\n@@@@\n-----END PUBLIC KEY-----".to_vec();
+    assert!(PEMToJWK.run(malformed, &[]).is_err());
+}
+
+#[test]
 fn test_pem_to_jwk_rsa() {
     let op = PEMToJWK;
     let input = b"-----BEGIN PUBLIC KEY-----\n\

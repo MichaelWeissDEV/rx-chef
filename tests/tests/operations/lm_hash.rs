@@ -7,6 +7,8 @@ use rxchef::Operation;
 
 #[test]
 fn test_lm_hash_basic() {
+    // Published LM hash example for PASSWORD (commonly reproduced by pwdump
+    // and Samba documentation); LM uppercases before hashing.
     let op = LMHash;
     let input = b"password".to_vec();
     let result = op.run(input, &[]).unwrap();

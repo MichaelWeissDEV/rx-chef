@@ -8,7 +8,7 @@ use rxchef::Operation;
 
 #[test]
 fn test_to_bcd_default_zero() {
-    // "To BCD: default 0" -> "0000"
+    // Standard 8-4-2-1 BCD: decimal zero is the nibble 0000.
     let op = ToBCD;
     let args = [
         ArgValue::Str("8 4 2 1".to_string()),

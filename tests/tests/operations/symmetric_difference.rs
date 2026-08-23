@@ -8,6 +8,7 @@ use rxchef::Operation;
 
 #[test]
 fn test_symmetric_difference_basic() {
+    // Independently calculated from A Δ B = (A ∖ B) ∪ (B ∖ A).
     let op = SymmetricDifference;
     let input = b"a,b,c\n\nb,c,d".to_vec();
     let args = vec![

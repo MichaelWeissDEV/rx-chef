@@ -17,6 +17,21 @@ fn test_bcrypt_parse_basic() {
     assert!(output.contains("Salt: $somesalt1234567890abcd"));
     assert!(output.contains("Password hash: "));
 }
+
+#[test]
+fn test_bcrypt_parse_jbcrypt_vector() {
+    let operation = BcryptParse;
+    // jBCrypt/OpenBSD-compatible test vector, also carried by the independent
+    // RustCrypto bcrypt test suite (cost 6, 22-character salt, 31-char hash).
+    let hash = "$2a$06$DCq7YPn5Rq63x1Lad4cll.TV4S6ytwfsfvkgY8jIucDrjc8deX1s.";
+    let output = String::from_utf8(operation.run(hash.as_bytes().to_vec(), &[]).unwrap()).unwrap();
+    assert_eq!(
+        output,
+        "Version: 2a\nRounds: 06\nSalt: $DCq7YPn5Rq63x1Lad4cll.\n\
+         Password hash: $TV4S6ytwfsfvkgY8jIucDrjc8deX1s.\n\
+         Full hash: $2a$06$DCq7YPn5Rq63x1Lad4cll.TV4S6ytwfsfvkgY8jIucDrjc8deX1s."
+    );
+}
 #[test]
 fn test_bcrypt_parse_invalid_format() {
     let operation = BcryptParse;

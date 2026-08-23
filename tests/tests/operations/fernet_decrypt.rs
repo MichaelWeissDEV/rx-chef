@@ -8,6 +8,8 @@ use rxchef::Operation;
 
 #[test]
 fn test_fernet_decrypt_valid() {
+    // Independently observed with CyberChef 11.4.0 at pinned commit
+    // 2e048b0290854781db61e20638dca62978379032 using the same explicit key.
     let op = FernetDecrypt;
     // key: VGhpc0lzVGhpcnR5VHdvQ2hhcmFjdGVyc0xvbmdLZXk=
     // plaintext: "This is a secret message.\n"

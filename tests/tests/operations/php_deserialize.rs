@@ -8,6 +8,8 @@ use rxchef::Operation;
 
 #[test]
 fn test_php_deserialize_basic() {
+    // PHP serialization grammar: a is an array, s a byte-counted string,
+    // i an integer and b a boolean (PHP manual, serialize/unserialize).
     let op = PHPDeserialize;
     let input = b"a:2:{s:1:\"a\";i:10;i:0;a:1:{s:2:\"ab\";b:1;}}".to_vec();
     let result = op.run(input, &[ArgValue::Bool(true)]).unwrap();

@@ -7,14 +7,13 @@ use rxchef::Operation;
 
 #[test]
 fn test_parse_object_id_timestamp_basic() {
-    // ObjectID 5e4d3c2b... => timestamp 0x5e4d3c2b = 1582163755
-    // 2020-02-20T02:35:55.000Z
+    // MongoDB BSON ObjectID specification: the first four bytes are an
+    // unsigned big-endian Unix timestamp. 0x5e4d3c2b = 1582119979.
     let op = ParseObjectIDTimestamp;
     let input = b"5e4d3c2b1234567890abcdef".to_vec();
     let result = op.run(input, &[]).unwrap();
     let out = String::from_utf8(result).unwrap();
-    assert!(out.starts_with("2020-"), "Expected 2020-..., got {}", out);
-    assert!(out.ends_with('Z'));
+    assert_eq!(out, "2020-02-19T13:46:19.000Z");
 }
 #[test]
 fn test_parse_object_id_timestamp_zero() {

@@ -10,8 +10,8 @@ use rxchef::Operation;
 #[test]
 fn test_parse_ssh_host_key_rsa() {
     let op = ParseSshHostKey;
-    // ssh-rsa followed by length-prefixed "ssh-rsa", "exponent", "modulus"
-    // "ssh-rsa" = 7 chars. len = 7.
+    // RFC 4253 section 6.6: ssh-rsa is a length-prefixed name followed by
+    // length-prefixed mpints e and n. This minimal vector uses e=1 and n=2.
     let mut key = vec![0, 0, 0, 7];
     key.extend_from_slice(b"ssh-rsa");
     key.extend_from_slice(&[0, 0, 0, 1, 0x01]); // exponent
@@ -20,9 +20,10 @@ fn test_parse_ssh_host_key_rsa() {
     let input = format!("ssh-rsa {}", b64).into_bytes();
     let result = op.run(input, &[]).unwrap();
     let result_str = String::from_utf8(result).unwrap();
-    assert!(result_str.contains("Key type: ssh-rsa"));
-    assert!(result_str.contains("Exponent: 0x01"));
-    assert!(result_str.contains("Modulus: 0x02"));
+    assert_eq!(
+        result_str,
+        "Key type: ssh-rsa\nExponent: 0x01\nModulus: 0x02"
+    );
 }
 #[test]
 fn test_parse_ssh_host_key_ed25519() {

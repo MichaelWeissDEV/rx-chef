@@ -6,7 +6,8 @@ use rxchef::operation::ArgValue;
 use rxchef::operations::flask_session_decode::FlaskSessionDecode;
 use rxchef::Operation;
 
-// Token from CyberChef test suite:
+// Token from CyberChef 11.4.0 official FlaskSession test suite at commit
+// 2e048b0290854781db61e20638dca62978379032:
 // validTokenSha1 = "eyJyb2xlIjoic3VwZXJ1c2VyIiwidXNlciI6ImFkbWluIn0.aZ-KEw.E_x6bOhA4GU9t72pMinJUjN-O3I"
 // payload decodes to: {"role":"superuser","user":"admin"}
 const VALID_TOKEN_SHA1: &str =

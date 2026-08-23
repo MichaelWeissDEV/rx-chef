@@ -27,6 +27,8 @@ fn test_subsection_empty_input() {
 }
 #[test]
 fn test_subsection_no_regex() {
+    // By the operation contract, an empty subsection regex selects no regions
+    // and therefore leaves the complete input byte-for-byte unchanged.
     let op = Subsection;
     let input = b"data".to_vec();
     let args = [

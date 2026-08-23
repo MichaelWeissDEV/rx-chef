@@ -7,6 +7,33 @@ use rxchef::operations::shake::SHAKE;
 use rxchef::Operation;
 
 #[test]
+fn test_shake128_fips_202_empty_256_bits() {
+    // NIST FIPS 202, Appendix A/known-answer material: SHAKE128("", 256 bits).
+    let result = SHAKE
+        .run(Vec::new(), &[ArgValue::Num(128.0), ArgValue::Num(32.0)])
+        .unwrap();
+    assert_eq!(
+        String::from_utf8(result).unwrap(),
+        "7f9c2ba4e88f827d616045507605853ed73b8093f6efbc88eb1a6eacfa66ef26"
+    );
+}
+
+#[test]
+fn test_shake256_fips_202_empty_512_bits() {
+    // NIST FIPS 202, Appendix A/known-answer material: SHAKE256("", 512 bits).
+    let result = SHAKE
+        .run(Vec::new(), &[ArgValue::Num(256.0), ArgValue::Num(64.0)])
+        .unwrap();
+    assert_eq!(
+        String::from_utf8(result).unwrap(),
+        concat!(
+            "46b9dd2b0ba88d13233b3feb743eeb243fcd52ea62b81b82b50c27646ed5762f",
+            "d75dc4ddd8c0f200cb05019d67b592f6fc821c49479ab48640292eacb3b7c4be"
+        )
+    );
+}
+
+#[test]
 fn test_shake128_basic() {
     let operation = SHAKE;
     let input = b"Hello, World!".to_vec();

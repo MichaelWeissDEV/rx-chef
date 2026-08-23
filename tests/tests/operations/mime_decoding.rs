@@ -6,6 +6,12 @@ use rxchef::operations::mime_decoding::MIMEDecoding;
 use rxchef::Operation;
 
 #[test]
+fn test_mime_decoding_rejects_unsupported_charset() {
+    let result = MIMEDecoding.run(b"=?X-NOT-A-CHARSET?B?YQ==?=".to_vec(), &[]);
+    assert!(result.is_err(), "an unsupported MIME charset must be rejected");
+}
+
+#[test]
 fn test_mime_decoding_base64() {
     let op = MIMEDecoding;
     let input = b"=?utf-8?B?SGVsbG8gV29ybGQ=?=".to_vec();
