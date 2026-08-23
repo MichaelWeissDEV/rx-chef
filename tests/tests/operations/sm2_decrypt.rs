@@ -37,5 +37,8 @@ fn test_sm2_decrypt_matches_pinned_upstream_vector() {
         ArgValue::Str("C1C3C2".into()),
         ArgValue::Str("sm2p256v1".into()),
     ];
-    assert_eq!(Sm2Decrypt.run(ciphertext.to_vec(), &args).unwrap(), b"I am a small plaintext");
+    assert_eq!(
+        Sm2Decrypt.run(ciphertext.to_vec(), &args).unwrap(),
+        b"I am a small plaintext"
+    );
 }

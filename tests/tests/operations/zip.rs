@@ -81,7 +81,11 @@ fn test_zip_empty_file_boundary() {
     let output = ZipOp.run(Vec::new(), &args).unwrap();
     let mut archive = ZipArchive::new(Cursor::new(output)).unwrap();
     let mut contents = Vec::new();
-    archive.by_name("empty.bin").unwrap().read_to_end(&mut contents).unwrap();
+    archive
+        .by_name("empty.bin")
+        .unwrap()
+        .read_to_end(&mut contents)
+        .unwrap();
     assert_eq!(contents, Vec::<u8>::new());
 }
 

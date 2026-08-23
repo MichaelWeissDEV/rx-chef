@@ -98,14 +98,14 @@ impl Operation for ShowBase64Offsets {
             });
         };
         if input.is_empty() {
-            return Err(OperationError::InvalidInput("Please enter a string.".into()));
+            return Err(OperationError::InvalidInput(
+                "Please enter a string.".into(),
+            ));
         }
 
         let encode = |bytes: Vec<u8>| -> Result<String, OperationError> {
-            let encoded = crate::operations::to_base64::ToBase64.run(
-                bytes,
-                &[ArgValue::Str(alphabet.to_string())],
-            )?;
+            let encoded = crate::operations::to_base64::ToBase64
+                .run(bytes, &[ArgValue::Str(alphabet.to_string())])?;
             String::from_utf8(encoded)
                 .map_err(|error| OperationError::ProcessingError(error.to_string()))
         };
@@ -152,25 +152,45 @@ fn static_base64_section(encoded: &str, leading: usize) -> String {
         .to_string()
 }
 
-fn highlight_offset(encoded: &str, offset: usize, alphabet: &str) -> Result<String, OperationError> {
+fn highlight_offset(
+    encoded: &str,
+    offset: usize,
+    alphabet: &str,
+) -> Result<String, OperationError> {
     let padding_index = encoded.find('=').map(|index| index as isize).unwrap_or(-1);
     let remainder = padding_index % 4;
-    let trailing = if remainder == 2 { 3 } else if remainder == 3 { 2 } else { 0 };
+    let trailing = if remainder == 2 {
+        3
+    } else if remainder == 3 {
+        2
+    } else {
+        0
+    };
     let static_end = encoded.len().saturating_sub(trailing);
-    let static_part = encoded.get(offset + usize::from(offset > 0)..static_end).unwrap_or("");
+    let static_part = encoded
+        .get(offset + usize::from(offset > 0)..static_end)
+        .unwrap_or("");
     let prefix = match offset {
         0 => String::new(),
         1 => format!(
             "<span class='hl3'>{}</span><span class='hl5'>{}</span>",
-            &encoded[0..1], &encoded[1..2]
+            &encoded[0..1],
+            &encoded[1..2]
         ),
         2 => format!(
             "<span class='hl3'>{}</span><span class='hl5'>{}</span>",
-            &encoded[0..2], &encoded[2..3]
+            &encoded[0..2],
+            &encoded[2..3]
         ),
         _ => unreachable!(),
     };
-    let decode_prefix = if offset == 1 { "AA" } else if offset == 2 { "AAA" } else { "" };
+    let decode_prefix = if offset == 1 {
+        "AA"
+    } else if offset == 2 {
+        "AAA"
+    } else {
+        ""
+    };
     let tooltip_input = format!("{decode_prefix}{static_part}");
     let decoded = crate::operations::from_base64::FromBase64.run(
         tooltip_input.into_bytes(),

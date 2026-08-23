@@ -106,8 +106,11 @@ fn test_series_chart_single_x_value_has_finite_exact_geometry() {
         .run(
             b"X,A\nonly,10".to_vec(),
             &[
-                ArgValue::Str("\\n".into()), ArgValue::Str(",".into()),
-                ArgValue::Str("X".into()), ArgValue::Num(2.0), ArgValue::Str("red".into()),
+                ArgValue::Str("\\n".into()),
+                ArgValue::Str(",".into()),
+                ArgValue::Str("X".into()),
+                ArgValue::Num(2.0),
+                ArgValue::Str("red".into()),
             ],
         )
         .unwrap();

@@ -39,7 +39,12 @@ fn test_multiple_bombe_recovers_upstream_reference_stop() {
         ArgValue::Num(0.0),
         ArgValue::Bool(false),
     ];
-    let output = String::from_utf8(MultipleBombe.run(b"BBYFLTHHYIJQAYBBYS".to_vec(), &args).unwrap()).unwrap();
+    let output = String::from_utf8(
+        MultipleBombe
+            .run(b"BBYFLTHHYIJQAYBBYS".to_vec(), &args)
+            .unwrap(),
+    )
+    .unwrap();
     assert_eq!(
         output,
         r#"{"bombe_runs":[{"rotors":["EKMFLGDQVZNTOWYHXUSPAIBRCJ<R","AJDKSIRUXBLHWTMCQGZNPYFVOE<F","BDFHJLCPRTXVZNYEIWGAKMUSQO<W"],"reflector":"AY BR CU DH EQ FS GL IP JX KN MO TZ VW","result":[["LGA","SS","VFISUSGTKSTMPSUNAK"]]}],"n_loops":36}"#

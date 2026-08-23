@@ -232,8 +232,7 @@ impl Operation for ScatterChart {
             if y_max == y_min {
                 margin_top + height / 2.0
             } else {
-                margin_top + height
-                    - (y - y_range_min) / (y_range_max - y_range_min) * height
+                margin_top + height - (y - y_range_min) / (y_range_max - y_range_min) * height
             }
         };
 

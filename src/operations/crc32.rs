@@ -173,11 +173,7 @@ impl Operation for CRC32 {
     }
 }
 
-fn parse_hex_arg(
-    arg: Option<&ArgValue>,
-    name: &str,
-    default: u32,
-) -> Result<u32, OperationError> {
+fn parse_hex_arg(arg: Option<&ArgValue>, name: &str, default: u32) -> Result<u32, OperationError> {
     let Some(value) = arg.and_then(ArgValue::as_str) else {
         return Ok(default);
     };

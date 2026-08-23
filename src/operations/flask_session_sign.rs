@@ -154,34 +154,34 @@ fn sign_session_at(
     algorithm: &str,
     timestamp: u32,
 ) -> Result<Vec<u8>, OperationError> {
-        let payload_b64 = STANDARD.encode(compact_json.as_bytes());
-        let payload = b64_to_urlsafe_nopad(&payload_b64);
+    let payload_b64 = STANDARD.encode(compact_json.as_bytes());
+    let payload = b64_to_urlsafe_nopad(&payload_b64);
 
-        // Build timestamp as an unsigned big-endian 32-bit integer.
-        let now = timestamp;
-        let ts_bytes = now.to_be_bytes();
-        let ts_b64 = STANDARD.encode(ts_bytes);
-        let time = b64_to_urlsafe_nopad(&ts_b64);
+    // Build timestamp as an unsigned big-endian 32-bit integer.
+    let now = timestamp;
+    let ts_bytes = now.to_be_bytes();
+    let ts_b64 = STANDARD.encode(ts_bytes);
+    let time = b64_to_urlsafe_nopad(&ts_b64);
 
-        // Data to sign: "payload.timestamp"
-        let data = format!("{}.{}", payload, time);
+    // Data to sign: "payload.timestamp"
+    let data = format!("{}.{}", payload, time);
 
-        let sig_bytes = match algorithm {
-            "sha256" => sign_itsdangerous_sha256(&key, salt.as_bytes(), data.as_bytes())?,
-            "sha1" => sign_itsdangerous_sha1(&key, salt.as_bytes(), data.as_bytes())?,
-            _ => {
-                return Err(OperationError::InvalidArgument {
-                    name: "Algorithm".into(),
-                    reason: format!("expected sha1 or sha256, got {algorithm:?}"),
-                })
-            }
-        };
+    let sig_bytes = match algorithm {
+        "sha256" => sign_itsdangerous_sha256(&key, salt.as_bytes(), data.as_bytes())?,
+        "sha1" => sign_itsdangerous_sha1(&key, salt.as_bytes(), data.as_bytes())?,
+        _ => {
+            return Err(OperationError::InvalidArgument {
+                name: "Algorithm".into(),
+                reason: format!("expected sha1 or sha256, got {algorithm:?}"),
+            })
+        }
+    };
 
-        let sig_b64 = STANDARD.encode(&sig_bytes);
-        let sig = b64_to_urlsafe_nopad(&sig_b64);
+    let sig_b64 = STANDARD.encode(&sig_bytes);
+    let sig = b64_to_urlsafe_nopad(&sig_b64);
 
-        let token = format!("{}.{}.{}", payload, time, sig);
-        Ok(token.into_bytes())
+    let token = format!("{}.{}.{}", payload, time, sig);
+    Ok(token.into_bytes())
 }
 
 /// Convert standard base64 to url-safe base64 with no padding

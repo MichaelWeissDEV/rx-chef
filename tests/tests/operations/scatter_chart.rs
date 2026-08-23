@@ -73,9 +73,14 @@ fn test_scatter_chart_single_point_boundary_has_finite_geometry() {
         .run(
             b"1,2".to_vec(),
             &[
-                ArgValue::Str("Line feed".into()), ArgValue::Str("Comma".into()),
-                ArgValue::Bool(false), ArgValue::Str("X".into()), ArgValue::Str("Y".into()),
-                ArgValue::Str("blue".into()), ArgValue::Num(5.0), ArgValue::Bool(false),
+                ArgValue::Str("Line feed".into()),
+                ArgValue::Str("Comma".into()),
+                ArgValue::Bool(false),
+                ArgValue::Str("X".into()),
+                ArgValue::Str("Y".into()),
+                ArgValue::Str("blue".into()),
+                ArgValue::Num(5.0),
+                ArgValue::Bool(false),
             ],
         )
         .unwrap();
@@ -91,7 +96,11 @@ fn test_scatter_chart_single_point_boundary_has_finite_geometry() {
 fn test_scatter_chart_rejects_non_numeric_point() {
     let result = ScatterChart.run(
         b"nope,2".to_vec(),
-        &[ArgValue::Str("Line feed".into()), ArgValue::Str("Comma".into()), ArgValue::Bool(false)],
+        &[
+            ArgValue::Str("Line feed".into()),
+            ArgValue::Str("Comma".into()),
+            ArgValue::Bool(false),
+        ],
     );
     assert!(result.is_err());
 }

@@ -2384,7 +2384,7 @@
       "correctness": [
         "tests/tests/operations/gost_key_unwrap.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/gost_key_unwrap.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2395,31 +2395,29 @@
       "correctness": [
         "tests/tests/operations/gost_key_wrap.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/gost_key_wrap.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
-      "untested_reason": "Needs published GOST 28147-89 key-wrap test vectors; no reference vector is recorded yet."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "gost_sign": {
       "correctness": [
         "tests/tests/operations/gost_sign.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/gost_sign.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
       "benchmark": [],
-      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed.",
-      "untested_reason": "Needs published GOST 28147-89 MAC test vectors; no reference vector is recorded yet."
+      "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "gost_verify": {
       "correctness": [
         "tests/tests/operations/gost_verify.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/gost_verify.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],

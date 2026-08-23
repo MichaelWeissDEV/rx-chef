@@ -26,7 +26,10 @@ fn test_generate_image_greyscale() {
 
 #[test]
 fn test_generate_image_empty_input_boundary() {
-    assert_eq!(GenerateImageOp.run(Vec::new(), &[]).unwrap(), Vec::<u8>::new());
+    assert_eq!(
+        GenerateImageOp.run(Vec::new(), &[]).unwrap(),
+        Vec::<u8>::new()
+    );
 }
 
 #[test]

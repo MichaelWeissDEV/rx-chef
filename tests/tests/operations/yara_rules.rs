@@ -38,8 +38,12 @@ fn test_yara_rules_empty_input_filesize_boundary() {
         .run(
             Vec::new(),
             &[
-                ArgValue::Str(rules.into()), ArgValue::Bool(false), ArgValue::Bool(false),
-                ArgValue::Bool(false), ArgValue::Bool(true), ArgValue::Bool(true),
+                ArgValue::Str(rules.into()),
+                ArgValue::Bool(false),
+                ArgValue::Bool(false),
+                ArgValue::Bool(false),
+                ArgValue::Bool(true),
+                ArgValue::Bool(true),
                 ArgValue::Bool(true),
             ],
         )

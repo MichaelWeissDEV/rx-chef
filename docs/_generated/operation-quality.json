@@ -3,15 +3,15 @@
   "operation_count": 478,
   "summary": {
     "registered": 478,
-    "correctness_verified": 474,
-    "correctness_partially_verified": 4,
+    "correctness_verified": 478,
+    "correctness_partially_verified": 0,
     "correctness_unverified": 0,
     "tested": 478,
-    "test_functions": 2521,
+    "test_functions": 2525,
     "negative_tested": 385,
     "negative_not_applicable": 93,
     "boundary_tested": 478,
-    "reference_verified": 227,
+    "reference_verified": 231,
     "differential_verified": 262,
     "parity_exact": 171,
     "parity_compatible": 5,
@@ -7820,19 +7820,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
       "fixture_binary_or_unicode": true,
-      "tests": 1,
+      "tests": 2,
       "negative_test": false,
       "boundary_test": false,
       "empty_input_test": false,
-      "value_assertions": 1,
+      "value_assertions": 2,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "GOST Key Unwrap",
@@ -7846,13 +7844,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/gost_key_unwrap.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/gost_key_unwrap.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -7864,21 +7864,19 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
       "fixture_binary_or_unicode": true,
-      "tests": 0,
+      "tests": 1,
       "negative_test": false,
       "boundary_test": false,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 1,
       "tests_asserting_only_success": 0,
-      "untested_reason": "Needs published GOST 28147-89 key-wrap test vectors; no reference vector is recorded yet.",
+      "untested_reason": null,
       "name": "GOST Key Wrap",
       "slug": "gost-key-wrap",
       "id": "gost_key_wrap",
@@ -7889,14 +7887,16 @@
       "input": "Bytes",
       "output": "Bytes",
       "args_documented": true,
-      "correctness_test": false,
-      "known_answer_test": false,
+      "correctness_test": true,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/gost_key_wrap.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/gost_key_wrap.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -7908,21 +7908,19 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
       "fixture_binary_or_unicode": true,
-      "tests": 0,
+      "tests": 1,
       "negative_test": false,
       "boundary_test": false,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 1,
       "tests_asserting_only_success": 0,
-      "untested_reason": "Needs published GOST 28147-89 MAC test vectors; no reference vector is recorded yet.",
+      "untested_reason": null,
       "name": "GOST Sign",
       "slug": "gost-sign",
       "id": "gost_sign",
@@ -7933,14 +7931,16 @@
       "input": "Bytes",
       "output": "Bytes",
       "args_documented": true,
-      "correctness_test": false,
-      "known_answer_test": false,
+      "correctness_test": true,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/gost_sign.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/gost_sign.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -7952,19 +7952,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": true,
       "fixture_rejection": true,
       "fixture_binary_or_unicode": true,
-      "tests": 1,
+      "tests": 2,
       "negative_test": false,
       "boundary_test": false,
       "empty_input_test": false,
-      "value_assertions": 2,
+      "value_assertions": 3,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "GOST Verify",
@@ -7978,13 +7976,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/gost_verify.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/gost_verify.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],

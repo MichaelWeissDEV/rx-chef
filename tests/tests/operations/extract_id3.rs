@@ -9,8 +9,8 @@ fn tagged_mp3() -> Vec<u8> {
     // ID3v2.3 TIT2("Title") followed by one MPEG-1 Layer III, 128 kb/s,
     // 44.1 kHz frame (417 bytes including its four-byte header).
     let mut bytes = vec![
-        b'I', b'D', b'3', 3, 0, 0, 0, 0, 0, 16, b'T', b'I', b'T', b'2', 0, 0, 0, 6, 0, 0, 0,
-        b'T', b'i', b't', b'l', b'e', 0xff, 0xfb, 0x90, 0x64,
+        b'I', b'D', b'3', 3, 0, 0, 0, 0, 0, 16, b'T', b'I', b'T', b'2', 0, 0, 0, 6, 0, 0, 0, b'T',
+        b'i', b't', b'l', b'e', 0xff, 0xfb, 0x90, 0x64,
     ];
     bytes.resize(10 + 16 + 417, 0);
     bytes.extend_from_slice(&[0xff, 0xfb, 0x90, 0x64]);

@@ -151,7 +151,8 @@ fn test_bombe_recovers_upstream_reference_stop() {
         ArgValue::Num(0.0),
         ArgValue::Bool(false),
     ];
-    let output = String::from_utf8(Bombe.run(b"BBYFLTHHYIJQAYBBYS".to_vec(), &args).unwrap()).unwrap();
+    let output =
+        String::from_utf8(Bombe.run(b"BBYFLTHHYIJQAYBBYS".to_vec(), &args).unwrap()).unwrap();
     assert_eq!(
         output,
         r#"{"n_loops":6,"result":[["LGA","SS","VFISUSGTKSTMPSUNAK"]]}"#

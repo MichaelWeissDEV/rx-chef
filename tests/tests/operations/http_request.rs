@@ -24,9 +24,16 @@ fn test_http_request_against_local_protocol_stub() {
         }
         let header_end = request.windows(4).position(|w| w == b"\r\n\r\n").unwrap() + 4;
         let headers = String::from_utf8_lossy(&request[..header_end]);
-        let length = headers.lines().find_map(|line| {
-            line.to_ascii_lowercase().strip_prefix("content-length:")?.trim().parse::<usize>().ok()
-        }).unwrap_or(0);
+        let length = headers
+            .lines()
+            .find_map(|line| {
+                line.to_ascii_lowercase()
+                    .strip_prefix("content-length:")?
+                    .trim()
+                    .parse::<usize>()
+                    .ok()
+            })
+            .unwrap_or(0);
         while request.len() < header_end + length {
             let read = stream.read(&mut buffer).unwrap();
             request.extend_from_slice(&buffer[..read]);
@@ -35,21 +42,25 @@ fn test_http_request_against_local_protocol_stub() {
         stream.write_all(b"HTTP/1.1 201 Created\r\nX-Test: yes\r\nContent-Length: 4\r\nConnection: close\r\n\r\npong").unwrap();
     });
 
-    let output = HTTPRequest.run(
-        b"ping".to_vec(),
-        &[
-            ArgValue::Str("POST".into()),
-            ArgValue::Str(format!("http://{address}/submit")),
-            ArgValue::Str("X-Recipe: rxchef".into()),
-            ArgValue::Str("Cross-Origin Resource Sharing".into()),
-            ArgValue::Bool(false),
-        ],
-    ).unwrap();
+    let output = HTTPRequest
+        .run(
+            b"ping".to_vec(),
+            &[
+                ArgValue::Str("POST".into()),
+                ArgValue::Str(format!("http://{address}/submit")),
+                ArgValue::Str("X-Recipe: rxchef".into()),
+                ArgValue::Str("Cross-Origin Resource Sharing".into()),
+                ArgValue::Bool(false),
+            ],
+        )
+        .unwrap();
     assert_eq!(output, b"pong");
     let request = receiver.recv().unwrap();
     let request = String::from_utf8(request).unwrap();
     assert!(request.starts_with("POST /submit HTTP/1.1\r\n"));
-    assert!(request.to_ascii_lowercase().contains("x-recipe: rxchef\r\n"));
+    assert!(request
+        .to_ascii_lowercase()
+        .contains("x-recipe: rxchef\r\n"));
     assert!(request.ends_with("\r\n\r\nping"));
     server.join().unwrap();
 }
@@ -58,7 +69,10 @@ fn test_http_request_against_local_protocol_stub() {
 fn test_http_request_rejects_invalid_method() {
     let result = HTTPRequest.run(
         Vec::new(),
-        &[ArgValue::Str("BAD METHOD".into()), ArgValue::Str("http://127.0.0.1/".into())],
+        &[
+            ArgValue::Str("BAD METHOD".into()),
+            ArgValue::Str("http://127.0.0.1/".into()),
+        ],
     );
     assert!(result.is_err());
 }

@@ -118,7 +118,11 @@ impl Operation for ROT13BruteForce {
         let sample_len = args.get(3).and_then(ArgValue::as_usize).unwrap_or(100);
         let sample_offset = args.get(4).and_then(ArgValue::as_usize).unwrap_or(0);
         let print_amount = args.get(5).and_then(ArgValue::as_bool).unwrap_or(true);
-        let crib = args.get(6).and_then(ArgValue::as_str).unwrap_or("").to_lowercase();
+        let crib = args
+            .get(6)
+            .and_then(ArgValue::as_str)
+            .unwrap_or("")
+            .to_lowercase();
         let end = sample_offset.saturating_add(sample_len).min(input.len());
         let sample = input.get(sample_offset..end).unwrap_or(&[]);
         let mut results = Vec::new();
@@ -136,8 +140,9 @@ impl Operation for ROT13BruteForce {
                     *byte
                 };
             }
-            let text = String::from_utf8(rotated)
-                .map_err(|_| OperationError::InvalidInput("Rotated sample is not valid UTF-8".into()))?;
+            let text = String::from_utf8(rotated).map_err(|_| {
+                OperationError::InvalidInput("Rotated sample is not valid UTF-8".into())
+            })?;
             if text.to_lowercase().contains(&crib) {
                 let escaped = text
                     .chars()

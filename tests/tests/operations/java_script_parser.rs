@@ -32,6 +32,9 @@ fn test_parser_ast_metadata_and_errors() {
         ast["body"][0]["declarations"][0]["init"]["value"].as_f64(),
         Some(1.0)
     );
-    assert_eq!(ast["body"][0]["declarations"][0]["id"]["range"], serde_json::json!([15, 16]));
+    assert_eq!(
+        ast["body"][0]["declarations"][0]["id"]["range"],
+        serde_json::json!([15, 16])
+    );
     assert!(op.run(b"const = ;".to_vec(), &[]).is_err());
 }

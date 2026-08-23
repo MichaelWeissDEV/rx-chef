@@ -4,14 +4,5 @@
 
 Why each operation is not yet `verified`, and what would close the gap. Groups are ordered by how much work they need, so the list can be worked in batches.
 
-**474 verified · 4 partially verified · 0 unverified** of 478 registered.
-
-## A: only independent evidence missing (4)
-
-| Operation | Module | Tests | Neg | Bound | KAT | Diff | Parity | Weak | Remaining gaps | Strategy |
-|---|---|---:|:---:|:---:|:---:|:---:|---|---:|---|---|
-| GOST Key Unwrap | Ciphers | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
-| GOST Key Wrap | Ciphers | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
-| GOST Sign | Ciphers | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
-| GOST Verify | Ciphers | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
+**478 verified · 0 partially verified · 0 unverified** of 478 registered.
 

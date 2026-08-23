@@ -2,8 +2,8 @@
 // Run only these tests:
 //   cargo test -p cyberchef-rust-tests --test operations generate_rsa_key_pair::
 
-use rxchef::operations::generate_rsa_key_pair::GenerateRSAKeyPair;
 use rxchef::operation::ArgValue;
+use rxchef::operations::generate_rsa_key_pair::GenerateRSAKeyPair;
 use rxchef::operations::rsa_sign::RSASign;
 use rxchef::Operation;
 

@@ -2,8 +2,8 @@
 // Run only these tests:
 //   cargo test -p cyberchef-rust-tests --test operations crc32::
 
-use rxchef::operations::crc32::CRC32;
 use rxchef::operation::ArgValue;
+use rxchef::operations::crc32::CRC32;
 use rxchef::Operation;
 
 #[test]

@@ -165,7 +165,10 @@ fn test_generated_pgp_key_pair_has_requested_identity_and_interoperates() {
     assert!(public.starts_with("-----BEGIN PGP PUBLIC KEY BLOCK-----"));
     assert!(private.starts_with("-----BEGIN PGP PRIVATE KEY BLOCK-----"));
     let encrypted = PGPEncrypt
-        .run(b"generated-key proof".to_vec(), &[ArgValue::Str(public.into())])
+        .run(
+            b"generated-key proof".to_vec(),
+            &[ArgValue::Str(public.into())],
+        )
         .unwrap();
     assert_eq!(
         PGPDecrypt

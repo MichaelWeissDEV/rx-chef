@@ -2,10 +2,16 @@
 // Run only these tests:
 //   cargo test -p cyberchef-rust-tests --test operations generate_pgp_key_pair::
 
+#[cfg(feature = "pgp")]
+use rxchef::{
+    operation::ArgValue,
+    operations::{
+        generate_pgp_key_pair::GeneratePGPKeyPair, pgp_decrypt::PGPDecrypt, pgp_encrypt::PGPEncrypt,
+    },
+    Operation,
+};
 #[cfg(not(feature = "pgp"))]
 use rxchef::{operations::generate_pgp_key_pair::GeneratePGPKeyPair, Operation};
-#[cfg(feature = "pgp")]
-use rxchef::{operation::ArgValue, operations::{generate_pgp_key_pair::GeneratePGPKeyPair, pgp_decrypt::PGPDecrypt, pgp_encrypt::PGPEncrypt}, Operation};
 
 #[test]
 #[cfg(not(feature = "pgp"))]
@@ -63,18 +69,32 @@ fn test_generate_pgp_key_pair_empty_input() {
 #[test]
 #[cfg(feature = "pgp")]
 fn test_generate_pgp_key_pair_exact_interoperability_payload() {
-    let keys = GeneratePGPKeyPair.run(Vec::new(), &[
-        ArgValue::Str("ECC-256".into()), ArgValue::Str(String::new()),
-        ArgValue::Str("Ada Lovelace".into()), ArgValue::Str("ada@example.test".into()),
-    ]).unwrap();
+    let keys = GeneratePGPKeyPair
+        .run(
+            Vec::new(),
+            &[
+                ArgValue::Str("ECC-256".into()),
+                ArgValue::Str(String::new()),
+                ArgValue::Str("Ada Lovelace".into()),
+                ArgValue::Str("ada@example.test".into()),
+            ],
+        )
+        .unwrap();
     let keys: serde_json::Value = serde_json::from_slice(&keys).unwrap();
-    let encrypted = PGPEncrypt.run(
-        b"generated PGP key proof".to_vec(),
-        &[ArgValue::Str(keys["publicKey"].as_str().unwrap().into())],
-    ).unwrap();
-    let decrypted = PGPDecrypt.run(encrypted, &[
-        ArgValue::Str(keys["privateKey"].as_str().unwrap().into()),
-        ArgValue::Str(String::new()),
-    ]).unwrap();
+    let encrypted = PGPEncrypt
+        .run(
+            b"generated PGP key proof".to_vec(),
+            &[ArgValue::Str(keys["publicKey"].as_str().unwrap().into())],
+        )
+        .unwrap();
+    let decrypted = PGPDecrypt
+        .run(
+            encrypted,
+            &[
+                ArgValue::Str(keys["privateKey"].as_str().unwrap().into()),
+                ArgValue::Str(String::new()),
+            ],
+        )
+        .unwrap();
     assert_eq!(decrypted, b"generated PGP key proof");
 }

@@ -100,8 +100,9 @@ fn format_bytes(bytes: Vec<u8>, output_as: &str) -> Result<Vec<u8>, OperationErr
     match output_as {
         "Hex" => Ok(hex::encode(bytes).into_bytes()),
         "Integer" => Ok(BigUint::from_bytes_le(&bytes).to_string().into_bytes()),
-        "Byte array" => serde_json::to_vec(&bytes)
-            .map_err(|e| OperationError::ProcessingError(e.to_string())),
+        "Byte array" => {
+            serde_json::to_vec(&bytes).map_err(|e| OperationError::ProcessingError(e.to_string()))
+        }
         "Raw" => Ok(bytes),
         _ => Err(OperationError::InvalidArgument {
             name: "Output as".into(),
@@ -118,8 +119,14 @@ mod tests {
     fn fixed_octets_have_exact_documented_encodings() {
         let octets = vec![0x00, 0x01, 0xff];
         assert_eq!(format_bytes(octets.clone(), "Hex").unwrap(), b"0001ff");
-        assert_eq!(format_bytes(octets.clone(), "Integer").unwrap(), b"16711936");
-        assert_eq!(format_bytes(octets.clone(), "Byte array").unwrap(), b"[0,1,255]");
+        assert_eq!(
+            format_bytes(octets.clone(), "Integer").unwrap(),
+            b"16711936"
+        );
+        assert_eq!(
+            format_bytes(octets.clone(), "Byte array").unwrap(),
+            b"[0,1,255]"
+        );
         assert_eq!(format_bytes(octets.clone(), "Raw").unwrap(), octets);
     }
 }

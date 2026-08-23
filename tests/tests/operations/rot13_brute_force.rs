@@ -2,8 +2,8 @@
 // Run only these tests:
 //   cargo test -p cyberchef-rust-tests --test operations rot13_brute_force::
 
-use rxchef::operations::rot13_brute_force::ROT13BruteForce;
 use rxchef::operation::ArgValue;
+use rxchef::operations::rot13_brute_force::ROT13BruteForce;
 use rxchef::Operation;
 
 #[test]

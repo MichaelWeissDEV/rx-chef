@@ -18,7 +18,10 @@ fn test_encrypt_output_longer_than_input() {
 #[test]
 fn test_encrypt_empty_plaintext_boundary_is_iv_only() {
     let args = [ArgValue::Str(String::new()), ArgValue::Num(20.0)];
-    assert_eq!(CipherSaber2Encrypt.run(Vec::new(), &args).unwrap().len(), 10);
+    assert_eq!(
+        CipherSaber2Encrypt.run(Vec::new(), &args).unwrap().len(),
+        10
+    );
 }
 
 #[test]

@@ -2,8 +2,8 @@
 // Run only these tests:
 //   cargo test -p cyberchef-rust-tests --test operations magic::
 
-use rxchef::operations::magic::Magic;
 use rxchef::operation::ArgValue;
+use rxchef::operations::magic::Magic;
 use rxchef::Operation;
 
 #[test]
@@ -28,7 +28,9 @@ fn test_magic_decodes_base64_known_answer() {
 #[test]
 fn test_magic_zero_depth_boundary_returns_no_candidates() {
     assert_eq!(
-        Magic.run(b"SGVsbG8gV29ybGQ=".to_vec(), &[ArgValue::Num(0.0)]).unwrap(),
+        Magic
+            .run(b"SGVsbG8gV29ybGQ=".to_vec(), &[ArgValue::Num(0.0)])
+            .unwrap(),
         b"[]"
     );
 }
@@ -38,7 +40,9 @@ fn test_magic_rejects_invalid_crib_regex() {
     let result = Magic.run(
         b"data".to_vec(),
         &[
-            ArgValue::Num(3.0), ArgValue::Bool(false), ArgValue::Bool(false),
+            ArgValue::Num(3.0),
+            ArgValue::Bool(false),
+            ArgValue::Bool(false),
             ArgValue::Str("[".into()),
         ],
     );

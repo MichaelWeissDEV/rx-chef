@@ -2,18 +2,26 @@
 // Run only these tests:
 //   cargo test -p cyberchef-rust-tests --test operations optical_character_recognition::
 
-use rxchef::operations::optical_character_recognition::OpticalCharacterRecognition;
 #[cfg(feature = "tesseract")]
 use rxchef::operation::ArgValue;
+use rxchef::operations::optical_character_recognition::OpticalCharacterRecognition;
 use rxchef::Operation;
 
 #[cfg(feature = "tesseract")]
 fn test_bitmap_bmp() -> Vec<u8> {
     const GLYPHS: [[u8; 7]; 4] = [
-        [0b11111, 0b00100, 0b00100, 0b00100, 0b00100, 0b00100, 0b00100], // T
-        [0b11111, 0b10000, 0b10000, 0b11110, 0b10000, 0b10000, 0b11111], // E
-        [0b01111, 0b10000, 0b10000, 0b01110, 0b00001, 0b00001, 0b11110], // S
-        [0b11111, 0b00100, 0b00100, 0b00100, 0b00100, 0b00100, 0b00100], // T
+        [
+            0b11111, 0b00100, 0b00100, 0b00100, 0b00100, 0b00100, 0b00100,
+        ], // T
+        [
+            0b11111, 0b10000, 0b10000, 0b11110, 0b10000, 0b10000, 0b11111,
+        ], // E
+        [
+            0b01111, 0b10000, 0b10000, 0b01110, 0b00001, 0b00001, 0b11110,
+        ], // S
+        [
+            0b11111, 0b00100, 0b00100, 0b00100, 0b00100, 0b00100, 0b00100,
+        ], // T
     ];
     const SCALE: usize = 20;
     const WIDTH: usize = 520;
@@ -36,7 +44,9 @@ fn test_bitmap_bmp() -> Vec<u8> {
         let origin_x = 40 + glyph_index * 120;
         for (row, bits) in glyph.iter().enumerate() {
             for column in 0..5 {
-                if bits & (1 << (4 - column)) == 0 { continue; }
+                if bits & (1 << (4 - column)) == 0 {
+                    continue;
+                }
                 for dy in 0..SCALE {
                     for dx in 0..SCALE {
                         let x = origin_x + column * SCALE + dx;
