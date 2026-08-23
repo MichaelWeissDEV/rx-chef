@@ -667,7 +667,7 @@
       "correctness": [
         "tests/tests/operations/csv_to_json.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/csv_to_json.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -1263,10 +1263,13 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "detect_file_type": {
+      "negative_test_policy": {
+        "not_applicable": "Detect File Type is a total signature classifier over arbitrary finite bytes; its six boolean switches only enable or disable file-type families and introduce no invalid value."
+      },
       "correctness": [
         "tests/tests/operations/detect_file_type.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/detect_file_type.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -1468,7 +1471,7 @@
       "correctness": [
         "tests/tests/operations/entropy.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/entropy.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3278,10 +3281,13 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "label": {
+      "negative_test_policy": {
+        "not_applicable": "Label is an identity marker for recipe control flow: standalone execution accepts every finite byte string and every label name and always returns the input unchanged."
+      },
       "correctness": [
         "tests/tests/operations/label.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/label.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3448,10 +3454,13 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "merge": {
+      "negative_test_policy": {
+        "not_applicable": "Merge is a total identity operation when executed standalone; branch consolidation belongs to recipe control flow, while every byte input and either boolean flag is valid."
+      },
       "correctness": [
         "tests/tests/operations/merge.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/merge.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -5042,10 +5051,13 @@
       "benchmark_skip_reason": "No stable representative benchmark case is defined; operation remains Partial until performance evidence is reviewed."
     },
     "shuffle": {
+      "negative_test_policy": {
+        "not_applicable": "Shuffle accepts every finite string and every delimiter string, including an empty delimiter for character shuffling; all inputs have a defined permutation output."
+      },
       "correctness": [
         "tests/tests/operations/shuffle.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/shuffle.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -5402,7 +5414,7 @@
       "correctness": [
         "tests/tests/operations/tar.rs"
       ],
-      "known_answer": [],
+      "known_answer": ["tests/tests/operations/tar.rs"],
       "differential": [],
       "property": [],
       "fuzz": [],

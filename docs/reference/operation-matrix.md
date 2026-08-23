@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2391 |
-| With negative tests | 365 |
-| With boundary tests | 459 |
-| Reference-verified (known answer) | 167 |
+| Test functions | 2395 |
+| With negative tests | 368 |
+| With boundary tests | 460 |
+| Reference-verified (known answer) | 174 |
 | Differential-verified | 258 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -39,7 +39,7 @@
 
 | Operation | Status | Parity | Args | Tests | Neg | Bound | KAT | Diff | Property | Fuzz | Bench | Docs |
 |---|---|---|:---:|---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Entropy | partial | unknown | yes | 5 | — | yes | — | — | — | — | — | yes |
+| Entropy | partial | unknown | yes | 6 | yes | yes | yes | — | — | — | — | yes |
 | Heatmap chart | partial | unknown | yes | 13 | yes | yes | yes | — | — | — | — | yes |
 | Hex Density chart | partial | unknown | yes | 2 | — | — | yes | — | — | — | — | yes |
 | Scatter chart | partial | unknown | yes | 3 | — | — | — | — | — | — | — | yes |
@@ -161,7 +161,7 @@
 | LZString Decompress | partial | unknown | yes | 4 | yes | — | — | yes | — | — | — | yes |
 | Raw Deflate | partial | unknown | yes | 2 | — | yes | — | yes | — | — | — | yes |
 | Raw Inflate | partial | unknown | yes | 2 | yes | — | — | yes | — | — | — | yes |
-| Tar | partial | unknown | yes | 3 | — | yes | — | — | — | — | — | yes |
+| Tar | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | Untar | partial | unknown | yes | 3 | — | yes | yes | — | — | — | — | yes |
 | Unzip | partial | unknown | yes | 3 | — | yes | yes | — | — | — | — | yes |
 | Zip | partial | unknown | yes | 3 | — | — | — | — | — | — | — | yes |
@@ -172,7 +172,7 @@
 
 | Operation | Status | Parity | Args | Tests | Neg | Bound | KAT | Diff | Property | Fuzz | Bench | Docs |
 |---|---|---|:---:|---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| CSV to JSON | partial | unknown | yes | 4 | — | yes | — | — | — | — | — | yes |
+| CSV to JSON | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
 
 ## Crypto
 
@@ -258,7 +258,7 @@
 | Decode NetBIOS Name | partial | exact | yes | 13 | yes | yes | — | yes | — | — | — | yes |
 | Defang IP Addresses | partial | exact | yes | 4 | — | — | — | yes | — | — | — | yes |
 | Defang URL | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
-| Detect File Type | partial | unknown | yes | 19 | — | yes | — | — | — | — | — | yes |
+| Detect File Type | partial | unknown | yes | 19 | — | yes | yes | — | — | — | — | yes |
 | Divide | partial | exact | yes | 5 | — | yes | — | yes | — | — | — | yes |
 | Drop bytes | partial | exact | yes | 4 | — | — | — | yes | — | — | — | yes |
 | Drop nth bytes | partial | exact | yes | 5 | yes | — | — | yes | — | — | — | yes |
@@ -318,14 +318,14 @@
 | JSON to CSV | partial | unknown | yes | 3 | — | — | — | yes | — | — | — | yes |
 | JSON to YAML | partial | unknown | yes | 2 | — | yes | — | yes | — | — | — | yes |
 | Jump | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
-| Label | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
+| Label | partial | unknown | yes | 2 | — | yes | yes | — | — | — | — | yes |
 | Levenshtein Distance | partial | unknown | yes | 9 | yes | yes | — | yes | — | — | — | yes |
 | Luhn Checksum | partial | unknown | yes | 8 | yes | yes | — | yes | — | — | — | yes |
 | MIME Decoding | partial | exact | yes | 4 | yes | — | — | yes | — | — | — | yes |
 | Magic | partial | unknown | yes | 1 | — | — | — | — | — | — | yes | yes |
 | Mean | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |
 | Median | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |
-| Merge | partial | unknown | yes | 5 | — | yes | — | — | — | — | — | yes |
+| Merge | partial | unknown | yes | 5 | — | yes | yes | — | — | — | — | yes |
 | Microsoft Script Decoder | partial | exact | yes | 1 | — | — | — | yes | — | — | — | yes |
 | Multiply | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |
 | NOT | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |
@@ -369,7 +369,7 @@
 | Set Intersection | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
 | Set Union | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
 | Show Base64 Offsets | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
-| Shuffle | partial | unknown | yes | 3 | — | yes | — | — | — | — | — | yes |
+| Shuffle | partial | unknown | yes | 3 | — | yes | yes | — | — | — | — | yes |
 | Sleep | partial | exact | yes | 3 | yes | — | — | yes | — | — | — | yes |
 | Sort | partial | exact | yes | 5 | yes | — | — | yes | — | — | — | yes |
 | Split | partial | exact | yes | 3 | — | yes | — | yes | — | — | — | yes |

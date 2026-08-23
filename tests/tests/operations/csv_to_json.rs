@@ -61,3 +61,21 @@ fn test_csv_empty_input() {
     let s = String::from_utf8(result).unwrap();
     assert_eq!(s.trim(), "[]");
 }
+
+#[test]
+fn test_csv_to_json_rejects_unknown_format() {
+    let error = CsvToJson
+        .run(
+            b"a,b".to_vec(),
+            &[
+                ArgValue::Str(",".into()),
+                ArgValue::Str("\n".into()),
+                ArgValue::Str("Table".into()),
+            ],
+        )
+        .unwrap_err();
+    assert!(matches!(
+        error,
+        rxchef::operation::OperationError::InvalidArgument { .. }
+    ));
+}

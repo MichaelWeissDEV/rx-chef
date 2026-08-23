@@ -88,6 +88,12 @@ impl Operation for CsvToJson {
             .get(2)
             .and_then(|a| a.as_str())
             .unwrap_or("Array of dictionaries");
+        if !matches!(format, "Array of dictionaries" | "Array of arrays") {
+            return Err(OperationError::InvalidArgument {
+                name: "Format".to_string(),
+                reason: format!("Unsupported output format: {format}"),
+            });
+        }
 
         let cell_delim_char = cell_delim.chars().next().unwrap_or(',');
 
@@ -118,7 +124,7 @@ impl Operation for CsvToJson {
                     .collect();
                 serde_json::Value::Array(records)
             }
-            _ => {
+            "Array of arrays" => {
                 // Array of arrays
                 let arrays: Vec<serde_json::Value> = rows
                     .iter()
@@ -132,6 +138,7 @@ impl Operation for CsvToJson {
                     .collect();
                 serde_json::Value::Array(arrays)
             }
+            _ => unreachable!("format validated above"),
         };
 
         let output = serde_json::to_string_pretty(&json_value).map_err(|e| {

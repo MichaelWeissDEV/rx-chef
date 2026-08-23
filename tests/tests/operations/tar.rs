@@ -44,3 +44,15 @@ fn test_tar_empty_input() {
     let entry = entries.next().unwrap().unwrap();
     assert_eq!(entry.header().size().unwrap(), 0);
 }
+
+#[test]
+fn test_tar_rejects_parent_directory_filename() {
+    let error = Tar
+        .run(b"data".to_vec(), &[ArgValue::Str("../escape.txt".into())])
+        .unwrap_err();
+    assert!(matches!(
+        error,
+        rxchef::operation::OperationError::InvalidArgument { ref name, .. }
+            if name == "Filename"
+    ));
+}

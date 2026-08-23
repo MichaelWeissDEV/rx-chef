@@ -14,3 +14,11 @@ fn test_label_passthrough() {
     let result = op.run(input.clone(), &args).unwrap();
     assert_eq!(result, input);
 }
+
+#[test]
+fn test_label_empty_input_boundary() {
+    assert_eq!(
+        Label.run(vec![], &[ArgValue::Str(String::new())]).unwrap(),
+        Vec::<u8>::new()
+    );
+}

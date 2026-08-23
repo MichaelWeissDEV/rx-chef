@@ -3,15 +3,15 @@
   "operation_count": 478,
   "summary": {
     "registered": 478,
-    "correctness_verified": 410,
-    "correctness_partially_verified": 68,
+    "correctness_verified": 417,
+    "correctness_partially_verified": 61,
     "correctness_unverified": 0,
     "tested": 478,
-    "test_functions": 2391,
-    "negative_tested": 365,
-    "negative_not_applicable": 88,
-    "boundary_tested": 459,
-    "reference_verified": 167,
+    "test_functions": 2395,
+    "negative_tested": 368,
+    "negative_not_applicable": 92,
+    "boundary_tested": 460,
+    "reference_verified": 174,
     "differential_verified": 258,
     "parity_exact": 171,
     "parity_compatible": 5,
@@ -2251,17 +2251,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 4,
-      "negative_test": false,
+      "tests": 5,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": true,
       "value_assertions": 7,
@@ -2278,13 +2275,15 @@
       "output": "JSON",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/csv_to_json.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/csv_to_json.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4217,12 +4216,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "independent reference evidence"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Detect File Type is a total signature classifier over arbitrary finite bytes; its six boolean switches only enable or disable file-type families and introduce no invalid value."
+      },
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
@@ -4244,13 +4242,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/detect_file_type.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/detect_file_type.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4888,20 +4888,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 5,
-      "negative_test": false,
+      "tests": 6,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 1,
+      "value_assertions": 2,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Entropy",
@@ -4915,13 +4912,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/entropy.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/entropy.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -11029,21 +11028,19 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "boundary tests",
-        "independent reference evidence"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Label is an identity marker for recipe control flow: standalone execution accepts every finite byte string and every label name and always returns the input unchanged."
+      },
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 1,
+      "tests": 2,
       "negative_test": false,
-      "boundary_test": false,
-      "empty_input_test": false,
-      "value_assertions": 1,
+      "boundary_test": true,
+      "empty_input_test": true,
+      "value_assertions": 2,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Label",
@@ -11057,13 +11054,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/label.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/label.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -11575,12 +11574,11 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "independent reference evidence"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Merge is a total identity operation when executed standalone; branch consolidation belongs to recipe control flow, while every byte input and either boolean flag is valid."
+      },
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
@@ -11602,13 +11600,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/merge.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/merge.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -16981,12 +16981,11 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "independent reference evidence"
-      ],
-      "negative_test_policy": "required",
+      "correctness": "verified",
+      "correctness_gaps": [],
+      "negative_test_policy": {
+        "not_applicable": "Shuffle accepts every finite string and every delimiter string, including an empty delimiter for character shuffling; all inputs have a defined permutation output."
+      },
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
@@ -17008,13 +17007,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/shuffle.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/shuffle.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -18109,17 +18110,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 3,
-      "negative_test": false,
+      "tests": 4,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
       "value_assertions": 5,
@@ -18136,13 +18134,15 @@
       "output": "Bytes",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/tar.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/tar.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],

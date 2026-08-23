@@ -30,8 +30,18 @@ fn test_entropy_all_distinct_bytes() {
     // All 256 distinct byte values -> entropy = 8.0
     let input: Vec<u8> = (0..=255).collect();
     let result = run_op(&input, 0);
-    let val: f64 = result.trim().parse().unwrap();
-    assert!((val - 8.0).abs() < 1e-10, "Expected 8.0, got {}", val);
+    assert_eq!(result, "8.00000000000000000");
+}
+
+#[test]
+fn test_entropy_rejects_non_numeric_chunk_size() {
+    let error = Entropy
+        .run(b"abc".to_vec(), &[ArgValue::Str("not-a-number".into())])
+        .unwrap_err();
+    assert!(matches!(
+        error,
+        rxchef::operation::OperationError::InvalidArgument { .. }
+    ));
 }
 #[test]
 fn test_entropy_chunked_same_bytes() {

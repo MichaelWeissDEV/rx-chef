@@ -57,7 +57,17 @@ impl Operation for Entropy {
     }
 
     fn run(&self, input: Vec<u8>, args: &[ArgValue]) -> Result<Vec<u8>, OperationError> {
-        let chunk_size = args.first().and_then(|a| a.as_usize()).unwrap_or(0);
+        let chunk_size = match args.first() {
+            Some(argument) => {
+                argument
+                    .as_usize()
+                    .ok_or_else(|| OperationError::InvalidArgument {
+                        name: "Chunk size".to_string(),
+                        reason: "Chunk size must be a non-negative integer".to_string(),
+                    })?
+            }
+            None => 0,
+        };
 
         if chunk_size == 0 {
             let entropy = calculate_shannon_entropy(&input);
