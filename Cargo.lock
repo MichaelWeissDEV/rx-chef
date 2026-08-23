@@ -1684,6 +1684,7 @@ dependencies = [
  "p256",
  "plotters",
  "regex",
+ "ring",
  "rxchef",
  "serde",
  "serde_json",

@@ -3,6 +3,8 @@
 //   cargo test -p cyberchef-rust-tests --test operations generate_rsa_key_pair::
 
 use rxchef::operations::generate_rsa_key_pair::GenerateRSAKeyPair;
+use rxchef::operation::ArgValue;
+use rxchef::operations::rsa_sign::RSASign;
 use rxchef::Operation;
 
 #[test]
@@ -81,4 +83,61 @@ fn test_generate_rsa_key_pair_invalid_format() {
     let result = op.run(input.to_vec(), &args);
     // Should fail due to invalid format
     assert!(result.is_err());
+}
+
+#[test]
+fn test_generate_rsa_key_pair_512_bit_boundary() {
+    let args = [
+        ArgValue::Str("512".to_string()),
+        ArgValue::Str("PEM".to_string()),
+    ];
+    let output = String::from_utf8(GenerateRSAKeyPair.run(Vec::new(), &args).unwrap()).unwrap();
+    assert!(output.contains("-----BEGIN RSA PUBLIC KEY-----"));
+    assert!(output.contains("-----BEGIN RSA PRIVATE KEY-----"));
+}
+
+#[test]
+fn test_generated_rsa_key_is_accepted_by_ring_validator() {
+    use base64::{engine::general_purpose::STANDARD, Engine as _};
+    use ring::signature::{UnparsedPublicKey, RSA_PKCS1_2048_8192_SHA256};
+
+    let args = [
+        ArgValue::Str("2048".to_string()),
+        ArgValue::Str("PEM".to_string()),
+    ];
+    let output = String::from_utf8(GenerateRSAKeyPair.run(Vec::new(), &args).unwrap()).unwrap();
+    let public_pem = pem_block(&output, "RSA PUBLIC KEY");
+    let private_pem = pem_block(&output, "RSA PRIVATE KEY");
+    let message = b"independent RSA key-generation validation";
+    let signature = RSASign
+        .run(
+            message.to_vec(),
+            &[
+                ArgValue::Str(private_pem),
+                ArgValue::Str(String::new()),
+                ArgValue::Str("SHA-256".to_string()),
+            ],
+        )
+        .unwrap();
+    let der = STANDARD
+        .decode(
+            public_pem
+                .lines()
+                .filter(|line| !line.starts_with("-----"))
+                .collect::<String>(),
+        )
+        .unwrap();
+
+    assert_eq!(
+        UnparsedPublicKey::new(&RSA_PKCS1_2048_8192_SHA256, der).verify(message, &signature),
+        Ok(())
+    );
+}
+
+fn pem_block(text: &str, label: &str) -> String {
+    let begin = format!("-----BEGIN {label}-----");
+    let end = format!("-----END {label}-----");
+    let start = text.find(&begin).unwrap();
+    let finish = text[start..].find(&end).unwrap() + start + end.len();
+    format!("{}\n", &text[start..finish])
 }

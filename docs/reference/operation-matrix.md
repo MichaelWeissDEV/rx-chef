@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2416 |
+| Test functions | 2419 |
 | With negative tests | 373 |
-| With boundary tests | 466 |
-| Reference-verified (known answer) | 184 |
+| With boundary tests | 467 |
+| Reference-verified (known answer) | 186 |
 | Differential-verified | 262 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -85,8 +85,8 @@
 | GOST Key Wrap | partial | unknown | yes | 0 | — | — | — | — | — | — | — | yes |
 | GOST Sign | partial | unknown | yes | 0 | — | — | — | — | — | — | — | yes |
 | GOST Verify | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
-| Generate ECDSA Key Pair | partial | unknown | yes | 2 | yes | yes | — | — | — | — | — | yes |
-| Generate RSA Key Pair | partial | unknown | yes | 5 | yes | — | — | — | — | — | — | yes |
+| Generate ECDSA Key Pair | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
+| Generate RSA Key Pair | partial | unknown | yes | 7 | yes | yes | yes | — | — | — | — | yes |
 | Pseudo-Random Integer Generator | partial | unknown | yes | 11 | yes | yes | yes | — | — | — | — | yes |
 | Pseudo-Random Number Generator | partial | unknown | yes | 8 | — | yes | — | — | — | — | — | yes |
 | RC2 Decrypt | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |

@@ -26,6 +26,7 @@ encoding_rs = "0.8"
 fernet = "0.2"
 libsm = "0.6.1"
 p256 = { version = "0.13.2", features = ["pem", "pkcs8"] }
+ring = "0.17.14"
 
 [features]
 default = []

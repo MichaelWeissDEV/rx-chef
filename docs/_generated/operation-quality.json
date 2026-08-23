@@ -3,15 +3,15 @@
   "operation_count": 478,
   "summary": {
     "registered": 478,
-    "correctness_verified": 431,
-    "correctness_partially_verified": 47,
+    "correctness_verified": 433,
+    "correctness_partially_verified": 45,
     "correctness_unverified": 0,
     "tested": 478,
-    "test_functions": 2416,
+    "test_functions": 2419,
     "negative_tested": 373,
     "negative_not_applicable": 92,
-    "boundary_tested": 466,
-    "reference_verified": 184,
+    "boundary_tested": 467,
+    "reference_verified": 186,
     "differential_verified": 262,
     "parity_exact": 171,
     "parity_compatible": 5,
@@ -8036,19 +8036,17 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 2,
+      "tests": 3,
       "negative_test": true,
       "boundary_test": true,
       "empty_input_test": true,
-      "value_assertions": 0,
+      "value_assertions": 1,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Generate ECDSA Key Pair",
@@ -8062,13 +8060,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/generate_ecdsa_key_pair.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/generate_ecdsa_key_pair.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -8307,20 +8307,17 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "boundary tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 5,
+      "tests": 7,
       "negative_test": true,
-      "boundary_test": false,
-      "empty_input_test": false,
-      "value_assertions": 0,
+      "boundary_test": true,
+      "empty_input_test": true,
+      "value_assertions": 1,
       "tests_asserting_only_success": 3,
       "untested_reason": null,
       "name": "Generate RSA Key Pair",
@@ -8334,13 +8331,15 @@
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/generate_rsa_key_pair.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/generate_rsa_key_pair.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
