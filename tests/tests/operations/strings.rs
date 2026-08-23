@@ -61,3 +61,10 @@ fn test_strings_display_total() {
     let out = String::from_utf8(result).unwrap();
     assert!(out.starts_with("Total found:"));
 }
+
+#[test]
+fn test_strings_rejects_unknown_encoding() {
+    let op = Strings;
+    let args = [ArgValue::Str("UTF-7".to_string())];
+    assert!(op.run(b"printable".to_vec(), &args).is_err());
+}

@@ -11383,6 +11383,16 @@
       "reference_source": "observed: CyberChef 11.4.0 @ 2e048b029085, explicit single-byte printable-string settings"
     },
     {
+      "operation": "ROT13 Brute Force",
+      "input": "Uryyb",
+      "input_encoding": "text",
+      "args": ["true", "true", "false", "100", "0", "true", "Hello"],
+      "reference": "Amount = 13: Hello",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.4.0 @ 2e048b029085, explicit character classes and known-plaintext crib"
+    },
+    {
       "operation": "Lorenz",
       "input": "HELLO",
       "input_encoding": "text",

@@ -110,3 +110,13 @@ fn test_colossus_numeric_chars() {
     assert!(result.contains("counters"));
     assert!(result.contains("runcount"));
 }
+
+#[test]
+fn test_colossus_matches_published_ita2_letter_code() {
+    // ITA2/Baudot defines A as least-significant-bit-first 00011, rendered by
+    // Colossus tape channel order as 11000.
+    assert_eq!(
+        run("A"),
+        r#"{"printout":"0001  A  11000\n","counters":[1,1,0,0,0],"runcount":1}"#
+    );
+}

@@ -10,11 +10,11 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2403 |
-| With negative tests | 370 |
-| With boundary tests | 463 |
-| Reference-verified (known answer) | 179 |
-| Differential-verified | 260 |
+| Test functions | 2408 |
+| With negative tests | 372 |
+| With boundary tests | 464 |
+| Reference-verified (known answer) | 180 |
+| Differential-verified | 261 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
 | Parity: documented difference | 1 |
@@ -28,7 +28,7 @@
 | Operation | Status | Parity | Args | Tests | Neg | Bound | KAT | Diff | Property | Fuzz | Bench | Docs |
 |---|---|---|:---:|---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | Bombe | partial | unknown | yes | 5 | yes | yes | — | — | — | — | — | yes |
-| Colossus | partial | unknown | yes | 10 | yes | yes | — | — | — | — | — | yes |
+| Colossus | partial | unknown | yes | 11 | yes | yes | yes | — | — | — | — | yes |
 | Enigma | partial | unknown | yes | 6 | yes | — | — | yes | — | — | — | yes |
 | Lorenz | partial | unknown | yes | 0 | — | — | — | yes | — | — | — | yes |
 | Multiple Bombe | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
@@ -96,7 +96,7 @@
 | RC6 Decrypt | partial | unknown | yes | 2 | yes | — | yes | — | — | — | — | yes |
 | RC6 Encrypt | partial | unknown | yes | 3 | yes | yes | yes | — | — | — | — | yes |
 | ROT13 | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
-| ROT13 Brute Force | partial | unknown | yes | 2 | — | — | — | — | — | — | — | yes |
+| ROT13 Brute Force | partial | unknown | yes | 5 | yes | yes | — | yes | — | — | — | yes |
 | ROT47 | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
 | RSA Decrypt | partial | unknown | yes | 1 | yes | — | — | — | — | — | — | yes |
 | RSA Encrypt | partial | unknown | yes | 1 | yes | — | — | — | — | — | — | yes |
@@ -596,7 +596,7 @@
 | Find / Replace | partial | unknown | yes | 4 | — | — | — | yes | — | — | — | yes |
 | Register | partial | unknown | yes | 6 | — | yes | — | — | — | — | — | yes |
 | Regular expression | partial | exact | yes | 4 | yes | — | — | yes | — | — | — | yes |
-| Strings | partial | unknown | yes | 3 | — | yes | — | yes | — | — | — | yes |
+| Strings | partial | unknown | yes | 4 | yes | yes | — | yes | — | — | — | yes |
 
 ## Serialise
 

@@ -869,7 +869,9 @@
       "correctness": [
         "tests/tests/operations/colossus.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/colossus.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -4295,7 +4297,9 @@
         "tests/tests/operations/rot13_brute_force.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],

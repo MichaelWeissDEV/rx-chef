@@ -124,6 +124,35 @@ impl Operation for Strings {
         let do_sort = args.get(4).and_then(|a| a.as_bool()).unwrap_or(false);
         let do_unique = args.get(5).and_then(|a| a.as_bool()).unwrap_or(false);
 
+        if ![
+            "Single byte",
+            "16-bit littleendian",
+            "16-bit bigendian",
+            "All",
+        ]
+        .contains(&encoding)
+        {
+            return Err(OperationError::InvalidArgument {
+                name: "Encoding".into(),
+                reason: format!("unsupported strings encoding {encoding:?}"),
+            });
+        }
+        if ![
+            "Alphanumeric + punctuation (A)",
+            "All printable chars (A)",
+            "Null-terminated strings (A)",
+            "Alphanumeric + punctuation (U)",
+            "All printable chars (U)",
+            "Null-terminated strings (U)",
+        ]
+        .contains(&match_type)
+        {
+            return Err(OperationError::InvalidArgument {
+                name: "Match".into(),
+                reason: format!("unsupported strings match mode {match_type:?}"),
+            });
+        }
+
         // Build character class pattern
         let char_class = match match_type {
             "Alphanumeric + punctuation (A)" => {

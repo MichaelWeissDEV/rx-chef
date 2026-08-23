@@ -3,16 +3,16 @@
   "operation_count": 478,
   "summary": {
     "registered": 478,
-    "correctness_verified": 423,
-    "correctness_partially_verified": 55,
+    "correctness_verified": 426,
+    "correctness_partially_verified": 52,
     "correctness_unverified": 0,
     "tested": 478,
-    "test_functions": 2403,
-    "negative_tested": 370,
+    "test_functions": 2408,
+    "negative_tested": 372,
     "negative_not_applicable": 92,
-    "boundary_tested": 463,
-    "reference_verified": 179,
-    "differential_verified": 260,
+    "boundary_tested": 464,
+    "reference_verified": 180,
+    "differential_verified": 261,
     "parity_exact": 171,
     "parity_compatible": 5,
     "parity_documented_difference": 1,
@@ -2876,19 +2876,17 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": true,
       "fixture_binary_or_unicode": true,
-      "tests": 10,
+      "tests": 11,
       "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 2,
+      "value_assertions": 3,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Colossus",
@@ -2902,13 +2900,15 @@
       "output": "JSON",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/colossus.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/colossus.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -14382,21 +14382,17 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "boundary tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 2,
-      "negative_test": false,
-      "boundary_test": false,
+      "tests": 5,
+      "negative_test": true,
+      "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 1,
+      "value_assertions": 4,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "ROT13 Brute Force",
@@ -14406,18 +14402,20 @@
       "status": "partial",
       "availability": "available",
       "feature": [],
-      "input": "String",
+      "input": "Bytes",
       "output": "String",
       "args_documented": true,
       "correctness_test": true,
       "known_answer_test": false,
-      "differential_test": false,
+      "differential_test": true,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/rot13_brute_force.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "fuzz_target": false,
@@ -17293,16 +17291,14 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": true,
-      "tests": 3,
-      "negative_test": false,
+      "tests": 4,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
       "value_assertions": 0,
