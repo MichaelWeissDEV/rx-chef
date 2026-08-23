@@ -33,3 +33,14 @@ fn test_pem_to_hex_roundtrip() {
     let hex_out = pem_op.run(pem, &[]).expect("pem to hex");
     assert_eq!(String::from_utf8(hex_out).unwrap().trim(), "0102030405");
 }
+
+#[test]
+fn test_pem_to_hex_one_byte_rfc7468_boundary() {
+    let output = PEMToHex
+        .run(
+            b"-----BEGIN DATA-----\n/w==\n-----END DATA-----\n".to_vec(),
+            &[],
+        )
+        .unwrap();
+    assert_eq!(output, b"ff");
+}

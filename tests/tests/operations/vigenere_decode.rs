@@ -7,6 +7,23 @@ use rxchef::operations::vigenere_decode::VigenereDecodeOp;
 use rxchef::Operation;
 
 #[test]
+fn test_vigenere_classical_known_answer_decrypt() {
+    // Inverse of the fixed classical vector, not output from the encoder.
+    let output = VigenereDecodeOp
+        .run(b"LXFOPVEFRNHR".to_vec(), &[ArgValue::Str("LEMON".into())])
+        .unwrap();
+    assert_eq!(output, b"ATTACKATDAWN");
+}
+
+#[test]
+fn test_vigenere_decode_single_letter_boundary() {
+    let output = VigenereDecodeOp
+        .run(b"B".to_vec(), &[ArgValue::Str("B".into())])
+        .unwrap();
+    assert_eq!(output, b"A");
+}
+
+#[test]
 fn test_vigenere_decode_basic() {
     let op = VigenereDecodeOp;
     let input = b"Dlc aygmo zbsux jmh nswtq yzcb xfo pyjc byk".to_vec();

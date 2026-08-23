@@ -7,6 +7,23 @@ use rxchef::operations::vigenere_encode::VigenereEncodeOp;
 use rxchef::Operation;
 
 #[test]
+fn test_vigenere_classical_known_answer() {
+    // Classical Vigenere example published in standard cryptography texts.
+    let output = VigenereEncodeOp
+        .run(b"ATTACKATDAWN".to_vec(), &[ArgValue::Str("LEMON".into())])
+        .unwrap();
+    assert_eq!(output, b"LXFOPVEFRNHR");
+}
+
+#[test]
+fn test_vigenere_encode_single_letter_boundary() {
+    let output = VigenereEncodeOp
+        .run(b"A".to_vec(), &[ArgValue::Str("B".into())])
+        .unwrap();
+    assert_eq!(output, b"B");
+}
+
+#[test]
 fn test_vigenere_encode_basic() {
     let op = VigenereEncodeOp;
     let input = b"The quick brown fox jumps over the lazy dog".to_vec();

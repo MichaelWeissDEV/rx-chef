@@ -598,7 +598,9 @@
       "correctness": [
         "tests/tests/operations/crc_checksum.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/crc_checksum.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -1225,7 +1227,9 @@
       "correctness": [
         "tests/tests/operations/derive_evp_key.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/derive_evp_key.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -2769,7 +2773,9 @@
       "correctness": [
         "tests/tests/operations/hex_to_pem.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/hex_to_pem.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3641,7 +3647,9 @@
       "correctness": [
         "tests/tests/operations/pem_to_hex.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/pem_to_hex.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -6124,7 +6132,9 @@
       "correctness": [
         "tests/tests/operations/vigenere_decode.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/vigenere_decode.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -6135,7 +6145,9 @@
       "correctness": [
         "tests/tests/operations/vigenere_encode.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/vigenere_encode.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],

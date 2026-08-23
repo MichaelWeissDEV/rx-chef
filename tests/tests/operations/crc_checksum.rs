@@ -44,3 +44,10 @@ fn test_default_algorithm() {
     let s = String::from_utf8(result).unwrap();
     assert_eq!(s, "cbf43926");
 }
+
+#[test]
+fn test_crc32_empty_message_boundary() {
+    // CRC-32/ISO-HDLC has init/xorout 0xffffffff, hence the empty message's
+    // catalogue check value is zero.
+    assert_eq!(run_with_algo("CRC-32", b""), "00000000");
+}

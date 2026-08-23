@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2358 |
-| With negative tests | 353 |
-| With boundary tests | 441 |
-| Reference-verified (known answer) | 141 |
+| Test functions | 2366 |
+| With negative tests | 354 |
+| With boundary tests | 446 |
+| Reference-verified (known answer) | 147 |
 | Differential-verified | 258 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -74,7 +74,7 @@
 | ChaCha | partial | unknown | yes | 36 | yes | yes | yes | — | — | — | — | yes |
 | DES Decrypt | partial | unknown | yes | 31 | yes | yes | yes | — | — | — | — | yes |
 | DES Encrypt | partial | unknown | yes | 31 | yes | yes | yes | — | — | — | — | yes |
-| Derive EVP key | partial | unknown | yes | 1 | — | yes | — | — | — | — | — | yes |
+| Derive EVP key | partial | unknown | yes | 2 | yes | yes | yes | — | — | — | — | yes |
 | Derive PBKDF2 key | partial | unknown | yes | 10 | yes | yes | yes | — | — | — | — | yes |
 | ECDSA Sign | partial | unknown | yes | 6 | yes | yes | — | — | — | — | — | yes |
 | ECDSA Signature Conversion | partial | unknown | yes | 9 | yes | — | — | yes | — | — | — | yes |
@@ -110,8 +110,8 @@
 | Salsa20 | partial | unknown | yes | 4 | yes | — | yes | — | — | — | — | yes |
 | Triple DES Decrypt | partial | unknown | yes | 7 | yes | yes | yes | — | — | — | — | yes |
 | Triple DES Encrypt | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
-| Vigenre Decode | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
-| Vigenre Encode | partial | unknown | yes | 4 | yes | — | — | — | — | — | — | yes |
+| Vigenre Decode | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
+| Vigenre Encode | partial | unknown | yes | 6 | yes | yes | yes | — | — | — | — | yes |
 | XSalsa20 | partial | unknown | yes | 5 | yes | — | yes | — | — | — | — | yes |
 | XXTEA Decrypt | partial | unknown | yes | 2 | — | — | yes | — | — | — | — | yes |
 | XXTEA Encrypt | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
@@ -333,7 +333,7 @@
 | OR | partial | unknown | yes | 4 | — | yes | — | — | — | — | — | yes |
 | Offset checker | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | P-list Viewer | partial | unknown | yes | 2 | yes | — | — | yes | — | — | — | yes |
-| PEM to Hex | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
+| PEM to Hex | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | PHP Deserialize | partial | unknown | yes | 2 | — | — | yes | — | — | — | — | yes |
 | PHP Serialize | partial | unknown | yes | 3 | — | — | — | yes | — | — | — | yes |
 | Pad lines | partial | exact | yes | 5 | yes | yes | — | yes | — | — | — | yes |
@@ -470,7 +470,7 @@
 | BLAKE2b | partial | compatible | yes | 6 | yes | yes | yes | — | — | — | — | yes |
 | BLAKE2s | partial | compatible | yes | 6 | yes | yes | yes | — | — | — | — | yes |
 | BLAKE3 | partial | unknown | yes | 28 | — | yes | yes | — | — | — | — | yes |
-| CRC Checksum | partial | unknown | yes | 5 | yes | — | — | — | — | — | — | yes |
+| CRC Checksum | partial | unknown | yes | 6 | yes | yes | yes | — | — | — | — | yes |
 | Convert co-ordinate format | partial | unknown | yes | 2 | yes | — | — | yes | — | — | — | yes |
 | GOST Hash | partial | unknown | yes | 11 | yes | yes | yes | — | — | — | — | yes |
 | Keccak | partial | exact | yes | 6 | yes | yes | — | yes | — | — | — | yes |
@@ -569,7 +569,7 @@
 | Operation | Status | Parity | Args | Tests | Neg | Bound | KAT | Diff | Property | Fuzz | Bench | Docs |
 |---|---|---|:---:|---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | Hex to Object Identifier | partial | unknown | yes | 5 | yes | yes | — | yes | — | — | — | yes |
-| Hex to PEM | partial | unknown | yes | 3 | yes | — | — | — | — | — | — | yes |
+| Hex to PEM | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | JWK to PEM | partial | unknown | yes | 1 | — | — | yes | — | — | — | — | yes |
 | Object Identifier to Hex | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
 | PEM to JWK | partial | exact | yes | 2 | yes | — | — | yes | — | — | — | yes |

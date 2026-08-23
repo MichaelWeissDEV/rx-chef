@@ -35,3 +35,13 @@ fn test_hex_to_pem_custom_header() {
     assert!(s.contains("-----BEGIN RSA PRIVATE KEY-----"));
     assert!(s.contains("-----END RSA PRIVATE KEY-----"));
 }
+
+#[test]
+fn test_hex_to_pem_one_byte_rfc7468_boundary() {
+    // RFC 4648 base64 of the single byte 0xff is /w==; RFC 7468 textual
+    // encoding places it between matching boundary labels.
+    let output = HexToPEM
+        .run(b"ff".to_vec(), &[ArgValue::Str("DATA".into())])
+        .unwrap();
+    assert_eq!(output, b"-----BEGIN DATA-----\n/w==\n-----END DATA-----\n");
+}
