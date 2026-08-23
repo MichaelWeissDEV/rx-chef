@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2514 |
+| Test functions | 2521 |
 | With negative tests | 385 |
 | With boundary tests | 478 |
-| Reference-verified (known answer) | 221 |
+| Reference-verified (known answer) | 227 |
 | Differential-verified | 262 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -550,12 +550,12 @@
 
 | Operation | Status | Parity | Args | Tests | Neg | Bound | KAT | Diff | Property | Fuzz | Bench | Docs |
 |---|---|---|:---:|---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Generate PGP Key Pair | partial | unknown | yes | 3 | yes | yes | — | — | — | — | — | yes |
-| PGP Decrypt | partial | unknown | yes | 0 | — | — | — | — | — | — | — | yes |
-| PGP Decrypt and Verify | partial | unknown | yes | 0 | — | — | — | — | — | — | — | yes |
-| PGP Encrypt | partial | unknown | yes | 1 | — | — | — | — | — | — | — | yes |
-| PGP Encrypt and Sign | partial | unknown | yes | 0 | — | — | — | — | — | — | — | yes |
-| PGP Verify | partial | unknown | yes | 0 | — | — | — | — | — | — | — | yes |
+| Generate PGP Key Pair | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
+| PGP Decrypt | partial | unknown | yes | 1 | — | — | yes | — | — | — | — | yes |
+| PGP Decrypt and Verify | partial | unknown | yes | 1 | — | — | yes | — | — | — | — | yes |
+| PGP Encrypt | partial | unknown | yes | 3 | — | — | yes | — | — | — | — | yes |
+| PGP Encrypt and Sign | partial | unknown | yes | 1 | — | — | yes | — | — | — | — | yes |
+| PGP Verify | partial | unknown | yes | 1 | — | — | yes | — | — | — | — | yes |
 
 ## Protobuf
 

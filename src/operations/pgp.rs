@@ -10,7 +10,7 @@ mod enabled {
         cert::{prelude::*, CipherSuite},
         crypto::{KeyPair, Password, SessionKey},
         parse::{stream::*, Parse},
-        policy::StandardPolicy,
+        policy::{AsymmetricAlgorithm, StandardPolicy},
         serialize::{stream::*, SerializeInto},
         types::SymmetricAlgorithm,
         Cert, KeyID,
@@ -20,8 +20,16 @@ mod enabled {
         Cert::from_bytes(value.as_bytes())
     }
 
+    fn compatibility_policy() -> StandardPolicy<'static> {
+        let mut policy = StandardPolicy::new();
+        // CyberChef supports reading legacy RSA-1024 OpenPGP material.  Keep
+        // generation disabled, but permit interoperability with existing keys.
+        policy.accept_asymmetric_algo(AsymmetricAlgorithm::RSA1024);
+        policy
+    }
+
     fn signing_key(cert: &Cert, password: &str) -> openpgp::Result<KeyPair> {
-        let policy = &StandardPolicy::new();
+        let policy = &compatibility_policy();
         let key = cert
             .keys()
             .secret()
@@ -85,7 +93,7 @@ mod enabled {
 
     pub fn encrypt(plaintext: &[u8], recipient: &str) -> openpgp::Result<Vec<u8>> {
         let cert = parse_cert(recipient)?;
-        let policy = &StandardPolicy::new();
+        let policy = &compatibility_policy();
         let recipients = cert
             .keys()
             .with_policy(policy, None)
@@ -124,7 +132,7 @@ mod enabled {
     ) -> openpgp::Result<Vec<u8>> {
         let signer = parse_cert(signer)?;
         let recipient = parse_cert(recipient)?;
-        let policy = &StandardPolicy::new();
+        let policy = &compatibility_policy();
         let recipients = recipient
             .keys()
             .with_policy(policy, None)
@@ -177,7 +185,7 @@ mod enabled {
             certs: vec![cert],
             require_signature: true,
         };
-        let policy = &StandardPolicy::new();
+        let policy = &compatibility_policy();
         let mut verifier =
             VerifierBuilder::from_bytes(message)?.with_policy(policy, None, helper)?;
         let mut output = Vec::new();
@@ -192,7 +200,7 @@ mod enabled {
 
     impl DecryptHelper {
         fn new(secret: Cert, password: &str, verifier: Option<Cert>) -> openpgp::Result<Self> {
-            let policy = &StandardPolicy::new();
+            let policy = &compatibility_policy();
             let mut keys = HashMap::new();
             for key in secret
                 .keys()
@@ -266,7 +274,7 @@ mod enabled {
         let secret = parse_cert(recipient)?;
         let signer = signer.map(parse_cert).transpose()?;
         let helper = DecryptHelper::new(secret, password, signer)?;
-        let policy = &StandardPolicy::new();
+        let policy = &compatibility_policy();
         let mut decryptor =
             DecryptorBuilder::from_bytes(message)?.with_policy(policy, None, helper)?;
         let mut output = Vec::new();

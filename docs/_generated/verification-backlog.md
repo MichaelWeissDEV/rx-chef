@@ -4,9 +4,9 @@
 
 Why each operation is not yet `verified`, and what would close the gap. Groups are ordered by how much work they need, so the list can be worked in batches.
 
-**468 verified · 10 partially verified · 0 unverified** of 478 registered.
+**474 verified · 4 partially verified · 0 unverified** of 478 registered.
 
-## A: only independent evidence missing (10)
+## A: only independent evidence missing (4)
 
 | Operation | Module | Tests | Neg | Bound | KAT | Diff | Parity | Weak | Remaining gaps | Strategy |
 |---|---|---:|:---:|:---:|:---:|:---:|---|---:|---|---|
@@ -14,10 +14,4 @@ Why each operation is not yet `verified`, and what would close the gap. Groups a
 | GOST Key Wrap | Ciphers | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | GOST Sign | Ciphers | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
 | GOST Verify | Ciphers | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | authoritative known-answer vectors (RFC/NIST/FIPS or the algorithm's own published test set), preferred over a differential comparison |
-| Generate PGP Key Pair | PGP | 3 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| PGP Decrypt | PGP | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| PGP Decrypt and Verify | PGP | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| PGP Encrypt | PGP | 1 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| PGP Encrypt and Sign | PGP | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
-| PGP Verify | PGP | 0 | yes | yes | — | — | unknown | 0 | independent reference evidence | CyberChef differential fixture with an input this operation actually accepts |
 
