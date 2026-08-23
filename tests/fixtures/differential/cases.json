@@ -11373,6 +11373,26 @@
       "divergence": null
     },
     {
+      "operation": "Strings",
+      "input": "0048656c6c6f0001576f726c642100",
+      "input_encoding": "hex",
+      "args": ["Single byte", "4", "All printable chars (A)", "false", "false", "false"],
+      "reference": "Hello\nWorld!",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.4.0 @ 2e048b029085, explicit single-byte printable-string settings"
+    },
+    {
+      "operation": "Lorenz",
+      "input": "HELLO",
+      "input_encoding": "text",
+      "args": ["SZ40", "KH Pattern", "false", "Send", "Plaintext", "ITA2", "5/8/9", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", ".x...xx.x.x..xxx.x.x.xxxx.x.x.x.x.x..x.xx.x", ".xx.x.xxx..x.x.x..x.xx.x.xxx.x....x.xx.x.x.x..x", ".x.x.x..xxx....x.x.xx.x.x.x..xxx.x.x..x.x.xx..x.x.x", ".xx...xxxxx.x.x.xx...x.xx.x.x..x.x.xx.x..x.x.x.x.x.x.", "xx...xx.x..x.xx.x...x.x.x.x.x.x.x.x.xx..xxxx.x.x...xx.x..x.", "x.x.x.x.x.x...x.x.x...x.x.x...x.x....", ".xxxx.xxxx.xxx.xxxx.xx....xxx.xxxx.xxxx.xxxx.xxxx.xxx.xxxx...", ".x...xxx.x.xxxx.x...x.x..xxx....xx.xxxx..", "x..xxx...x.xxxx..xx..x..xx.xx..", "..xx..x.xxx...xx...xx..xx.xx.", "xx..x..xxxx..xx.xxx....x..", "xx..xx....xxxx.x..x.x.."],
+      "reference": "VIC3T",
+      "reference_encoding": "text",
+      "expect": "exact",
+      "reference_source": "observed: CyberChef 11.4.0 @ 2e048b029085, SZ40 KH pattern with all wheel starts at one"
+    },
+    {
       "operation": "BSON deserialise",
       "input": "foobar",
       "input_encoding": "text",

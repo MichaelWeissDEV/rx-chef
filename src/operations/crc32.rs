@@ -104,11 +104,7 @@ impl Operation for CRC32 {
             .and_then(|a| a.as_str())
             .unwrap_or("IEEE")
             .to_uppercase();
-        let _initial_value = args
-            .get(1)
-            .and_then(|a| a.as_str())
-            .and_then(|s| u32::from_str_radix(s.trim_start_matches("0x"), 16).ok())
-            .unwrap_or(0xFFFFFFFF);
+        let initial_value = parse_hex_arg(args.get(1), "Initial Value", 0xFFFFFFFF)?;
         let reflect_input = args
             .get(2)
             .and_then(|a| a.as_str())
@@ -119,17 +115,15 @@ impl Operation for CRC32 {
             .and_then(|a| a.as_str())
             .map(|s| s.to_lowercase() == "true")
             .unwrap_or(true);
-        let xor_output = args
-            .get(4)
-            .and_then(|a| a.as_str())
-            .and_then(|s| u32::from_str_radix(s.trim_start_matches("0x"), 16).ok())
-            .unwrap_or(0xFFFFFFFF);
+        let xor_output = parse_hex_arg(args.get(4), "XOR Output", 0xFFFFFFFF)?;
 
         let crc = match polynomial.as_str() {
             "IEEE" | "CRC32" => {
                 // CRC-32 IEEE 802.3 with standard settings
                 let crc_calc = crc::Crc::<u32>::new(&crc::CRC_32_ISO_HDLC);
-                let mut result = crc_calc.checksum(&input);
+                let mut digest = crc_calc.digest_with_initial(initial_value);
+                digest.update(&input);
+                let mut result = digest.finalize();
                 if !reflect_input {
                     result = reflect_u32(result, 32);
                 }
@@ -141,7 +135,9 @@ impl Operation for CRC32 {
             "CKSUM" | "CRC32C" => {
                 // CRC-32 castagnoli (CRC-32C) - polynomial 0x1EDC6F41
                 let crc_calc = crc::Crc::<u32>::new(&crc::CRC_32_CKSUM);
-                let mut result = crc_calc.checksum(&input);
+                let mut digest = crc_calc.digest_with_initial(initial_value);
+                digest.update(&input);
+                let mut result = digest.finalize();
                 if !reflect_input {
                     result = reflect_u32(result, 32);
                 }
@@ -152,9 +148,10 @@ impl Operation for CRC32 {
             }
             "BZIP2" => {
                 // CRC-32 with different initial value (like zlib)
-                let crc_calc = crc::Crc::<u32>::new(&crc::CRC_32_ISO_HDLC);
-                let mut result = crc_calc.checksum(&input);
-                result ^= 0xFFFFFFFF;
+                let crc_calc = crc::Crc::<u32>::new(&crc::CRC_32_BZIP2);
+                let mut digest = crc_calc.digest_with_initial(initial_value);
+                digest.update(&input);
+                let mut result = digest.finalize();
                 if !reflect_input {
                     result = reflect_u32(result, 32);
                 }
@@ -174,6 +171,24 @@ impl Operation for CRC32 {
         let output = format!("{:08X}", crc);
         Ok(output.into_bytes())
     }
+}
+
+fn parse_hex_arg(
+    arg: Option<&ArgValue>,
+    name: &str,
+    default: u32,
+) -> Result<u32, OperationError> {
+    let Some(value) = arg.and_then(ArgValue::as_str) else {
+        return Ok(default);
+    };
+    let digits = value
+        .strip_prefix("0x")
+        .or_else(|| value.strip_prefix("0X"))
+        .unwrap_or(value);
+    u32::from_str_radix(digits, 16).map_err(|_| OperationError::InvalidArgument {
+        name: name.to_string(),
+        reason: format!("expected a 32-bit hexadecimal value, got {value:?}"),
+    })
 }
 
 fn reflect_u32(data: u32, num_bits: u32) -> u32 {

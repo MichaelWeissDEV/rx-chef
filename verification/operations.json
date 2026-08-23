@@ -618,7 +618,9 @@
       "correctness": [
         "tests/tests/operations/crc32.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/crc32.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -3319,7 +3321,9 @@
         "tests/tests/operations/lorenz.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
@@ -5162,7 +5166,9 @@
         "tests/tests/operations/strings.rs"
       ],
       "known_answer": [],
-      "differential": [],
+      "differential": [
+        "tests/tests/differential.rs"
+      ],
       "property": [],
       "fuzz": [],
       "benchmark": [],
