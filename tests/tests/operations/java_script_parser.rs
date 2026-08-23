@@ -28,7 +28,10 @@ fn test_parser_ast_metadata_and_errors() {
     assert_eq!(ast["body"][0]["type"], "VariableDeclaration");
     assert_eq!(ast["body"][0]["kind"], "const");
     assert_eq!(ast["body"][0]["declarations"][0]["id"]["value"], "x");
-    assert_eq!(ast["body"][0]["declarations"][0]["init"]["value"], 1);
+    assert_eq!(
+        ast["body"][0]["declarations"][0]["init"]["value"].as_f64(),
+        Some(1.0)
+    );
     assert_eq!(ast["body"][0]["declarations"][0]["id"]["range"], serde_json::json!([15, 16]));
     assert!(op.run(b"const = ;".to_vec(), &[]).is_err());
 }
