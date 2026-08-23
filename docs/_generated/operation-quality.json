@@ -3,15 +3,15 @@
   "operation_count": 478,
   "summary": {
     "registered": 478,
-    "correctness_verified": 461,
-    "correctness_partially_verified": 17,
+    "correctness_verified": 464,
+    "correctness_partially_verified": 14,
     "correctness_unverified": 0,
     "tested": 478,
-    "test_functions": 2502,
-    "negative_tested": 381,
+    "test_functions": 2510,
+    "negative_tested": 384,
     "negative_not_applicable": 93,
-    "boundary_tested": 475,
-    "reference_verified": 214,
+    "boundary_tested": 477,
+    "reference_verified": 217,
     "differential_verified": 262,
     "parity_exact": 171,
     "parity_compatible": 5,
@@ -11425,21 +11425,17 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "boundary tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 1,
-      "negative_test": false,
-      "boundary_test": false,
+      "tests": 4,
+      "negative_test": true,
+      "boundary_test": true,
       "empty_input_test": false,
-      "value_assertions": 0,
+      "value_assertions": 5,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Magic",
@@ -11453,13 +11449,15 @@
       "output": "JSON",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/magic.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/magic.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -16570,21 +16568,17 @@
       "parity": "exact"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "boundary tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 3,
-      "negative_test": false,
-      "boundary_test": false,
-      "empty_input_test": false,
-      "value_assertions": 0,
+      "tests": 6,
+      "negative_test": true,
+      "boundary_test": true,
+      "empty_input_test": true,
+      "value_assertions": 1,
       "tests_asserting_only_success": 0,
       "untested_reason": null,
       "name": "Scatter chart",
@@ -16598,13 +16592,15 @@
       "output": "HTML",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/scatter_chart.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/scatter_chart.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -16660,17 +16656,14 @@
       "parity": "unknown"
     },
     {
-      "correctness": "partially_verified",
-      "correctness_gaps": [
-        "negative tests",
-        "independent reference evidence"
-      ],
+      "correctness": "verified",
+      "correctness_gaps": [],
       "negative_test_policy": "required",
       "fixture_empty_input": false,
       "fixture_rejection": false,
       "fixture_binary_or_unicode": false,
-      "tests": 3,
-      "negative_test": false,
+      "tests": 5,
+      "negative_test": true,
       "boundary_test": true,
       "empty_input_test": false,
       "value_assertions": 5,
@@ -16687,13 +16680,15 @@
       "output": "HTML",
       "args_documented": true,
       "correctness_test": true,
-      "known_answer_test": false,
+      "known_answer_test": true,
       "differential_test": false,
       "property_test": false,
       "test_mapping": [
         "tests/tests/operations/series_chart.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/series_chart.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],

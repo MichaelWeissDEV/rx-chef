@@ -110,6 +110,19 @@ impl Operation for SeriesChart {
             .unwrap_or("mediumseagreen, dodgerblue, tomato");
         let series_colours: Vec<&str> = series_colours_str.split(',').map(|s| s.trim()).collect();
 
+        if record_delimiter.is_empty() || field_delimiter.is_empty() {
+            return Err(OperationError::InvalidArgument {
+                name: "Delimiter".into(),
+                reason: "record and field delimiters must not be empty".into(),
+            });
+        }
+        if !pip_radius.is_finite() || pip_radius < 0.0 {
+            return Err(OperationError::InvalidArgument {
+                name: "Point radius".into(),
+                reason: "must be a finite non-negative number".into(),
+            });
+        }
+
         let (x_values, series) = parse_series(&input_str, &record_delimiter, &field_delimiter);
 
         if x_values.is_empty() || series.is_empty() {
@@ -172,8 +185,12 @@ impl Operation for SeriesChart {
             let mut path = String::new();
             for (j, &val) in serie.data.iter().enumerate() {
                 if let Some(y_val) = val {
-                    let x = series_label_width
-                        + (j as f64 * (series_width / (x_values.len() - 1) as f64));
+                    let x = if x_values.len() == 1 {
+                        series_label_width
+                    } else {
+                        series_label_width
+                            + (j as f64 * (series_width / (x_values.len() - 1) as f64))
+                    };
                     let y = y_offset + series_height - ((y_val - min_y) / y_range * series_height);
 
                     if path.is_empty() {

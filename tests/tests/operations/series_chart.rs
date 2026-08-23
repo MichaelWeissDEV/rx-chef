@@ -99,3 +99,29 @@ fn test_parse_series() {
     assert_eq!(s[0].name, "A");
     assert_eq!(s[0].data, vec![Some(10.0), Some(30.0)]);
 }
+
+#[test]
+fn test_series_chart_single_x_value_has_finite_exact_geometry() {
+    let result = SeriesChart
+        .run(
+            b"X,A\nonly,10".to_vec(),
+            &[
+                ArgValue::Str("\\n".into()), ArgValue::Str(",".into()),
+                ArgValue::Str("X".into()), ArgValue::Num(2.0), ArgValue::Str("red".into()),
+            ],
+        )
+        .unwrap();
+    let svg = String::from_utf8(result).unwrap();
+    assert!(svg.contains(r#"<circle cx="50" cy="170" r="2" fill="red" />"#));
+    assert!(svg.contains(r#"<path d="M 50 170" fill="none" stroke="red" stroke-width="1" />"#));
+    assert!(!svg.contains("NaN"));
+}
+
+#[test]
+fn test_series_chart_rejects_empty_field_delimiter() {
+    let result = SeriesChart.run(
+        b"X,A\n1,2".to_vec(),
+        &[ArgValue::Str("\\n".into()), ArgValue::Str(String::new())],
+    );
+    assert!(result.is_err());
+}

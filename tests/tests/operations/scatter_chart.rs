@@ -66,3 +66,37 @@ fn test_scatter_chart_with_colours() {
     assert!(svg.contains("fill=\"green\""));
     assert!(svg.contains("fill=\"blue\""));
 }
+
+#[test]
+fn test_scatter_chart_single_point_boundary_has_finite_geometry() {
+    let result = ScatterChart
+        .run(
+            b"1,2".to_vec(),
+            &[
+                ArgValue::Str("Line feed".into()), ArgValue::Str("Comma".into()),
+                ArgValue::Bool(false), ArgValue::Str("X".into()), ArgValue::Str("Y".into()),
+                ArgValue::Str("blue".into()), ArgValue::Num(5.0), ArgValue::Bool(false),
+            ],
+        )
+        .unwrap();
+    let svg = String::from_utf8(result).unwrap();
+    assert!(
+        svg.contains(r#"<circle cx="265" cy="235" r="5" fill="blue""#),
+        "{svg}"
+    );
+    assert!(!svg.contains("NaN"));
+}
+
+#[test]
+fn test_scatter_chart_rejects_non_numeric_point() {
+    let result = ScatterChart.run(
+        b"nope,2".to_vec(),
+        &[ArgValue::Str("Line feed".into()), ArgValue::Str("Comma".into()), ArgValue::Bool(false)],
+    );
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_scatter_chart_empty_input_boundary() {
+    assert_eq!(ScatterChart.run(Vec::new(), &[]).unwrap(), Vec::<u8>::new());
+}

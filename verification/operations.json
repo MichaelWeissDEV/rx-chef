@@ -3467,7 +3467,9 @@
       "correctness": [
         "tests/tests/operations/magic.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/magic.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -5018,7 +5020,9 @@
       "correctness": [
         "tests/tests/operations/scatter_chart.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/scatter_chart.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],
@@ -5042,7 +5046,9 @@
       "correctness": [
         "tests/tests/operations/series_chart.rs"
       ],
-      "known_answer": [],
+      "known_answer": [
+        "tests/tests/operations/series_chart.rs"
+      ],
       "differential": [],
       "property": [],
       "fuzz": [],

@@ -8,6 +8,8 @@
  * -----------------------------------------------------------------------------
  */
 
+use html_escape::{encode_double_quoted_attribute, encode_safe};
+
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
 
 /// Scatter chart operation
@@ -148,6 +150,19 @@ impl Operation for ScatterChart {
         let radius = args.get(6).and_then(|v| v.as_f64()).unwrap_or(5.0);
         let colour_in_input = args.get(7).and_then(|v| v.as_bool()).unwrap_or(false);
 
+        if record_delim.is_empty() || field_delim.is_empty() {
+            return Err(OperationError::InvalidArgument {
+                name: "Delimiter".into(),
+                reason: "record and field delimiters must not be empty".into(),
+            });
+        }
+        if !radius.is_finite() || radius < 0.0 {
+            return Err(OperationError::InvalidArgument {
+                name: "Point radius".into(),
+                reason: "must be a finite non-negative number".into(),
+            });
+        }
+
         let (headings, values) = get_scatter_values(
             &input_str,
             record_delim,
@@ -235,7 +250,7 @@ impl Operation for ScatterChart {
             };
             svg.push_str(&format!(
                 r#"<circle cx="{}" cy="{}" r="{}" fill="{}" stroke="rgba(0,0,0,0.5)" stroke-width="0.5"><title>X: {}&#10;Y: {}</title></circle>"#,
-                cx, cy, radius, c, x, y
+                cx, cy, radius, encode_double_quoted_attribute(c), x, y
             ));
         }
         svg.push_str("</g>");
@@ -259,11 +274,11 @@ impl Operation for ScatterChart {
         // Labels
         svg.push_str(&format!(
             r#"<text x="{}" y="{}" text-anchor="middle" font-family="sans-serif" font-size="14">{}</text>"#,
-            margin_left + width / 2.0, dimension - 15.0, x_label
+            margin_left + width / 2.0, dimension - 15.0, encode_safe(&x_label)
         ));
         svg.push_str(&format!(
             r#"<text x="{}" y="{}" transform="rotate(-90, {}, {})" text-anchor="middle" font-family="sans-serif" font-size="14">{}</text>"#,
-            15.0, margin_top + height / 2.0, 15.0, margin_top + height / 2.0, y_label
+            15.0, margin_top + height / 2.0, 15.0, margin_top + height / 2.0, encode_safe(&y_label)
         ));
 
         svg.push_str("</svg>");

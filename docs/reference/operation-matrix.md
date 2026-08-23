@@ -10,10 +10,10 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2502 |
-| With negative tests | 381 |
-| With boundary tests | 475 |
-| Reference-verified (known answer) | 214 |
+| Test functions | 2510 |
+| With negative tests | 384 |
+| With boundary tests | 477 |
+| Reference-verified (known answer) | 217 |
 | Differential-verified | 262 |
 | Parity: exact | 171 |
 | Parity: compatible | 5 |
@@ -42,8 +42,8 @@
 | Entropy | partial | unknown | yes | 6 | yes | yes | yes | — | — | — | — | yes |
 | Heatmap chart | partial | unknown | yes | 13 | yes | yes | yes | — | — | — | — | yes |
 | Hex Density chart | partial | unknown | yes | 2 | — | — | yes | — | — | — | — | yes |
-| Scatter chart | partial | unknown | yes | 3 | — | — | — | — | — | — | — | yes |
-| Series chart | partial | unknown | yes | 3 | — | yes | — | — | — | — | — | yes |
+| Scatter chart | partial | unknown | yes | 6 | yes | yes | yes | — | — | — | — | yes |
+| Series chart | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
 
 ## Checksums
 
@@ -322,7 +322,7 @@
 | Levenshtein Distance | partial | unknown | yes | 9 | yes | yes | — | yes | — | — | — | yes |
 | Luhn Checksum | partial | unknown | yes | 8 | yes | yes | — | yes | — | — | — | yes |
 | MIME Decoding | partial | exact | yes | 4 | yes | — | — | yes | — | — | — | yes |
-| Magic | partial | unknown | yes | 1 | — | — | — | — | — | — | yes | yes |
+| Magic | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | yes | yes |
 | Mean | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |
 | Median | partial | exact | yes | 4 | — | yes | — | yes | — | — | — | yes |
 | Merge | partial | unknown | yes | 5 | — | yes | yes | — | — | — | — | yes |
