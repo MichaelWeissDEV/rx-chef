@@ -55,6 +55,14 @@ jobs:
         shell: bash
     steps:
       - uses: actions/checkout@v4
+      - name: Prefer Strawberry Perl over Git's bundled Perl
+        # Git for Windows ships its own minimal `perl` earlier on PATH than
+        # Strawberry Perl in bash shells on the windows-latest runner. That
+        # perl lacks Locale::Maketext::Simple (used by IPC::Cmd), which
+        # breaks openssl-sys's vendored OpenSSL build (see Cargo.toml's
+        # windows `openssl` dependency). Put Strawberry Perl first instead.
+        if: matrix.os == 'windows-latest'
+        run: echo "C:/Strawberry/perl/bin" >> "$GITHUB_PATH"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
