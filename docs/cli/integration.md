@@ -102,6 +102,16 @@ Plugins must decode `output_base64` when exact bytes matter. `output` is UTF-8-l
 
 Protocol errors do not stop the server.
 
+Execution failures (`-32002`) additionally include an additive `error.data`
+object. Its stable `kind` is one of `unknown_operation`,
+`operation_unavailable`, `missing_argument`, `invalid_argument`,
+`operation_error`, `output_validation`, `invalid_recipe`,
+`step_limit_exceeded`, or `output_limit_exceeded`. When applicable it also
+contains the one-based `step`, `operation`, and `argument`; clients should use
+these fields rather than parsing the human-readable `message`. This is
+backward compatible with protocol version 1 because existing response fields
+are unchanged.
+
 ## Neovim process model
 
 Start one process per editor session, keep its pipes open, assign increasing IDs, buffer stdout until newline, and dispatch responses by `id`. Send `shutdown` during teardown and close stdin as fallback. Requests execute sequentially and responses preserve request order.

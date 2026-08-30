@@ -28,7 +28,7 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Input type | `HexBytes` | no | `Hex` | — | no | Raw bytes or Hex string |
+| 1 | Input type | `Enum` | no | `Hex` | Hex, Raw | no | Raw bytes or Hex string |
 | 2 | Return type | `String` | no | `Text output` | — | no | Text output, Packet data, or Packet data (hex) |
 
 ## Implementation

@@ -116,11 +116,10 @@ pub fn describe(operation: &str) -> Result<OperationDescriptor, String> {
             .iter()
             .map(|value| (*value).to_string())
             .collect(),
-        platform_requirements: vec![
-            "Linux".to_string(),
-            "macOS".to_string(),
-            "Windows".to_string(),
-        ],
+        // The registry currently exposes availability, but no per-operation
+        // platform requirements. An empty list is truthful; callers must use
+        // `availability` rather than treating every operation as universal.
+        platform_requirements: Vec::new(),
         side_effects: info.side_effects.to_vec(),
         deterministic: info.deterministic,
         parity: info.parity,
@@ -164,6 +163,18 @@ pub fn run_with_input(
     input_supplied: bool,
     args: &[String],
 ) -> Result<ExecutionResult, String> {
+    run_with_input_checked(operation, input, input_supplied, args)
+        .map_err(|error| error.to_string())
+}
+
+/// Checked counterpart to [`run_with_input`] that preserves execution error
+/// variants for Rust callers and the JSON-RPC protocol.
+pub fn run_with_input_checked(
+    operation: &str,
+    input: Vec<u8>,
+    input_supplied: bool,
+    args: &[String],
+) -> Result<ExecutionResult, execution::ExecutionError> {
     execution::execute(execution::ExecutionRequest {
         input,
         input_supplied,
@@ -176,7 +187,6 @@ pub fn run_with_input(
         options: execution::ExecutionOptions::default(),
     })
     .map(|outcome| ExecutionResult::from_bytes(outcome.output))
-    .map_err(|error| error.to_string())
 }
 
 /// Execute an arbitrary recipe through the shared execution engine.
@@ -190,6 +200,16 @@ pub fn bake_with_input(
     input_supplied: bool,
     recipe: &[RecipeStep],
 ) -> Result<ExecutionResult, String> {
+    bake_with_input_checked(input, input_supplied, recipe).map_err(|error| error.to_string())
+}
+
+/// Checked counterpart to [`bake_with_input`] that preserves structured
+/// engine failures instead of flattening them into display text.
+pub fn bake_with_input_checked(
+    input: Vec<u8>,
+    input_supplied: bool,
+    recipe: &[RecipeStep],
+) -> Result<ExecutionResult, execution::ExecutionError> {
     execution::execute(execution::ExecutionRequest {
         input,
         input_supplied,
@@ -198,7 +218,6 @@ pub fn bake_with_input(
         options: execution::ExecutionOptions::default(),
     })
     .map(|outcome| ExecutionResult::from_bytes(outcome.output))
-    .map_err(|error| error.to_string())
 }
 
 #[derive(Debug, Deserialize)]
@@ -253,11 +272,111 @@ fn decode_input(
 }
 
 fn error_response(id: Value, code: i64, message: impl Into<String>) -> Value {
+    error_response_with_data(id, code, message, None)
+}
+
+fn error_response_with_data(
+    id: Value,
+    code: i64,
+    message: impl Into<String>,
+    data: Option<Value>,
+) -> Value {
+    let mut error = json!({"code": code, "message": message.into()});
+    if let Some(data) = data {
+        error["data"] = data;
+    }
     json!({
         "jsonrpc": "2.0",
         "id": id,
-        "error": {"code": code, "message": message.into()}
+        "error": error
     })
+}
+
+#[derive(Debug)]
+struct ProtocolError {
+    code: i64,
+    message: String,
+    data: Option<Value>,
+}
+
+impl ProtocolError {
+    fn simple(code: i64, message: impl Into<String>) -> Self {
+        Self {
+            code,
+            message: message.into(),
+            data: None,
+        }
+    }
+}
+
+fn execution_protocol_error(error: execution::ExecutionError) -> ProtocolError {
+    let message = error.to_string();
+    let data = match error {
+        execution::ExecutionError::InvalidRecipe(reason) => json!({
+            "kind": "invalid_recipe",
+            "reason": reason,
+        }),
+        execution::ExecutionError::Step {
+            step_index,
+            operation,
+            ..
+        } => json!({
+            "kind": "operation_error",
+            "step": step_index,
+            "operation": operation,
+        }),
+        execution::ExecutionError::RuntimeStep {
+            step_index,
+            operation,
+            source,
+        } => runtime_error_data(source, step_index, operation),
+        execution::ExecutionError::StepLimitExceeded { limit } => json!({
+            "kind": "step_limit_exceeded",
+            "limit": limit,
+        }),
+        execution::ExecutionError::OutputLimitExceeded {
+            step_index,
+            limit,
+            actual,
+        } => json!({
+            "kind": "output_limit_exceeded",
+            "step": step_index,
+            "limit": limit,
+            "actual": actual,
+        }),
+    };
+    ProtocolError {
+        code: -32002,
+        message,
+        data: Some(data),
+    }
+}
+
+fn runtime_error_data(error: runtime::RuntimeError, step: usize, operation: String) -> Value {
+    match error {
+        runtime::RuntimeError::UnknownOperation(_) => json!({
+            "kind": "unknown_operation", "step": step, "operation": operation,
+        }),
+        runtime::RuntimeError::Unavailable { features, .. } => json!({
+            "kind": "operation_unavailable", "step": step, "operation": operation,
+            "features": features,
+        }),
+        runtime::RuntimeError::MissingArgument { name, .. } => json!({
+            "kind": "missing_argument", "step": step, "operation": operation,
+            "argument": name,
+        }),
+        runtime::RuntimeError::InvalidArgument { name, reason } => json!({
+            "kind": "invalid_argument", "step": step, "operation": operation,
+            "argument": name, "reason": reason,
+        }),
+        runtime::RuntimeError::Operation(_) => json!({
+            "kind": "operation_error", "step": step, "operation": operation,
+        }),
+        runtime::RuntimeError::OutputValidation(reason) => json!({
+            "kind": "output_validation", "step": step, "operation": operation,
+            "reason": reason,
+        }),
+    }
 }
 
 /// Handle one decoded JSON-RPC/JSONL request.
@@ -279,7 +398,7 @@ pub fn handle_request(value: Value) -> Option<Value> {
         }
     }
 
-    let result: Result<Value, (i64, String)> = match request.method.as_str() {
+    let result: Result<Value, ProtocolError> = match request.method.as_str() {
         "ping" => Ok(json!({
             "name": "rxchef",
             "version": env!("CARGO_PKG_VERSION"),
@@ -287,41 +406,54 @@ pub fn handle_request(value: Value) -> Option<Value> {
         })),
         "operations" => operations()
             .and_then(|value| serde_json::to_value(value).map_err(|error| error.to_string()))
-            .map_err(|message| (-32603, message)),
+            .map_err(|message| ProtocolError::simple(-32603, message)),
         "describe" => serde_json::from_value::<DescribeParams>(request.params)
-            .map_err(|error| (-32602, error.to_string()))
-            .and_then(|params| describe(&params.operation).map_err(|error| (-32001, error)))
+            .map_err(|error| ProtocolError::simple(-32602, error.to_string()))
+            .and_then(|params| {
+                describe(&params.operation).map_err(|error| ProtocolError {
+                    code: -32001,
+                    message: error,
+                    data: Some(json!({"kind": "unknown_operation", "operation": params.operation})),
+                })
+            })
             .and_then(|value| {
-                serde_json::to_value(value).map_err(|error| (-32603, error.to_string()))
+                serde_json::to_value(value)
+                    .map_err(|error| ProtocolError::simple(-32603, error.to_string()))
             }),
         "run" => serde_json::from_value::<RunParams>(request.params)
-            .map_err(|error| (-32602, error.to_string()))
+            .map_err(|error| ProtocolError::simple(-32602, error.to_string()))
             .and_then(|params| {
                 let (input, supplied) = decode_input(params.input, params.input_base64)
-                    .map_err(|error| (-32602, error))?;
-                run_with_input(&params.operation, input, supplied, &params.args)
-                    .map_err(|error| (-32002, error))
+                    .map_err(|error| ProtocolError::simple(-32602, error))?;
+                run_with_input_checked(&params.operation, input, supplied, &params.args)
+                    .map_err(execution_protocol_error)
             })
             .and_then(|value| {
-                serde_json::to_value(value).map_err(|error| (-32603, error.to_string()))
+                serde_json::to_value(value)
+                    .map_err(|error| ProtocolError::simple(-32603, error.to_string()))
             }),
         "bake" => serde_json::from_value::<BakeParams>(request.params)
-            .map_err(|error| (-32602, error.to_string()))
+            .map_err(|error| ProtocolError::simple(-32602, error.to_string()))
             .and_then(|params| {
                 let (input, supplied) = decode_input(params.input, params.input_base64)
-                    .map_err(|error| (-32602, error))?;
-                bake_with_input(input, supplied, &params.recipe).map_err(|error| (-32002, error))
+                    .map_err(|error| ProtocolError::simple(-32602, error))?;
+                bake_with_input_checked(input, supplied, &params.recipe)
+                    .map_err(execution_protocol_error)
             })
             .and_then(|value| {
-                serde_json::to_value(value).map_err(|error| (-32603, error.to_string()))
+                serde_json::to_value(value)
+                    .map_err(|error| ProtocolError::simple(-32603, error.to_string()))
             }),
         "shutdown" => Ok(json!({"shutdown": true})),
-        _ => Err((-32601, format!("method '{}' was not found", request.method))),
+        _ => Err(ProtocolError::simple(
+            -32601,
+            format!("method '{}' was not found", request.method),
+        )),
     };
 
     id.map(|_| match result {
         Ok(result) => json!({"jsonrpc": "2.0", "id": response_id, "result": result}),
-        Err((code, message)) => error_response(response_id, code, message),
+        Err(error) => error_response_with_data(response_id, error.code, error.message, error.data),
     })
 }
 
@@ -639,6 +771,33 @@ mod tests {
         let mut output = Vec::new();
         serve_jsonl(Cursor::new("{\"method\":\"ping\"}\n"), &mut output).unwrap();
         assert!(output.is_empty());
+    }
+
+    #[test]
+    fn execution_errors_include_stable_machine_readable_data() {
+        let response = handle_request(json!({
+            "id": 8,
+            "method": "run",
+            "params": {"operation": "From Base64", "input": "QQ==", "args": ["A-Za-z0-9+/=", "num:0"]}
+        }))
+        .unwrap();
+        assert_eq!(response["error"]["code"], -32002);
+        assert_eq!(response["error"]["data"]["kind"], "invalid_argument");
+        assert_eq!(response["error"]["data"]["step"], 1);
+        assert_eq!(response["error"]["data"]["operation"], "From Base64");
+        assert_eq!(
+            response["error"]["data"]["argument"],
+            "Remove non-alphabet chars"
+        );
+
+        let missing = handle_request(json!({
+            "id": 9,
+            "method": "run",
+            "params": {"operation": "AES Encrypt", "input": "plaintext"}
+        }))
+        .unwrap();
+        assert_eq!(missing["error"]["data"]["kind"], "missing_argument");
+        assert_eq!(missing["error"]["data"]["argument"], "Key");
     }
 
     #[test]

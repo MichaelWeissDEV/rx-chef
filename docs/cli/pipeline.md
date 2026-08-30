@@ -16,3 +16,8 @@ Step and argument indexes are one-based. `set` accepts an argument index or its
 schema name. `remove`, `rename`, `delete --yes`, `import`, and `export` complete
 the lifecycle. Use `pipeline COMMAND --help` for the version-specific flags and
 [the complete reference](reference.md#pipeline) for a compact table.
+
+The Rust `Pipeline` API also validates registered operation availability,
+required arguments, and declared argument kinds before it invokes a step. This
+makes typed programmatic pipelines follow the same fundamental contracts as
+recipes and CLI execution.

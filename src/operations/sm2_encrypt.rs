@@ -93,8 +93,8 @@ impl Operation for Sm2Encrypt {
                 "SM2 cannot encrypt an empty message".into(),
             ));
         }
-        let public_key_x = args.first().and_then(|a| a.as_str()).unwrap_or("");
-        let public_key_y = args.get(1).and_then(|a| a.as_str()).unwrap_or("");
+        let public_key_x = Self::parse_public_key_component(args.first())?;
+        let public_key_y = Self::parse_public_key_component(args.get(1))?;
 
         if public_key_x.is_empty() || public_key_y.is_empty() {
             return Err(OperationError::InvalidArgument {
@@ -103,7 +103,7 @@ impl Operation for Sm2Encrypt {
             });
         }
 
-        if public_key_x.len() != 64 || public_key_y.len() != 64 {
+        if public_key_x.len() != 32 || public_key_y.len() != 32 {
             return Err(OperationError::InvalidArgument {
                 name: "Public Key".to_string(),
                 reason: "Invalid Public Key - Ensure each component is 32 bytes in size (64 hex characters)".to_string(),
@@ -128,12 +128,10 @@ impl Operation for Sm2Encrypt {
                 reason: "Only sm2p256v1 is supported".into(),
             });
         }
-        let encoded = hex::decode(format!("04{public_key_x}{public_key_y}")).map_err(|error| {
-            OperationError::InvalidArgument {
-                name: "Public Key".into(),
-                reason: error.to_string(),
-            }
-        })?;
+        let mut encoded = Vec::with_capacity(65);
+        encoded.push(0x04);
+        encoded.extend_from_slice(&public_key_x);
+        encoded.extend_from_slice(&public_key_y);
         let public_key = SigCtx::new().load_pubkey(&encoded).map_err(|error| {
             OperationError::InvalidArgument {
                 name: "Public Key".into(),
@@ -158,5 +156,21 @@ impl Operation for Sm2Encrypt {
             ciphertext.extend_from_slice(&c2);
         }
         Ok(hex::encode(ciphertext).into_bytes())
+    }
+}
+
+impl Sm2Encrypt {
+    fn parse_public_key_component(argument: Option<&ArgValue>) -> Result<Vec<u8>, OperationError> {
+        match argument {
+            Some(ArgValue::Bytes(bytes)) => Ok(bytes.clone()),
+            Some(ArgValue::Str(value)) if value.is_empty() => Ok(Vec::new()),
+            Some(ArgValue::Str(value)) => {
+                hex::decode(value).map_err(|error| OperationError::InvalidArgument {
+                    name: "Public Key".into(),
+                    reason: error.to_string(),
+                })
+            }
+            _ => Ok(Vec::new()),
+        }
     }
 }

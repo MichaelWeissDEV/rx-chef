@@ -10,7 +10,7 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2539 |
+| Test functions | 2543 |
 | With negative tests | 385 |
 | With boundary tests | 478 |
 | Reference-verified (known answer) | 231 |
@@ -248,7 +248,7 @@ See [What "verified" means](../reference/verification.md) for what each evidence
 | Change IP format | partial | unknown | yes | 5 | yes | — | — | yes | — | — | — | yes |
 | Chi Square | partial | unknown | yes | 7 | — | yes | yes | yes | — | — | — | yes |
 | Comment | partial | exact | yes | 2 | — | — | — | yes | — | — | — | yes |
-| Conditional Jump | partial | unknown | yes | 14 | yes | yes | yes | yes | — | — | — | yes |
+| Conditional Jump | partial | unknown | yes | 15 | yes | yes | yes | yes | — | — | — | yes |
 | Convert Leet Speak | partial | exact | yes | 3 | — | — | — | yes | — | — | — | yes |
 | Convert area | partial | unknown | yes | 2 | — | — | — | yes | — | — | — | yes |
 | Convert data units | partial | unknown | yes | 3 | — | — | — | yes | — | — | — | yes |
@@ -278,7 +278,7 @@ See [What "verified" means](../reference/verification.md) for what each evidence
 | Fernet Decrypt | partial | unknown | yes | 3 | yes | yes | yes | yes | — | — | — | yes |
 | Fernet Encrypt | partial | unknown | yes | 4 | yes | — | yes | yes | — | — | — | yes |
 | File Tree | partial | exact | yes | 1 | — | — | — | yes | — | — | — | yes |
-| Fork | partial | unknown | yes | 13 | yes | yes | yes | yes | — | — | — | yes |
+| Fork | partial | unknown | yes | 14 | yes | yes | yes | yes | — | — | — | yes |
 | Format MAC addresses | partial | unknown | yes | 4 | yes | — | — | yes | — | — | — | yes |
 | Frequency distribution | partial | unknown | yes | 3 | yes | yes | yes | yes | — | — | — | yes |
 | From BCD | partial | unknown | yes | 5 | yes | yes | yes | yes | — | — | — | yes |
@@ -322,7 +322,7 @@ See [What "verified" means](../reference/verification.md) for what each evidence
 | Index of Coincidence | partial | unknown | yes | 8 | — | yes | yes | yes | — | — | — | yes |
 | JSON to CSV | partial | unknown | yes | 3 | — | — | — | yes | — | — | — | yes |
 | JSON to YAML | partial | unknown | yes | 2 | — | yes | — | yes | — | — | — | yes |
-| Jump | partial | unknown | yes | 12 | yes | yes | yes | yes | — | — | — | yes |
+| Jump | partial | unknown | yes | 13 | yes | yes | yes | yes | — | — | — | yes |
 | Label | partial | unknown | yes | 2 | — | yes | yes | — | — | — | — | yes |
 | Levenshtein Distance | partial | unknown | yes | 9 | yes | yes | — | yes | — | — | — | yes |
 | Luhn Checksum | partial | unknown | yes | 8 | yes | yes | — | yes | — | — | — | yes |
@@ -599,7 +599,7 @@ See [What "verified" means](../reference/verification.md) for what each evidence
 | Extract hashes | partial | exact | yes | 3 | yes | — | — | yes | — | — | — | yes |
 | Filter | partial | exact | yes | 4 | yes | yes | — | yes | — | — | — | yes |
 | Find / Replace | partial | unknown | yes | 4 | — | — | — | yes | — | — | — | yes |
-| Register | partial | unknown | yes | 17 | yes | yes | yes | — | — | — | — | yes |
+| Register | partial | unknown | yes | 18 | yes | yes | yes | — | — | — | — | yes |
 | Regular expression | partial | exact | yes | 4 | yes | — | — | yes | — | — | — | yes |
 | Strings | partial | unknown | yes | 4 | yes | yes | — | yes | — | — | — | yes |
 

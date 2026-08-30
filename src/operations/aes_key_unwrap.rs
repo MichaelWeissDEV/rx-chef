@@ -35,7 +35,7 @@ impl Operation for AesKeyUnwrap {
                 name: "Key (KEK)",
                 description: "Key-encryption key (16, 24, or 32 bytes)",
                 default_value: "",
-                kind: crate::operation::ArgKind::String,
+                kind: crate::operation::ArgKind::Bytes,
                 required: false,
                 choices: &[],
                 minimum: None,

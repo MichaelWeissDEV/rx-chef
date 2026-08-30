@@ -29,7 +29,7 @@ Declared output type: `String`. Redirect stdout or use `--output-file` for exact
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
 | 1 | Salt | `Bytes` | no | `<empty>` | — | no | The salt to use |
-| 2 | Info | `String` | no | `<empty>` | — | no | The info to use |
+| 2 | Info | `Bytes` | no | `<empty>` | — | no | The info to use |
 | 3 | Hashing function | `Enum` | no | `SHA256` | SHA1, SHA256, SHA384, SHA512 | no | The hashing function to use (SHA1, SHA256, SHA384, SHA512) |
 | 4 | Extract mode | `Enum` | no | `with salt` | with salt, no salt, skip | no | The extract mode (with salt, no salt, skip) |
 | 5 | L (number of output octets) | `Integer` | no | `16` | — | no | The number of output octets |

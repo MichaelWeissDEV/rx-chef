@@ -28,7 +28,7 @@ Declared output type: `Bytes`. Redirect stdout or use `--output-file` for exact 
 
 | # | Argument | Type | Required | Default | Allowed | Sensitive | Description |
 |---:|---|---|:---:|---|---|:---:|---|
-| 1 | Key (KEK) | `String` | no | `<empty>` | — | no | Key-encryption key (16, 24, or 32 bytes) |
+| 1 | Key (KEK) | `Bytes` | no | `<empty>` | — | no | Key-encryption key (16, 24, or 32 bytes) |
 | 2 | IV | `Bytes` | no | `a6a6a6a6a6a6a6a6` | — | no | Initialization Vector (8 bytes, defaults to a6a6a6a6a6a6a6a6) |
 | 3 | Input | `Enum` | no | `Hex` | Raw, Hex | no | Input encoding (Raw, Hex) |
 | 4 | Output | `Enum` | no | `Hex` | Raw, Hex | no | Output encoding (Raw, Hex) |

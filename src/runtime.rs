@@ -182,6 +182,57 @@ pub fn validate_operation_args(
         .collect::<Result<Vec<_>, _>>()
 }
 
+/// Validate already-typed arguments for a registered operation.
+///
+/// This is used by the public typed [`crate::pipeline::Pipeline`] so direct
+/// Rust composition observes the same availability, required-argument and
+/// `ArgKind` contracts as recipe and CLI execution.
+pub fn validate_typed_operation_args(
+    operation_name: &str,
+    values: &[ArgValue],
+) -> Result<(), RuntimeError> {
+    let canonical_name = resolve_operation_name(operation_name)
+        .ok_or_else(|| RuntimeError::UnknownOperation(operation_name.to_string()))?;
+    let operation = operations::get_operation(&canonical_name)
+        .ok_or_else(|| RuntimeError::UnknownOperation(operation_name.to_string()))?;
+    if operation.availability() != Availability::Available {
+        return Err(RuntimeError::Unavailable {
+            operation: operation.name().to_string(),
+            features: operation.feature_requirements().join(", "),
+        });
+    }
+    let schema = operation.args_schema();
+    if values.len() > schema.len() {
+        return Err(RuntimeError::InvalidArgument {
+            name: "arguments".into(),
+            reason: format!(
+                "'{}' accepts {} value(s), but {} were provided",
+                operation.name(),
+                schema.len(),
+                values.len()
+            ),
+        });
+    }
+    for (index, argument) in schema.iter().enumerate() {
+        let Some(value) = values.get(index) else {
+            if argument.required {
+                return Err(RuntimeError::MissingArgument {
+                    operation: operation.name().to_string(),
+                    name: argument.name.into(),
+                });
+            }
+            continue;
+        };
+        validate_typed_schema_argument(value, argument).map_err(|reason| {
+            RuntimeError::InvalidArgument {
+                name: argument.name.into(),
+                reason,
+            }
+        })?;
+    }
+    Ok(())
+}
+
 /// Bind supplied positional and named values to an operation's schema.
 ///
 /// # Why this keeps `Option` internally
@@ -336,15 +387,26 @@ pub fn parse_operation_arg(raw: &str) -> Result<ArgValue, String> {
         return Ok(ArgValue::Bytes(bytes));
     }
 
+    if let Some(rest) = raw.strip_prefix("base64:") {
+        use base64::{engine::general_purpose, Engine as _};
+        let bytes = general_purpose::STANDARD
+            .decode(rest)
+            .map_err(|error| format!("invalid Base64 argument '{}': {error}", raw))?;
+        return Ok(ArgValue::Bytes(bytes));
+    }
+
     Ok(ArgValue::Str(raw.to_string()))
 }
 
 fn parse_schema_argument(raw: &str, kind: ArgKind) -> Result<ArgValue, String> {
-    if raw.starts_with("num:")
-        || raw.starts_with("bool:")
-        || raw.starts_with("hex:")
-        || raw.starts_with("bytes:")
-    {
+    if let Some(prefix) = typed_prefix(raw) {
+        if !prefix_is_compatible_with_kind(prefix, kind) {
+            return Err(format!(
+                "{} values are incompatible with {} arguments",
+                prefix.name(),
+                arg_kind_name(kind)
+            ));
+        }
         return parse_operation_arg(raw);
     }
     match kind {
@@ -374,8 +436,91 @@ fn parse_schema_argument(raw: &str, kind: ArgKind) -> Result<ArgValue, String> {
             }
             Ok(ArgValue::Str(raw.to_string()))
         }
+        ArgKind::HexBytes => Ok(ArgValue::Bytes(decode_hex_bytes(raw)?)),
+        ArgKind::Base64Bytes => {
+            use base64::{engine::general_purpose, Engine as _};
+            general_purpose::STANDARD
+                .decode(raw)
+                .map_err(|error| format!("expected Base64 bytes: {error}"))?;
+            Ok(ArgValue::Str(raw.to_string()))
+        }
         _ => Ok(ArgValue::Str(raw.to_string())),
     }
+}
+
+#[derive(Clone, Copy)]
+enum TypedPrefix {
+    Number,
+    Boolean,
+    HexBytes,
+    Base64Bytes,
+}
+
+impl TypedPrefix {
+    fn name(self) -> &'static str {
+        match self {
+            Self::Number => "num:",
+            Self::Boolean => "bool:",
+            Self::HexBytes => "hex:",
+            Self::Base64Bytes => "base64:",
+        }
+    }
+}
+
+fn typed_prefix(raw: &str) -> Option<TypedPrefix> {
+    if raw.starts_with("num:") {
+        Some(TypedPrefix::Number)
+    } else if raw.starts_with("bool:") {
+        Some(TypedPrefix::Boolean)
+    } else if raw.starts_with("hex:") || raw.starts_with("bytes:") {
+        Some(TypedPrefix::HexBytes)
+    } else if raw.starts_with("base64:") {
+        Some(TypedPrefix::Base64Bytes)
+    } else {
+        None
+    }
+}
+
+fn prefix_is_compatible_with_kind(prefix: TypedPrefix, kind: ArgKind) -> bool {
+    matches!(
+        (prefix, kind),
+        (
+            TypedPrefix::Number,
+            ArgKind::Integer | ArgKind::UnsignedInteger | ArgKind::Float
+        ) | (TypedPrefix::Boolean, ArgKind::Boolean)
+            | (TypedPrefix::HexBytes, ArgKind::Bytes | ArgKind::HexBytes)
+            | (
+                TypedPrefix::Base64Bytes,
+                ArgKind::Bytes | ArgKind::Base64Bytes
+            )
+    )
+}
+
+fn arg_kind_name(kind: ArgKind) -> &'static str {
+    match kind {
+        ArgKind::String => "string",
+        ArgKind::Integer => "integer",
+        ArgKind::UnsignedInteger => "unsigned integer",
+        ArgKind::Float => "float",
+        ArgKind::Boolean => "boolean",
+        ArgKind::Bytes => "bytes",
+        ArgKind::HexBytes => "hex bytes",
+        ArgKind::Base64Bytes => "Base64 bytes",
+        ArgKind::Enum => "enum",
+        ArgKind::Regex => "regular expression",
+        ArgKind::Path => "path",
+        ArgKind::Url => "URL",
+    }
+}
+
+fn decode_hex_bytes(raw: &str) -> Result<Vec<u8>, String> {
+    let encoded = raw
+        .strip_prefix("hex:")
+        .or_else(|| raw.strip_prefix("bytes:"))
+        .or_else(|| raw.strip_prefix("0x"))
+        .unwrap_or(raw);
+    let cleaned = encoded.replace([' ', '\n', '\r', '\t'], "");
+    hex::decode(cleaned).map_err(|error| format!("expected hex bytes: {error}"))
 }
 
 fn numeric_bound(bound: NumericBound) -> f64 {
@@ -387,11 +532,68 @@ fn numeric_bound(bound: NumericBound) -> f64 {
 }
 
 fn validate_schema_argument(raw: &str, value: &ArgValue, schema: &ArgSchema) -> Result<(), String> {
+    validate_value_kind(value, schema.kind)?;
     if !schema.choices.is_empty()
         && !schema
             .choices
             .iter()
             .any(|choice| choice.eq_ignore_ascii_case(raw))
+    {
+        return Err(format!("expected one of: {}", schema.choices.join(", ")));
+    }
+    if schema.minimum.is_some() || schema.maximum.is_some() {
+        let number = value
+            .as_f64()
+            .ok_or_else(|| "expected a finite numeric value".to_string())?;
+        if let Some(minimum) = schema.minimum {
+            if number < numeric_bound(minimum) {
+                return Err(format!("must be at least {minimum}"));
+            }
+        }
+        if let Some(maximum) = schema.maximum {
+            if number > numeric_bound(maximum) {
+                return Err(format!("must be at most {maximum}"));
+            }
+        }
+    }
+    Ok(())
+}
+
+fn validate_value_kind(value: &ArgValue, kind: ArgKind) -> Result<(), String> {
+    let valid = match kind {
+        ArgKind::String | ArgKind::Enum | ArgKind::Regex | ArgKind::Path | ArgKind::Url => {
+            matches!(value, ArgValue::Str(_))
+        }
+        ArgKind::Boolean => value.as_bool().is_some(),
+        ArgKind::Integer => value.as_f64().is_some_and(|number| number.fract() == 0.0),
+        ArgKind::UnsignedInteger => value
+            .as_f64()
+            .is_some_and(|number| number.fract() == 0.0 && number >= 0.0),
+        ArgKind::Float => value.as_f64().is_some(),
+        // Byte arguments support literal text as well as explicit encoded
+        // prefixes. Existing operations intentionally use `ArgValue::Str` for
+        // literal keys and decode them through `convert_to_byte_array`.
+        ArgKind::Bytes | ArgKind::HexBytes | ArgKind::Base64Bytes => {
+            matches!(value, ArgValue::Str(_) | ArgValue::Bytes(_))
+        }
+    };
+    valid.then_some(()).ok_or_else(|| {
+        format!(
+            "expected {}, got incompatible runtime value",
+            arg_kind_name(kind)
+        )
+    })
+}
+
+fn validate_typed_schema_argument(value: &ArgValue, schema: &ArgSchema) -> Result<(), String> {
+    validate_value_kind(value, schema.kind)?;
+    if !schema.choices.is_empty()
+        && !value.as_str().is_some_and(|raw| {
+            schema
+                .choices
+                .iter()
+                .any(|choice| choice.eq_ignore_ascii_case(raw))
+        })
     {
         return Err(format!("expected one of: {}", schema.choices.join(", ")));
     }
@@ -568,6 +770,45 @@ mod tests {
         assert!(matches!(parse_operation_arg("plain"), Ok(ArgValue::Str(v)) if v == "plain"));
         assert!(parse_operation_arg("num:NaN").is_err());
         assert!(parse_operation_arg("num:inf").is_err());
+    }
+
+    #[test]
+    fn typed_prefixes_must_match_the_declared_argument_kind() {
+        // Previously `num:0` became ArgValue::Num for From Base64's boolean
+        // slot. The operation then treated it as absent and silently used its
+        // default (`true`). Schema validation must reject it before dispatch.
+        let error =
+            validate_operation_args("From Base64", &["A-Za-z0-9+/=".into(), "num:0".into()])
+                .unwrap_err();
+        assert!(matches!(
+            error,
+            RuntimeError::InvalidArgument { name, .. } if name == "Remove non-alphabet chars"
+        ));
+
+        assert!(validate_operation_args(
+            "From Base64",
+            &[
+                "A-Za-z0-9+/=".into(),
+                "bool:false".into(),
+                "bool:true".into()
+            ],
+        )
+        .is_ok());
+    }
+
+    #[test]
+    fn schema_parsing_rejects_invalid_numeric_and_byte_contracts() {
+        let integer = validate_operation_args("Head", &["Line feed".into(), "num:1.5".into()]);
+        assert!(matches!(integer, Err(RuntimeError::InvalidArgument { .. })));
+
+        let unsigned = validate_operation_args("Caesar Box Cipher", &["-1".into()]);
+        assert!(matches!(
+            unsigned,
+            Err(RuntimeError::InvalidArgument { .. })
+        ));
+
+        let hex = validate_operation_args("SM2 Encrypt", &["not-hex".into()]);
+        assert!(matches!(hex, Err(RuntimeError::InvalidArgument { .. })));
     }
 
     #[test]

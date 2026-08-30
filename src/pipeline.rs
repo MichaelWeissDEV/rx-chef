@@ -9,7 +9,10 @@
 
 use std::fmt;
 
-use crate::operation::{ArgValue, Operation, OperationData, OperationError};
+use crate::{
+    operation::{ArgValue, Operation, OperationData, OperationError},
+    runtime,
+};
 
 /// Error produced when a [`Pipeline`] step fails.
 #[derive(Debug)]
@@ -96,6 +99,18 @@ impl Pipeline {
     pub fn run(&self, input: OperationData) -> Result<OperationData, PipelineError> {
         let mut current = input;
         for (i, (op, args)) in self.steps.iter().enumerate() {
+            // Pipeline keeps its useful typed composition API, but registry
+            // operations no longer bypass the public runtime contract.
+            runtime::validate_typed_operation_args(op.name(), args).map_err(|error| {
+                PipelineError {
+                    step_index: i,
+                    step_name: op.name().to_string(),
+                    cause: OperationError::InvalidArgument {
+                        name: "arguments".into(),
+                        reason: error.to_string(),
+                    },
+                }
+            })?;
             current = op.run_typed(current, args).map_err(|cause| PipelineError {
                 step_index: i,
                 step_name: op.name().to_string(),
@@ -271,5 +286,26 @@ mod tests {
             .run_text("hello rxchef")
             .unwrap();
         assert_eq!(result, "HELLO RXCHEF");
+    }
+
+    #[test]
+    fn pipeline_enforces_registered_argument_contracts_before_running() {
+        let error = Pipeline::new()
+            .then(
+                op("From Base64"),
+                vec![ArgValue::Str("A-Za-z0-9+/=".into()), ArgValue::Num(0.0)],
+            )
+            .run_bytes(b"QQ==".to_vec())
+            .unwrap_err();
+        assert_eq!(error.step_index, 0);
+        assert!(error.to_string().contains("Remove non-alphabet chars"));
+
+        let missing = Pipeline::new()
+            .then(op("AES Encrypt"), vec![])
+            .run_bytes(b"plaintext".to_vec())
+            .unwrap_err();
+        assert!(missing
+            .to_string()
+            .contains("requires a value for argument 'Key'"));
     }
 }

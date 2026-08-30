@@ -45,7 +45,7 @@ impl Operation for DeriveHKDFKey {
                 name: "Info",
                 description: "The info to use",
                 default_value: "",
-                kind: crate::operation::ArgKind::String,
+                kind: crate::operation::ArgKind::Bytes,
                 required: false,
                 choices: &[],
                 minimum: None,

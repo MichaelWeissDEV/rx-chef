@@ -35,9 +35,11 @@ impl Operation for ParseEthernetFrame {
                 name: "Input type",
                 description: "Raw bytes or Hex string",
                 default_value: "Hex",
-                kind: crate::operation::ArgKind::HexBytes,
+                // This selects how the *input* is interpreted; it is not a
+                // byte-valued operation argument.
+                kind: crate::operation::ArgKind::Enum,
                 required: false,
-                choices: &[],
+                choices: &["Hex", "Raw"],
                 minimum: None,
                 maximum: None,
                 sensitive: false,

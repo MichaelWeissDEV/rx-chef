@@ -296,6 +296,24 @@ pub unsafe extern "C" fn rxchef_run(
     args: *const *mut ArgValue,
     num_args: usize,
 ) -> *mut RxChefResult {
+    // Keep this ABI wrapper deliberately thin: even validation, pointer
+    // iteration, formatting, and result allocation happen in the guarded
+    // implementation. Valid FFI calls must never unwind into C.
+    match ffi_boundary(|| unsafe {
+        rxchef_run_impl(op_name, input_data, input_len, args, num_args)
+    }) {
+        Ok(result) => result,
+        Err(()) => ffi_boundary(|| error_result("operation panicked")).unwrap_or(ptr::null_mut()),
+    }
+}
+
+unsafe fn rxchef_run_impl(
+    op_name: *const c_char,
+    input_data: *const c_uchar,
+    input_len: usize,
+    args: *const *mut ArgValue,
+    num_args: usize,
+) -> *mut RxChefResult {
     if op_name.is_null() {
         return error_result("op_name must not be NULL");
     }
@@ -333,8 +351,8 @@ pub unsafe extern "C" fn rxchef_run(
         }
     }
 
-    let run_result = ffi_boundary(|| {
-        execution::execute(execution::ExecutionRequest {
+    let (out_data, out_len, out_cap, out_err) =
+        match execution::execute(execution::ExecutionRequest {
             input,
             input_supplied,
             recipe: vec![execution::RecipeStep {
@@ -344,26 +362,20 @@ pub unsafe extern "C" fn rxchef_run(
             .into(),
             variables: execution::VariableContext::default(),
             options: execution::ExecutionOptions::default(),
-        })
-        .map(|outcome| outcome.output)
-    });
-    let (out_data, out_len, out_cap, out_err) = match run_result {
-        Ok(Ok(mut v)) => {
-            let len = v.len();
-            let cap = v.capacity();
-            let ptr = v.as_mut_ptr();
-            std::mem::forget(v);
-            (ptr, len, cap, ptr::null_mut())
-        }
-        Ok(Err(e)) => {
-            let err_str = CString::new(e.to_string()).unwrap_or_default();
-            (ptr::null_mut(), 0, 0, err_str.into_raw())
-        }
-        Err(_) => {
-            let err_str = CString::new("operation panicked").unwrap_or_default();
-            (ptr::null_mut(), 0, 0, err_str.into_raw())
-        }
-    };
+        }) {
+            Ok(v) => {
+                let mut v = v.output;
+                let len = v.len();
+                let cap = v.capacity();
+                let ptr = v.as_mut_ptr();
+                std::mem::forget(v);
+                (ptr, len, cap, ptr::null_mut())
+            }
+            Err(e) => {
+                let err_str = CString::new(e.to_string()).unwrap_or_default();
+                (ptr::null_mut(), 0, 0, err_str.into_raw())
+            }
+        };
 
     let result = Box::new(RxChefResult {
         data: out_data,

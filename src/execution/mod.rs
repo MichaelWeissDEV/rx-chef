@@ -3,7 +3,7 @@
 //! Every frontend passes byte input and a recipe to this module. The engine is
 //! deliberately independent of terminals, stores, and transport protocols.
 
-use std::{collections::HashMap, time::Duration, time::Instant};
+use std::{collections::HashMap, sync::OnceLock, time::Duration, time::Instant};
 
 use serde::{Deserialize, Serialize};
 
@@ -225,6 +225,22 @@ pub enum ExecutionError {
     },
 }
 
+impl ExecutionError {
+    /// `ignore_errors` belongs to branch transformations, not to the engine.
+    /// Policy failures (limits, invalid recipes, output contracts, lookup and
+    /// schema errors) must stay visible so a nested recipe cannot escape its
+    /// caller's safety guarantees.
+    fn is_ignorable_operation_failure(&self) -> bool {
+        matches!(
+            self,
+            Self::RuntimeStep {
+                source: runtime::RuntimeError::Operation(_),
+                ..
+            }
+        )
+    }
+}
+
 fn flow_name(name: &str) -> String {
     name.chars()
         .filter(|character| character.is_ascii_alphanumeric())
@@ -389,7 +405,9 @@ fn split_bytes<'a>(input: &'a [u8], delimiter: &[u8]) -> Result<Vec<&'a [u8]>, S
 }
 
 fn expand_registers(value: &str, registers: &[String]) -> String {
-    let matcher = regex::Regex::new(r"\$R(\d+)").expect("static register regex");
+    static REGISTER_REFERENCE: OnceLock<regex::Regex> = OnceLock::new();
+    let matcher = REGISTER_REFERENCE
+        .get_or_init(|| regex::Regex::new(r"\$R(\d+)").expect("static register regex"));
     matcher
         .replace_all(value, |captures: &regex::Captures<'_>| {
             captures[1]
@@ -503,6 +521,24 @@ impl<'a> Engine<'a> {
         Ok(())
     }
 
+    fn append_checked(
+        &self,
+        step_index: usize,
+        output: &mut Vec<u8>,
+        bytes: &[u8],
+    ) -> Result<(), ExecutionError> {
+        let output_len = output.len().checked_add(bytes.len()).ok_or_else(|| {
+            ExecutionError::OutputLimitExceeded {
+                step_index: step_index + 1,
+                limit: self.options.max_output_bytes.unwrap_or(usize::MAX),
+                actual: usize::MAX,
+            }
+        })?;
+        self.check_output(step_index, output_len)?;
+        output.extend_from_slice(bytes);
+        Ok(())
+    }
+
     fn record_trace(
         &mut self,
         index: usize,
@@ -558,7 +594,7 @@ impl<'a> Engine<'a> {
                     let mut joined = Vec::new();
                     for (branch_index, branch) in branches.iter().enumerate() {
                         if branch_index > 0 {
-                            joined.extend_from_slice(&join);
+                            self.append_checked(index, &mut joined, &join)?;
                         }
                         let mut branch_registers = registers.clone();
                         match self.run_range(
@@ -567,8 +603,12 @@ impl<'a> Engine<'a> {
                             branch.to_vec(),
                             &mut branch_registers,
                         ) {
-                            Ok(output) => joined.extend_from_slice(&output),
-                            Err(_) if ignore_errors => joined.extend_from_slice(branch),
+                            Ok(output) => self.append_checked(index, &mut joined, &output)?,
+                            Err(error)
+                                if ignore_errors && error.is_ignorable_operation_failure() =>
+                            {
+                                self.append_checked(index, &mut joined, branch)?
+                            }
                             Err(error) => return Err(error),
                         }
                     }
@@ -593,7 +633,7 @@ impl<'a> Engine<'a> {
                         if !global && match_index > 0 {
                             break;
                         }
-                        output.extend_from_slice(&current[offset..found.start()]);
+                        self.append_checked(index, &mut output, &current[offset..found.start()])?;
                         let original = &current[found.start()..found.end()];
                         let mut section_registers = registers.clone();
                         match self.run_range(
@@ -602,13 +642,17 @@ impl<'a> Engine<'a> {
                             original.to_vec(),
                             &mut section_registers,
                         ) {
-                            Ok(section) => output.extend_from_slice(&section),
-                            Err(_) if ignore_errors => output.extend_from_slice(original),
+                            Ok(section) => self.append_checked(index, &mut output, &section)?,
+                            Err(error)
+                                if ignore_errors && error.is_ignorable_operation_failure() =>
+                            {
+                                self.append_checked(index, &mut output, original)?
+                            }
                             Err(error) => return Err(error),
                         }
                         offset = found.end();
                     }
-                    output.extend_from_slice(&current[offset..]);
+                    self.append_checked(index, &mut output, &current[offset..])?;
                     pc = merge + 1;
                     Some(output)
                 }
@@ -755,7 +799,7 @@ pub fn execute(request: ExecutionRequest) -> Result<ExecutionOutcome, ExecutionE
         return Err(ExecutionError::StepLimitExceeded { limit: 0 });
     }
     if let Some(limit) = request.options.max_output_bytes {
-        if request.input.len() > limit && request.recipe.steps.is_empty() {
+        if request.input.len() > limit {
             return Err(ExecutionError::OutputLimitExceeded {
                 step_index: 0,
                 limit,
@@ -892,6 +936,163 @@ mod tests {
         assert!(matches!(
             execute(request),
             Err(ExecutionError::OutputLimitExceeded { limit: 4, .. })
+        ));
+    }
+
+    fn request(
+        input: &[u8],
+        recipe: Vec<RecipeStep>,
+        options: ExecutionOptions,
+    ) -> ExecutionRequest {
+        ExecutionRequest {
+            input: input.to_vec(),
+            input_supplied: true,
+            recipe: recipe.into(),
+            variables: VariableContext::default(),
+            options,
+        }
+    }
+
+    #[test]
+    fn nested_ignore_errors_never_suppresses_engine_limits() {
+        let fork = vec![
+            RecipeStep {
+                op: "Fork".into(),
+                args: vec!["\\n".into(), "\\n".into(), "true".into()],
+            },
+            RecipeStep {
+                op: "To Upper case".into(),
+                args: vec![],
+            },
+            RecipeStep {
+                op: "Merge".into(),
+                args: vec![],
+            },
+        ];
+        assert!(matches!(
+            execute(request(
+                b"a",
+                fork.clone(),
+                ExecutionOptions {
+                    max_steps: 1,
+                    ..ExecutionOptions::default()
+                }
+            )),
+            Err(ExecutionError::StepLimitExceeded { limit: 1 })
+        ));
+
+        let subsection = vec![
+            RecipeStep {
+                op: "Subsection".into(),
+                args: vec![".".into(), "true".into(), "true".into(), "true".into()],
+            },
+            RecipeStep {
+                op: "To Upper case".into(),
+                args: vec![],
+            },
+            RecipeStep {
+                op: "Merge".into(),
+                args: vec![],
+            },
+        ];
+        assert!(matches!(
+            execute(request(
+                b"a",
+                subsection.clone(),
+                ExecutionOptions {
+                    max_steps: 1,
+                    ..ExecutionOptions::default()
+                }
+            )),
+            Err(ExecutionError::StepLimitExceeded { limit: 1 })
+        ));
+
+        let expanding_branch = vec![
+            RecipeStep {
+                op: "Fork".into(),
+                args: vec!["\\n".into(), "\\n".into(), "true".into()],
+            },
+            RecipeStep {
+                op: "To Base64".into(),
+                args: vec![],
+            },
+            RecipeStep {
+                op: "Merge".into(),
+                args: vec![],
+            },
+        ];
+        assert!(matches!(
+            execute(request(
+                b"a\\nb",
+                expanding_branch,
+                ExecutionOptions {
+                    max_output_bytes: Some(4),
+                    ..ExecutionOptions::default()
+                }
+            )),
+            Err(ExecutionError::OutputLimitExceeded { limit: 4, .. })
+        ));
+
+        let expanding_section = vec![
+            RecipeStep {
+                op: "Subsection".into(),
+                args: vec![".".into(), "true".into(), "true".into(), "true".into()],
+            },
+            RecipeStep {
+                op: "To Base64".into(),
+                args: vec![],
+            },
+            RecipeStep {
+                op: "Merge".into(),
+                args: vec![],
+            },
+        ];
+        assert!(matches!(
+            execute(request(
+                b"a,b",
+                expanding_section,
+                ExecutionOptions {
+                    max_output_bytes: Some(4),
+                    ..ExecutionOptions::default()
+                }
+            )),
+            Err(ExecutionError::OutputLimitExceeded { limit: 4, .. })
+        ));
+    }
+
+    #[test]
+    fn nested_ignore_errors_only_ignores_operation_failures() {
+        let recipe = vec![
+            RecipeStep {
+                op: "Fork".into(),
+                args: vec!["\\n".into(), "|".into(), "true".into()],
+            },
+            RecipeStep {
+                op: "From Base64".into(),
+                args: vec![
+                    "A-Za-z0-9+/=".into(),
+                    "bool:false".into(),
+                    "bool:true".into(),
+                ],
+            },
+            RecipeStep {
+                op: "Merge".into(),
+                args: vec![],
+            },
+        ];
+        let ignored = execute(request(
+            b"A\nQQ==",
+            recipe.clone(),
+            ExecutionOptions::default(),
+        ))
+        .unwrap();
+        assert_eq!(ignored.output, b"A|A");
+
+        let mut propagated = recipe;
+        propagated[0].args[2] = "false".into();
+        assert!(matches!(
+            execute(request(b"A\nQQ==", propagated, ExecutionOptions::default())),
+            Err(ExecutionError::RuntimeStep { .. })
         ));
     }
 
