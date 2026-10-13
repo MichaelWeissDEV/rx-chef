@@ -22,7 +22,10 @@ fn main() -> ExitCode {
         Ok(config) => config,
         Err(error) => return fail(error),
     };
-    let runtime = match tokio::runtime::Builder::new_multi_thread().enable_all().build() {
+    let runtime = match tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()
+    {
         Ok(runtime) => runtime,
         Err(error) => return fail(format!("cannot start runtime: {error}")),
     };
@@ -31,7 +34,11 @@ fn main() -> ExitCode {
             Ok(listener) => listener,
             Err(error) => return fail(format!("cannot bind {listen}: {error}")),
         };
-        eprintln!("rxchef-server {} listening on http://{}", env!("CARGO_PKG_VERSION"), listener.local_addr().map_or(listen, |a| a));
+        eprintln!(
+            "rxchef-server {} listening on http://{}",
+            env!("CARGO_PKG_VERSION"),
+            listener.local_addr().map_or(listen, |a| a)
+        );
         if config.generated_token {
             // Shown exactly once, on stderr only; never written to disk or logs.
             eprintln!("generated access token (not stored): {}", config.full_token);

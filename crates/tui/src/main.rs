@@ -47,12 +47,12 @@ use ratatui::{
     Frame, Terminal,
 };
 use rxchef::{execution, runtime};
-use std::time::Duration;
 use rxchef_client::{
     EngineClient, ExecuteRequest, ExecutionPolicy, LocalEngineClient, RemoteEngineClient,
     TraceLimits,
 };
 use rxchef_store as store;
+use std::time::Duration;
 
 // ─── Data model ──────────────────────────────────────────────────────────────
 
@@ -258,7 +258,11 @@ impl App {
             })
             .collect::<Vec<_>>();
         let client: Box<dyn EngineClient> = if let Some(ref url) = self.server_url {
-            match RemoteEngineClient::new(url, self.server_token.as_deref(), Duration::from_secs(30)) {
+            match RemoteEngineClient::new(
+                url,
+                self.server_token.as_deref(),
+                Duration::from_secs(30),
+            ) {
                 Ok(remote) => Box::new(remote),
                 Err(err) => {
                     self.results.push(StepResult {
@@ -1409,8 +1413,12 @@ fn main() -> io::Result<()> {
                 println!("Usage:");
                 println!("  rxchef_tui [OPTIONS]\n");
                 println!("Options:");
-                println!("  --server <URL>    Connect to remote rxchef-server (or RXCHEF_SERVER env)");
-                println!("  --token <TOKEN>   Bearer token for remote server (or RXCHEF_TOKEN env)");
+                println!(
+                    "  --server <URL>    Connect to remote rxchef-server (or RXCHEF_SERVER env)"
+                );
+                println!(
+                    "  --token <TOKEN>   Bearer token for remote server (or RXCHEF_TOKEN env)"
+                );
                 println!("  -h, --help        Show help\n");
                 println!("Run without arguments for local execution.");
                 println!("For headless recipes use `rxchef bake`.");

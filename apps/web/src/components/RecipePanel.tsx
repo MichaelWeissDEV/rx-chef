@@ -114,7 +114,7 @@ export const RecipePanel: React.FC<RecipePanelProps> = ({
                 {desc && desc.args && desc.args.length > 0 && (
                   <div style={{ padding: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     {desc.args.map((argSchema: ArgSchema, argIdx: number) => {
-                      const val = step.args[argIdx] ?? argSchema.default_value ?? '';
+                      const val = step.args[argIdx] ?? argSchema.default ?? '';
 
                       return (
                         <div key={argIdx} style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -138,7 +138,7 @@ export const RecipePanel: React.FC<RecipePanelProps> = ({
                               type={argSchema.sensitive ? 'password' : 'text'}
                               value={val}
                               onChange={(e) => onUpdateArg(stepIdx, argIdx, e.target.value)}
-                              placeholder={argSchema.default_value}
+                              placeholder={argSchema.default}
                               style={{ width: '100%' }}
                             />
                           )}

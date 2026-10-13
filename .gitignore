@@ -12,3 +12,14 @@
 site/
 __pycache__/
 *.py[cod]
+
+# JavaScript / TypeScript
+**/node_modules/
+**/dist/
+**/.vite/
+**/coverage/
+**/playwright-report/
+**/test-results/
+**/*.tsbuildinfo
+
+/crates/server/web-dist/

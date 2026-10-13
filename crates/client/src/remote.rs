@@ -160,7 +160,10 @@ impl EngineClient for RemoteEngineClient {
     }
     fn describe(&self, operation: &str) -> Result<integration::OperationDescriptor, ClientError> {
         if operation.is_empty() || operation.len() > 256 {
-            return Err(ClientError::new(ErrorKind::InvalidInput, "invalid operation name"));
+            return Err(ClientError::new(
+                ErrorKind::InvalidInput,
+                "invalid operation name",
+            ));
         }
         // Path segments are percent-encoded by `Url`, so names with spaces are safe.
         self.request(
@@ -181,7 +184,11 @@ impl EngineClient for RemoteEngineClient {
 }
 
 fn validate_job_id(id: &str) -> Result<(), ClientError> {
-    if id.len() != 36 || !id.bytes().all(|byte| byte.is_ascii_hexdigit() || byte == b'-') {
+    if id.len() != 36
+        || !id
+            .bytes()
+            .all(|byte| byte.is_ascii_hexdigit() || byte == b'-')
+    {
         return Err(ClientError::new(ErrorKind::InvalidInput, "invalid job ID"));
     }
     Ok(())

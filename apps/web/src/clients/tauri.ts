@@ -13,7 +13,7 @@ import {
 
 declare global {
   interface Window {
-    __TAURI_INTERNALS__?: any;
+    __TAURI_INTERNALS__?: unknown;
     __TAURI__?: {
       core: {
         invoke: <T>(cmd: string, args?: Record<string, unknown>) => Promise<T>;
@@ -58,7 +58,7 @@ export class TauriRxchefClient implements RxchefClient {
     return this.invoke<ScanFinding[]>('plugin:rxchef|scan', { request });
   }
 
-  async submitJob(task: { method: string; params: any }): Promise<JobSnapshot> {
+  async submitJob(task: { method: string; params: unknown }): Promise<JobSnapshot> {
     return this.invoke<JobSnapshot>('plugin:rxchef|submit_job', { task });
   }
 

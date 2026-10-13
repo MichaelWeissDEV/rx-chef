@@ -59,6 +59,7 @@ path = "src/lib.rs"
 crate-type = ["rlib", "staticlib", "cdylib"]
 
 [dependencies]
+schemars = { version = "1", optional = true }
 thiserror  = "1"
 hex        = "0.4"
 base64     = "0.22"
@@ -195,6 +196,7 @@ tesseract-rs = { version = "0.4", optional = true, default-features = false, fea
 openssl = { version = "0.10.81", features = ["vendored"] }
 
 [features]
+schema = ["dep:schemars"]
 default = []
 full = ["pgp", "jsonata", "tesseract", "yara", "disassembly"]
 pgp = ["dep:sequoia-openpgp"]

@@ -98,8 +98,12 @@ fn run() -> Result<(), CliError> {
         Command::Scan(a) => scan::cmd_scan(a).map_err(CliError::StoreIo),
         Command::Project(a) => project::cmd_project(a).map_err(CliError::StoreIo),
         Command::Serve(a) => serve::cmd_serve(a).map_err(CliError::Execution),
-        Command::Doctor(a) => commands::doctor::cmd_doctor(a.server, a.token).map_err(CliError::Execution),
-        Command::Connect(a) => commands::connect::cmd_connect(a.url, a.token).map_err(CliError::Execution),
+        Command::Doctor(a) => {
+            commands::doctor::cmd_doctor(a.server, a.token).map_err(CliError::Execution)
+        }
+        Command::Connect(a) => {
+            commands::connect::cmd_connect(a.url, a.token).map_err(CliError::Execution)
+        }
         Command::Examples => commands::examples::cmd_examples().map_err(CliError::Execution),
         Command::Tui(a) => {
             let mut cmd = std::process::Command::new("rxchef_tui");
@@ -112,11 +116,15 @@ fn run() -> Result<(), CliError> {
             match cmd.status() {
                 Ok(status) => {
                     if !status.success() {
-                        return Err(CliError::Execution("rxchef_tui exited with an error".into()));
+                        return Err(CliError::Execution(
+                            "rxchef_tui exited with an error".into(),
+                        ));
                     }
                     Ok(())
                 }
-                Err(err) => Err(CliError::Execution(format!("failed to launch rxchef_tui: {err}"))),
+                Err(err) => Err(CliError::Execution(format!(
+                    "failed to launch rxchef_tui: {err}"
+                ))),
             }
         }
         Command::Completions { shell } => {

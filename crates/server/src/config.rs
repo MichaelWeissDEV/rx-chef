@@ -6,7 +6,11 @@ use rxchef_client::ExecutionPolicy;
 
 /// Command-line / environment configuration of `rxchef-server`.
 #[derive(Debug, Parser)]
-#[command(name = "rxchef-server", version, about = "Headless rxchef HTTP / JSON-RPC / WebSocket server")]
+#[command(
+    name = "rxchef-server",
+    version,
+    about = "Headless rxchef HTTP / JSON-RPC / WebSocket server"
+)]
 pub struct Cli {
     /// Address to listen on. Non-loopback addresses require --allow-remote.
     #[arg(long, default_value = "127.0.0.1:8787")]
@@ -122,7 +126,10 @@ impl std::fmt::Debug for ServerConfig {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("ServerConfig")
             .field("full_token", &"<redacted>")
-            .field("read_token", &self.read_token.as_ref().map(|_| "<redacted>"))
+            .field(
+                "read_token",
+                &self.read_token.as_ref().map(|_| "<redacted>"),
+            )
             .field("allowed_hosts", &self.allowed_hosts)
             .field("allowed_origins", &self.allowed_origins)
             .finish_non_exhaustive()
@@ -138,7 +145,8 @@ pub fn random_token() -> Result<String, String> {
 impl ServerConfig {
     /// Test/default constructor for a loopback server on `addr`.
     pub fn loopback(addr: SocketAddr, token: &str, worker_executable: PathBuf) -> Self {
-        let mut cfg = Self::from_cli(Cli::parse_from(["rxchef-server"]), worker_executable).expect("defaults");
+        let mut cfg = Self::from_cli(Cli::parse_from(["rxchef-server"]), worker_executable)
+            .expect("defaults");
         cfg.full_token = token.into();
         cfg.generated_token = false;
         cfg.set_hosts(addr, false, &[], &[]);
@@ -149,14 +157,21 @@ impl ServerConfig {
         let port = addr.port();
         let mut allowed: Vec<String> = hosts.iter().map(|h| h.to_lowercase()).collect();
         if addr.ip().is_loopback() {
-            allowed.extend([format!("localhost:{port}"), format!("127.0.0.1:{port}"), format!("[::1]:{port}")]);
+            allowed.extend([
+                format!("localhost:{port}"),
+                format!("127.0.0.1:{port}"),
+                format!("[::1]:{port}"),
+            ]);
         }
         if port != 0 {
             allowed.push(addr.to_string().to_lowercase());
         }
         allowed.sort();
         allowed.dedup();
-        let mut allowed_origins: Vec<String> = origins.iter().map(|o| o.trim_end_matches('/').to_lowercase()).collect();
+        let mut allowed_origins: Vec<String> = origins
+            .iter()
+            .map(|o| o.trim_end_matches('/').to_lowercase())
+            .collect();
         for host in &allowed {
             allowed_origins.push(format!("http://{host}"));
             if tls {
@@ -172,13 +187,18 @@ impl ServerConfig {
     pub fn from_cli(cli: Cli, worker_executable: PathBuf) -> Result<Self, String> {
         if !cli.listen.ip().is_loopback() {
             if !cli.allow_remote {
-                return Err("refusing to bind a non-loopback address without --allow-remote".into());
+                return Err(
+                    "refusing to bind a non-loopback address without --allow-remote".into(),
+                );
             }
             if !cli.trust_tls_terminator {
                 return Err("remote access requires TLS in front of the server; pass --trust-tls-terminator once a TLS reverse proxy is in place".into());
             }
             if cli.allowed_hosts.is_empty() {
-                return Err("remote binds require at least one --allowed-host (DNS-rebinding protection)".into());
+                return Err(
+                    "remote binds require at least one --allowed-host (DNS-rebinding protection)"
+                        .into(),
+                );
             }
         }
         for (name, value) in [
@@ -187,7 +207,10 @@ impl ServerConfig {
             ("max-connections", cli.max_connections),
             ("max-ws-connections", cli.max_ws_connections),
             ("max-ws-inflight-per-conn", cli.max_ws_inflight_per_conn),
-            ("max-ws-subscriptions-per-conn", cli.max_ws_subscriptions_per_conn),
+            (
+                "max-ws-subscriptions-per-conn",
+                cli.max_ws_subscriptions_per_conn,
+            ),
             ("max-body-mib", cli.max_body_mib),
             ("max-input-mib", cli.max_input_mib),
             ("max-output-mib", cli.max_output_mib),
@@ -204,18 +227,38 @@ impl ServerConfig {
         }
         // Protect against integer overflow on MiB calculations and ensure bounds match IPC limits
         let mib = 1usize << 20;
-        let max_body = cli.max_body_mib.checked_mul(mib).ok_or("max_body_mib overflow")?;
-        let max_input_bytes = cli.max_input_mib.checked_mul(mib).ok_or("max_input_mib overflow")?;
-        let max_output_bytes = cli.max_output_mib.checked_mul(mib).ok_or("max_output_mib overflow")?;
-        let memory_bytes = (cli.memory_mib as u64).checked_mul(1 << 20).ok_or("memory_mib overflow")?;
-        let retain_bytes = cli.retain_mib.checked_mul(mib).ok_or("retain_mib overflow")?;
+        let max_body = cli
+            .max_body_mib
+            .checked_mul(mib)
+            .ok_or("max_body_mib overflow")?;
+        let max_input_bytes = cli
+            .max_input_mib
+            .checked_mul(mib)
+            .ok_or("max_input_mib overflow")?;
+        let max_output_bytes = cli
+            .max_output_mib
+            .checked_mul(mib)
+            .ok_or("max_output_mib overflow")?;
+        let memory_bytes = (cli.memory_mib as u64)
+            .checked_mul(1 << 20)
+            .ok_or("memory_mib overflow")?;
+        let retain_bytes = cli
+            .retain_mib
+            .checked_mul(mib)
+            .ok_or("retain_mib overflow")?;
 
         // Enforce IPC limits: input and output cannot exceed worker IPC envelope
         if max_input_bytes > crate::worker::MAX_REQUEST {
-            return Err(format!("max-input-mib exceeds maximum worker IPC request capacity ({} MiB)", crate::worker::MAX_REQUEST / mib));
+            return Err(format!(
+                "max-input-mib exceeds maximum worker IPC request capacity ({} MiB)",
+                crate::worker::MAX_REQUEST / mib
+            ));
         }
         if max_output_bytes > crate::worker::MAX_RESPONSE {
-            return Err(format!("max-output-mib exceeds maximum worker IPC response capacity ({} MiB)", crate::worker::MAX_RESPONSE / mib));
+            return Err(format!(
+                "max-output-mib exceeds maximum worker IPC response capacity ({} MiB)",
+                crate::worker::MAX_RESPONSE / mib
+            ));
         }
 
         let mut generated = false;
@@ -224,15 +267,24 @@ impl ServerConfig {
             (Some(token), None) => token,
             (None, Some(path)) => std::fs::read_to_string(path)
                 .map_err(|_| "cannot read token file".to_string())?
-                .lines().next().unwrap_or("").trim().to_string(),
+                .lines()
+                .next()
+                .unwrap_or("")
+                .trim()
+                .to_string(),
             (None, None) => {
                 generated = true;
                 random_token()?
             }
         };
-        for (label, secret) in [("token", Some(&token)), ("read token", cli.read_token.as_ref())] {
+        for (label, secret) in [
+            ("token", Some(&token)),
+            ("read token", cli.read_token.as_ref()),
+        ] {
             if secret.is_some_and(|s| s.len() < 16 || !s.bytes().all(|b| b.is_ascii_graphic())) {
-                return Err(format!("{label} must be at least 16 printable ASCII characters"));
+                return Err(format!(
+                    "{label} must be at least 16 printable ASCII characters"
+                ));
             }
         }
         if cli.read_token.as_ref() == Some(&token) {
@@ -265,14 +317,20 @@ impl ServerConfig {
             worker_executable,
             generated_token: generated,
         };
-        cfg.set_hosts(cli.listen, cli.trust_tls_terminator, &cli.allowed_hosts, &cli.allowed_origins);
+        cfg.set_hosts(
+            cli.listen,
+            cli.trust_tls_terminator,
+            &cli.allowed_hosts,
+            &cli.allowed_origins,
+        );
         Ok(cfg)
     }
 
     /// Constant-time token comparison; `None` when the token is unknown.
     pub fn scope_of(&self, presented: &str) -> Option<Scope> {
         use subtle::ConstantTimeEq;
-        let eq = |a: &str, b: &str| a.len() == b.len() && bool::from(a.as_bytes().ct_eq(b.as_bytes()));
+        let eq =
+            |a: &str, b: &str| a.len() == b.len() && bool::from(a.as_bytes().ct_eq(b.as_bytes()));
         let full = eq(presented, &self.full_token);
         let read = self.read_token.as_deref().is_some_and(|t| eq(presented, t));
         if full {

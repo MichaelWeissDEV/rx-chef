@@ -8,6 +8,7 @@ repository.workspace = true
 homepage.workspace = true
 description = "Headless local HTTP and JSON-RPC server for rxchef"
 readme = "README.md"
+include = ["src/**", "tests/**", "build.rs", "web-dist/**", "README.md", "Cargo.toml"]
 
 [dependencies]
 rxchef = { version = "0.1.0", path = "../.." }
@@ -21,11 +22,10 @@ uuid = { version = "1", features = ["v4"] }
 subtle = "2.6"
 getrandom = "0.2"
 hex = "0.4"
-tower-http = { version = "0.6", features = ["fs"], optional = true }
 
 [features]
 default = []
-web-ui = ["dep:tower-http"]
+web-ui = []
 
 [target.'cfg(unix)'.dependencies]
 libc = "0.2"

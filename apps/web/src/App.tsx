@@ -9,10 +9,17 @@ import { OutputPanel } from './components/OutputPanel';
 import { TracePanel } from './components/TracePanel';
 import { Sun, Moon, Shield, Key } from 'lucide-react';
 import './styles/workbench.css';
+import { encodeBase64, parseInput } from './lib/bytes';
+import { prepareRecipe } from './lib/recipe';
+import { errorMessage } from './lib/contracts';
 
 export const App: React.FC = () => {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
-  const [token, setToken] = useState<string>(() => localStorage.getItem('rxchef_token') || '');
+  const [token, setToken] = useState<string>('');
+  const [tokenDraft, setTokenDraft] = useState('');
+  useEffect(() => {
+    try { localStorage.removeItem('rxchef_token'); sessionStorage.removeItem('rxchef_token'); } catch { /* storage may be unavailable */ }
+  }, []);
   const [showTokenDialog, setShowTokenDialog] = useState<boolean>(false);
 
   // Initialize client (Tauri if in desktop, else HTTP)
@@ -82,44 +89,17 @@ export const App: React.FC = () => {
     setError(null);
 
     try {
-      // Encode input to Base64
-      let inputBytes: Uint8Array;
-      if (inputType === 'hex') {
-        const cleanHex = input.replace(/\s+/g, '');
-        const matches = cleanHex.match(/.{1,2}/g) || [];
-        inputBytes = new Uint8Array(matches.map((byte) => parseInt(byte, 16)));
-      } else if (inputType === 'base64') {
-        const binary = atob(input);
-        inputBytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i++) {
-          inputBytes[i] = binary.charCodeAt(i);
-        }
-      } else {
-        const encoder = new TextEncoder();
-        inputBytes = encoder.encode(input);
-      }
-
-      // Convert Uint8Array to Base64 string safely
-      let binaryStr = '';
-      for (let i = 0; i < inputBytes.length; i++) {
-        binaryStr += String.fromCharCode(inputBytes[i]);
-      }
-      const input_base64 = btoa(binaryStr);
-
-      const activeRecipe = recipe.filter((s) => !s.disabled);
-      const res = await client.execute({
-        input_base64,
-        recipe: activeRecipe,
-        trace: {
-          max_entries: 64,
-          max_bytes_per_entry: 512,
-          max_total_bytes: 65536,
-        },
-      });
-
+      const input_base64 = encodeBase64(parseInput(input, inputType));
+      const { steps, sourceIndices } = prepareRecipe(recipe);
+      const request = { input_base64, recipe: steps, trace: {
+        max_entries: 64, max_bytes_per_entry: 512, max_total_bytes: 65536,
+      }};
+      await client.validate(request);
+      const res = await client.execute(request);
+      res.trace = res.trace.map(entry => ({ ...entry, step_index: sourceIndices[entry.step_index] }));
       setResponse(res);
-    } catch (err: any) {
-      setError(err.message || String(err));
+    } catch (err: unknown) {
+      setError(errorMessage(err));
       setResponse(null);
     } finally {
       setIsExecuting(false);
@@ -127,7 +107,7 @@ export const App: React.FC = () => {
   }, [client, input, inputType, recipe]);
 
   const handleAddOperation = (op: OperationDescriptor) => {
-    const defaultArgs = op.args.map((a) => a.default_value || '');
+    const defaultArgs = op.args.map((a) => a.default || '');
     setRecipe((prev) => [...prev, { op: op.name, args: defaultArgs }]);
   };
 
@@ -170,20 +150,13 @@ export const App: React.FC = () => {
     );
   };
 
-  const handleFileUpload = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (reader.result instanceof ArrayBuffer) {
-        const bytes = new Uint8Array(reader.result);
-        let binary = '';
-        for (let i = 0; i < bytes.length; i++) {
-          binary += String.fromCharCode(bytes[i]);
-        }
-        setInput(btoa(binary));
-        setInputType('base64');
-      }
-    };
-    reader.readAsArrayBuffer(file);
+  const handleFileUpload = async (file: File) => {
+    try {
+      const capabilities = await client.capabilities();
+      if (file.size > capabilities.max_input_bytes) throw new Error('File exceeds the engine input limit.');
+      setInput(encodeBase64(new Uint8Array(await file.arrayBuffer())));
+      setInputType('base64');
+    } catch (error) { setError(errorMessage(error)); }
   };
 
   return (
@@ -203,7 +176,7 @@ export const App: React.FC = () => {
           {!isTauri && (
             <button
               className="btn btn-secondary"
-              onClick={() => setShowTokenDialog(true)}
+              onClick={() => { setTokenDraft(token); setShowTokenDialog(true); }}
               title="Server Auth Token"
             >
               <Key size={13} /> {token ? 'Authenticated' : 'Set Token'}
@@ -299,8 +272,10 @@ export const App: React.FC = () => {
             <input
               type="password"
               placeholder="e.g. test-token-0123456789abcdef"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
+              value={tokenDraft}
+              onChange={(e) => setTokenDraft(e.target.value)}
+              autoComplete="off"
+              aria-label="Server Bearer Token"
               style={{ width: '100%' }}
             />
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '8px' }}>
@@ -313,12 +288,13 @@ export const App: React.FC = () => {
               <button
                 className="btn btn-primary"
                 onClick={() => {
-                  localStorage.setItem('rxchef_token', token);
+                  setToken(tokenDraft);
+                  setTokenDraft('');
                   setShowTokenDialog(false);
-                  window.location.reload();
+
                 }}
               >
-                Save & Connect
+                Connect (this session)
               </button>
             </div>
           </div>

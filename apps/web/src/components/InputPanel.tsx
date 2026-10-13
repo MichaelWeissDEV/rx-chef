@@ -36,7 +36,7 @@ export const InputPanel: React.FC<InputPanelProps> = ({
         <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
           <select
             value={inputType}
-            onChange={(e) => onChangeInputType(e.target.value as any)}
+            onChange={(e) => onChangeInputType(e.target.value as 'text' | 'hex' | 'base64')}
             style={{ padding: '2px 6px', fontSize: '11px' }}
           >
             <option value="text">UTF-8 Text</option>
@@ -69,6 +69,7 @@ export const InputPanel: React.FC<InputPanelProps> = ({
       <div className="panel-body">
         <textarea
           className="editor"
+          aria-label="Input data"
           value={input}
           onChange={(e) => onChangeInput(e.target.value)}
           placeholder="Input data goes here, or drag & drop a file..."

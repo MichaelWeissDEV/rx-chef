@@ -27,6 +27,7 @@ use crate::execution;
 
 /// One decode step in a recovered recipe.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct RecipeStep {
     pub op: String,
     pub args: Vec<String>,
@@ -105,7 +106,9 @@ pub fn magic(input: &[u8], opts: &MagicOptions) -> Vec<MagicMatch> {
 /// Run the existing Magic search while checking every candidate before execution.
 /// Denied decoders are skipped, including at nested recursion levels.
 pub fn magic_with_filter(
-    input: &[u8], opts: &MagicOptions, allowed: &dyn Fn(&str) -> bool,
+    input: &[u8],
+    opts: &MagicOptions,
+    allowed: &dyn Fn(&str) -> bool,
 ) -> Vec<MagicMatch> {
     let mut matches: Vec<MagicMatch> = Vec::new();
     let mut visited: HashSet<u64> = HashSet::new();
@@ -190,7 +193,9 @@ fn recurse(
         return;
     }
     for cand in candidates(data, opts.intensive) {
-        if !allowed(cand.op) { continue; }
+        if !allowed(cand.op) {
+            continue;
+        }
         if budget.candidates >= opts.max_candidates {
             break;
         }

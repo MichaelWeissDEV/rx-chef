@@ -1,0 +1,953 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Contracts",
+  "type": "object",
+  "properties": {
+    "operations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/OperationDescriptor"
+      }
+    },
+    "argument": {
+      "$ref": "#/$defs/ArgumentDescriptor"
+    },
+    "result": {
+      "$ref": "#/$defs/ExecutionResult"
+    },
+    "request": {
+      "$ref": "#/$defs/ExecuteRequest"
+    },
+    "response": {
+      "$ref": "#/$defs/ExecuteResponse"
+    },
+    "capabilities": {
+      "$ref": "#/$defs/Capabilities"
+    },
+    "magic_request": {
+      "$ref": "#/$defs/MagicRequest"
+    },
+    "magic": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/MagicCandidate"
+      }
+    },
+    "scan_request": {
+      "$ref": "#/$defs/ScanRequest"
+    },
+    "scan": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Finding"
+      }
+    },
+    "error": {
+      "$ref": "#/$defs/ClientError"
+    },
+    "job": {
+      "$ref": "#/$defs/JobSnapshot"
+    },
+    "task": {
+      "$ref": "#/$defs/EngineTask"
+    }
+  },
+  "required": [
+    "operations",
+    "argument",
+    "result",
+    "request",
+    "response",
+    "capabilities",
+    "magic_request",
+    "magic",
+    "scan_request",
+    "scan",
+    "error",
+    "job",
+    "task"
+  ],
+  "$defs": {
+    "OperationDescriptor": {
+      "description": "Serializable operation metadata used by CLI and editor integrations.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "aliases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "module": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "input_type": {
+          "type": "string"
+        },
+        "output_type": {
+          "type": "string"
+        },
+        "broken": {
+          "type": "boolean"
+        },
+        "input_requirement": {
+          "$ref": "#/$defs/InputRequirement"
+        },
+        "implementation_status": {
+          "$ref": "#/$defs/ImplementationStatus"
+        },
+        "availability": {
+          "$ref": "#/$defs/Availability"
+        },
+        "feature_requirements": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "platform_requirements": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "side_effects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SideEffect"
+          }
+        },
+        "deterministic": {
+          "type": "boolean"
+        },
+        "parity": {
+          "$ref": "#/$defs/ParityStatus"
+        },
+        "known_limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "documentation_slug": {
+          "type": "string"
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ArgumentDescriptor"
+          }
+        }
+      },
+      "required": [
+        "name",
+        "id",
+        "aliases",
+        "module",
+        "description",
+        "input_type",
+        "output_type",
+        "broken",
+        "input_requirement",
+        "implementation_status",
+        "availability",
+        "feature_requirements",
+        "platform_requirements",
+        "side_effects",
+        "deterministic",
+        "parity",
+        "known_limitations",
+        "documentation_slug",
+        "args"
+      ]
+    },
+    "InputRequirement": {
+      "description": "Whether an operation consumes input bytes.",
+      "type": "string",
+      "enum": [
+        "required",
+        "optional",
+        "ignored"
+      ]
+    },
+    "ImplementationStatus": {
+      "description": "Verification state of an operation implementation.",
+      "type": "string",
+      "enum": [
+        "complete",
+        "partial",
+        "unsupported",
+        "experimental"
+      ]
+    },
+    "Availability": {
+      "description": "Whether an implementation can run in the current build and platform.",
+      "type": "string",
+      "enum": [
+        "available",
+        "feature_disabled",
+        "platform_unavailable"
+      ]
+    },
+    "SideEffect": {
+      "description": "Externally observable behavior an operation may perform.",
+      "type": "string",
+      "enum": [
+        "network",
+        "filesystem-read",
+        "filesystem-write",
+        "random",
+        "time",
+        "external-process",
+        "native-library"
+      ]
+    },
+    "ParityStatus": {
+      "description": "Compatibility level with upstream CyberChef behavior.",
+      "type": "string",
+      "enum": [
+        "exact",
+        "compatible",
+        "intentional_difference",
+        "unknown",
+        "not_applicable"
+      ]
+    },
+    "ArgumentDescriptor": {
+      "description": "One operation argument in a machine-readable descriptor.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "default": {
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/ArgKind"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "choices": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "minimum": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "maximum": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sensitive": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "description",
+        "default",
+        "kind",
+        "required",
+        "choices",
+        "sensitive"
+      ]
+    },
+    "ArgKind": {
+      "description": "Machine-readable argument value category.",
+      "type": "string",
+      "enum": [
+        "string",
+        "integer",
+        "unsigned_integer",
+        "float",
+        "boolean",
+        "bytes",
+        "hex_bytes",
+        "base64_bytes",
+        "enum",
+        "regex",
+        "path",
+        "url"
+      ]
+    },
+    "ExecutionResult": {
+      "description": "Binary-safe result envelope.",
+      "type": "object",
+      "properties": {
+        "output": {
+          "description": "UTF-8-lossy convenience representation for editor UIs.",
+          "type": "string"
+        },
+        "output_base64": {
+          "description": "Exact output bytes encoded as standard padded Base64.",
+          "type": "string"
+        },
+        "output_len": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "output_is_utf8": {
+          "description": "Whether `output` is an exact UTF-8 representation (`false` means it is\nonly a lossy UI convenience and `output_base64` is authoritative).",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "output",
+        "output_base64",
+        "output_len",
+        "output_is_utf8"
+      ]
+    },
+    "ExecuteRequest": {
+      "type": "object",
+      "properties": {
+        "input_base64": {
+          "description": "None means no input source; Some(\"\") means explicitly empty input.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "recipe": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RecipeStep"
+          }
+        },
+        "variables": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {}
+        },
+        "trace": {
+          "description": "Opt-in: trace payloads can contain sensitive data.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TraceLimits"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "recipe"
+      ]
+    },
+    "RecipeStep": {
+      "description": "One operation and its ordered argument values in a recipe.",
+      "type": "object",
+      "properties": {
+        "op": {
+          "description": "Operation name or normalized identifier.",
+          "type": "string"
+        },
+        "args": {
+          "description": "Ordered raw arguments. Parsing is delegated to the shared registry\nruntime after variable and register expansion.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "op"
+      ]
+    },
+    "TraceLimits": {
+      "type": "object",
+      "properties": {
+        "max_entries": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "max_bytes_per_entry": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "max_total_bytes": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "max_entries",
+        "max_bytes_per_entry",
+        "max_total_bytes"
+      ]
+    },
+    "ExecuteResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/ExecutionResult"
+        },
+        "trace": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TraceArtifact"
+          }
+        },
+        "trace_truncated": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "result",
+        "trace",
+        "trace_truncated"
+      ]
+    },
+    "TraceArtifact": {
+      "type": "object",
+      "properties": {
+        "step_index": {
+          "description": "Zero-based index into the original recipe, including repeated steps.",
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "operation": {
+          "type": "string"
+        },
+        "input_bytes": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "output_bytes": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "elapsed_ms": {
+          "type": "number",
+          "format": "double"
+        },
+        "control_flow": {
+          "type": "boolean"
+        },
+        "output_base64": {
+          "description": "Exact prefix, never a reconstruction from a lossy text preview.",
+          "type": "string"
+        },
+        "truncated": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "step_index",
+        "operation",
+        "input_bytes",
+        "output_bytes",
+        "elapsed_ms",
+        "control_flow",
+        "output_base64",
+        "truncated"
+      ]
+    },
+    "Capabilities": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "protocol_version": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "binary_transport": {
+          "type": "string"
+        },
+        "trace": {
+          "type": "boolean"
+        },
+        "jobs": {
+          "description": "True when the endpoint offers process-supervised, cancellable jobs.",
+          "type": "boolean"
+        },
+        "max_input_bytes": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "max_output_bytes": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "max_steps": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "version",
+        "protocol_version",
+        "binary_transport",
+        "trace",
+        "jobs",
+        "max_input_bytes",
+        "max_output_bytes",
+        "max_steps"
+      ]
+    },
+    "MagicRequest": {
+      "type": "object",
+      "properties": {
+        "input_base64": {
+          "type": "string"
+        },
+        "depth": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0,
+          "default": 3
+        },
+        "intensive": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_results": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0,
+          "default": 20
+        },
+        "crib": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "input_base64"
+      ]
+    },
+    "MagicCandidate": {
+      "type": "object",
+      "properties": {
+        "recipe": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RecipeStep"
+          }
+        },
+        "result": {
+          "$ref": "#/$defs/ExecutionResult"
+        },
+        "score": {
+          "type": "number",
+          "format": "double"
+        },
+        "entropy": {
+          "type": "number",
+          "format": "double"
+        },
+        "printable_ratio": {
+          "type": "number",
+          "format": "double"
+        },
+        "matched_crib": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "recipe",
+        "result",
+        "score",
+        "entropy",
+        "printable_ratio",
+        "matched_crib"
+      ]
+    },
+    "ScanRequest": {
+      "type": "object",
+      "properties": {
+        "input_base64": {
+          "type": "string"
+        },
+        "min_len": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0,
+          "default": 16
+        },
+        "max_findings": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0,
+          "default": 100
+        },
+        "decode": {
+          "type": "boolean",
+          "default": false
+        },
+        "depth": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0,
+          "default": 3
+        },
+        "crib": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "input_base64"
+      ]
+    },
+    "Finding": {
+      "description": "A single hit produced by the scanner.",
+      "type": "object",
+      "properties": {
+        "offset": {
+          "description": "Byte offset of the token in the original stream.",
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0
+        },
+        "len": {
+          "description": "Length of the matched token in bytes.",
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "kinds": {
+          "description": "Encodings that fired on the token (e.g. `[\"From Base64\"]`).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "entropy": {
+          "description": "Shannon entropy of the token bytes.",
+          "type": "number",
+          "format": "double"
+        },
+        "token": {
+          "description": "The matched token text (length-capped preview).",
+          "type": "string"
+        },
+        "decoded": {
+          "description": "Best decoded preview, when `decode` was requested and a decode succeeded.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "recipe": {
+          "description": "Recipe that produced `decoded`.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/$defs/RecipeStep2"
+          }
+        }
+      },
+      "required": [
+        "offset",
+        "len",
+        "kinds",
+        "entropy",
+        "token"
+      ]
+    },
+    "RecipeStep2": {
+      "description": "One decode step in a recovered recipe.",
+      "type": "object",
+      "properties": {
+        "op": {
+          "type": "string"
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "op",
+        "args"
+      ]
+    },
+    "ClientError": {
+      "description": "Stable classification independent of human-readable messages.",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/ErrorKind"
+        },
+        "message": {
+          "type": "string"
+        },
+        "step": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "kind",
+        "message"
+      ]
+    },
+    "ErrorKind": {
+      "type": "string",
+      "enum": [
+        "invalid_input",
+        "invalid_recipe",
+        "unknown_operation",
+        "unavailable",
+        "invalid_argument",
+        "operation",
+        "limit_exceeded",
+        "policy_denied",
+        "transport",
+        "protocol",
+        "busy",
+        "not_found",
+        "cancelled",
+        "timeout",
+        "unauthorized"
+      ]
+    },
+    "JobSnapshot": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/JobStatus"
+        },
+        "progress": {
+          "description": "No fabricated percentage: None when operation progress is unknown.",
+          "type": [
+            "number",
+            "null"
+          ],
+          "format": "double"
+        },
+        "result": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TaskResult"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ClientError"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "status"
+      ]
+    },
+    "JobStatus": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "running",
+        "succeeded",
+        "failed",
+        "cancelled",
+        "timed_out"
+      ]
+    },
+    "TaskResult": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "execution"
+            },
+            "value": {
+              "$ref": "#/$defs/ExecuteResponse"
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "validated"
+            }
+          },
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "magic"
+            },
+            "value": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/MagicCandidate"
+              }
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "scan"
+            },
+            "value": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Finding"
+              }
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ]
+        }
+      ]
+    },
+    "EngineTask": {
+      "description": "Shared job payload, also used for supervised local worker execution.",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "type": "string",
+              "const": "execute"
+            },
+            "params": {
+              "$ref": "#/$defs/ExecuteRequest"
+            }
+          },
+          "required": [
+            "method",
+            "params"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "type": "string",
+              "const": "validate"
+            },
+            "params": {
+              "$ref": "#/$defs/ExecuteRequest"
+            }
+          },
+          "required": [
+            "method",
+            "params"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "type": "string",
+              "const": "magic"
+            },
+            "params": {
+              "$ref": "#/$defs/MagicRequest"
+            }
+          },
+          "required": [
+            "method",
+            "params"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "type": "string",
+              "const": "scan"
+            },
+            "params": {
+              "$ref": "#/$defs/ScanRequest"
+            }
+          },
+          "required": [
+            "method",
+            "params"
+          ]
+        }
+      ]
+    }
+  }
+}

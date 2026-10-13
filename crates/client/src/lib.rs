@@ -12,12 +12,13 @@ mod remote;
 pub use remote::RemoteEngineClient;
 
 mod analysis;
-pub use analysis::{MagicRequest, MagicCandidate, ScanRequest};
+pub use analysis::{MagicCandidate, MagicRequest, ScanRequest};
 
 pub const PROTOCOL_VERSION: u32 = integration::PROTOCOL_VERSION;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub enum ErrorKind {
     InvalidInput,
     InvalidRecipe,
@@ -39,6 +40,7 @@ pub enum ErrorKind {
 /// Stable classification independent of human-readable messages.
 #[derive(Debug, Clone, thiserror::Error, Serialize, Deserialize)]
 #[error("{message}")]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ClientError {
     pub kind: ErrorKind,
     pub message: String,
@@ -87,6 +89,7 @@ impl From<execution::ExecutionError> for ClientError {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Capabilities {
     pub version: String,
     pub protocol_version: u32,
@@ -100,6 +103,7 @@ pub struct Capabilities {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct TraceLimits {
     pub max_entries: usize,
     pub max_bytes_per_entry: usize,
@@ -117,6 +121,7 @@ impl Default for TraceLimits {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ExecuteRequest {
     /// None means no input source; Some("") means explicitly empty input.
     pub input_base64: Option<String>,
@@ -129,6 +134,7 @@ pub struct ExecuteRequest {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct TraceArtifact {
     /// Zero-based index into the original recipe, including repeated steps.
     pub step_index: usize,
@@ -143,6 +149,7 @@ pub struct TraceArtifact {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ExecuteResponse {
     pub result: integration::ExecutionResult,
     pub trace: Vec<TraceArtifact>,
@@ -159,13 +166,22 @@ pub trait EngineClient {
     fn execute(&self, request: ExecuteRequest) -> Result<ExecuteResponse, ClientError>;
 
     fn submit_job(&self, _task: EngineTask) -> Result<JobSnapshot, ClientError> {
-        Err(ClientError::new(ErrorKind::Unavailable, "this client has no job manager"))
+        Err(ClientError::new(
+            ErrorKind::Unavailable,
+            "this client has no job manager",
+        ))
     }
     fn job(&self, _id: &str) -> Result<JobSnapshot, ClientError> {
-        Err(ClientError::new(ErrorKind::Unavailable, "this client has no job manager"))
+        Err(ClientError::new(
+            ErrorKind::Unavailable,
+            "this client has no job manager",
+        ))
     }
     fn cancel_job(&self, _id: &str) -> Result<JobSnapshot, ClientError> {
-        Err(ClientError::new(ErrorKind::Unavailable, "this client has no job manager"))
+        Err(ClientError::new(
+            ErrorKind::Unavailable,
+            "this client has no job manager",
+        ))
     }
 
     fn magic(&self, request: MagicRequest) -> Result<Vec<MagicCandidate>, ClientError>;
@@ -235,11 +251,19 @@ impl LocalEngineClient {
     fn decode_input(&self, encoded: &str) -> Result<Vec<u8>, ClientError> {
         let max_encoded = (self.policy.max_input_bytes.saturating_add(2) / 3).saturating_mul(4);
         if encoded.len() > max_encoded {
-            return Err(ClientError::new(ErrorKind::LimitExceeded, "input exceeds byte limit"));
+            return Err(ClientError::new(
+                ErrorKind::LimitExceeded,
+                "input exceeds byte limit",
+            ));
         }
-        let input = STANDARD.decode(encoded).map_err(|_| ClientError::new(ErrorKind::InvalidInput, "invalid input_base64"))?;
+        let input = STANDARD
+            .decode(encoded)
+            .map_err(|_| ClientError::new(ErrorKind::InvalidInput, "invalid input_base64"))?;
         if input.len() > self.policy.max_input_bytes {
-            return Err(ClientError::new(ErrorKind::LimitExceeded, "input exceeds byte limit"));
+            return Err(ClientError::new(
+                ErrorKind::LimitExceeded,
+                "input exceeds byte limit",
+            ));
         }
         Ok(input)
     }
@@ -247,12 +271,26 @@ impl LocalEngineClient {
     pub fn check_operation(&self, operation: &str) -> Result<(), ClientError> {
         let descriptor = self.describe(operation)?;
         use rxchef::SideEffect as S;
-        let host_effect = descriptor.side_effects.iter().any(|effect| matches!(effect,
-            S::Network | S::FilesystemRead | S::FilesystemWrite | S::ExternalProcess));
-        if (!self.policy.allow_host_effects && host_effect) || self.policy.allowed_operations.as_ref()
-            .is_some_and(|ids| !ids.contains(&descriptor.id)) {
-            return Err(ClientError::new(ErrorKind::PolicyDenied,
-                format!("operation '{}' is denied by execution policy", descriptor.name)));
+        let host_effect = descriptor.side_effects.iter().any(|effect| {
+            matches!(
+                effect,
+                S::Network | S::FilesystemRead | S::FilesystemWrite | S::ExternalProcess
+            )
+        });
+        if (!self.policy.allow_host_effects && host_effect)
+            || self
+                .policy
+                .allowed_operations
+                .as_ref()
+                .is_some_and(|ids| !ids.contains(&descriptor.id))
+        {
+            return Err(ClientError::new(
+                ErrorKind::PolicyDenied,
+                format!(
+                    "operation '{}' is denied by execution policy",
+                    descriptor.name
+                ),
+            ));
         }
         Ok(())
     }
@@ -260,11 +298,15 @@ impl LocalEngineClient {
     fn check(&self, request: &ExecuteRequest) -> Result<Vec<u8>, ClientError> {
         let input = self.decode_input(request.input_base64.as_deref().unwrap_or(""))?;
         if request.recipe.len() > self.policy.max_steps {
-            return Err(ClientError::new(ErrorKind::LimitExceeded, "recipe exceeds step limit"));
+            return Err(ClientError::new(
+                ErrorKind::LimitExceeded,
+                "recipe exceeds step limit",
+            ));
         }
         for (index, step) in request.recipe.iter().enumerate() {
             self.check_operation(&step.op).map_err(|mut error| {
-                error.step = Some(index + 1); error
+                error.step = Some(index + 1);
+                error
             })?;
         }
         execution::validate_recipe(
@@ -380,6 +422,7 @@ pub fn export_bytes(result: &integration::ExecutionResult) -> Result<Vec<u8>, Cl
 /// Shared job payload, also used for supervised local worker execution.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "method", content = "params", rename_all = "snake_case")]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub enum EngineTask {
     Execute(ExecuteRequest),
     Validate(ExecuteRequest),
@@ -389,6 +432,7 @@ pub enum EngineTask {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "value", rename_all = "snake_case")]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub enum TaskResult {
     Execution(ExecuteResponse),
     Validated,
@@ -409,7 +453,15 @@ impl LocalEngineClient {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub enum JobStatus { Queued, Running, Succeeded, Failed, Cancelled, TimedOut }
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+pub enum JobStatus {
+    Queued,
+    Running,
+    Succeeded,
+    Failed,
+    Cancelled,
+    TimedOut,
+}
 
 impl JobStatus {
     /// True once a job can no longer change state.
@@ -419,6 +471,7 @@ impl JobStatus {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct JobSnapshot {
     pub id: String,
     pub status: JobStatus,

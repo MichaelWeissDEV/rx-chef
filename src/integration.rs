@@ -21,6 +21,7 @@ pub const DEFAULT_MAX_REQUEST_BYTES: usize = 1024 * 1024;
 
 /// One operation argument in a machine-readable descriptor.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ArgumentDescriptor {
     pub name: String,
     pub description: String,
@@ -35,6 +36,7 @@ pub struct ArgumentDescriptor {
 
 /// Serializable operation metadata used by CLI and editor integrations.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct OperationDescriptor {
     pub name: String,
     pub id: String,
@@ -59,6 +61,7 @@ pub struct OperationDescriptor {
 
 /// Binary-safe result envelope.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ExecutionResult {
     /// UTF-8-lossy convenience representation for editor UIs.
     pub output: String,

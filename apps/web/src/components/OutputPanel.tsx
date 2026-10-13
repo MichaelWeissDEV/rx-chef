@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Download, Copy, AlertTriangle } from 'lucide-react';
 import { ExecuteResponse } from '../types';
+import { parseBase64, encodeHex, previewUtf8, downloadBytes } from '../lib/bytes';
 
 interface OutputPanelProps {
   response: ExecuteResponse | null;
@@ -17,28 +18,16 @@ export const OutputPanel: React.FC<OutputPanelProps> = ({
   onChangeViewMode,
   elapsedMs,
 }) => {
-  // Decode Base64 to raw bytes
-  const bytes = useMemo(() => {
-    if (!response?.result?.output_base64) return new Uint8Array(0);
+  const decoded = useMemo(() => {
     try {
-      const binary = atob(response.result.output_base64);
-      const arr = new Uint8Array(binary.length);
-      for (let i = 0; i < binary.length; i++) {
-        arr[i] = binary.charCodeAt(i);
-      }
-      return arr;
-    } catch {
-      return new Uint8Array(0);
-    }
+      const bytes = parseBase64(response?.result.output_base64 ?? '');
+      if (response && bytes.length !== response.result.output_len) throw new Error('Result byte count mismatch.');
+      return { bytes, error: null };
+    } catch { return { bytes: new Uint8Array(), error: 'Invalid binary result from server.' }; }
   }, [response]);
-
-  // Decode text preview
-  const textOutput = useMemo(() => {
-    if (!bytes || bytes.length === 0) return '';
-    const decoder = new TextDecoder('utf-8', { fatal: false });
-    return decoder.decode(bytes);
-  }, [bytes]);
-
+  const bytes = decoded.bytes;
+  error = error || decoded.error;
+  const textOutput = useMemo(() => previewUtf8(bytes), [bytes]);
   // Render hex rows
   const hexRows = useMemo(() => {
     if (!bytes || bytes.length === 0) return [];
@@ -66,24 +55,7 @@ export const OutputPanel: React.FC<OutputPanelProps> = ({
     return rows;
   }, [bytes]);
 
-  const handleCopy = () => {
-    if (outputViewMode === 'base64' && response?.result?.output_base64) {
-      navigator.clipboard.writeText(response.result.output_base64);
-    } else {
-      navigator.clipboard.writeText(textOutput);
-    }
-  };
-
-  const handleDownload = () => {
-    if (!bytes || bytes.length === 0) return;
-    const blob = new Blob([bytes as BlobPart], { type: 'application/octet-stream' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'rxchef_output.bin';
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+  const handleDownload = () => { if (response && !error) downloadBytes(bytes); };
 
   return (
     <div className="panel" style={{ flex: 1, minWidth: '300px' }}>
@@ -94,22 +66,23 @@ export const OutputPanel: React.FC<OutputPanelProps> = ({
         <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
           <select
             value={outputViewMode}
-            onChange={(e) => onChangeViewMode(e.target.value as any)}
+            onChange={(e) => onChangeViewMode(e.target.value as 'text' | 'hex' | 'base64')}
             style={{ padding: '2px 6px', fontSize: '11px' }}
           >
             <option value="text">UTF-8 Text</option>
             <option value="hex">Hex Table</option>
             <option value="base64">Raw Base64</option>
           </select>
-          <button className="btn-icon" onClick={handleCopy} title="Copy output">
-            <Copy size={13} />
-          </button>
-          <button className="btn-icon" onClick={handleDownload} title="Export binary file">
+          <button className="btn-icon" disabled={!response || !!error} onClick={() => navigator.clipboard.writeText(textOutput)} title="Copy Text"><Copy size={13} />Text</button>
+          <button className="btn-icon" disabled={!response || !!error} onClick={() => navigator.clipboard.writeText(encodeHex(bytes))} title="Copy HEX">HEX</button>
+          <button className="btn-icon" disabled={!response || !!error} onClick={() => navigator.clipboard.writeText(response?.result.output_base64 ?? '')} title="Copy Base64">Base64</button>
+          <button className="btn-icon" onClick={handleDownload} title="Download Raw Bytes" disabled={!response || !!error}>
             <Download size={13} />
           </button>
         </div>
       </div>
 
+      {response && !response.result.output_is_utf8 && <p role="note">Text is a lossy preview. Raw download preserves the original bytes.</p>}
       <div className="panel-body">
         {error ? (
           <div style={{ padding: '16px', color: 'var(--color-danger)', display: 'flex', gap: '8px', alignItems: 'flex-start' }}>

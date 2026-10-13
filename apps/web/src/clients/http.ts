@@ -11,6 +11,7 @@ import {
   ScanFinding,
   ScanRequest,
 } from '../types';
+import { parseContract } from '../lib/contracts';
 
 export class HttpRxchefClient implements RxchefClient {
   private baseUrl: string;
@@ -40,12 +41,14 @@ export class HttpRxchefClient implements RxchefClient {
     const response = await fetch(url, {
       ...options,
       headers,
+      redirect: 'error',
+      cache: 'no-store',
     });
 
     if (!response.ok) {
       let errorData: ClientError;
       try {
-        errorData = await response.json();
+        errorData = parseContract('error', await response.json());
       } catch {
         errorData = {
           kind: response.status === 401 ? 'unauthorized' : 'transport',
@@ -63,15 +66,15 @@ export class HttpRxchefClient implements RxchefClient {
   }
 
   async capabilities(): Promise<Capabilities> {
-    return this.request<Capabilities>('capabilities');
+    return parseContract('capabilities', await this.request('capabilities'));
   }
 
   async operations(): Promise<OperationDescriptor[]> {
-    return this.request<OperationDescriptor[]>('operations');
+    return parseContract('operations', await this.request('operations'));
   }
 
   async describe(id: string): Promise<OperationDescriptor> {
-    return this.request<OperationDescriptor>(`operations/${encodeURIComponent(id)}`);
+    return parseContract('operations', [await this.request(`operations/${encodeURIComponent(id)}`)])[0];
   }
 
   async validate(request: ExecuteRequest): Promise<void> {
@@ -82,40 +85,40 @@ export class HttpRxchefClient implements RxchefClient {
   }
 
   async execute(request: ExecuteRequest): Promise<ExecuteResponse> {
-    return this.request<ExecuteResponse>('execute', {
+    return parseContract('response', await this.request('execute', {
       method: 'POST',
       body: JSON.stringify(request),
-    });
+    }));
   }
 
   async magic(request: MagicRequest): Promise<MagicCandidate[]> {
-    return this.request<MagicCandidate[]>('magic', {
+    return parseContract('magic', await this.request('magic', {
       method: 'POST',
       body: JSON.stringify(request),
-    });
+    }));
   }
 
   async scan(request: ScanRequest): Promise<ScanFinding[]> {
-    return this.request<ScanFinding[]>('scan', {
+    return parseContract('scan', await this.request('scan', {
       method: 'POST',
       body: JSON.stringify(request),
-    });
+    }));
   }
 
-  async submitJob(task: { method: string; params: any }): Promise<JobSnapshot> {
-    return this.request<JobSnapshot>('jobs', {
+  async submitJob(task: { method: string; params: unknown }): Promise<JobSnapshot> {
+    return parseContract('job', await this.request('jobs', {
       method: 'POST',
       body: JSON.stringify(task),
-    });
+    }));
   }
 
   async getJob(id: string): Promise<JobSnapshot> {
-    return this.request<JobSnapshot>(`jobs/${encodeURIComponent(id)}`);
+    return parseContract('job', await this.request(`jobs/${encodeURIComponent(id)}`));
   }
 
   async cancelJob(id: string): Promise<JobSnapshot> {
-    return this.request<JobSnapshot>(`jobs/${encodeURIComponent(id)}/cancel`, {
+    return parseContract('job', await this.request(`jobs/${encodeURIComponent(id)}/cancel`, {
       method: 'POST',
-    });
+    }));
   }
 }

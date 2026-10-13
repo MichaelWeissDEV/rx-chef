@@ -14,6 +14,7 @@ use std::fmt;
 /// Machine-readable argument value category.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "snake_case")]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub enum ArgKind {
     String,
     Integer,
@@ -51,6 +52,7 @@ impl fmt::Display for NumericBound {
 /// Whether an operation consumes input bytes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "snake_case")]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub enum InputRequirement {
     Required,
     Optional,
@@ -60,6 +62,7 @@ pub enum InputRequirement {
 /// Verification state of an operation implementation.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "snake_case")]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub enum ImplementationStatus {
     Complete,
     Partial,
@@ -70,6 +73,7 @@ pub enum ImplementationStatus {
 /// Whether an implementation can run in the current build and platform.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "snake_case")]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub enum Availability {
     Available,
     FeatureDisabled,
@@ -79,6 +83,7 @@ pub enum Availability {
 /// Compatibility level with upstream CyberChef behavior.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "snake_case")]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub enum ParityStatus {
     Exact,
     Compatible,
@@ -90,6 +95,7 @@ pub enum ParityStatus {
 /// Externally observable behavior an operation may perform.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "kebab-case")]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub enum SideEffect {
     Network,
     FilesystemRead,

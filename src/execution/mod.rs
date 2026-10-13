@@ -15,6 +15,7 @@ pub const DEFAULT_MAX_STEPS: usize = 1_000_000;
 
 /// One operation and its ordered argument values in a recipe.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct RecipeStep {
     /// Operation name or normalized identifier.
     #[serde(alias = "operation")]

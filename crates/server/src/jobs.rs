@@ -38,7 +38,9 @@ pub struct JobManager {
 }
 
 fn lock(table: &Mutex<Table>) -> MutexGuard<'_, Table> {
-    table.lock().unwrap_or_else(|poisoned| poisoned.into_inner())
+    table
+        .lock()
+        .unwrap_or_else(|poisoned| poisoned.into_inner())
 }
 
 async fn cancelled(mut rx: watch::Receiver<bool>) {
@@ -65,7 +67,10 @@ impl JobManager {
         lock(&self.table).active
     }
 
-    pub fn submit(&self, task: EngineTask) -> Result<(String, watch::Receiver<JobSnapshot>), ClientError> {
+    pub fn submit(
+        &self,
+        task: EngineTask,
+    ) -> Result<(String, watch::Receiver<JobSnapshot>), ClientError> {
         let id = uuid::Uuid::new_v4().to_string();
         let (snapshot, snapshot_rx) = watch::channel(JobSnapshot {
             id: id.clone(),
@@ -82,7 +87,15 @@ impl JobManager {
                 return Err(ClientError::new(ErrorKind::Busy, "job queue is full"));
             }
             table.active += 1;
-            table.jobs.insert(id.clone(), Entry { snapshot, cancel, finished: None, bytes: 0 });
+            table.jobs.insert(
+                id.clone(),
+                Entry {
+                    snapshot,
+                    cancel,
+                    finished: None,
+                    bytes: 0,
+                },
+            );
         }
         let manager = self.clone();
         let job = id.clone();
@@ -102,7 +115,10 @@ impl JobManager {
                 self.update(&id, |s| s.status = JobStatus::Running);
                 supervise(
                     &self.config.worker_executable,
-                    Invocation { policy: self.config.policy.clone(), task },
+                    Invocation {
+                        policy: self.config.policy.clone(),
+                        task,
+                    },
                     self.config.timeout,
                     self.config.memory_bytes,
                     cancel,
@@ -131,7 +147,9 @@ impl JobManager {
                 (status, None, Some(error))
             }
         };
-        let bytes = result.as_ref().map_or(0, |r| serde_json::to_vec(r).map_or(0, |v| v.len()));
+        let bytes = result
+            .as_ref()
+            .map_or(0, |r| serde_json::to_vec(r).map_or(0, |v| v.len()));
         let mut table = lock(&self.table);
         if let Some(entry) = table.jobs.get_mut(id) {
             entry.snapshot.send_modify(|s| {
@@ -151,9 +169,15 @@ impl JobManager {
     fn evict(&self, table: &mut Table) {
         let now = Instant::now();
         let ttl = self.config.retain_for;
-        table.jobs.retain(|_, e| e.finished.is_none_or(|t| now.duration_since(t) < ttl));
+        table
+            .jobs
+            .retain(|_, e| e.finished.is_none_or(|t| now.duration_since(t) < ttl));
         loop {
-            let finished: Vec<_> = table.jobs.iter().filter_map(|(id, e)| e.finished.map(|t| (t, id.clone(), e.bytes))).collect();
+            let finished: Vec<_> = table
+                .jobs
+                .iter()
+                .filter_map(|(id, e)| e.finished.map(|t| (t, id.clone(), e.bytes)))
+                .collect();
             let total: usize = finished.iter().map(|f| f.2).sum();
             if finished.len() <= self.config.retain && total <= self.config.retain_bytes {
                 return;
@@ -184,7 +208,11 @@ impl JobManager {
     }
 
     fn signal_cancel(&self, id: &str) -> bool {
-        lock(&self.table).jobs.get(id).map(|e| e.cancel.send_replace(true)).is_some()
+        lock(&self.table)
+            .jobs
+            .get(id)
+            .map(|e| e.cancel.send_replace(true))
+            .is_some()
     }
 
     /// Request cancellation and wait briefly for the terminal state, so the
@@ -192,7 +220,11 @@ impl JobManager {
     pub async fn cancel(&self, id: &str) -> Result<JobSnapshot, ClientError> {
         let mut rx = self.subscribe(id)?;
         self.signal_cancel(id);
-        let _ = tokio::time::timeout(Duration::from_secs(5), rx.wait_for(|s| s.status.is_terminal())).await;
+        let _ = tokio::time::timeout(
+            Duration::from_secs(5),
+            rx.wait_for(|s| s.status.is_terminal()),
+        )
+        .await;
         let snapshot = rx.borrow().clone();
         Ok(snapshot)
     }
@@ -207,7 +239,10 @@ impl JobManager {
     /// cancels the worker; the finished entry is never retained.
     pub async fn run_to_completion(&self, task: EngineTask) -> Result<TaskResult, ClientError> {
         let (id, mut rx) = self.submit(task)?;
-        let _guard = Guard { manager: self.clone(), id };
+        let _guard = Guard {
+            manager: self.clone(),
+            id,
+        };
         let snapshot = rx
             .wait_for(|s| s.status.is_terminal())
             .await
@@ -216,7 +251,10 @@ impl JobManager {
         match (snapshot.result, snapshot.error) {
             (Some(result), _) => Ok(result),
             (_, Some(error)) => Err(error),
-            _ => Err(ClientError::new(ErrorKind::Operation, "job produced no result")),
+            _ => Err(ClientError::new(
+                ErrorKind::Operation,
+                "job produced no result",
+            )),
         }
     }
 }
@@ -230,7 +268,11 @@ impl Drop for Guard {
     fn drop(&mut self) {
         self.manager.signal_cancel(&self.id);
         let mut table = lock(&self.manager.table);
-        if table.jobs.get(&self.id).is_some_and(|e| e.finished.is_some()) {
+        if table
+            .jobs
+            .get(&self.id)
+            .is_some_and(|e| e.finished.is_some())
+        {
             table.jobs.remove(&self.id);
         }
     }

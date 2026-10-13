@@ -17,6 +17,7 @@ use crate::{
 
 pub struct AppState {
     pub config: Arc<ServerConfig>,
+    pub shutdown: tokio::sync::watch::Sender<bool>,
     pub jobs: JobManager,
     pub connections: Arc<Semaphore>,
     pub ws_connections: Arc<Semaphore>,
@@ -24,37 +25,61 @@ pub struct AppState {
 }
 
 /// Methods a read-only token may call. Everything else needs full scope.
-const READ_METHODS: &[&str] = &["version", "capabilities", "operations", "describe", "search"];
+const READ_METHODS: &[&str] = &[
+    "version",
+    "capabilities",
+    "operations",
+    "describe",
+    "search",
+];
 /// Every method known to the service (used for JSON-RPC "method not found").
 pub const METHODS: &[&str] = &[
-    "version", "capabilities", "operations", "describe", "search", "validate", "execute", "magic",
-    "scan", "job.submit", "job.get", "job.cancel",
+    "version",
+    "capabilities",
+    "operations",
+    "describe",
+    "search",
+    "validate",
+    "execute",
+    "magic",
+    "scan",
+    "job.submit",
+    "job.get",
+    "job.cancel",
 ];
 
 fn params<T: DeserializeOwned>(value: Value) -> Result<T, ClientError> {
     // Never echo the offending payload: it may contain secrets.
-    serde_json::from_value(value).map_err(|_| ClientError::new(ErrorKind::InvalidInput, "invalid parameters"))
+    serde_json::from_value(value)
+        .map_err(|_| ClientError::new(ErrorKind::InvalidInput, "invalid parameters"))
 }
 
 fn text(value: &Value, key: &str) -> Result<String, ClientError> {
     match value.get(key).and_then(Value::as_str) {
         Some(s) if !s.is_empty() && s.len() <= 256 => Ok(s.to_owned()),
-        _ => Err(ClientError::new(ErrorKind::InvalidInput, format!("missing or invalid '{key}'"))),
+        _ => Err(ClientError::new(
+            ErrorKind::InvalidInput,
+            format!("missing or invalid '{key}'"),
+        )),
     }
 }
 
 fn encode<T: serde::Serialize>(value: T) -> Result<Value, ClientError> {
-    serde_json::to_value(value).map_err(|_| ClientError::new(ErrorKind::Protocol, "cannot encode result"))
+    serde_json::to_value(value)
+        .map_err(|_| ClientError::new(ErrorKind::Protocol, "cannot encode result"))
 }
 
 impl AppState {
     pub fn new(config: ServerConfig) -> Arc<Self> {
         let config = Arc::new(config);
         Arc::new(Self {
+            shutdown: tokio::sync::watch::channel(false).0,
             jobs: JobManager::new(config.clone()),
             connections: Arc::new(Semaphore::new(config.max_connections)),
             ws_connections: Arc::new(Semaphore::new(config.max_ws_connections)),
-            local: LocalEngineClient { policy: config.policy.clone() },
+            local: LocalEngineClient {
+                policy: config.policy.clone(),
+            },
             config,
         })
     }
@@ -67,7 +92,12 @@ impl AppState {
 
     /// Authorize then perform one method. Discovery is answered from the
     /// pure registry; everything that runs data goes through a worker process.
-    pub async fn call(&self, scope: Option<Scope>, method: &str, input: Value) -> Result<Value, ClientError> {
+    pub async fn call(
+        &self,
+        scope: Option<Scope>,
+        method: &str,
+        input: Value,
+    ) -> Result<Value, ClientError> {
         let allowed = match scope {
             Some(Scope::Full) => true,
             Some(Scope::Read) => READ_METHODS.contains(&method),
@@ -75,7 +105,10 @@ impl AppState {
         };
         if !allowed {
             let (kind, message) = if scope.is_some() {
-                (ErrorKind::PolicyDenied, "token scope does not permit this method")
+                (
+                    ErrorKind::PolicyDenied,
+                    "token scope does not permit this method",
+                )
             } else {
                 (ErrorKind::Unauthorized, "authentication required")
             };

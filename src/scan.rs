@@ -20,6 +20,7 @@ use crate::magic::{self, MagicOptions, RecipeStep};
 
 /// A single hit produced by the scanner.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Finding {
     /// Byte offset of the token in the original stream.
     pub offset: u64,
@@ -125,7 +126,10 @@ impl Scanner {
     }
 
     /// Use the same scanner with an execution policy applied before each decode.
-    pub fn with_decoder_filter(mut self, filter: std::sync::Arc<dyn Fn(&str) -> bool + Send + Sync>) -> Self {
+    pub fn with_decoder_filter(
+        mut self,
+        filter: std::sync::Arc<dyn Fn(&str) -> bool + Send + Sync>,
+    ) -> Self {
         self.decoder_filter = Some(filter);
         self
     }

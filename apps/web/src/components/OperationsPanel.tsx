@@ -26,7 +26,7 @@ export const OperationsPanel: React.FC<OperationsPanelProps> = ({
   const categories = useMemo(() => {
     const set = new Set<string>();
     operations.forEach((op) => {
-      if (op.category) set.add(op.category);
+      if (op.module) set.add(op.module);
     });
     return Array.from(set).sort();
   }, [operations]);
@@ -41,7 +41,7 @@ export const OperationsPanel: React.FC<OperationsPanelProps> = ({
       const matchesCat =
         selectedCategory === 'All' ||
         (selectedCategory === 'Favorites' && favorites.includes(op.id)) ||
-        op.category === selectedCategory;
+        op.module === selectedCategory;
 
       return matchesSearch && matchesCat;
     });
@@ -116,7 +116,7 @@ export const OperationsPanel: React.FC<OperationsPanelProps> = ({
                   {op.name}
                 </div>
                 <div style={{ fontSize: '11px', color: 'var(--text-muted)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                  {op.category}
+                  {op.module}
                 </div>
               </div>
 
