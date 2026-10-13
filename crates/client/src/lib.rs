@@ -33,6 +33,7 @@ pub enum ErrorKind {
     NotFound,
     Cancelled,
     Timeout,
+    Unauthorized,
 }
 
 /// Stable classification independent of human-readable messages.
@@ -91,7 +92,7 @@ pub struct Capabilities {
     pub protocol_version: u32,
     pub binary_transport: String,
     pub trace: bool,
-    /// False until a process-supervised job implementation is available.
+    /// True when the endpoint offers process-supervised, cancellable jobs.
     pub jobs: bool,
     pub max_input_bytes: usize,
     pub max_output_bytes: usize,
@@ -408,7 +409,14 @@ impl LocalEngineClient {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub enum JobStatus { Running, Succeeded, Failed, Cancelled, TimedOut }
+pub enum JobStatus { Queued, Running, Succeeded, Failed, Cancelled, TimedOut }
+
+impl JobStatus {
+    /// True once a job can no longer change state.
+    pub fn is_terminal(self) -> bool {
+        !matches!(self, JobStatus::Queued | JobStatus::Running)
+    }
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JobSnapshot {

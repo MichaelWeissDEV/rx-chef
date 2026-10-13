@@ -78,13 +78,14 @@ impl RemoteEngineClient {
     fn request<T: DeserializeOwned>(
         &self,
         method: reqwest::Method,
-        path: &str,
+        path: &[&str],
         body: Option<&impl Serialize>,
     ) -> Result<T, ClientError> {
-        let url = self
-            .base
-            .join(path)
-            .map_err(|_| ClientError::new(ErrorKind::Protocol, "invalid endpoint"))?;
+        let mut url = self.base.clone();
+        url.path_segments_mut()
+            .map_err(|_| ClientError::new(ErrorKind::Protocol, "invalid endpoint"))?
+            .pop_if_empty()
+            .extend(path);
         let mut request = self.client.request(method, url);
         if let Some(body) = body {
             request = request.json(body);
@@ -121,51 +122,59 @@ impl RemoteEngineClient {
 
 impl EngineClient for RemoteEngineClient {
     fn submit_job(&self, task: EngineTask) -> Result<JobSnapshot, ClientError> {
-        self.request(reqwest::Method::POST, "jobs", Some(&task))
+        self.request(reqwest::Method::POST, &["jobs"], Some(&task))
     }
     fn job(&self, id: &str) -> Result<JobSnapshot, ClientError> {
         validate_job_id(id)?;
-        self.request(reqwest::Method::GET, &format!("jobs/{id}"), None::<&()>)
+        self.request(reqwest::Method::GET, &["jobs", id], None::<&()>)
     }
     fn cancel_job(&self, id: &str) -> Result<JobSnapshot, ClientError> {
         validate_job_id(id)?;
-        self.request(reqwest::Method::POST, &format!("jobs/{id}/cancel"), Some(&()))
+        self.request(reqwest::Method::POST, &["jobs", id, "cancel"], Some(&()))
     }
     fn magic(&self, request: MagicRequest) -> Result<Vec<MagicCandidate>, ClientError> {
-        self.request(reqwest::Method::POST, "magic", Some(&request))
+        self.request(reqwest::Method::POST, &["magic"], Some(&request))
     }
     fn scan(&self, request: ScanRequest) -> Result<Vec<rxchef::scan::Finding>, ClientError> {
-        self.request(reqwest::Method::POST, "scan", Some(&request))
+        self.request(reqwest::Method::POST, &["scan"], Some(&request))
     }
     fn capabilities(&self) -> Result<Capabilities, ClientError> {
         let capabilities: Capabilities =
-            self.request(reqwest::Method::GET, "capabilities", None::<&()>)?;
+            self.request(reqwest::Method::GET, &["capabilities"], None::<&()>)?;
         if capabilities.protocol_version != PROTOCOL_VERSION
             || capabilities.binary_transport != "base64"
         {
             return Err(ClientError::new(
                 ErrorKind::Protocol,
-                "incompatible server protocol",
+                format!(
+                    "incompatible server: protocol {} / {} transport (server {}), this client speaks protocol {} / base64",
+                    capabilities.protocol_version, capabilities.binary_transport,
+                    capabilities.version, PROTOCOL_VERSION
+                ),
             ));
         }
         Ok(capabilities)
     }
     fn operations(&self) -> Result<Vec<integration::OperationDescriptor>, ClientError> {
-        self.request(reqwest::Method::GET, "operations", None::<&()>)
+        self.request(reqwest::Method::GET, &["operations"], None::<&()>)
     }
     fn describe(&self, operation: &str) -> Result<integration::OperationDescriptor, ClientError> {
+        if operation.is_empty() || operation.len() > 256 {
+            return Err(ClientError::new(ErrorKind::InvalidInput, "invalid operation name"));
+        }
+        // Path segments are percent-encoded by `Url`, so names with spaces are safe.
         self.request(
-            reqwest::Method::POST,
-            "describe",
-            Some(&serde_json::json!({"operation": operation})),
+            reqwest::Method::GET,
+            &["operations", operation],
+            None::<&()>,
         )
     }
     fn validate(&self, request: &ExecuteRequest) -> Result<(), ClientError> {
-        self.request(reqwest::Method::POST, "validate", Some(request))
+        self.request(reqwest::Method::POST, &["validate"], Some(request))
     }
     fn execute(&self, request: ExecuteRequest) -> Result<ExecuteResponse, ClientError> {
         let response: ExecuteResponse =
-            self.request(reqwest::Method::POST, "execute", Some(&request))?;
+            self.request(reqwest::Method::POST, &["execute"], Some(&request))?;
         export_bytes(&response.result)?;
         Ok(response)
     }

@@ -4,8 +4,9 @@ use rxchef_client::{ClientError, EngineTask, ErrorKind, ExecutionPolicy, LocalEn
 use serde::{Deserialize, Serialize};
 use tokio::{io::{AsyncReadExt, AsyncWriteExt}, process::Command, sync::watch};
 
-pub const MAX_REQUEST: usize = 2 << 20;
-pub const MAX_RESPONSE: usize = 16 << 20;
+/// Sized for the default 8 MiB input policy after Base64 and JSON expansion.
+pub const MAX_REQUEST: usize = 32 << 20;
+pub const MAX_RESPONSE: usize = 48 << 20;
 
 #[derive(Serialize, Deserialize)]
 pub struct Invocation { pub policy: ExecutionPolicy, pub task: EngineTask }
@@ -52,13 +53,23 @@ pub async fn supervise(
     let mut command = Command::new(executable);
     command.arg("--internal-worker").env_clear()
         .stdin(Stdio::piped()).stdout(Stdio::piped()).stderr(Stdio::null()).kill_on_drop(true);
-    #[cfg(target_os = "linux")]
+    // Enforced limits differ per platform; see docs/server/configuration.md.
+    //  * Linux: RLIMIT_AS (address space) and RLIMIT_CPU.
+    //  * Other Unix (macOS, BSD): RLIMIT_CPU only. RLIMIT_AS is not reliably
+    //    enforced there, so memory is NOT limited beyond the input/output caps.
+    //  * Windows: neither; only the wall-clock deadline (kill) and caps apply.
+    #[cfg(unix)]
     {
         let cpu_seconds = timeout.as_secs().saturating_add(2);
         // Only async-signal-safe libc calls in the post-fork child.
         unsafe { command.pre_exec(move || {
-            for (resource, limit) in [(libc::RLIMIT_AS, memory_bytes), (libc::RLIMIT_CPU, cpu_seconds)] {
-                let limit = libc::rlimit { rlim_cur: limit, rlim_max: limit };
+            // Fixed-size array: no heap allocation after fork.
+            #[cfg(target_os = "linux")]
+            let limits = [(libc::RLIMIT_CPU, cpu_seconds), (libc::RLIMIT_AS, memory_bytes)];
+            #[cfg(not(target_os = "linux"))]
+            let limits = [(libc::RLIMIT_CPU, cpu_seconds)];
+            for (resource, limit) in limits {
+                let limit = libc::rlimit { rlim_cur: limit as _, rlim_max: limit as _ };
                 if libc::setrlimit(resource, &limit) != 0 { return Err(std::io::Error::last_os_error()); }
             }
             Ok(())
@@ -70,31 +81,34 @@ pub async fn supervise(
     // Taking stdin is essential: Child::wait must not close the lifeline.
     let mut lifeline = child.stdin.take().ok_or_else(|| failure("missing worker stdin"))?;
     let mut output = child.stdout.take().ok_or_else(|| failure("missing worker stdout"))?;
-    let work = async {
-        lifeline.write_all(&(body.len() as u32).to_be_bytes()).await.map_err(|_| failure("worker input failed"))?;
-        lifeline.write_all(&body).await.map_err(|_| failure("worker input failed"))?;
-        lifeline.flush().await.map_err(|_| failure("worker input failed"))?;
-        let size = output.read_u32().await.map_err(|_| failure("worker exited without a result"))? as usize;
-        if size > MAX_RESPONSE { return Err(ClientError::new(ErrorKind::LimitExceeded, "worker response limit exceeded")); }
-        let mut response = vec![0; size];
-        output.read_exact(&mut response).await.map_err(|_| failure("incomplete worker result"))?;
-        let status = child.wait().await.map_err(|_| failure("cannot reap worker"))?;
-        if !status.success() { return Err(failure("worker failed (resource limit, panic, or process error)")); }
-        serde_json::from_slice::<Result<TaskResult, ClientError>>(&response)
-            .map_err(|_| failure("invalid worker result"))?
+    let result = {
+        let work = async {
+            lifeline.write_all(&(body.len() as u32).to_be_bytes()).await.map_err(|_| failure("worker input failed"))?;
+            lifeline.write_all(&body).await.map_err(|_| failure("worker input failed"))?;
+            lifeline.flush().await.map_err(|_| failure("worker input failed"))?;
+            let size = output.read_u32().await.map_err(|_| failure("worker exited without a result"))? as usize;
+            if size > MAX_RESPONSE { return Err(ClientError::new(ErrorKind::LimitExceeded, "worker response limit exceeded")); }
+            let mut response = vec![0; size];
+            output.read_exact(&mut response).await.map_err(|_| failure("incomplete worker result"))?;
+            let status = child.wait().await.map_err(|_| failure("cannot reap worker"))?;
+            if !status.success() { return Err(failure("worker failed (resource limit, panic, or process error)")); }
+            serde_json::from_slice::<Result<TaskResult, ClientError>>(&response)
+                .map_err(|_| failure("invalid worker result"))?
+        };
+        tokio::pin!(work);
+        tokio::select! {
+            biased;
+            _ = async {
+                // A dropped sender is not a cancellation request.
+                loop {
+                    if *cancel.borrow() { break; }
+                    if cancel.changed().await.is_err() { std::future::pending::<()>().await; }
+                }
+            } => Err(ClientError::new(ErrorKind::Cancelled, "job cancelled")),
+            _ = tokio::time::sleep(timeout) => Err(ClientError::new(ErrorKind::Timeout, "job deadline exceeded")),
+            result = &mut work => result,
+        }
     };
-    tokio::pin!(work);
-    let result = tokio::select! {
-        biased;
-        _ = async {
-            if !*cancel.borrow() { let _ = cancel.changed().await; }
-        } => Err(ClientError::new(ErrorKind::Cancelled, "job cancelled")),
-        _ = tokio::time::sleep(timeout) => Err(ClientError::new(ErrorKind::Timeout, "job deadline exceeded")),
-        result = &mut work => result,
-    };
-    // End mutable borrows of child before kill-and-reap. The select future is
-    // scoped below by explicitly dropping its pinned binding and owning future.
-    drop(work);
     drop(lifeline);
     // start_kill is harmless for an already exited child; wait always reaps it.
     let _ = child.start_kill();

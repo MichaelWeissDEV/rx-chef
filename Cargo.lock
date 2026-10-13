@@ -6027,6 +6027,7 @@ name = "rxchef-client"
 version = "0.1.0"
 dependencies = [
  "base64",
+ "regex",
  "reqwest",
  "rxchef",
  "serde",
