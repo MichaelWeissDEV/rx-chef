@@ -21,6 +21,11 @@ uuid = { version = "1", features = ["v4"] }
 subtle = "2.6"
 getrandom = "0.2"
 hex = "0.4"
+tower-http = { version = "0.6", features = ["fs"], optional = true }
+
+[features]
+default = []
+web-ui = ["dep:tower-http"]
 
 [target.'cfg(unix)'.dependencies]
 libc = "0.2"

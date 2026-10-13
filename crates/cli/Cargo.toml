@@ -75,3 +75,4 @@ regex        = "1"
 rustyline    = "13"
 shlex        = "2"
 hex          = "0.4"
+rxchef-client = { version = "0.1.0", path = "../client", features = ["remote"] }

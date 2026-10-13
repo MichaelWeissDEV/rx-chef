@@ -40,10 +40,13 @@ forensics, image processing, and more.
 
 ## Product development
 
-The active [product roadmap](docs/development/product-roadmap.md) targets a shared
-client layer, secure network server, web workbench and standalone desktop app.
-The client and bounded trace foundation are implemented; server, web and desktop
-remain planned. This checkout is not yet the complete product described there.
+The [product roadmap](docs/development/product-roadmap.md) guides rx-chef's
+expansion into a multi-interface suite:
+- **Core, Client & Store**: Complete 478 operations, binary-safe contracts, and isolated local storage.
+- **Server**: Axum/Tokio HTTP, JSON-RPC, WebSocket, bearer auth, and process worker supervision (`rxchef-server`).
+- **Web Workbench**: Modern React/TypeScript frontend (`apps/web`) with dark/light themes, offline execution, and trace inspection.
+- **TUI & CLI**: Interactive terminal workbench (`rxchef_tui` / `rxchef tui`) with local & remote server support, diagnostic `doctor`, connection testing `connect`, and verified `examples`.
+- **Desktop GUI**: Cross-platform desktop shell sharing the web workbench frontend.
 
 ## Release verification
 

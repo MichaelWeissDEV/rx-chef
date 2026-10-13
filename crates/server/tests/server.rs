@@ -343,6 +343,55 @@ mod websocket {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn websocket_connection_and_inflight_limits() {
+        let server = tokio::task::spawn_blocking(|| {
+            TestServer::with(|c| {
+                c.max_ws_connections = 2;
+                c.max_ws_inflight_per_conn = 1;
+                c.max_ws_subscriptions_per_conn = 2;
+            })
+        }).await.unwrap();
+        let url = format!("ws://{}/api/v1/ws", server.addr);
+
+        // Connect 1st client
+        let (mut ws1, _) = connect_async(&url).await.unwrap();
+        ws1.send(Message::Text(json!({"type": "auth", "token": TOKEN}).to_string().into())).await.unwrap();
+        assert_eq!(recv(&mut ws1).await.unwrap()["type"], "ready");
+
+        // Connect 2nd client
+        let (mut ws2, _) = connect_async(&url).await.unwrap();
+        ws2.send(Message::Text(json!({"type": "auth", "token": TOKEN}).to_string().into())).await.unwrap();
+        assert_eq!(recv(&mut ws2).await.unwrap()["type"], "ready");
+
+        // Connect 3rd client (should be rejected with 503 Busy as max_ws_connections = 2)
+        assert!(connect_async(&url).await.is_err());
+
+        // Test in-flight limit on ws1: submit a slow job in flight then an execute request
+        ws1.send(Message::Text(json!({"jsonrpc": "2.0", "id": "slow", "method": "execute", "params": slow_request()}).to_string().into())).await.unwrap();
+        // Sending another RPC immediately should exceed inflight limit (max 1)
+        ws1.send(Message::Text(json!({"jsonrpc": "2.0", "id": "fast", "method": "capabilities"}).to_string().into())).await.unwrap();
+        let reply = recv(&mut ws1).await.unwrap();
+        assert_eq!(reply["id"], "fast");
+        assert_eq!(reply["error"]["data"]["kind"], "busy");
+
+        // Test subscription limit on ws2
+        let job = server.client().submit_job(EngineTask::Execute(request(b"test", vec![step("To Hex", &[])]))).unwrap();
+        ws2.send(Message::Text(json!({"jsonrpc": "2.0", "id": 1, "method": "job.subscribe", "params": {"id": job.id}}).to_string().into())).await.unwrap();
+        let _ = recv(&mut ws2).await; // subscribed
+        ws2.send(Message::Text(json!({"jsonrpc": "2.0", "id": 2, "method": "job.subscribe", "params": {"id": job.id}}).to_string().into())).await.unwrap();
+        let _ = recv(&mut ws2).await; // subscribed
+        // 3rd subscription exceeds max_ws_subscriptions_per_conn (2)
+        ws2.send(Message::Text(json!({"jsonrpc": "2.0", "id": 3, "method": "job.subscribe", "params": {"id": job.id}}).to_string().into())).await.unwrap();
+        let reply3 = recv(&mut ws2).await.unwrap();
+        assert_eq!(reply3["id"], 3);
+        assert_eq!(reply3["error"]["data"]["kind"], "limit_exceeded");
+
+        drop(ws1);
+        drop(ws2);
+        tokio::task::spawn_blocking(move || drop(server)).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn websocket_refuses_missing_bad_auth_and_foreign_origin() {
         let server = tokio::task::spawn_blocking(TestServer::start).await.unwrap();
         let url = format!("ws://{}/api/v1/ws", server.addr);
@@ -388,4 +437,12 @@ fn remote_configuration_requires_explicit_opt_in() {
     assert!(parse(&[]).unwrap().generated_token);
     let debug = format!("{:?}", parse(&["--token", "0123456789abcdef0123"]).unwrap());
     assert!(!debug.contains("0123456789abcdef0123"));
+
+    // Overflow protection on MiB limits
+    assert!(parse(&["--max-body-mib", &format!("{}", usize::MAX)]).is_err());
+    assert!(parse(&["--max-input-mib", "1000"]).is_err()); // Exceeds worker IPC capacity (32 MiB)
+    assert!(parse(&["--max-output-mib", "1000"]).is_err()); // Exceeds worker IPC capacity (48 MiB)
+    assert!(parse(&["--max-ws-connections", "0"]).is_err());
+    assert!(parse(&["--max-ws-inflight-per-conn", "0"]).is_err());
+    assert!(parse(&["--ws-idle-timeout-secs", "0"]).is_err());
 }

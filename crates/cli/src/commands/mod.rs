@@ -6,6 +6,9 @@
 //! execution in [`crate::steps`].
 
 pub(crate) mod bake;
+pub(crate) mod connect;
+pub(crate) mod doctor;
+pub(crate) mod examples;
 pub(crate) mod history;
 pub(crate) mod magic;
 pub(crate) mod operations;

@@ -19,6 +19,7 @@ pub struct AppState {
     pub config: Arc<ServerConfig>,
     pub jobs: JobManager,
     pub connections: Arc<Semaphore>,
+    pub ws_connections: Arc<Semaphore>,
     local: LocalEngineClient,
 }
 
@@ -52,6 +53,7 @@ impl AppState {
         Arc::new(Self {
             jobs: JobManager::new(config.clone()),
             connections: Arc::new(Semaphore::new(config.max_connections)),
+            ws_connections: Arc::new(Semaphore::new(config.max_ws_connections)),
             local: LocalEngineClient { policy: config.policy.clone() },
             config,
         })

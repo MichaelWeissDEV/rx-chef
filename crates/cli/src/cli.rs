@@ -58,6 +58,14 @@ pub(crate) enum Command {
     Project(ProjectArgs),
     /// Run a persistent machine-readable transport.
     Serve(ServeArgs),
+    /// Run environment, feature, and connectivity diagnostics.
+    Doctor(DoctorArgs),
+    /// Test connection to an rxchef server and inspect capabilities.
+    Connect(ConnectArgs),
+    /// Show usage examples and verified recipe patterns.
+    Examples,
+    /// Launch the interactive terminal workbench (rxchef_tui).
+    Tui(TuiArgs),
     /// Generate a shell completion script on stdout.
     Completions {
         #[arg(value_enum)]
@@ -68,6 +76,35 @@ pub(crate) enum Command {
         #[arg(short, long)]
         output: Option<PathBuf>,
     },
+}
+
+#[derive(Debug, Args)]
+pub(crate) struct DoctorArgs {
+    /// Optional server URL to test connectivity with.
+    #[arg(long)]
+    pub(crate) server: Option<String>,
+    /// Optional bearer token for the server.
+    #[arg(long)]
+    pub(crate) token: Option<String>,
+}
+
+#[derive(Debug, Args)]
+pub(crate) struct ConnectArgs {
+    /// Server base URL (e.g. http://127.0.0.1:8787).
+    pub(crate) url: String,
+    /// Bearer authentication token.
+    #[arg(long)]
+    pub(crate) token: Option<String>,
+}
+
+#[derive(Debug, Args)]
+pub(crate) struct TuiArgs {
+    /// Optional remote server base URL (e.g. http://127.0.0.1:8787).
+    #[arg(long)]
+    pub(crate) server: Option<String>,
+    /// Optional bearer authentication token.
+    #[arg(long)]
+    pub(crate) token: Option<String>,
 }
 
 // ─── Machine integration ─────────────────────────────────────────────────────

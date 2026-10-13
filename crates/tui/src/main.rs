@@ -47,8 +47,10 @@ use ratatui::{
     Frame, Terminal,
 };
 use rxchef::{execution, runtime};
+use std::time::Duration;
 use rxchef_client::{
-    EngineClient, ExecuteRequest, ExecutionPolicy, LocalEngineClient, TraceLimits,
+    EngineClient, ExecuteRequest, ExecutionPolicy, LocalEngineClient, RemoteEngineClient,
+    TraceLimits,
 };
 use rxchef_store as store;
 
@@ -177,20 +179,34 @@ struct App {
 
     // Trace view scroll
     trace_scroll: u16,
+
+    // Remote server connection
+    server_url: Option<String>,
+    server_token: Option<String>,
 }
 
 impl App {
+    #[allow(dead_code)]
     fn new() -> Self {
+        Self::with_remote(None, None)
+    }
+
+    fn with_remote(server_url: Option<String>, server_token: Option<String>) -> Self {
         let all_ops = runtime::operation_names(None);
         let mut state = ListState::default();
         state.select(Some(0));
+        let status = if let Some(ref url) = server_url {
+            format!("Connected to remote server: {url}")
+        } else {
+            "Welcome! Press (a) to add a step, (?) for help.".into()
+        };
         App {
             mode: Mode::Normal,
             pipeline: Vec::new(),
             selected: 0,
             input_text: String::new(),
             results: Vec::new(),
-            status: "Welcome! Press (a) to add a step, (?) for help.".into(),
+            status,
             search_query: String::new(),
             search_results: all_ops,
             search_list_state: state,
@@ -205,6 +221,8 @@ impl App {
             checkpoints: Vec::new(),
             checkpoint_list_state: ListState::default(),
             trace_scroll: 0,
+            server_url,
+            server_token,
         }
     }
 
@@ -239,11 +257,26 @@ impl App {
                 args: step.args.clone(),
             })
             .collect::<Vec<_>>();
-        let client = LocalEngineClient {
-            policy: ExecutionPolicy {
-                allow_host_effects: true,
-                ..ExecutionPolicy::default()
-            },
+        let client: Box<dyn EngineClient> = if let Some(ref url) = self.server_url {
+            match RemoteEngineClient::new(url, self.server_token.as_deref(), Duration::from_secs(30)) {
+                Ok(remote) => Box::new(remote),
+                Err(err) => {
+                    self.results.push(StepResult {
+                        operation: "Remote client error".into(),
+                        error: Some(err.to_string()),
+                        ..StepResult::default()
+                    });
+                    self.status = format!("Remote error: {err}");
+                    return;
+                }
+            }
+        } else {
+            Box::new(LocalEngineClient {
+                policy: ExecutionPolicy {
+                    allow_host_effects: true,
+                    ..ExecutionPolicy::default()
+                },
+            })
         };
         let result = client.execute(ExecuteRequest {
             input_base64: Some(STANDARD.encode(self.input_text.as_bytes())),
@@ -596,11 +629,20 @@ fn ui(f: &mut Frame, app: &mut App) {
 }
 
 fn render_pipeline(f: &mut Frame, app: &mut App, area: Rect) {
-    let title = format!(
-        " Pipeline ({} step{}) ",
-        app.pipeline.len(),
-        if app.pipeline.len() == 1 { "" } else { "s" }
-    );
+    let title = if let Some(ref url) = app.server_url {
+        format!(
+            " Pipeline ({} step{}) [Remote: {}] ",
+            app.pipeline.len(),
+            if app.pipeline.len() == 1 { "" } else { "s" },
+            url
+        )
+    } else {
+        format!(
+            " Pipeline ({} step{}) [Local] ",
+            app.pipeline.len(),
+            if app.pipeline.len() == 1 { "" } else { "s" }
+        )
+    };
     let block = Block::default()
         .title(title)
         .borders(Borders::ALL)
@@ -1356,16 +1398,54 @@ fn chrono_now_tui() -> String {
 
 fn main() -> io::Result<()> {
     let args: Vec<String> = std::env::args().collect();
-    if args.len() > 1 {
-        if matches!(args[1].as_str(), "--help" | "-h") {
-            println!("rxchef_tui — interactive pipeline builder");
-            println!("Run without arguments. For headless recipes use `rxchef bake`.");
-            return Ok(());
+    let mut server_url = std::env::var("RXCHEF_SERVER").ok();
+    let mut server_token = std::env::var("RXCHEF_TOKEN").ok();
+
+    let mut i = 1;
+    while i < args.len() {
+        match args[i].as_str() {
+            "--help" | "-h" => {
+                println!("rxchef_tui — interactive pipeline builder\n");
+                println!("Usage:");
+                println!("  rxchef_tui [OPTIONS]\n");
+                println!("Options:");
+                println!("  --server <URL>    Connect to remote rxchef-server (or RXCHEF_SERVER env)");
+                println!("  --token <TOKEN>   Bearer token for remote server (or RXCHEF_TOKEN env)");
+                println!("  -h, --help        Show help\n");
+                println!("Run without arguments for local execution.");
+                println!("For headless recipes use `rxchef bake`.");
+                return Ok(());
+            }
+            "--server" => {
+                if i + 1 < args.len() {
+                    server_url = Some(args[i + 1].clone());
+                    i += 1;
+                } else {
+                    return Err(io::Error::new(
+                        io::ErrorKind::InvalidInput,
+                        "--server requires a URL argument",
+                    ));
+                }
+            }
+            "--token" => {
+                if i + 1 < args.len() {
+                    server_token = Some(args[i + 1].clone());
+                    i += 1;
+                } else {
+                    return Err(io::Error::new(
+                        io::ErrorKind::InvalidInput,
+                        "--token requires a TOKEN argument",
+                    ));
+                }
+            }
+            arg => {
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidInput,
+                    format!("unknown option '{arg}'. Use --help for usage information"),
+                ));
+            }
         }
-        return Err(io::Error::new(
-            io::ErrorKind::InvalidInput,
-            "rxchef_tui is interactive; use `rxchef bake --recipe FILE` for headless execution",
-        ));
+        i += 1;
     }
 
     // Interactive TUI
@@ -1375,7 +1455,7 @@ fn main() -> io::Result<()> {
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
 
-    let mut app = App::new();
+    let mut app = App::with_remote(server_url, server_token);
     let mut quit = false;
 
     while !quit {

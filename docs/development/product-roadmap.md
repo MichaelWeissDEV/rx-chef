@@ -34,10 +34,10 @@ build without Node or frontend assets. Keep stdio RPC backward compatible.
 |---|---|---|
 | M1 Architecture | Reviewed; boundaries recorded above | Revisit worker isolation with platform prototypes |
 | M2 Client/protocol | Implemented execution/discovery/validation/search/export foundation and bounded trace artifacts; optional HTTP adapter | Magic/Scan, projects/recipes, jobs, full server negotiation; migrate all client calls |
-| M3 Server | Not implemented | Axum REST `/api/v1`, strict HTTP/WS JSON-RPC, supervised workers, cancellation, timeouts, limits, storage, authentication and host/origin policy |
-| M4 Design system | Not implemented | Shared offline frontend, design tokens, light/dark themes, accessible components |
-| M5 Web | Not implemented | Workbench, editors, import/export, exact-byte views, control-flow visualization, undo, palette, browser E2E |
-| M6 Desktop | Not implemented | Tauri direct execution, remote mode, explicit managed server, native file/clipboard/keyring integration, platform smoke tests |
+| M3 Server | Implemented & hardened | Axum REST `/api/v1`, HTTP/WS JSON-RPC 2.0, WebSocket connection & in-flight limits, supervised worker processes, cancellation, timeouts, retention, Constant-Time Auth, Scope & Host/Origin policy |
+| M4 Design system | In progress | Shared offline frontend, design tokens, light/dark themes, accessible components |
+| M5 Web | In progress | Workbench, editors, import/export, exact-byte views, control-flow visualization, undo, palette, browser E2E |
+| M6 Desktop | In progress | Tauri direct execution, remote mode, explicit managed server, native file/clipboard/keyring integration, platform smoke tests |
 | M7 TUI | Trace correctness and bounded previews fixed; edits no longer implicitly execute | State/render/event separation, asynchronous execution, client discovery/arguments, remote sessions, files/HEX, palette, terminal-size tests |
 | M8 CLI | Existing CLI retained | Doctor, connection management, examples; check command consistency and help |
 | M9 Operations | Existing 478 operations and verification infrastructure retained | Systematic quality audit, independently verified examples, further Magic/Scan work |

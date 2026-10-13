@@ -127,7 +127,7 @@ async fn guard(State(state): State<Shared>, mut request: Request, next: Next) ->
 
 pub fn router(state: Shared) -> Router {
     let limit = state.config.max_body;
-    Router::new()
+    let r = Router::new()
         .route("/api/v1/health", get(|| async { Json(json!({"status": "ok"})) }))
         .route("/api/v1/version", get(|s, a| simple(s, a, "version")))
         .route("/api/v1/capabilities", get(|s, a| simple(s, a, "capabilities")))
@@ -157,8 +157,18 @@ pub fn router(state: Shared) -> Router {
             }),
         )
         .route("/api/v1/rpc", post(rpc_http))
-        .route("/api/v1/ws", get(websocket))
-        .fallback(|| async { error_response(ClientError::new(ErrorKind::NotFound, "no such endpoint")) })
+        .route("/api/v1/ws", get(websocket));
+
+    #[cfg(feature = "web-ui")]
+    let r = {
+        let serve_dir = tower_http::services::ServeDir::new("apps/web/dist")
+            .fallback(tower_http::services::ServeFile::new("apps/web/dist/index.html"));
+        r.fallback_service(serve_dir)
+    };
+    #[cfg(not(feature = "web-ui"))]
+    let r = r.fallback(|| async { error_response(ClientError::new(ErrorKind::NotFound, "no such endpoint")) });
+
+    r
         .layer(axum::extract::DefaultBodyLimit::max(limit))
         .layer(middleware::from_fn_with_state(state.clone(), guard))
         .with_state(state)
@@ -223,16 +233,19 @@ async fn rpc_http(State(s): State<Shared>, Extension(a): Extension<Auth>, body: 
 
 async fn websocket(State(s): State<Shared>, Extension(a): Extension<Auth>, upgrade: WebSocketUpgrade) -> Response {
     let limit = s.config.max_body;
+    let Ok(ws_permit) = s.ws_connections.clone().try_acquire_owned() else {
+        return error_response(ClientError::new(ErrorKind::Busy, "too many WebSocket connections"));
+    };
     upgrade
         .max_message_size(limit)
         .max_frame_size(limit)
-        .on_upgrade(move |socket| socket_loop(s, a.0, socket))
+        .on_upgrade(move |socket| socket_loop(s, a.0, socket, ws_permit))
 }
 
 /// Authenticate (header already checked, else first message), then serve
 /// JSON-RPC requests. `job.subscribe` streams real status transitions; no
-/// progress is invented.
-async fn socket_loop(state: Shared, mut scope: Option<Scope>, mut socket: WebSocket) {
+/// progress is invented. Holds `_ws_permit` for the entire connection duration.
+async fn socket_loop(state: Shared, mut scope: Option<Scope>, mut socket: WebSocket, _ws_permit: tokio::sync::OwnedSemaphorePermit) {
     if scope.is_none() {
         let first = tokio::time::timeout(WS_AUTH_TIMEOUT, socket.recv()).await;
         let presented = match first {
@@ -251,35 +264,68 @@ async fn socket_loop(state: Shared, mut scope: Option<Scope>, mut socket: WebSoc
     let _ = socket.send(Message::Text(json!({"type": "ready", "protocol_version": rxchef_client::PROTOCOL_VERSION}).to_string().into())).await;
 
     let (out, mut inbox) = mpsc::channel::<String>(64);
-    // Dropping the set aborts in-flight requests, which cancels their workers.
+    // Dropping the set aborts in-flight requests and subscription tasks, which cancels their workers/streams.
     let mut tasks = JoinSet::new();
+    let inflight_sem = Arc::new(tokio::sync::Semaphore::new(state.config.max_ws_inflight_per_conn));
+    let active_subs = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let idle_timeout = state.config.ws_idle_timeout;
+
     loop {
         tokio::select! {
             Some(frame) = inbox.recv() => {
                 if socket.send(Message::Text(frame.into())).await.is_err() { break; }
             }
-            incoming = socket.recv() => {
-                let text = match incoming {
-                    Some(Ok(Message::Text(text))) => text,
-                    Some(Ok(Message::Ping(_) | Message::Pong(_))) => continue,
+            incoming = tokio::time::timeout(idle_timeout, socket.recv()) => {
+                let msg = match incoming {
+                    Ok(Some(Ok(Message::Ping(_) | Message::Pong(_)))) => continue,
+                    Ok(Some(Ok(msg))) => msg,
+                    // Socket closed, error, or idle timeout reached
                     _ => break,
                 };
+                let text = match msg {
+                    Message::Text(text) => text,
+                    Message::Close(_) => break,
+                    _ => continue,
+                };
+
                 let state = state.clone();
                 let out = out.clone();
-                tasks.spawn(async move { handle_frame(state, scope, text.as_str(), out).await });
+                let inflight = inflight_sem.clone();
+                let subs = active_subs.clone();
+                tasks.spawn(async move {
+                    handle_frame(state, scope, text.as_str(), out, inflight, subs).await;
+                });
             }
         }
         while tasks.try_join_next().is_some() {}
     }
+    // Cleanup: abort all tasks on disconnect
+    tasks.abort_all();
 }
 
-async fn handle_frame(state: Shared, scope: Option<Scope>, text: &str, out: mpsc::Sender<String>) {
+async fn handle_frame(
+    state: Shared,
+    scope: Option<Scope>,
+    text: &str,
+    out: mpsc::Sender<String>,
+    inflight: Arc<tokio::sync::Semaphore>,
+    active_subs: Arc<std::sync::atomic::AtomicUsize>,
+) {
     let Ok(request) = serde_json::from_str::<Value>(text) else {
         let _ = out.send(rpc_error(Value::Null, -32700, "parse error", None).to_string()).await;
         return;
     };
+
     if request["method"] == "job.subscribe" {
         let id = request["id"].clone();
+        let max_subs = state.config.max_ws_subscriptions_per_conn;
+        let current = active_subs.load(std::sync::atomic::Ordering::Relaxed);
+        if current >= max_subs {
+            let err = ClientError::new(ErrorKind::LimitExceeded, "maximum subscriptions per connection reached");
+            let _ = out.send(rpc_error(id, -32000, &err.message, Some(&err)).to_string()).await;
+            return;
+        }
+
         let outcome = match request["params"]["id"].as_str() {
             Some(job) if scope == Some(Scope::Full) => state.jobs.subscribe(job).map(|rx| (job.to_owned(), rx)),
             Some(_) => Err(ClientError::new(ErrorKind::PolicyDenied, "token scope does not permit this method")),
@@ -290,6 +336,15 @@ async fn handle_frame(state: Shared, scope: Option<Scope>, text: &str, out: mpsc
                 let _ = out.send(rpc_error(id, -32000, &error.message, Some(&error)).to_string()).await;
             }
             Ok((job, mut rx)) => {
+                active_subs.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                struct SubGuard(Arc<std::sync::atomic::AtomicUsize>);
+                impl Drop for SubGuard {
+                    fn drop(&mut self) {
+                        self.0.fetch_sub(1, std::sync::atomic::Ordering::Relaxed);
+                    }
+                }
+                let _guard = SubGuard(active_subs.clone());
+
                 let _ = out.send(json!({"jsonrpc": "2.0", "id": id, "result": {"subscribed": job}}).to_string()).await;
                 loop {
                     let event = {
@@ -309,6 +364,15 @@ async fn handle_frame(state: Shared, scope: Option<Scope>, text: &str, out: mpsc
         }
         return;
     }
+
+    // Limit concurrent in-flight RPC requests per connection
+    let Ok(_permit) = inflight.try_acquire_owned() else {
+        let id = request.get("id").cloned().unwrap_or(Value::Null);
+        let err = ClientError::new(ErrorKind::Busy, "too many concurrent in-flight requests on this connection");
+        let _ = out.send(rpc_error(id, -32000, &err.message, Some(&err)).to_string()).await;
+        return;
+    };
+
     if let Some(reply) = rpc_dispatch(&state, scope, request).await {
         let _ = out.send(reply.to_string()).await;
     }

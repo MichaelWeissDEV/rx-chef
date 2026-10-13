@@ -61,6 +61,18 @@ pub struct Cli {
     /// Maximum simultaneously served HTTP requests and WebSockets.
     #[arg(long, default_value_t = 256)]
     pub max_connections: usize,
+    /// Maximum simultaneous WebSocket connections.
+    #[arg(long, default_value_t = 64)]
+    pub max_ws_connections: usize,
+    /// Maximum concurrent in-flight RPC requests per WebSocket connection.
+    #[arg(long, default_value_t = 8)]
+    pub max_ws_inflight_per_conn: usize,
+    /// Maximum active job subscriptions per WebSocket connection.
+    #[arg(long, default_value_t = 16)]
+    pub max_ws_subscriptions_per_conn: usize,
+    /// WebSocket idle timeout in seconds (close if no ping/pong/message).
+    #[arg(long, default_value_t = 120)]
+    pub ws_idle_timeout_secs: u64,
     /// Maximum input size in MiB.
     #[arg(long, default_value_t = 8)]
     pub max_input_mib: usize,
@@ -96,6 +108,10 @@ pub struct ServerConfig {
     pub retain_bytes: usize,
     pub retain_for: Duration,
     pub max_connections: usize,
+    pub max_ws_connections: usize,
+    pub max_ws_inflight_per_conn: usize,
+    pub max_ws_subscriptions_per_conn: usize,
+    pub ws_idle_timeout: Duration,
     pub worker_executable: PathBuf,
     /// Set when the token was generated at start-up and must be shown once.
     pub generated_token: bool,
@@ -165,7 +181,17 @@ impl ServerConfig {
                 return Err("remote binds require at least one --allowed-host (DNS-rebinding protection)".into());
             }
         }
-        for (name, value) in [("workers", cli.workers), ("max-pending", cli.max_pending), ("max-connections", cli.max_connections), ("max-body-mib", cli.max_body_mib)] {
+        for (name, value) in [
+            ("workers", cli.workers),
+            ("max-pending", cli.max_pending),
+            ("max-connections", cli.max_connections),
+            ("max-ws-connections", cli.max_ws_connections),
+            ("max-ws-inflight-per-conn", cli.max_ws_inflight_per_conn),
+            ("max-ws-subscriptions-per-conn", cli.max_ws_subscriptions_per_conn),
+            ("max-body-mib", cli.max_body_mib),
+            ("max-input-mib", cli.max_input_mib),
+            ("max-output-mib", cli.max_output_mib),
+        ] {
             if value == 0 {
                 return Err(format!("--{name} must be positive"));
             }
@@ -173,6 +199,25 @@ impl ServerConfig {
         if cli.timeout_secs == 0 {
             return Err("--timeout-secs must be positive".into());
         }
+        if cli.ws_idle_timeout_secs == 0 {
+            return Err("--ws-idle-timeout-secs must be positive".into());
+        }
+        // Protect against integer overflow on MiB calculations and ensure bounds match IPC limits
+        let mib = 1usize << 20;
+        let max_body = cli.max_body_mib.checked_mul(mib).ok_or("max_body_mib overflow")?;
+        let max_input_bytes = cli.max_input_mib.checked_mul(mib).ok_or("max_input_mib overflow")?;
+        let max_output_bytes = cli.max_output_mib.checked_mul(mib).ok_or("max_output_mib overflow")?;
+        let memory_bytes = (cli.memory_mib as u64).checked_mul(1 << 20).ok_or("memory_mib overflow")?;
+        let retain_bytes = cli.retain_mib.checked_mul(mib).ok_or("retain_mib overflow")?;
+
+        // Enforce IPC limits: input and output cannot exceed worker IPC envelope
+        if max_input_bytes > crate::worker::MAX_REQUEST {
+            return Err(format!("max-input-mib exceeds maximum worker IPC request capacity ({} MiB)", crate::worker::MAX_REQUEST / mib));
+        }
+        if max_output_bytes > crate::worker::MAX_RESPONSE {
+            return Err(format!("max-output-mib exceeds maximum worker IPC response capacity ({} MiB)", crate::worker::MAX_RESPONSE / mib));
+        }
+
         let mut generated = false;
         let token = match (cli.token.clone(), &cli.token_file) {
             (Some(_), Some(_)) => return Err("use either --token or --token-file".into()),
@@ -193,11 +238,10 @@ impl ServerConfig {
         if cli.read_token.as_ref() == Some(&token) {
             return Err("read token must differ from the full-access token".into());
         }
-        let mib = 1usize << 20;
         let mut cfg = Self {
             policy: ExecutionPolicy {
-                max_input_bytes: cli.max_input_mib * mib,
-                max_output_bytes: cli.max_output_mib * mib,
+                max_input_bytes,
+                max_output_bytes,
                 allow_host_effects: cli.allow_host_effects,
                 ..ExecutionPolicy::default()
             },
@@ -205,15 +249,19 @@ impl ServerConfig {
             read_token: cli.read_token.clone(),
             allowed_hosts: vec![],
             allowed_origins: vec![],
-            max_body: cli.max_body_mib * mib,
+            max_body,
             timeout: Duration::from_secs(cli.timeout_secs),
-            memory_bytes: cli.memory_mib << 20,
+            memory_bytes,
             workers: cli.workers,
             max_pending: cli.max_pending,
             retain: cli.retain,
-            retain_bytes: cli.retain_mib * mib,
+            retain_bytes,
             retain_for: Duration::from_secs(cli.retain_secs),
             max_connections: cli.max_connections,
+            max_ws_connections: cli.max_ws_connections,
+            max_ws_inflight_per_conn: cli.max_ws_inflight_per_conn,
+            max_ws_subscriptions_per_conn: cli.max_ws_subscriptions_per_conn,
+            ws_idle_timeout: Duration::from_secs(cli.ws_idle_timeout_secs),
             worker_executable,
             generated_token: generated,
         };
