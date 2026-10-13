@@ -14,12 +14,12 @@
  */
 
 use regex::Regex;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::magic::{self, MagicOptions, RecipeStep};
 
 /// A single hit produced by the scanner.
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Finding {
     /// Byte offset of the token in the original stream.
     pub offset: u64,
@@ -95,7 +95,10 @@ fn is_token_byte(b: u8) -> bool {
 /// Feed bytes with [`Scanner::push`] (repeatedly, in any chunk sizes) and end
 /// with [`Scanner::finish`]. Completed tokens are delivered to the callback as
 /// they are recognised.
+type DecoderFilter = std::sync::Arc<dyn Fn(&str) -> bool + Send + Sync>;
+
 pub struct Scanner {
+    decoder_filter: Option<DecoderFilter>,
     opts: ScanOptions,
     /// Bytes of the run currently being accumulated across pushes.
     pending: Vec<u8>,
@@ -111,6 +114,7 @@ pub struct Scanner {
 impl Scanner {
     pub fn new(opts: ScanOptions) -> Self {
         Scanner {
+            decoder_filter: None,
             opts,
             pending: Vec::new(),
             pending_start: 0,
@@ -118,6 +122,12 @@ impl Scanner {
             truncated: false,
             findings: 0,
         }
+    }
+
+    /// Use the same scanner with an execution policy applied before each decode.
+    pub fn with_decoder_filter(mut self, filter: std::sync::Arc<dyn Fn(&str) -> bool + Send + Sync>) -> Self {
+        self.decoder_filter = Some(filter);
+        self
     }
 
     /// Whether the configured finding budget has been exhausted.
@@ -206,7 +216,10 @@ impl Scanner {
                 max_results: 1,
                 ..MagicOptions::default()
             };
-            let results = magic::magic(&token, &opts);
+            let results = match &self.decoder_filter {
+                Some(filter) => magic::magic_with_filter(&token, &opts, filter.as_ref()),
+                None => magic::magic(&token, &opts),
+            };
             // With a crib set, only keep findings that actually matched it.
             if let Some(best) = results.into_iter().next() {
                 if self.opts.crib.is_some() && !best.matched_crib {

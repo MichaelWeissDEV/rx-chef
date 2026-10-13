@@ -161,6 +161,8 @@ if [[ "$mode" == "linux" ]]; then
     run_gate "quick Linux benchmarks" cargo run --locked --package xtask -- bench-docs --quick
     run_gate "Core package" cargo package --locked -p rxchef --allow-dirty
     run_gate "Store package" cargo package --locked -p rxchef-store --allow-dirty
+    run_gate "Client package contents" \
+        cargo package --locked -p rxchef-client --allow-dirty --list >/dev/null
     run_gate "CLI package contents" \
         cargo package --locked -p rxchef-cli --allow-dirty --list >/dev/null
     run_gate "TUI package contents" \

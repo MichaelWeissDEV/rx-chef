@@ -32,6 +32,7 @@ The workspace is divided by responsibility:
 | Component | Location | Responsibility |
 |---|---|---|
 | Core library | `src/` | Operations, metadata, registry, runtime, recipes, Magic, Scan, integration protocol, FFI. |
+| Client | `crates/client/` | Typed local/optional HTTP execution, policy and bounded trace contracts. |
 | CLI | `crates/cli/` | Clap model, files/stdin/stdout, rendering, Store commands, process exit codes. |
 | Store | `crates/store/` | Project discovery, recipes, variables, history, atomic JSON persistence. |
 | TUI | `crates/tui/` | Interactive pipeline editing and execution through the core engine. |
@@ -441,3 +442,5 @@ Future changes should preserve these architectural invariants:
 - [Scan](scan.md)
 - [TUI](tui.md)
 - [FFI](ffi.md)
+
+The [shared client contract](client.md) and [active product roadmap](../development/product-roadmap.md) describe the current interface work and remaining server/GUI scope.

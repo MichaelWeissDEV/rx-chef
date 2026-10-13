@@ -1,8 +1,8 @@
 name: Publish to crates.io
 
 # Called by release.yml (dist's publish-jobs extension point) after the
-# GitHub Release is live. Publishes the four workspace crates in their
-# dependency order — rxchef-store, rxchef, rxchef-cli, rxchef-tui — since
+# GitHub Release is live. Publishes the five workspace crates in their
+# dependency order — rxchef-store, rxchef, rxchef-client, rxchef-cli, rxchef-tui — since
 # the CLI and TUI both depend on the library and the store.
 #
 # Two auth modes, selected automatically:
@@ -81,6 +81,9 @@ jobs:
 
       - name: Publish rxchef
         run: ./scripts/publish-crate.sh rxchef
+
+      - name: Publish rxchef-client
+        run: ./scripts/publish-crate.sh rxchef-client
 
       - name: Publish rxchef-cli
         run: ./scripts/publish-crate.sh rxchef-cli

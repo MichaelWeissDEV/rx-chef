@@ -87,6 +87,9 @@ nav:
       - Benchmarking: development/benchmarking.md
       - Fuzzing: development/fuzzing.md
       - Releasing: development/releasing.md
+      - Interface foundation report: development/interface-foundation-report.md
+      - Product completion roadmap: development/product-roadmap.md
+      - Shared engine clients: architecture/client.md
       - Release readiness: development/release-readiness.md
 
 markdown_extensions:

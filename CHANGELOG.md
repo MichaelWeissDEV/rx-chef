@@ -7,7 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+- Shared `rxchef-client` execution/discovery/validation contracts with typed
+  errors, a local implementation, optional HTTP adapter, canonical operation
+  allowlists and explicit host-effect policy. The network server itself is not
+  implemented yet.
+- Additive Core step-output observer and public recipe validation API. Clients
+  can retain bounded, binary-safe trace artifacts without replaying operations.
+- Product-completion roadmap with explicit unfinished server, web, desktop,
+  audit and release milestones.
+
+### Fixed
+
+- TUI intermediate results now reflect actual completed steps, including Fork
+  branches, with accurate recipe indices and a separate final-output view.
+- Trace retention and binary preview formatting are bounded. History preserves
+  recipe structure instead of turning repeated trace actions into recipe steps.
+
+### Changed
+
+- TUI recipes execute explicitly with `r`; edits and loads no longer trigger
+  operations automatically. Local TUI input/output are limited to 8 MiB and
+  execution to 100,000 actions through the client policy.
+- Release dependency order includes `rxchef-client` before the TUI. Native gates
+  exercise the optional remote-client contract tests.
 
 ## [0.1.0] - 2026-08-23
 

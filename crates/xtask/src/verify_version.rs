@@ -71,6 +71,7 @@ fn render_status(root: &std::path::Path) -> Result<String, String> {
             "rxchef_cli",
             "rxchef_tui",
             "rxchef_store",
+            "rxchef_client",
             "cyberchef-rust-tests",
         ],
         "binaries": ["rxchef"],

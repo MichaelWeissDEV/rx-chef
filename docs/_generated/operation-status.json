@@ -5,6 +5,7 @@
     "rxchef_cli",
     "rxchef_tui",
     "rxchef_store",
+    "rxchef_client",
     "cyberchef-rust-tests"
   ],
   "binaries": [

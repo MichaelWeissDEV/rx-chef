@@ -11,6 +11,7 @@ cargo --version
 cargo fmt --all -- --check
 cargo check --locked --workspace --all-targets
 cargo test --locked --workspace
+cargo test --locked -p rxchef-client --features remote
 cargo clippy --locked --workspace --all-targets -- \
     -D clippy::correctness -D clippy::suspicious
 cargo run --locked --package xtask -- check-registry

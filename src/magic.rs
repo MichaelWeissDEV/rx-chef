@@ -21,12 +21,12 @@ use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
 
 use regex::Regex;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::execution;
 
 /// One decode step in a recovered recipe.
-#[derive(Debug, Clone, Serialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct RecipeStep {
     pub op: String,
     pub args: Vec<String>,
@@ -99,6 +99,14 @@ struct Candidate {
 /// decodings, best first. The original (undecoded) input is never returned as
 /// a match; only the results of one or more successful decode steps are.
 pub fn magic(input: &[u8], opts: &MagicOptions) -> Vec<MagicMatch> {
+    magic_with_filter(input, opts, &|_| true)
+}
+
+/// Run the existing Magic search while checking every candidate before execution.
+/// Denied decoders are skipped, including at nested recursion levels.
+pub fn magic_with_filter(
+    input: &[u8], opts: &MagicOptions, allowed: &dyn Fn(&str) -> bool,
+) -> Vec<MagicMatch> {
     let mut matches: Vec<MagicMatch> = Vec::new();
     let mut visited: HashSet<u64> = HashSet::new();
     visited.insert(hash_bytes(input));
@@ -114,6 +122,7 @@ pub fn magic(input: &[u8], opts: &MagicOptions) -> Vec<MagicMatch> {
         &mut budget,
         &mut visited,
         &mut matches,
+        allowed,
     );
 
     matches.sort_by(|a, b| {
@@ -172,6 +181,7 @@ fn recurse(
     budget: &mut MagicBudget,
     visited: &mut HashSet<u64>,
     out: &mut Vec<MagicMatch>,
+    allowed: &dyn Fn(&str) -> bool,
 ) {
     if depth >= opts.depth
         || data.len() > opts.max_candidate_bytes
@@ -180,6 +190,7 @@ fn recurse(
         return;
     }
     for cand in candidates(data, opts.intensive) {
+        if !allowed(cand.op) { continue; }
         if budget.candidates >= opts.max_candidates {
             break;
         }
@@ -259,6 +270,7 @@ fn recurse(
                 budget,
                 visited,
                 out,
+                allowed,
             );
         }
     }

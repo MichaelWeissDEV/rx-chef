@@ -2,7 +2,7 @@
 
 Pushing a signed, correctly-versioned stable tag (`vX.Y.Z`) triggers the
 release: platform binaries, a GitHub Release, a shell installer, `.deb` and
-`.rpm` packages, a Homebrew tap update, and four crates published to
+`.rpm` packages, a Homebrew tap update, and five crates published to
 crates.io. This page is the maintainer's reference for how that pipeline
 works, what has to be set up once before the first real release, and the
 actual commands to run.
@@ -39,7 +39,7 @@ git push origin vX.Y.Z
         ├── host                 creates the GitHub Release, uploads everything
         │
         ├── publish-homebrew-formula   MichaelWeissDEV/homebrew-tap
-        ├── publish-crates             rxchef-store → rxchef → rxchef-cli → rxchef-tui
+        ├── publish-crates             rxchef-store → rxchef → rxchef-client → rxchef-cli → rxchef-tui
         │
         └── announce
 ```
@@ -66,6 +66,7 @@ custom jobs (`validate-tag`, `release-gates`, `build-deb`, `build-rpm`,
 |---|---|---|
 | `rxchef` (library) | `rxchef` | — |
 | `rxchef-store` | `rxchef_store` | — |
+| `rxchef-client` | `rxchef_client` | — |
 | `rxchef-cli` | `rxchef_cli` | `rxchef` |
 | `rxchef-tui` | `rxchef_tui` | `rxchef_tui` |
 
@@ -92,13 +93,13 @@ publish across five external systems by pushing a tag.
 
 crates.io Trusted Publishing (GitHub OIDC, no stored token) can only be
 configured for a crate that already exists on the registry — so the very
-first publish of each of the four crates needs a real, scoped token:
+first publish of each of the five crates needs a real, scoped token:
 
 1. Create a crates.io token scoped to publish-new, add it to the `release`
    environment as `CRATES_IO_BOOTSTRAP_TOKEN`.
 2. Push the first stable tag. `publish-crates.yml` detects the secret and
-   uses it directly for all four crates, in order.
-3. On crates.io, for each of the four crates, add a Trusted Publisher:
+   uses it directly for all five crates, in order.
+3. On crates.io, for each of the five crates, add a Trusted Publisher:
    repository `MichaelWeissDEV/rx-chef`, workflow `release.yml`, environment
    `release`.
 4. Delete `CRATES_IO_BOOTSTRAP_TOKEN` from the `release` environment. Every
@@ -157,10 +158,10 @@ Homebrew upload** (AUR is never pushed externally regardless — see the
 scope decision above). Trigger it from the Actions tab before cutting a
 real tag.
 
-(`rxchef-cli`/`rxchef-tui` can't be dry-run publish-checked this way:
+(`rxchef-client`/`rxchef-cli`/`rxchef-tui` can't be dry-run publish-checked this way:
 `cargo publish` resolves path dependencies against the real registry even
-in `--dry-run` mode, so until `rxchef`/`rxchef-store` are actually live,
-those two error with "no matching package found" — this is a real Cargo
+in `--dry-run` mode, so until their dependencies (including `rxchef-client` for the TUI) are actually live,
+those packages error with "no matching package found" — this is a real Cargo
 limitation, not a config problem. `cargo package --list` still validates
 their packaged contents.)
 

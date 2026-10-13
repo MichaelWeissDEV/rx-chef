@@ -15,3 +15,9 @@ for usage and keybindings, and the
 and server interfaces.
 
 License: Apache-2.0
+
+Recipes run explicitly with `r`. Editing, loading, or restoring a recipe and
+changing input does not execute operations automatically. Trace views show
+actual completed actions, including repeated branch steps, with bounded binary
+prefixes and explicit truncation. Final output is shown separately. Execution
+uses `rxchef-client`; a remote TUI connection mode is not implemented yet.

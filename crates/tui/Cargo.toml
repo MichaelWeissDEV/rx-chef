@@ -17,6 +17,8 @@ name = "rxchef_tui"
 path = "src/main.rs"
 
 [dependencies]
+rxchef-client = { version = "0.1.0", path = "../client" }
+base64 = "0.22"
 rxchef       = { version = "0.1.0", path = "../.." }
 rxchef_store = { package = "rxchef-store", version = "0.1.0", path = "../store" }
 ratatui      = "0.28"

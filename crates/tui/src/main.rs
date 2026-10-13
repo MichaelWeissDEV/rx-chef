@@ -32,6 +32,7 @@ Keys (Input mode): edit freely, Enter/Esc confirm
 
 use std::io;
 
+use base64::{engine::general_purpose::STANDARD, Engine as _};
 use crossterm::{
     event::{self, Event, KeyCode, KeyEvent, KeyModifiers},
     execute,
@@ -46,6 +47,9 @@ use ratatui::{
     Frame, Terminal,
 };
 use rxchef::{execution, runtime};
+use rxchef_client::{
+    EngineClient, ExecuteRequest, ExecutionPolicy, LocalEngineClient, TraceLimits,
+};
 use rxchef_store as store;
 
 // ─── Data model ──────────────────────────────────────────────────────────────
@@ -66,8 +70,13 @@ impl PipelineStep {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 struct StepResult {
+    step_index: Option<usize>,
+    operation: String,
+    output_bytes: usize,
+    truncated: bool,
+    duration_ms: f64,
     output: Vec<u8>,
     error: Option<String>,
 }
@@ -77,7 +86,7 @@ impl StepResult {
         if let Some(ref e) = self.error {
             return format!("ERROR: {}", e);
         }
-        match std::str::from_utf8(&self.output) {
+        let preview = match std::str::from_utf8(&self.output) {
             Ok(s) => {
                 if s.chars().count() > 4096 {
                     let preview: String = s.chars().take(4096).collect();
@@ -87,7 +96,12 @@ impl StepResult {
                 }
             }
             Err(_) => {
-                let hex: Vec<String> = self.output.iter().map(|b| format!("{:02x}", b)).collect();
+                let hex: Vec<String> = self
+                    .output
+                    .iter()
+                    .take(256)
+                    .map(|b| format!("{:02x}", b))
+                    .collect();
                 let preview = hex
                     .chunks(16)
                     .map(|c| c.join(" "))
@@ -99,6 +113,15 @@ impl StepResult {
                     preview
                 }
             }
+        };
+        if self.truncated {
+            format!(
+                "{preview}\n… (captured {} of {} bytes)",
+                self.output.len(),
+                self.output_bytes
+            )
+        } else {
+            preview
         }
     }
 }
@@ -216,39 +239,58 @@ impl App {
                 args: step.args.clone(),
             })
             .collect::<Vec<_>>();
-        let result = execution::execute(execution::ExecutionRequest {
-            input: self.input_text.as_bytes().to_vec(),
-            input_supplied: true,
-            recipe: recipe.into(),
-            variables: execution::VariableContext::default(),
-            options: execution::ExecutionOptions {
-                trace: true,
-                ..execution::ExecutionOptions::default()
+        let client = LocalEngineClient {
+            policy: ExecutionPolicy {
+                allow_host_effects: true,
+                ..ExecutionPolicy::default()
             },
+        };
+        let result = client.execute(ExecuteRequest {
+            input_base64: Some(STANDARD.encode(self.input_text.as_bytes())),
+            recipe,
+            variables: Default::default(),
+            trace: Some(TraceLimits::default()),
         });
         match result {
             Ok(outcome) => {
                 self.results = outcome
                     .trace
                     .iter()
-                    .map(|_| StepResult {
-                        output: Vec::new(),
+                    .map(|entry| StepResult {
+                        step_index: Some(entry.step_index),
+                        operation: entry.operation.clone(),
+                        output: STANDARD
+                            .decode(&entry.output_base64)
+                            .expect("local client emits valid Base64"),
+                        output_bytes: entry.output_bytes,
+                        truncated: entry.truncated,
+                        duration_ms: entry.elapsed_ms,
                         error: None,
                     })
                     .collect();
-                if let Some(last) = self.results.last_mut() {
-                    last.output = outcome.output.clone();
-                }
+                self.results.push(StepResult {
+                    operation: "Final output".into(),
+                    output_bytes: outcome.result.output_len,
+                    output: rxchef_client::export_bytes(&outcome.result)
+                        .expect("local result is exact"),
+                    ..StepResult::default()
+                });
                 self.status = format!(
-                    "Pipeline ran OK — {} execution(s), output {} bytes.",
+                    "Pipeline ran OK — {} captured action(s), output {} bytes.{}",
                     outcome.trace.len(),
-                    outcome.output.len()
+                    outcome.result.output_len,
+                    if outcome.trace_truncated {
+                        " Trace preview limited."
+                    } else {
+                        ""
+                    }
                 );
             }
             Err(error) => {
                 self.results.push(StepResult {
-                    output: Vec::new(),
+                    operation: "Execution error".into(),
                     error: Some(error.to_string()),
+                    ..StepResult::default()
                 });
                 self.status = format!("Pipeline error: {error}");
             }
@@ -291,7 +333,7 @@ impl App {
             self.selected = insert_idx;
             self.mode = Mode::Normal;
             self.status = format!("Added '{}'.", op_name);
-            self.run_pipeline();
+            self.results.clear();
         }
     }
 
@@ -316,7 +358,7 @@ impl App {
     fn confirm_edit_args(&mut self) {
         if !self.pipeline.is_empty() {
             self.pipeline[self.selected].args = self.editing_args.clone();
-            self.run_pipeline();
+            self.results.clear();
             self.status = format!(
                 "Updated args for '{}'.",
                 self.pipeline[self.selected].op_name
@@ -334,7 +376,33 @@ impl App {
             self.selected -= 1;
         }
         self.status = format!("Deleted '{}'.", name);
-        self.run_pipeline();
+        self.results.clear();
+    }
+
+    fn history_steps(&self) -> Vec<store::HistoryStep> {
+        // History steps are replayable recipe structure, not the execution
+        // schedule. Fork children may appear many times in the trace.
+        self.pipeline
+            .iter()
+            .enumerate()
+            .map(|(index, step)| {
+                let result = self
+                    .results
+                    .iter()
+                    .rev()
+                    .find(|entry| entry.step_index == Some(index));
+                store::HistoryStep {
+                    op: step.op_name.clone(),
+                    args: runtime::redact_sensitive_args(&step.op_name, &step.args),
+                    output_preview: result
+                        .map(|entry| store::bytes_preview(&entry.output, 200))
+                        .unwrap_or_else(|| "[no captured action]".into()),
+                    output_bytes: result.map_or(0, |entry| entry.output_bytes),
+                    duration_ms: result.map_or(0.0, |entry| entry.duration_ms),
+                    error: result.and_then(|entry| entry.error.clone()),
+                }
+            })
+            .collect()
     }
 
     fn save_recipe(&mut self, name: &str) {
@@ -358,19 +426,7 @@ impl App {
         }
         // Also save to history if pipeline ran
         if !self.results.is_empty() {
-            let steps: Vec<store::HistoryStep> = self
-                .pipeline
-                .iter()
-                .zip(self.results.iter())
-                .map(|(s, r)| store::HistoryStep {
-                    op: s.op_name.clone(),
-                    args: runtime::redact_sensitive_args(&s.op_name, &s.args),
-                    output_preview: store::bytes_preview(&r.output, 200),
-                    output_bytes: r.output.len(),
-                    duration_ms: 0.0,
-                    error: r.error.clone(),
-                })
-                .collect();
+            let steps = self.history_steps();
             let entry = store::HistoryEntry {
                 id: store::new_history_id(),
                 timestamp: chrono_now_tui(),
@@ -428,7 +484,7 @@ impl App {
         }
         self.selected = 0;
         self.status = format!("Loaded '{}' ({} steps).", recipe.name, recipe.steps.len());
-        self.run_pipeline();
+        self.results.clear();
     }
 
     fn current_output(&self) -> String {
@@ -447,12 +503,16 @@ impl App {
             return "not yet run — press r".into();
         }
         let idx = self.output_step_view.min(self.results.len() - 1);
-        let step_name = self
-            .pipeline
-            .get(idx)
-            .map(|s| s.op_name.as_str())
-            .unwrap_or("?");
-        format!("step {}/{}: {}", idx + 1, self.pipeline.len(), step_name)
+        let result = &self.results[idx];
+        match result.step_index {
+            Some(index) => format!(
+                "action {} · recipe step {}: {}",
+                idx + 1,
+                index + 1,
+                result.operation
+            ),
+            None => result.operation.clone(),
+        }
     }
 
     fn save_checkpoint(&mut self, name: &str) {
@@ -470,7 +530,7 @@ impl App {
             self.input_text = cp.input_text;
             self.selected = 0;
             self.status = format!("Restored checkpoint '{}'.", cp.name);
-            self.run_pipeline();
+            self.results.clear();
         }
     }
 }
@@ -907,11 +967,7 @@ fn render_trace_view(f: &mut Frame, app: &App, area: Rect) {
 
     let mut lines: Vec<Line> = Vec::new();
     for (i, result) in app.results.iter().enumerate() {
-        let step_name = app
-            .pipeline
-            .get(i)
-            .map(|s| s.op_name.as_str())
-            .unwrap_or("?");
+        let step_name = &result.operation;
         let header_style = if result.error.is_some() {
             Style::default().fg(Color::Red).add_modifier(Modifier::BOLD)
         } else {
@@ -920,7 +976,15 @@ fn render_trace_view(f: &mut Frame, app: &App, area: Rect) {
                 .add_modifier(Modifier::BOLD)
         };
         lines.push(Line::from(Span::styled(
-            format!("── Step {}: {} ──", i + 1, step_name),
+            format!(
+                "── Action {}: {}{} ──",
+                i + 1,
+                step_name,
+                result
+                    .step_index
+                    .map(|index| format!(" (recipe step {})", index + 1))
+                    .unwrap_or_default()
+            ),
             header_style,
         )));
         let preview = result.display();
@@ -1113,7 +1177,8 @@ fn handle_edit_args(app: &mut App, key: KeyEvent) {
 fn handle_edit_input(app: &mut App, key: KeyEvent) {
     match key.code {
         KeyCode::Esc | KeyCode::Enter => {
-            app.run_pipeline();
+            app.results.clear();
+            app.status = "Input updated. Press r to run.".into();
             app.mode = Mode::Normal;
         }
         KeyCode::Backspace => {
@@ -1339,7 +1404,93 @@ fn main() -> io::Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use super::StepResult;
+    use super::{App, PipelineStep, StepResult};
+
+    #[test]
+    fn step_views_show_actual_outputs_and_separate_final_result() {
+        let mut app = App::new();
+        app.input_text = "hello".into();
+        app.pipeline = vec![
+            PipelineStep {
+                op_name: "To Upper case".into(),
+                args: vec![],
+            },
+            PipelineStep {
+                op_name: "To Base64".into(),
+                args: vec![],
+            },
+        ];
+        app.run_pipeline();
+        assert_eq!(app.results.len(), 3);
+        assert_eq!(app.results[0].output, b"HELLO");
+        assert_eq!(app.results[1].output, b"SEVMTE8=");
+        assert_eq!(app.results[2].output, b"SEVMTE8=");
+        assert_eq!(app.output_step_label(), "Final output");
+    }
+
+    #[test]
+    fn fork_views_label_repeated_recipe_steps_correctly() {
+        let mut app = App::new();
+        app.input_text = "one\ntwo".into();
+        app.pipeline = vec![
+            PipelineStep {
+                op_name: "Fork".into(),
+                args: vec!["\\n".into(), "|".into(), "false".into()],
+            },
+            PipelineStep {
+                op_name: "To Upper case".into(),
+                args: vec![],
+            },
+            PipelineStep {
+                op_name: "Merge".into(),
+                args: vec![],
+            },
+        ];
+        app.run_pipeline();
+        assert_eq!(app.results[0].output, b"ONE");
+        assert_eq!(app.results[1].output, b"TWO");
+        app.output_step_view = 1;
+        assert!(app.output_step_label().contains("recipe step 2"));
+        assert_eq!(app.results.last().unwrap().output, b"ONE|TWO");
+        let history = app.history_steps();
+        assert_eq!(
+            history
+                .iter()
+                .map(|step| step.op.as_str())
+                .collect::<Vec<_>>(),
+            vec!["Fork", "To Upper case", "Merge"]
+        );
+        assert_eq!(history[1].output_preview, "TWO");
+    }
+
+    #[test]
+    fn editing_does_not_execute_recipes_implicitly() {
+        let mut app = App::new();
+        app.pipeline = vec![PipelineStep {
+            op_name: "To Base64".into(),
+            args: vec![],
+        }];
+        app.editing_args = vec![];
+        app.confirm_edit_args();
+        assert!(app.results.is_empty());
+        super::handle_edit_input(
+            &mut app,
+            crossterm::event::KeyEvent::new(
+                crossterm::event::KeyCode::Esc,
+                crossterm::event::KeyModifiers::NONE,
+            ),
+        );
+        assert!(app.results.is_empty());
+    }
+
+    #[test]
+    fn binary_preview_is_bounded_before_formatting() {
+        let result = StepResult {
+            output: vec![255; 1024 * 1024],
+            ..StepResult::default()
+        };
+        assert!(result.display().len() < 1024);
+    }
 
     #[test]
     fn preview_is_unicode_safe_past_the_character_limit() {
@@ -1348,6 +1499,7 @@ mod tests {
             let result = StepResult {
                 output: text.into_bytes(),
                 error: None,
+                ..StepResult::default()
             };
             assert!(result.display().contains('…'));
         }

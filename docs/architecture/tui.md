@@ -29,3 +29,15 @@ The TUI does not own operation logic. Instead, it relies on the same registry an
 - [Architecture overview](overview.md)
 - [Execution engine](execution-engine.md)
 - [Workspace](workspace.md)
+
+## Execution and trace changes
+
+Execution now goes through `LocalEngineClient`. Press `r` to run after editing;
+loading, editing or restoring a recipe does not execute it implicitly. The trace
+captures real intermediate bytes in one execution. Entries are labeled by their
+original recipe index, so repeated Fork steps are not mislabeled as subsequent
+recipe operations. Bounded prefixes are marked as truncated, and final output
+is a separate view. Binary preview formatting inspects at most 256 bytes.
+
+The event loop still blocks during execution. Async execution, remote sessions,
+module separation and broader interaction tests remain on the product roadmap.

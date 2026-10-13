@@ -164,13 +164,14 @@ jobs:
         run: |
           rustup toolchain install 1.96.1 --profile minimal
           rustup default 1.96.1
-      - name: cargo publish --dry-run (store, then rxchef; cli/tui cannot
-          dry-run until those two are actually live — see
+      - name: cargo publish --dry-run (store, then rxchef; dependent crates cannot
+          dry-run until their dependencies are actually live — see
           docs/development/releasing.md)
         run: |
           ./scripts/publish-crate.sh rxchef-store --dry-run
           ./scripts/publish-crate.sh rxchef --dry-run
-          echo "::notice::rxchef-cli and rxchef-tui dry-runs are skipped here: cargo publish resolves path deps against the real registry even in --dry-run, so they can only be validated once rxchef/rxchef-store are actually published. cargo package -p rxchef-cli --list / -p rxchef-tui --list already validates their packaged contents."
+          echo "::notice::rxchef-client, rxchef-cli and rxchef-tui dry-runs are skipped here: cargo publish resolves path deps against the real registry even in --dry-run, so they can only be validated once their dependencies, including rxchef-client for the TUI, are actually published. cargo package --list validates each package content list below."
+          cargo package --locked -p rxchef-client --allow-dirty --list
           cargo package --locked -p rxchef-cli --allow-dirty --list
           cargo package --locked -p rxchef-tui --allow-dirty --list
 

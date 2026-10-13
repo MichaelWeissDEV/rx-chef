@@ -248,7 +248,9 @@ fn flow_name(name: &str) -> String {
         .collect()
 }
 
-fn validate_recipe(
+/// Validate structure and statically resolvable arguments without executing operations.
+/// Register-dependent arguments are checked at execution time.
+pub fn validate_recipe(
     recipe: &[RecipeStep],
     variables: &VariableContext,
 ) -> Result<(), ExecutionError> {
@@ -420,7 +422,9 @@ fn expand_registers(value: &str, registers: &[String]) -> String {
         .into_owned()
 }
 
-struct Engine<'a> {
+type StepObserver<'observer> = &'observer mut dyn FnMut(&TraceEntry, &[u8]);
+
+struct Engine<'a, 'observer> {
     recipe: &'a [RecipeStep],
     variables: &'a VariableContext,
     options: &'a ExecutionOptions,
@@ -428,14 +432,16 @@ struct Engine<'a> {
     executions: usize,
     input_supplied: bool,
     trace: Vec<TraceEntry>,
+    observer: Option<StepObserver<'observer>>,
 }
 
-impl<'a> Engine<'a> {
+impl<'a, 'observer> Engine<'a, 'observer> {
     fn new(
         recipe: &'a [RecipeStep],
         variables: &'a VariableContext,
         options: &'a ExecutionOptions,
         input_supplied: bool,
+        observer: Option<StepObserver<'observer>>,
     ) -> Result<Self, ExecutionError> {
         let mut labels = HashMap::new();
         for (index, step) in recipe.iter().enumerate() {
@@ -463,6 +469,7 @@ impl<'a> Engine<'a> {
             executions: 0,
             input_supplied,
             trace: Vec::new(),
+            observer,
         })
     }
 
@@ -543,19 +550,26 @@ impl<'a> Engine<'a> {
         &mut self,
         index: usize,
         input_bytes: usize,
-        output_bytes: usize,
+        output: &[u8],
         started: Instant,
         status: TraceStatus,
     ) {
+        if !self.options.trace && self.observer.is_none() {
+            return;
+        }
+        let entry = TraceEntry {
+            step_index: index,
+            operation: self.recipe[index].op.clone(),
+            input_bytes,
+            output_bytes: output.len(),
+            elapsed: started.elapsed(),
+            status,
+        };
+        if let Some(observer) = &mut self.observer {
+            observer(&entry, output);
+        }
         if self.options.trace {
-            self.trace.push(TraceEntry {
-                step_index: index,
-                operation: self.recipe[index].op.clone(),
-                input_bytes,
-                output_bytes,
-                elapsed: started.elapsed(),
-                status,
-            });
+            self.trace.push(entry);
         }
     }
 
@@ -765,7 +779,7 @@ impl<'a> Engine<'a> {
             self.record_trace(
                 index,
                 input_bytes,
-                current.len(),
+                &current,
                 started,
                 if matches!(
                     kind.as_str(),
@@ -794,6 +808,27 @@ impl<'a> Engine<'a> {
 /// Returns [`ExecutionError`] when recipe validation, resource limits,
 /// operation lookup, argument parsing, or operation execution fails.
 pub fn execute(request: ExecutionRequest) -> Result<ExecutionOutcome, ExecutionError> {
+    execute_internal(request, None)
+}
+
+/// Execute once, observing actual step outputs in completion order.
+///
+/// Output slices are borrowed only for the callback. Callers retaining payloads
+/// must impose their own byte and entry budgets and protect sensitive data.
+/// Fork/Subsection callbacks follow their completed child actions; repeated
+/// steps retain their original recipe index. No operation is replayed.
+/// Existing metadata-only tracing remains controlled by `options.trace`.
+pub fn execute_observed(
+    request: ExecutionRequest,
+    observer: &mut dyn FnMut(&TraceEntry, &[u8]),
+) -> Result<ExecutionOutcome, ExecutionError> {
+    execute_internal(request, Some(observer))
+}
+
+fn execute_internal(
+    request: ExecutionRequest,
+    observer: Option<StepObserver<'_>>,
+) -> Result<ExecutionOutcome, ExecutionError> {
     validate_recipe(&request.recipe.steps, &request.variables)?;
     if request.options.max_steps == 0 && !request.recipe.steps.is_empty() {
         return Err(ExecutionError::StepLimitExceeded { limit: 0 });
@@ -812,6 +847,7 @@ pub fn execute(request: ExecutionRequest) -> Result<ExecutionOutcome, ExecutionE
         &request.variables,
         &request.options,
         request.input_supplied,
+        observer,
     )?;
     let output = engine.run_range(
         0,

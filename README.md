@@ -38,6 +38,13 @@ forensics, image processing, and more.
 - **Generated Read the Docs site** whose 478 operation pages are checked for
   freshness by the local release check.
 
+## Product development
+
+The active [product roadmap](docs/development/product-roadmap.md) targets a shared
+client layer, secure network server, web workbench and standalone desktop app.
+The client and bounded trace foundation are implemented; server, web and desktop
+remain planned. This checkout is not yet the complete product described there.
+
 ## Release verification
 
 rxchef is written as a portable Rust application for Linux, macOS, and Windows.
