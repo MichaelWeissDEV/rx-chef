@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
+import { createCipheriv } from 'node:crypto';
 async function selectNamed(page: Page, label: string, name: string) {
   const select = page.getByLabel(label, { exact: true });
   const value = await select.locator('option').filter({ hasText: new RegExp(`^${name} ·`) }).first().getAttribute('value');
@@ -73,12 +74,94 @@ test('graph import validation and cancellation use the real supervised server', 
     { id: 'b', source_node: 'recipe', source_port: 'data', target_node: 'output', target_port: 'data' }] };
   await page.getByLabel('Graph file').setInputFiles({ name: 'slow.rxgraph.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(definition)) });
   await expect(page.getByRole('status')).toHaveText('Graph loaded. Bind input values before running.');
+  await page.getByRole('button', {name:'Bind empty input',exact:true}).click();
   await page.getByRole('button', { name: 'Run graph', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Cancel graph', exact: true })).toBeEnabled();
+  await selectNamed(page,'Selected graph node','recipe');
+  await expect(page.getByLabel('Live graph node status')).toContainText('running');
   await page.getByRole('button', { name: 'Cancel graph', exact: true }).click();
   await expect(page.getByRole('alert')).toContainText(/cancel/i);
   await expect(page.getByRole('button', { name: 'Run graph', exact: true })).toBeEnabled();
   definition.edges.push({ id: 'cycle', source_node: 'recipe', source_port: 'data', target_node: 'recipe', target_port: 'data' });
   await page.getByLabel('Graph file').setInputFiles({ name: 'invalid.rxgraph.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(definition)) });
   await expect(page.getByRole('alert')).toContainText(/duplicate connection|cycle/i);
+});
+
+for (const change of ['input', 'node', 'port']) {
+  test(`stale graph results are discarded after ${change} edits`, async ({ page }) => {
+    await page.goto('/'); await page.getByLabel('Server Bearer Token').fill('browser-test-token-0123456789');
+    await page.getByRole('button', { name: 'Connect (this session)' }).click(); await expect(page.getByText('Operations (478)')).toBeVisible();
+    await page.getByRole('button', { name: 'Graph mode', exact: true }).click();
+    await page.getByRole('button', {name:'Bind empty input',exact:true}).click();
+    let release!: () => void; const gate = new Promise<void>(resolve => { release = resolve; });
+    let ready!: () => void; const fetched = new Promise<void>(resolve => { ready = resolve; });
+    await page.route('**/api/v1/jobs/*', async route => {
+      const response = await route.fetch(); const body = await response.json();
+      if (body.status === 'succeeded') { ready(); await gate; }
+      await route.fulfill({ response });
+    });
+    await page.getByRole('button', { name: 'Run graph', exact: true }).click(); await fetched;
+    if (change === 'input') await page.getByLabel('Graph input data').fill('new revision');
+    else if (change === 'node') await page.getByRole('button', { name: 'Delete node', exact: true }).click();
+    else { await page.getByRole('button', { name: 'Add combine', exact: true }).click(); await page.getByLabel('Combine input count').fill('3'); }
+    release(); await expect(page.getByLabel('Graph run status')).toContainText('discarded');
+    await expect(page.getByRole('tab')).toHaveCount(0);
+  });
+}
+
+test('argument and recipe nodes can be created, connected and executed through the GUI', async ({ page }) => {
+  await page.goto('/'); await page.getByLabel('Server Bearer Token').fill('browser-test-token-0123456789');
+  await page.getByRole('button', { name: 'Connect (this session)' }).click(); await expect(page.getByText('Operations (478)')).toBeVisible();
+  await page.getByRole('button', { name: 'Graph mode', exact: true }).click();
+  await input(page, 'input', '00ffc000');
+  await page.getByRole('button', { name: 'Add argument', exact: true }).click();
+  await page.getByLabel('Argument node kind').selectOption('bytes');
+  await connect(page, 'input', 'bytes argument', 'data');
+  await page.getByRole('button', { name: 'Add recipe', exact: true }).click();
+  await page.getByLabel('Recipe node operation').selectOption('to_base64'); await page.getByRole('button', { name: 'Add recipe step' }).click();
+  await page.getByLabel('Recipe node operation').selectOption('from_base64'); await page.getByRole('button', { name: 'Add recipe step' }).click();
+  await connect(page, 'bytes argument', 'recipe', 'data');
+  await connect(page, 'recipe', 'output', 'data'); // Replaces the initial incoming output edge.
+  await page.getByRole('button', { name: 'Run graph', exact: true }).click();
+  await expect(page.getByRole('tab', { name: 'output', exact: true })).toBeVisible();
+  const download = page.waitForEvent('download'); await page.getByRole('button', { name: 'Download graph output' }).click();
+  expect(await readFile((await (await download).path())!)).toEqual(Buffer.from([0, 255, 192, 0]));
+});
+
+test('AES key and IV bind as separate byte inputs with exact plaintext download', async ({ page }) => {
+  const plaintext = Buffer.from([0, 255, 192, 0, 65]); const key = Buffer.alloc(16); const iv = Buffer.alloc(16, 1);
+  const cipher = createCipheriv('aes-128-cbc', key, iv);
+  const ciphertext = Buffer.concat([cipher.update(plaintext), cipher.final()]);
+  await page.goto('/'); await page.getByLabel('Server Bearer Token').fill('browser-test-token-0123456789');
+  await page.getByRole('button', {name:'Connect (this session)'}).click(); await expect(page.getByText('Operations (478)')).toBeVisible();
+  await page.getByRole('button', {name:'Graph mode',exact:true}).click();
+  await input(page, 'input', ciphertext.toString('hex'));
+  for (const [name, bytes] of [['key',key],['iv',iv]] as const) {
+    await page.getByRole('button', {name:'Add input',exact:true}).click(); await page.getByLabel('Node name').fill(name);
+    await page.getByLabel('Graph input encoding').selectOption('hex'); await page.getByLabel('Graph input data').fill(bytes.toString('hex'));
+  }
+  await page.getByLabel('Graph operation',{exact:true}).selectOption('aes_decrypt');
+  await page.getByRole('button', {name:'Add operation',exact:true}).click();
+  await page.getByLabel('Graph argument Input',{exact:true}).selectOption('Raw');
+  await connect(page,'input','AES Decrypt','data'); await connect(page,'key','AES Decrypt','arg:key'); await connect(page,'iv','AES Decrypt','arg:iv');
+  await connect(page,'AES Decrypt','output','data');
+  await page.getByRole('button', {name:'Run graph',exact:true}).click();
+  await expect(page.getByRole('tab', {name:'output',exact:true})).toBeVisible();
+  const download = page.waitForEvent('download'); await page.getByRole('button', {name:'Download graph output'}).click();
+  expect(await readFile((await (await download).path())!)).toEqual(plaintext);
+  await selectNamed(page,'Selected graph node','AES Decrypt');
+  await expect(page.getByText('Bound from key:data',{exact:true})).toBeVisible();
+  // A byte source cannot feed an enum argument. Reject without changing the graph.
+  await connect(page,'key','AES Decrypt','arg:mode');
+  await expect(page.getByRole('alert')).toContainText('Connection rejected');
+});
+
+test('selected outputs run only the required named input branch',async({page})=>{
+  await page.goto('/');await page.getByLabel('Server Bearer Token').fill('browser-test-token-0123456789');await page.getByRole('button',{name:'Connect (this session)'}).click();await expect(page.getByText('Operations (478)')).toBeVisible();
+  await page.getByRole('button',{name:'Graph mode',exact:true}).click();await input(page,'input','00ff');
+  await page.getByRole('button',{name:'Add input',exact:true}).click();await page.getByLabel('Node name').fill('secondary');
+  await page.getByRole('button',{name:'Add output',exact:true}).click();await page.getByLabel('Node name').fill('unused');await connect(page,'secondary','unused','data');
+  await page.getByLabel('Graph output selection').selectOption('output');await page.getByRole('button',{name:'Run graph',exact:true}).click();
+  await expect(page.getByRole('tab',{name:'output',exact:true})).toBeVisible();await expect(page.getByRole('tab')).toHaveCount(1);
+  const download=page.waitForEvent('download');await page.getByRole('button',{name:'Download graph output'}).click();expect(await readFile((await (await download).path())!)).toEqual(Buffer.from([0,255]));
 });

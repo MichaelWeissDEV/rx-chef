@@ -1,4 +1,5 @@
 import type { Contracts } from './contracts';
+export const workbench_project: (data: unknown) => data is Contracts['workbench_project'];
 export const operations: (data: unknown) => data is Contracts['operations'];
 export const argument: (data: unknown) => data is Contracts['argument'];
 export const result: (data: unknown) => data is Contracts['result'];

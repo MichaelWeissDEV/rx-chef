@@ -1,6 +1,7 @@
 use super::*;
 use crate::{execution, runtime, ArgKind, Availability, SideEffect};
 use std::collections::{BTreeMap, BTreeSet};
+use unicode_normalization::UnicodeNormalization;
 
 /// Stable lexical Kahn ordering. Indices refer to the original definition.
 #[derive(Debug, Clone)]
@@ -13,15 +14,30 @@ pub struct GraphPlan {
 pub(crate) fn output_type(node: &Node) -> Option<PortType> {
     match node.kind {
         NodeKind::Output { .. } => None,
-        NodeKind::Argument { kind } => Some(PortType::Argument(kind)),
+        NodeKind::Argument { kind } => Some(argument_type(kind)),
         _ => Some(PortType::Bytes),
     }
 }
-fn argument_type(kind: ArgKind) -> PortType {
+pub fn argument_type(kind: ArgKind) -> PortType {
     match kind {
         ArgKind::Bytes | ArgKind::HexBytes | ArgKind::Base64Bytes => PortType::Bytes,
         _ => PortType::Argument(kind),
     }
+}
+
+/// Registry IDs whose control semantics belong to the Recipe Engine.
+pub fn operation_requires_recipe(id: &str) -> bool {
+    matches!(
+        id,
+        "fork"
+            | "merge"
+            | "subsection"
+            | "register"
+            | "label"
+            | "jump"
+            | "conditional_jump"
+            | "return"
+    )
 }
 
 pub(crate) fn operation_info(
@@ -36,18 +52,7 @@ pub(crate) fn operation_info(
             "unknown operation",
         )
     })?;
-    // Graph edges cannot implement recipe control flow.
-    if matches!(
-        info.id.as_str(),
-        "fork"
-            | "merge"
-            | "subsection"
-            | "register"
-            | "label"
-            | "jump"
-            | "conditional_jump"
-            | "conditional-jump"
-    ) {
+    if operation_requires_recipe(&info.id) {
         return Err(GraphError::new(
             GraphErrorKind::Validation,
             Some(node),
@@ -94,7 +99,10 @@ fn check_policy(
 }
 
 fn valid_id(id: &str) -> bool {
-    !id.is_empty() && id.len() <= 128 && !id.chars().any(char::is_control)
+    !id.is_empty()
+        && id.len() <= 128
+        && !id.chars().any(char::is_control)
+        && id.nfc().eq(id.chars())
 }
 
 /// Validate all components, including cycles and invalid ports in disconnected
@@ -150,6 +158,13 @@ pub fn validate(graph: &Graph, policy: &GraphPolicy) -> Result<GraphPlan, GraphE
     let mut ports = Vec::new();
     let mut required_ports = Vec::new();
     for (index, node) in graph.nodes.iter().enumerate() {
+        if node.label.as_ref().is_some_and(|label| !valid_id(label)) {
+            return Err(fail(
+                GraphErrorKind::Validation,
+                Some(&node.id),
+                "invalid node label",
+            ));
+        }
         if !valid_id(&node.id) || !ids.insert(node.id.as_str()) {
             return Err(fail(
                 GraphErrorKind::Validation,
@@ -213,7 +228,15 @@ pub fn validate(graph: &Graph, policy: &GraphPolicy) -> Result<GraphPlan, GraphE
                         ));
                     }
                 }
+                let mut argument_ports = BTreeSet::new();
                 for schema in info.args {
+                    if !argument_ports.insert(runtime::canonical_identifier(schema.name)) {
+                        return Err(fail(
+                            GraphErrorKind::InvalidPort,
+                            Some(&node.id),
+                            "duplicate canonical argument port ID",
+                        ));
+                    }
                     if let Some(raw) = args.get(schema.name) {
                         runtime::validate_argument(raw, schema).map_err(|_| {
                             fail(

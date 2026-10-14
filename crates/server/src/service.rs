@@ -42,6 +42,7 @@ pub const METHODS: &[&str] = &[
     "validate",
     "execute",
     "graph.validate",
+    "project.validate",
     "graph.execute",
     "magic",
     "scan",
@@ -89,6 +90,7 @@ impl AppState {
     pub fn capabilities(&self) -> Result<Capabilities, ClientError> {
         let mut capabilities = self.local.capabilities()?;
         capabilities.jobs = true;
+        capabilities.graph_events = true;
         Ok(capabilities)
     }
 
@@ -128,6 +130,7 @@ impl AppState {
             "search" => encode(self.local.search(&text(&input, "query")?)?),
             "validate" => self.run(EngineTask::Validate(params(input)?)).await,
             "graph.validate" => self.run(EngineTask::GraphValidate(params(input)?)).await,
+            "project.validate" => self.run(EngineTask::ProjectValidate(params(input)?)).await,
             "graph.execute" => self.run(EngineTask::GraphExecute(params(input)?)).await,
             "execute" => self.run(EngineTask::Execute(params(input)?)).await,
             "magic" => self.run(EngineTask::Magic(params(input)?)).await,
@@ -146,6 +149,7 @@ impl AppState {
         match self.jobs.run_to_completion(task).await? {
             TaskResult::Execution(r) => encode(r),
             TaskResult::Graph(r) => encode(r),
+            TaskResult::Project(project) => encode(project),
             TaskResult::Validated => Ok(Value::Null),
             TaskResult::Magic(r) => encode(r),
             TaskResult::Scan(r) => encode(r),

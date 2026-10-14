@@ -1,6 +1,7 @@
 .git
 target
 fuzz/target
+apps/web/node_modules
 site
 .rxchef
 *.crate

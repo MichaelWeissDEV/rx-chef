@@ -247,7 +247,7 @@ cargo run --example generate_operation_docs -- --check
 mkdocs build --strict
 ```
 
-The current v0.1.0 workspace registers 478 operations. Quality evidence and
+The current v0.2.0-rc.1 workspace registers 478 operations. Quality evidence and
 remaining unknown parity are published in the generated operation matrix; the
 repository does not equate registration with complete verification.
 

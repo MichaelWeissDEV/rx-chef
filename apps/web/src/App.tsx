@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useMemo, useCallback, useReducer } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useReducer, useRef } from 'react';
 import { HttpRxchefClient } from './clients/http';
 import { TauriRxchefClient, configureConnection, importNativeFile } from './clients/tauri';
-import { OperationDescriptor, RecipeStep, ExecuteResponse, RxchefClient } from './types';
+import { OperationDescriptor, RecipeStep, ExecuteResponse, RxchefClient, Graph, WorkbenchProject, WorkbenchRun } from './types';
 import { OperationsPanel } from './components/OperationsPanel';
 import { RecipePanel } from './components/RecipePanel';
 import { InputPanel } from './components/InputPanel';
@@ -15,7 +15,10 @@ import { historyReducer } from './lib/history';
 import { CommandPalette } from './components/CommandPalette';
 import { RecipeTools } from './components/RecipeTools';
 const GraphEditor = React.lazy(() => import('./features/graph/GraphEditor').then(module => ({ default: module.GraphEditor })));
+import { useTaskExecution } from './hooks/useTaskExecution';
 import { errorMessage } from './lib/contracts';
+import { ProjectPanel } from './components/ProjectPanel';
+import { starterGraph } from './features/graph/model';
 
 export const App: React.FC = () => {
   const [mode, setMode] = useState<'list' | 'graph'>('list');
@@ -43,13 +46,19 @@ export const App: React.FC = () => {
   const [operations, setOperations] = useState<OperationDescriptor[]>([]);
   const [history, dispatch] = useReducer(historyReducer<RecipeStep[]>, { past: [], present: [{ op: 'To Base64', args: [] }], future: [] });
   const recipe = history.present;
+  const [project, setProject] = useState<WorkbenchProject>(() => ({ version:1,name:'Workspace',graphs:[starterGraph()],recipes:[{name:'Recipe 1',steps:[]}],settings:{theme:'dark',selected_graph:'untitled',selected_recipe:'Recipe 1'},input_files:[],history:[] }));
+  const [documentVersion, setDocumentVersion] = useState(0);
+  const [projectEpoch,setProjectEpoch] = useState(0);
+  const projectRef = useRef(project); projectRef.current = project;
+  const currentProject = useMemo<WorkbenchProject>(() => ({ ...project, settings:{...project.settings,theme}, recipes:project.recipes?.map(saved => saved.name === project.settings?.selected_recipe ? {...saved,steps:recipe.map(step=>({op:step.op,args:step.args,enabled:!step.disabled,breakpoint:step.breakpoint ?? false}))} : saved) }), [project,recipe,theme]);
   const setRecipe = (value: RecipeStep[] | ((steps: RecipeStep[]) => RecipeStep[])) => dispatch({ type: 'set', value });
   const [input, setInput] = useState<string>('Hello CyberChef from rx-chef!');
   const [inputType, setInputType] = useState<'text' | 'hex' | 'base64'>('text');
   const [outputViewMode, setOutputViewMode] = useState<'text' | 'hex' | 'base64'>('text');
   const [response, setResponse] = useState<ExecuteResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [isExecuting, setIsExecuting] = useState<boolean>(false);
+  const recipeExecution = useTaskExecution(client);
+  const isExecuting = recipeExecution.running;
   const [palette, setPalette] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -101,7 +110,6 @@ export const App: React.FC = () => {
   // Execute Recipe
   const handleBake = useCallback(async () => {
     if (isExecuting) return;
-    setIsExecuting(true);
     setError(null);
 
     let sourceIndices: number[] = [];
@@ -112,18 +120,18 @@ export const App: React.FC = () => {
       const request = { input_base64, recipe: steps, trace: {
         max_entries: 64, max_bytes_per_entry: 512, max_total_bytes: 65536,
       }};
-      await client.validate(request);
-      const res = await client.execute(request);
+      const outcome = await recipeExecution.run({ method: 'execute', params: request });
+      if (!outcome) return;
+      if (outcome.kind !== 'execution') throw new Error('Worker returned the wrong result.');
+      const res = outcome.value;
       res.trace = res.trace.map(entry => ({ ...entry, step_index: sourceIndices[entry.step_index] }));
       setResponse(res);
     } catch (err: unknown) {
       const step = err && typeof err === 'object' && 'step' in err && typeof err.step === 'number' ? sourceIndices[err.step - 1] : undefined;
       setError(`${step === undefined ? '' : `Step ${step + 1}: `}${errorMessage(err)}`);
       setResponse(null);
-    } finally {
-      setIsExecuting(false);
     }
-  }, [client, input, inputType, recipe, isExecuting]);
+  }, [client, input, inputType, recipe, isExecuting, recipeExecution]);
 
   useEffect(() => {
     const shortcut = (event: KeyboardEvent) => {
@@ -190,6 +198,39 @@ export const App: React.FC = () => {
       setInputType('base64');
     } catch (error) { setError(errorMessage(error)); }
   };
+  const graphChanged = useCallback((graph:Graph) => {
+    const current = projectRef.current; const selected = current.settings?.selected_graph;
+    if (current.graphs?.some(saved=>saved.id===graph.id && saved.id!==selected)) {setError('Graph name already exists in this project. Choose another name.');return;}
+    setProject(previous=>{
+      const index = previous.graphs?.findIndex(saved=>saved.id===previous.settings?.selected_graph) ?? -1;
+      const before=index>=0?previous.graphs?.[index]:undefined;
+      const inputNames=new Map(before?.nodes.flatMap(node=>{
+        if(node.type!=='input')return [];const after=graph.nodes.find(updated=>updated.id===node.id&&updated.type==='input');
+        return after?.type==='input'?[[node.name,after.name] as const]:[];
+      })??[]);
+      const graphs=[...(previous.graphs ?? [])]; if(index>=0) graphs[index]=graph;else graphs.push(graph);
+      const input_files=previous.input_files?.flatMap(reference=>reference.graph_id!==before?.id?[reference]:inputNames.has(reference.input_name)?[{...reference,graph_id:graph.id,input_name:inputNames.get(reference.input_name)!}]:[]);
+      return {...previous,graphs,input_files,settings:{...previous.settings,selected_graph:graph.id}};
+    });
+  }, []);
+  const graphRun = useCallback((run:WorkbenchRun) => {setProject(previous=>({...previous,history:[...(previous.history??[]).slice(-999),run]}));}, []);
+  const openProject = (next:WorkbenchProject) => {
+    setProjectEpoch(value=>value+1);
+    void recipeExecution.cancel().catch(error=>setError(errorMessage(error)));
+    const graphs=next.graphs?.length ? next.graphs : [starterGraph()];
+    const recipes=next.recipes?.length ? next.recipes : [{name:'Recipe 1',steps:[]}];
+    const graphId=next.settings?.selected_graph ?? graphs[0].id; const recipeName=next.settings?.selected_recipe ?? recipes[0].name;
+    setProject({...next,graphs,recipes,settings:{...next.settings,selected_graph:graphId,selected_recipe:recipeName}});
+    dispatch({type:'reset',value:recipes.find(saved=>saved.name===recipeName)!.steps.map(step=>({op:step.op,args:step.args ?? [],disabled:step.enabled===false,breakpoint:step.breakpoint ?? false}))});
+    setTheme(next.settings?.theme ?? 'dark');setInput('');setResponse(null);setError(null);setGraphOpened(true);setDocumentVersion(v=>v+1);
+  };
+  const selectProjectRecipe = (next:WorkbenchProject,name:string) => {
+    void recipeExecution.cancel().catch(error=>setError(errorMessage(error)));
+    const saved=next.recipes?.find(recipe=>recipe.name===name);if(!saved)return;
+    setProject({...next,settings:{...next.settings,selected_recipe:name}});
+    dispatch({type:'reset',value:saved.steps.map(step=>({op:step.op,args:step.args??[],disabled:step.enabled===false,breakpoint:step.breakpoint??false}))});
+    setInput('');setResponse(null);setError(null);setMode('list');
+  };
 
   return (
     <>
@@ -200,7 +241,7 @@ export const App: React.FC = () => {
             rx-chef
           </span>
           <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '4px' }}>
-            v0.1.0 {isTauri ? (connectedRemote ? '(Desktop / Remote)' : '(Desktop / Local)') : '(Web / Remote)'}
+            v0.2.0-rc.1 {isTauri ? (connectedRemote ? '(Desktop / Remote)' : '(Desktop / Local)') : '(Web / Remote)'}
           </span>
         </div>
 
@@ -224,11 +265,17 @@ export const App: React.FC = () => {
           </button>
         </div>
       </header>
+      <ProjectPanel project={currentProject} client={client} onOpen={openProject}
+        onRename={name=>setProject(previous=>({...previous,name}))}
+        onSelectGraph={id=>{setProject({...currentProject,settings:{...currentProject.settings,selected_graph:id}});setDocumentVersion(v=>v+1);setGraphOpened(true);setMode('graph');}}
+        onSelectRecipe={name=>selectProjectRecipe(currentProject,name)}
+        onAddGraph={()=>{const graph={...starterGraph(),id:`graph-${crypto.randomUUID().slice(0,8)}`};setProject({...currentProject,graphs:[...(currentProject.graphs??[]),graph],settings:{...currentProject.settings,selected_graph:graph.id}});setDocumentVersion(v=>v+1);setGraphOpened(true);setMode('graph');}}
+        onAddRecipe={()=>{const name=`Recipe ${crypto.randomUUID().slice(0,8)}`;selectProjectRecipe({...currentProject,recipes:[...(currentProject.recipes??[]),{name,steps:[]}]},name);}} />
 
       {mode === 'list' && palette && <CommandPalette operations={operations} onSelect={handleAddOperation} onClose={() => setPalette(false)} />}
       {mode === 'list' && <button className="palette-toggle btn btn-secondary" onClick={() => setPalette(true)}>Commands · ⌘/Ctrl K</button>}
       <nav className="workbench-mode" aria-label="Workbench mode"><button onClick={() => setMode('list')} aria-pressed={mode === 'list'}>List mode</button><button onClick={() => { setGraphOpened(true); setMode('graph'); }} aria-pressed={mode === 'graph'}>Graph mode</button></nav>
-      <div hidden={mode !== 'graph'}>{graphOpened && <React.Suspense fallback={<p role="status">Loading graph editor…</p>}><GraphEditor client={client} operations={operations} theme={theme} visible={mode === 'graph'} /></React.Suspense>}</div>
+      <div hidden={mode !== 'graph'}>{graphOpened && <React.Suspense fallback={<p role="status">Loading graph editor…</p>}><GraphEditor client={client} operations={operations} theme={theme} visible={mode === 'graph'} document={project.graphs?.find(graph=>graph.id===project.settings?.selected_graph)} documentVersion={documentVersion} projectEpoch={projectEpoch} onDocumentChange={graphChanged} onRun={graphRun} /></React.Suspense>}</div>
       {mode === 'list' && <><RecipeTools recipe={recipe} onLoad={setRecipe} onError={setError} undo={() => dispatch({ type: 'undo' })} redo={() => dispatch({ type: 'redo' })} canUndo={!!history.past.length} canRedo={!!history.future.length} />
       {/* Main workbench */}
       <main className="workbench-main">
@@ -251,6 +298,8 @@ export const App: React.FC = () => {
           onToggleDisabled={handleToggleDisabled}
           onUpdateArg={handleUpdateArg}
           onBake={handleBake}
+          onCancel={() => { void recipeExecution.cancel().catch(error => setError(errorMessage(error))); }}
+          canCancel={recipeExecution.canCancel}
           onClear={() => setRecipe([])}
           isExecuting={isExecuting}
         />

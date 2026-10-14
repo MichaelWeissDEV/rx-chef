@@ -658,6 +658,22 @@ pub(crate) struct ProjectArgs {
 
 #[derive(Debug, Subcommand)]
 pub(crate) enum ProjectAction {
+    /// Create a portable workbench project without payloads or credentials.
+    New {
+        name: String,
+        #[arg(long)]
+        destination: PathBuf,
+    },
+    /// Validate a portable workbench project without opening referenced files.
+    Validate { file: PathBuf },
+    /// Print a validated portable workbench project as JSON.
+    Inspect { file: PathBuf },
+    /// Export a validated portable project to a private atomic file.
+    Export {
+        file: PathBuf,
+        #[arg(long)]
+        destination: PathBuf,
+    },
     /// Create an explicit `.rxchef` store in the current directory.
     Init,
     /// Run a CTF project file (YAML/JSON).
@@ -673,6 +689,14 @@ pub(crate) enum ProjectAction {
 
 #[derive(Debug, Subcommand)]
 pub(crate) enum GraphCommand {
+    /// Manage definitions in the private project/global graph store.
+    Store {
+        /// Use the global store instead of the active project.
+        #[arg(long)]
+        global: bool,
+        #[command(subcommand)]
+        command: GraphStoreCommand,
+    },
     /// Validate a graph definition and report disconnected editor nodes as JSON.
     Validate {
         #[arg(long)]
@@ -699,6 +723,9 @@ pub(crate) enum GraphCommand {
         /// Complete results, per-output errors and node metadata as JSON.
         #[arg(long)]
         json: bool,
+        /// Record only status, duration and byte counts in the private history store.
+        #[arg(long)]
+        history: bool,
         #[arg(long)]
         server: Option<String>,
         /// Bearer credential; RXCHEF_TOKEN is read when the flag is omitted.
@@ -723,5 +750,35 @@ pub(crate) enum GraphCommand {
         graph: PathBuf,
         #[arg(long)]
         destination: PathBuf,
+    },
+}
+
+#[derive(Debug, Subcommand)]
+pub(crate) enum GraphStoreCommand {
+    List,
+    Save {
+        name: String,
+        #[arg(long)]
+        graph: PathBuf,
+        /// Explicitly replace an existing definition.
+        #[arg(long)]
+        replace: bool,
+    },
+    Load {
+        name: String,
+        /// Write JSON to a file; otherwise prints the definition on stdout.
+        #[arg(long)]
+        destination: Option<PathBuf>,
+    },
+    Rename {
+        source: String,
+        target: String,
+    },
+    Duplicate {
+        source: String,
+        target: String,
+    },
+    Delete {
+        name: String,
     },
 }

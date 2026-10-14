@@ -1,6 +1,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 use base64::{engine::general_purpose::STANDARD, Engine as _};
-use rxchef_client::{ClientError, EngineClient, ErrorKind, LocalEngineClient, RemoteEngineClient};
+use rxchef_client::{
+    ClientError, EngineClient, ErrorKind, RemoteEngineClient, SupervisedEngineClient,
+};
 use serde_json::Value;
 use std::{
     sync::{Arc, Mutex},
@@ -9,10 +11,20 @@ use std::{
 use tauri::State;
 use tauri_plugin_dialog::DialogExt;
 
+#[cfg(test)]
+use rxchef_client::LocalEngineClient;
+
 type Client = Arc<dyn EngineClient + Send + Sync>;
+struct JobRoute {
+    client: Client,
+    _permit: tokio::sync::OwnedSemaphorePermit,
+}
 struct Backend {
     client: Mutex<Client>,
     slots: Arc<tokio::sync::Semaphore>,
+    local: Arc<SupervisedEngineClient>,
+    jobs: Mutex<std::collections::BTreeMap<String, JobRoute>>,
+    job_slots: Arc<tokio::sync::Semaphore>,
 }
 fn error(message: &str) -> ClientError {
     ClientError::new(ErrorKind::InvalidInput, message)
@@ -44,6 +56,7 @@ fn dispatch(client: &dyn EngineClient, method: &str, params: Value) -> Result<Va
             client.validate_graph(&params!())?;
             Ok(Value::Null)
         }
+        "project_validate" => encode(client.validate_project(params!())?),
         "graph_execute" => encode(client.execute_graph(params!())?),
         "execute" => encode(client.execute(params!())?),
         "magic" => encode(client.magic(params!())?),
@@ -68,17 +81,69 @@ async fn engine_call(
         state.slots.clone().try_acquire_owned().map_err(|_| {
             ClientError::new(ErrorKind::Busy, "Desktop execution capacity exhausted")
         })?;
+    let job_id = params.get("id").and_then(Value::as_str).map(str::to_owned);
+    let job_client = job_id.as_ref().and_then(|id| {
+        state
+            .jobs
+            .lock()
+            .ok()?
+            .get(id)
+            .map(|route| route.client.clone())
+    });
+    let job_permit = if method == "submit_job" {
+        Some(state.job_slots.clone().try_acquire_owned().map_err(|_| {
+            ClientError::new(
+                ErrorKind::Busy,
+                "Desktop job registry capacity exhausted; collect or cancel previous jobs",
+            )
+        })?)
+    } else {
+        None
+    };
     let client = state
         .client
         .lock()
         .map_err(|_| error("Backend unavailable"))?
         .clone();
-    tauri::async_runtime::spawn_blocking(move || {
+    let client = job_client.unwrap_or(client);
+    let remembered = client.clone();
+    let job_method = method.clone();
+    let response = tauri::async_runtime::spawn_blocking(move || {
         let _permit = permit;
         dispatch(client.as_ref(), &method, params)
     })
     .await
-    .map_err(|_| error("Engine task failed"))?
+    .map_err(|_| error("Engine task failed"))??;
+    if job_method == "submit_job" {
+        if let Some(id) = response.get("id").and_then(Value::as_str) {
+            state
+                .jobs
+                .lock()
+                .map_err(|_| error("Job registry unavailable"))?
+                .insert(
+                    id.to_owned(),
+                    JobRoute {
+                        client: remembered,
+                        _permit: job_permit.expect("submit lease"),
+                    },
+                );
+        }
+    }
+    if matches!(job_method.as_str(), "get_job" | "cancel_job")
+        && !matches!(
+            response.get("status").and_then(Value::as_str),
+            Some("queued" | "running")
+        )
+    {
+        if let Some(id) = job_id {
+            state
+                .jobs
+                .lock()
+                .map_err(|_| error("Job registry unavailable"))?
+                .remove(&id);
+        }
+    }
+    Ok(response)
 }
 #[tauri::command]
 async fn configure_connection(
@@ -86,6 +151,7 @@ async fn configure_connection(
     url: Option<String>,
     token: Option<String>,
 ) -> Result<(), ClientError> {
+    let local = state.local.clone();
     let client: Client =
         tauri::async_runtime::spawn_blocking(move || -> Result<Client, ClientError> {
             match url {
@@ -95,11 +161,24 @@ async fn configure_connection(
                     remote.capabilities()?;
                     Ok(Arc::new(remote))
                 }
-                _ => Ok(Arc::new(LocalEngineClient::default())),
+                _ => Ok(local),
             }
         })
         .await
         .map_err(|_| error("Connection failed"))??;
+    let jobs = std::mem::take(
+        &mut *state
+            .jobs
+            .lock()
+            .map_err(|_| error("Job registry unavailable"))?,
+    );
+    tauri::async_runtime::spawn_blocking(move || {
+        for (id, route) in jobs {
+            let _ = route.client.cancel_job(&id);
+        }
+    })
+    .await
+    .map_err(|_| error("Session cancellation failed"))?;
     *state
         .client
         .lock()
@@ -107,7 +186,14 @@ async fn configure_connection(
     Ok(())
 }
 #[tauri::command]
-async fn import_file(app: tauri::AppHandle) -> Result<Option<String>, ClientError> {
+async fn import_file(
+    app: tauri::AppHandle,
+    limit: Option<usize>,
+) -> Result<Option<String>, ClientError> {
+    let limit = limit.unwrap_or(8 << 20);
+    if limit == 0 || limit > 16 << 20 {
+        return Err(error("Invalid file import limit"));
+    }
     tauri::async_runtime::spawn_blocking(move || {
         let Some(path) = app.dialog().file().blocking_pick_file() else {
             return Ok(None);
@@ -118,11 +204,11 @@ async fn import_file(app: tauri::AppHandle) -> Result<Option<String>, ClientErro
         use std::io::Read;
         let file = std::fs::File::open(path).map_err(|_| error("Cannot open selected file"))?;
         let mut bytes = Vec::new();
-        file.take((8 << 20) + 1)
+        file.take(limit as u64 + 1)
             .read_to_end(&mut bytes)
             .map_err(|_| error("Cannot read selected file"))?;
-        if bytes.len() > 8 << 20 {
-            return Err(error("File exceeds 8 MiB input limit"));
+        if bytes.len() > limit {
+            return Err(error("File exceeds selected import limit"));
         }
         Ok(Some(STANDARD.encode(bytes)))
     })
@@ -131,12 +217,15 @@ async fn import_file(app: tauri::AppHandle) -> Result<Option<String>, ClientErro
 }
 #[tauri::command]
 async fn export_file(app: tauri::AppHandle, data: String) -> Result<(), ClientError> {
-    if data.len() > 12 << 20 {
+    if data.len() > 24 << 20 {
         return Err(error("Output exceeds export limit"));
     }
     let bytes = STANDARD
         .decode(data)
         .map_err(|_| error("Invalid output bytes"))?;
+    if bytes.len() > 16 << 20 {
+        return Err(error("Output exceeds 16 MiB export limit"));
+    }
     tauri::async_runtime::spawn_blocking(move || {
         let Some(path) = app
             .dialog()
@@ -149,23 +238,73 @@ async fn export_file(app: tauri::AppHandle, data: String) -> Result<(), ClientEr
         let path = path
             .into_path()
             .map_err(|_| error("Unsupported file location"))?;
-        std::fs::write(path, bytes).map_err(|_| error("Cannot write selected file"))
+        write_export(&path, &bytes)
     })
     .await
     .map_err(|_| error("File dialog failed"))?
 }
+fn write_export(path: &std::path::Path, bytes: &[u8]) -> Result<(), ClientError> {
+    use std::io::Write;
+    let parent = path
+        .parent()
+        .ok_or_else(|| error("Invalid export location"))?;
+    let mut temporary =
+        tempfile::NamedTempFile::new_in(parent).map_err(|_| error("Cannot create export file"))?;
+    temporary
+        .write_all(bytes)
+        .and_then(|_| temporary.as_file().sync_all())
+        .map_err(|_| error("Cannot write selected file"))?;
+    temporary
+        .persist(path)
+        .map_err(|_| error("Cannot replace selected file"))?;
+    Ok(())
+}
 #[cfg(feature = "ui-test")]
 #[tauri::command]
-fn ui_test_result(app: tauri::AppHandle, result: Value) {
+fn ui_test_progress(stage: String) {
     if let Some(path) =
         std::env::args().find_map(|arg| arg.strip_prefix("--ui-test-output=").map(str::to_owned))
     {
+        let _ = std::fs::write(format!("{path}.progress"), stage);
+    }
+}
+#[cfg(feature = "ui-test")]
+#[tauri::command]
+fn ui_test_result(app: tauri::AppHandle, mut result: Value) {
+    if let Some(path) =
+        std::env::args().find_map(|arg| arg.strip_prefix("--ui-test-output=").map(str::to_owned))
+    {
+        result["executable"] = std::env::current_exe()
+            .map(|path| path.to_string_lossy().into_owned())
+            .unwrap_or_default()
+            .into();
         let passed = result["passed"] == true;
         let _ = std::fs::write(path, serde_json::to_vec_pretty(&result).unwrap());
         app.exit(if passed { 0 } else { 1 });
     }
 }
 fn main() {
+    if std::env::args().nth(1).as_deref() == Some("--internal-worker") {
+        std::process::exit(if rxchef_client::worker::run().is_ok() {
+            0
+        } else {
+            70
+        });
+    }
+    let worker_runtime = tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()
+        .expect("Cannot start native worker runtime");
+    let local = Arc::new(
+        SupervisedEngineClient::new(
+            rxchef_client::jobs::WorkerConfig::local(
+                std::env::current_exe().expect("Cannot locate desktop executable"),
+            ),
+            worker_runtime.handle().clone(),
+        )
+        .expect("Cannot initialize local engine"),
+    );
+    let shutdown_local = local.clone();
     let builder = tauri::Builder::default();
     #[cfg(feature = "ui-test")]
     let builder = builder.on_page_load(|webview, payload| {
@@ -181,7 +320,8 @@ fn main() {
         configure_connection,
         import_file,
         export_file,
-        ui_test_result
+        ui_test_result,
+        ui_test_progress
     ]);
     #[cfg(not(feature = "ui-test"))]
     let builder = builder.invoke_handler(tauri::generate_handler![
@@ -194,15 +334,30 @@ fn main() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_window_state::Builder::default().build())
         .manage(Backend {
-            client: Mutex::new(Arc::new(LocalEngineClient::default())),
+            client: Mutex::new(local.clone()),
+            local,
+            jobs: Mutex::default(),
+            job_slots: Arc::new(tokio::sync::Semaphore::new(64)),
             slots: Arc::new(tokio::sync::Semaphore::new(4)),
         })
         .run(tauri::generate_context!())
         .expect("Cannot start rx-chef desktop");
+    worker_runtime.block_on(shutdown_local.shutdown());
 }
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn exports_replace_existing_files_with_exact_bytes() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("output.bin");
+        std::fs::write(&path, b"old data").unwrap();
+        let bytes: Vec<u8> = (0..=255).collect();
+        write_export(&path, &bytes).unwrap();
+        assert_eq!(std::fs::read(&path).unwrap(), bytes);
+        assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 1);
+        assert!(write_export(&directory.path().join("missing/output.bin"), b"data").is_err());
+    }
     #[test]
     fn local_ipc_roundtrip_needs_no_server() {
         let bytes: Vec<u8> = (0..=255).collect();

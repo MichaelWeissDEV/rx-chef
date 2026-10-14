@@ -12,9 +12,12 @@ import {
   ScanFinding,
   ScanRequest,
 } from '../types';
-import { parseContract } from '../lib/contracts';
+import { parseContract, parseCapabilities } from '../lib/contracts';
 
 export class HttpRxchefClient implements RxchefClient {
+  async validateProject(project: import('../types').WorkbenchProject) {
+    return parseContract('workbench_project', await this.request('projects/validate', { method:'POST', body:JSON.stringify(project) }));
+  }
   private baseUrl: string;
   private token: string | null;
 
@@ -73,7 +76,7 @@ export class HttpRxchefClient implements RxchefClient {
     return parseContract('graph_response', await this.request('graphs/execute', { method: 'POST', body: JSON.stringify(request) }));
   }
   async capabilities(): Promise<Capabilities> {
-    return parseContract('capabilities', await this.request('capabilities'));
+    return parseCapabilities(await this.request('capabilities'));
   }
 
   async operations(): Promise<OperationDescriptor[]> {

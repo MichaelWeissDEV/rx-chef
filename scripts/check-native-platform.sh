@@ -25,7 +25,7 @@ cargo run --locked --package xtask -- audit-operations
 cargo run --locked --package xtask -- docs --check
 cargo run --locked --example generate_operation_docs -- --check
 mkdocs build --strict
-cargo build --locked --release -p rxchef-cli -p rxchef-tui -p rxchef
+cargo build --locked --release -p rxchef-cli -p rxchef-tui -p rxchef -p rxchef-server
 
 case "$(uname -s)" in
     MINGW*|MSYS*|CYGWIN*)
@@ -41,5 +41,11 @@ esac
 "$rxchef_binary" --version
 "$rxchef_binary" operations --all --json >/dev/null
 "$python_command" docker/server-smoke.py "$rxchef_binary"
+case "$(uname -s)" in
+    Darwin|Linux)
+        "$python_command" scripts/tui-graph-smoke.py target/release/rxchef_tui --server-binary target/release/rxchef-server
+        ;;
+    *) echo "NOT TESTED: POSIX TUI PTY smoke; native Windows console testing required" ;;
+esac
 
 echo "==> Native platform gate passed"

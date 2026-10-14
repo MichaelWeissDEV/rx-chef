@@ -140,13 +140,23 @@ impl LocalEngineClient {
         &self,
         request: GraphRequest,
     ) -> Result<GraphResult, ClientError> {
+        self.execute_graph_observed(request, None)
+    }
+    pub fn execute_graph_observed(
+        &self,
+        request: GraphRequest,
+        observer: Option<std::sync::Arc<dyn Fn(graph::GraphEvent) + Send + Sync>>,
+    ) -> Result<GraphResult, ClientError> {
         graph::validate(&request.graph, &self.graph_policy())?;
         Ok(graph::execute(
             &request.graph,
             self.graph_inputs(&request)?,
             &request.outputs,
             &self.graph_policy(),
-            &graph::ExecutionControl::default(),
+            &graph::ExecutionControl {
+                observer,
+                ..Default::default()
+            },
         )?)
     }
 }

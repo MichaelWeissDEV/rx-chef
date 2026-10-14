@@ -8,6 +8,34 @@ use crate::steps::{self, Step};
 
 pub(crate) fn cmd_project(a: ProjectArgs) -> Result<(), String> {
     match a.action {
+        ProjectAction::New { name, destination } => store::workbench::WorkbenchProject::new(name)
+            .save(&destination)
+            .map_err(|e| e.to_string()),
+        ProjectAction::Validate { file } => {
+            let project =
+                store::workbench::WorkbenchProject::load(&file).map_err(|e| e.to_string())?;
+            println!(
+                "{}",
+                serde_json::json!({"valid":true,"graphs":project.graphs.len(),"recipes":project.recipes.len(),"external_files":project.input_files.len(),"history":project.history.len()})
+            );
+            Ok(())
+        }
+        ProjectAction::Inspect { file } => {
+            let project =
+                store::workbench::WorkbenchProject::load(&file).map_err(|e| e.to_string())?;
+            std::io::Write::write_all(
+                &mut std::io::stdout().lock(),
+                &project.to_json().map_err(|e| e.to_string())?,
+            )
+            .map_err(|e| e.to_string())?;
+            println!();
+            Ok(())
+        }
+        ProjectAction::Export { file, destination } => {
+            store::workbench::WorkbenchProject::load(&file)
+                .and_then(|project| project.save(&destination))
+                .map_err(|e| e.to_string())
+        }
         ProjectAction::Init => {
             let path = store::init_project().map_err(|error| error.to_string())?;
             println!("Initialized rxchef project at '{}'.", path.display());

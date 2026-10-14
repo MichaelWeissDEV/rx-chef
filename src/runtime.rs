@@ -410,6 +410,16 @@ pub fn validate_argument(raw: &str, schema: &ArgSchema) -> Result<ArgValue, Runt
     Ok(value)
 }
 
+/// Check argument syntax independently of a consuming schema's choices/bounds.
+pub fn validate_argument_kind(raw: &str, kind: ArgKind) -> Result<(), RuntimeError> {
+    parse_schema_argument(raw, kind)
+        .map(|_| ())
+        .map_err(|_| RuntimeError::InvalidArgument {
+            name: "adapter".into(),
+            reason: "value does not match argument kind".into(),
+        })
+}
+
 fn parse_schema_argument(raw: &str, kind: ArgKind) -> Result<ArgValue, String> {
     if let Some(prefix) = typed_prefix(raw) {
         if !prefix_is_compatible_with_kind(prefix, kind) {

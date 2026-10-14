@@ -10,13 +10,14 @@ set -euo pipefail
 
 cd /src
 
-if [[ "$(uname -m)" != "x86_64" ]]; then
-    echo "release check requires Linux x86_64, found $(uname -m)" >&2
-    exit 1
-fi
+case "$(uname -m)" in
+    x86_64) gate_mode=linux ;;
+    aarch64) gate_mode=linux-arm ;;
+    *) echo "unsupported release-check architecture: $(uname -m)" >&2; exit 1 ;;
+esac
 
 export CARGO_TARGET_DIR=/tmp/rxchef-target
 export RXCHEF_HOME=/tmp/rxchef-home
 mkdir -p "$RXCHEF_HOME"
 
-exec /src/scripts/release-gates.sh linux "$@"
+exec /src/scripts/release-gates.sh "$gate_mode" "$@"

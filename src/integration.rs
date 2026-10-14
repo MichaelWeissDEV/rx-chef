@@ -15,7 +15,7 @@ pub use crate::execution::RecipeStep;
 use crate::{execution, runtime};
 
 /// Current version of the JSONL integration protocol.
-pub const PROTOCOL_VERSION: u32 = 1;
+pub const PROTOCOL_VERSION: u32 = 2;
 /// Default maximum size of one JSONL request, excluding the newline.
 pub const DEFAULT_MAX_REQUEST_BYTES: usize = 1024 * 1024;
 
@@ -23,6 +23,9 @@ pub const DEFAULT_MAX_REQUEST_BYTES: usize = 1024 * 1024;
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ArgumentDescriptor {
+    /// Authoritative graph handle ID; clients must not reimplement normalization.
+    pub graph_port_id: String,
+    pub graph_port_type: crate::graph::PortType,
     pub name: String,
     pub description: String,
     pub default: String,
@@ -38,6 +41,8 @@ pub struct ArgumentDescriptor {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct OperationDescriptor {
+    /// False for operations that must be embedded in a Recipe node.
+    pub graph_operation: bool,
     pub name: String,
     pub id: String,
     pub aliases: Vec<String>,
@@ -103,6 +108,7 @@ pub fn operations() -> Result<Vec<OperationDescriptor>, String> {
 pub fn describe(operation: &str) -> Result<OperationDescriptor, String> {
     let info = runtime::operation_info(operation)?;
     Ok(OperationDescriptor {
+        graph_operation: !crate::graph::operation_requires_recipe(&info.id),
         name: info.name.to_string(),
         id: info.id.clone(),
         aliases: Vec::new(),
@@ -136,6 +142,8 @@ pub fn describe(operation: &str) -> Result<OperationDescriptor, String> {
             .args
             .iter()
             .map(|arg| ArgumentDescriptor {
+                graph_port_id: format!("arg:{}", runtime::canonical_identifier(arg.name)),
+                graph_port_type: crate::graph::argument_type(arg.kind),
                 name: arg.name.to_string(),
                 description: arg.description.to_string(),
                 default: arg.default_value.to_string(),

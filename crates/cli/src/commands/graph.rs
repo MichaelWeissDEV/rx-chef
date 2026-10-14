@@ -1,5 +1,9 @@
 //! Graph commands bind local files to named byte inputs. Paths never cross the API.
-use crate::{cli::GraphCommand, error::CliError, output};
+use crate::{
+    cli::{GraphCommand, GraphStoreCommand},
+    error::CliError,
+    output,
+};
 use base64::{engine::general_purpose::STANDARD, Engine as _};
 use rxchef::graph::{Graph, GraphPolicy};
 use rxchef_client::{
@@ -37,8 +41,71 @@ fn json(value: &impl serde::Serialize) -> Result<(), CliError> {
     println!();
     Ok(())
 }
+fn destination_key(path: &Path) -> Result<std::path::PathBuf, CliError> {
+    let parent = path
+        .parent()
+        .filter(|parent| !parent.as_os_str().is_empty())
+        .unwrap_or(Path::new("."));
+    let name = path
+        .file_name()
+        .ok_or_else(|| CliError::InvalidInput("invalid output destination".into()))?;
+    let absolute = parent
+        .canonicalize()
+        .map_err(|error| CliError::StoreIo(error.to_string()))?
+        .join(name);
+    #[cfg(any(target_os = "macos", windows))]
+    {
+        Ok(std::path::PathBuf::from(
+            absolute.to_string_lossy().to_lowercase(),
+        ))
+    }
+    #[cfg(not(any(target_os = "macos", windows)))]
+    {
+        Ok(absolute)
+    }
+}
 pub(crate) fn cmd_graph(command: GraphCommand) -> Result<(), CliError> {
     match command {
+        GraphCommand::Store { global, command } => {
+            let scope = if global {
+                rxchef_store::Scope::Global
+            } else {
+                rxchef_store::default_scope()
+            };
+            let repository = rxchef_store::GraphRepository::in_scope(scope)
+                .map_err(|e| CliError::StoreIo(e.to_string()))?;
+            let stored = |error: rxchef_store::StoreError| CliError::StoreIo(error.to_string());
+            match command {
+                GraphStoreCommand::List => json(&repository.list().map_err(stored)?),
+                GraphStoreCommand::Save {
+                    name,
+                    graph,
+                    replace,
+                } => repository
+                    .save(&name, &load(&graph)?, replace)
+                    .map_err(stored),
+                GraphStoreCommand::Load { name, destination } => {
+                    let bytes = repository.export(&name).map_err(stored)?;
+                    if let Some(path) = destination {
+                        output::atomic_write(&path, &bytes).map_err(CliError::StoreIo)
+                    } else {
+                        std::io::stdout()
+                            .lock()
+                            .write_all(&bytes)
+                            .map_err(|e| CliError::StoreIo(e.to_string()))?;
+                        println!();
+                        Ok(())
+                    }
+                }
+                GraphStoreCommand::Rename { source, target } => {
+                    repository.rename(&source, &target).map_err(stored)
+                }
+                GraphStoreCommand::Duplicate { source, target } => {
+                    repository.duplicate(&source, &target).map_err(stored)
+                }
+                GraphStoreCommand::Delete { name } => repository.delete(&name).map_err(stored),
+            }
+        }
         GraphCommand::Validate { graph } => {
             let g = load(&graph)?;
             let plan = rxchef::graph::validate(&g, &GraphPolicy::default())
@@ -54,6 +121,7 @@ pub(crate) fn cmd_graph(command: GraphCommand) -> Result<(), CliError> {
             output: destinations,
             selected,
             json: as_json,
+            history,
             server,
             token,
         } => {
@@ -79,7 +147,7 @@ pub(crate) fn cmd_graph(command: GraphCommand) -> Result<(), CliError> {
                     .split_once('=')
                     .ok_or_else(|| CliError::InvalidInput("output requires NAME=FILE".into()))?;
                 if files.insert(name.to_owned(), path.to_owned()).is_some()
-                    || !paths.insert(path.to_owned())
+                    || !paths.insert(destination_key(Path::new(path))?)
                 {
                     return Err(CliError::InvalidInput(
                         "duplicate output name or path".into(),
@@ -134,6 +202,9 @@ pub(crate) fn cmd_graph(command: GraphCommand) -> Result<(), CliError> {
                     "server does not support graphs".into(),
                 ));
             }
+            let graph_id = g.id.clone();
+            let started = std::time::Instant::now();
+            let started_at = chrono::Utc::now().to_rfc3339();
             let result = client
                 .execute_graph(GraphRequest {
                     graph: g,
@@ -142,6 +213,33 @@ pub(crate) fn cmd_graph(command: GraphCommand) -> Result<(), CliError> {
                 })
                 .map_err(|e| CliError::Execution(e.to_string()))?;
             let failed = result.outputs.iter().any(|o| o.error.is_some());
+            if history {
+                let id = rxchef_store::new_history_id();
+                rxchef_store::workbench::WorkbenchRun {
+                    id: id.clone(),
+                    run_id: id,
+                    graph_id,
+                    started_at,
+                    status: if failed {
+                        rxchef_store::workbench::WorkbenchRunStatus::Failed
+                    } else {
+                        rxchef_store::workbench::WorkbenchRunStatus::Succeeded
+                    },
+                    elapsed_ms: started.elapsed().as_secs_f64() * 1000.0,
+                    output_sizes: result
+                        .outputs
+                        .iter()
+                        .map(|output| (output.name.clone(), output.output_bytes))
+                        .collect(),
+                    error_code: if failed {
+                        Some(rxchef_store::workbench::WorkbenchErrorCode::Operation)
+                    } else {
+                        None
+                    },
+                }
+                .append_history(total)
+                .map_err(|e| CliError::StoreIo(e.to_string()))?;
+            }
             if as_json {
                 json(&result)?;
             } else if files.is_empty() {

@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0-rc.1] - 2026-10-15
+
+Prepared locally; publication and final release approval are pending.
+
+### Added
+
+- Multi-input graph workbench with argument and embedded recipe nodes, typed
+  Rust-owned ports, DAG layout, output selection, binary exports and revisioned runs.
+- Shared process supervision for server, desktop and terminal jobs, real node
+  lifecycle metadata, cancellation, deadlines and platform memory controls.
+- Terminal graph file/directory selection, named bindings, output inspection and
+  export with real local/remote PTY coverage.
+- Private graph/project repositories, portable project sessions, browser project
+  library and payload-free execution history.
+
+### Changed
+
+- Client/server protocol is now 2; update both sides together. Graph byte adapters
+  consume decoded bytes; use explicit decoder operations for encoded source text.
+- Native packaging targets the bundle types supported by the build platform and
+  includes the application's icon in PNG, ICNS and ICO formats.
+
+### Fixed
+
+- Superseded runs and delayed file imports cannot publish data into a newer
+  document. Generated contracts gate builds and E2E uses freshly embedded assets.
+- Strict binary adapters, identifier normalization, port validation and atomic
+  file replacement preserve bytes and reject invalid definitions.
+- Remote diagnostic failures return failure exit codes. Store keys prevent path
+  traversal, symlink escapes, case collisions and Windows device-name collisions.
+
+## Earlier development checkpoint
+
 ### Added
 
 - Shared `rxchef-client` execution/discovery/validation contracts with typed

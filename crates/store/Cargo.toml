@@ -13,6 +13,7 @@ keywords = ["cyberchef", "recipes", "storage"]
 categories = ["command-line-utilities", "data-structures"]
 
 [dependencies]
+rxchef = { version = "0.2.0-rc.1", path = "../..", default-features = false }
 serde       = { version = "1", features = ["derive"] }
 serde_json  = "1"
 serde_yaml  = "0.9"
@@ -20,3 +21,10 @@ chrono      = { version = "0.4", features = ["serde"] }
 dirs        = "5"
 thiserror   = "1"
 uuid        = { version = "1", features = ["v4"] }
+schemars = { version = "1", optional = true }
+
+[features]
+schema = ["dep:schemars", "rxchef/schema"]
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"

@@ -8,13 +8,18 @@ Two scopes:
 Load precedence: project overrides global when names conflict.
 */
 
+pub mod graphs;
 pub mod history;
 pub mod models;
 mod paths;
 mod project;
+pub mod projects;
 mod recipe;
 mod vars;
+pub mod workbench;
+pub use projects::{ProjectMeta, ProjectRepository};
 
+pub use graphs::{check_graph_export, GraphMeta, GraphRepository, GraphStoreLimits};
 pub use history::{append_history, clear_history, get_history, list_history, new_history_id};
 pub use models::{
     bytes_preview, HistoryEntry, HistoryStep, Recipe, RecipeStep, Variable, RECIPE_VERSION,

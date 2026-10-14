@@ -94,8 +94,9 @@ LocalEngineClient / Registry / Execution Engine
 ### Plattformunterschiede bei Ressourcenlimits
 
 - **Linux**: Durchsetzung von `RLIMIT_CPU` (Timeout + 2s Kulanz) und `RLIMIT_AS` (Adressraum/Speicher) im Pre-Exec-Hook des Kindprozesses.
-- **macOS / BSD**: Durchsetzung von `RLIMIT_CPU`. `RLIMIT_AS` wird vom Kernel nicht zuverlässig für Speicherallokationen erzwungen; hier greift die harte Prozess-Terminierung bei Timeout und die Request-/Response-Größenüberprüfung.
-- **Windows**: Wall-Clock-Timeout und Prozess-Terminierung bei Cancellation/Timeout.
+- **macOS**: `RLIMIT_CPU` und Überwachung des physischen Prozessspeichers über `proc_pid_rusage` alle 5 ms. Bei Überschreitung wird der Worker beendet und geerntet. Dies ist eine überwachte Speichergrenze; kurzfristige Überschreitungen zwischen Messungen sind möglich, kein harter Adressraumdeckel. Der native Test mit sehr kleiner Grenze weist die tatsächliche Beendigung ohne Output nach.
+- **BSD**: `RLIMIT_CPU`, Wall-Clock-Timeout und Request-/Response-Grenzen. Kein zusätzlicher Speicherschutz nachgewiesen.
+- **Windows**: Job Object mit Prozess-/Job-Speichergrenze und `KILL_ON_JOB_CLOSE`; Zuweisung vor Übergabe der Invocation. Installation der Begrenzung muss gelingen, sonst startet keine Transformation. Wall-Clock-Timeout und Cancellation bleiben aktiv. Cross-Compile PASS; native Windows-Laufzeittests stehen aus.
 
 ## 4. Endpunkte
 

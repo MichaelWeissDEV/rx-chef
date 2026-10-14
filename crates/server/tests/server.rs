@@ -15,6 +15,84 @@ use serde_json::{json, Value};
 
 const TOKEN: &str = "test-token-0123456789abcdef";
 
+#[test]
+fn projects_validate_through_real_workers_with_auth_and_no_file_access() {
+    let server = TestServer::with(|config| {
+        config.read_token = Some("read-only-project-token-0123456789".into())
+    });
+    let mut project = rxchef_client::WorkbenchProject::new("Session");
+    project.graphs.push(rxchef::graph::Graph::from_recipe(
+        "graph".into(),
+        Vec::new(),
+    ));
+    let mut value = serde_json::to_value(&project).unwrap();
+    value["input_files"] = json!([{"graph_id":"graph","input_name":"input","path":"/this-file-does-not-exist","external":true}]);
+    let endpoint = server.url("/api/v1/projects/validate");
+    assert_eq!(
+        server
+            .http()
+            .post(&endpoint)
+            .json(&value)
+            .send()
+            .unwrap()
+            .status(),
+        401
+    );
+    assert_eq!(
+        server
+            .http()
+            .post(&endpoint)
+            .bearer_auth("read-only-project-token-0123456789")
+            .json(&value)
+            .send()
+            .unwrap()
+            .status(),
+        403
+    );
+    let response = server
+        .http()
+        .post(&endpoint)
+        .bearer_auth(TOKEN)
+        .json(&value)
+        .send()
+        .unwrap();
+    assert!(response.status().is_success());
+    let normalized: Value = response.json().unwrap();
+    assert_eq!(normalized["input_files"][0]["external"], true);
+    assert!(!normalized.to_string().contains("PRIVATE-DATA"));
+    let mut extra = value.clone();
+    extra["graphs"][0]["nodes"][0]["unknown_payload"] = json!("PRIVATE-DATA");
+    let response = server
+        .http()
+        .post(&endpoint)
+        .bearer_auth(TOKEN)
+        .json(&extra)
+        .send()
+        .unwrap();
+    assert_eq!(response.status(), 400);
+    assert!(!response.text().unwrap().contains("PRIVATE-DATA"));
+    let typed: rxchef_client::WorkbenchProject = serde_json::from_value(normalized).unwrap();
+    assert_eq!(
+        server
+            .client()
+            .validate_project(typed)
+            .unwrap()
+            .graphs
+            .len(),
+        1
+    );
+    let forbidden = json!({"version":1,"name":"secret","token":"PRIVATE-TOKEN"});
+    let response = server
+        .http()
+        .post(&endpoint)
+        .bearer_auth(TOKEN)
+        .json(&forbidden)
+        .send()
+        .unwrap();
+    assert_eq!(response.status(), 400);
+    assert!(!response.text().unwrap().contains("PRIVATE-TOKEN"));
+}
+
 struct TestServer {
     addr: SocketAddr,
     stop: Option<tokio::sync::oneshot::Sender<()>>,

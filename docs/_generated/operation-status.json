@@ -1,20 +1,27 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0-rc.1",
   "workspace_crates": [
     "rxchef",
-    "rxchef_cli",
-    "rxchef_tui",
-    "rxchef_store",
-    "rxchef_client",
+    "rxchef-cli",
+    "rxchef-tui",
+    "rxchef-store",
+    "rxchef-client",
+    "rxchef-server",
+    "rxchef-gui",
     "cyberchef-rust-tests"
   ],
   "binaries": [
-    "rxchef"
+    "rxchef",
+    "rxchef_tui",
+    "rxchef-server",
+    "rxchef-gui"
   ],
+  "protocol_version": 2,
   "features": [
     "disassembly",
     "jsonata",
     "pgp",
+    "schema",
     "tesseract",
     "yara"
   ],

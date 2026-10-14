@@ -3,6 +3,170 @@ use std::process::{Command, Output, Stdio};
 
 use base64::{engine::general_purpose, Engine as _};
 
+#[test]
+fn graph_history_opt_in_records_metadata_without_inputs_outputs_or_arguments() {
+    let (directory, home) = isolated_store();
+    let graph = directory.join("graph.json");
+    let input = directory.join("input.bin");
+    std::fs::write(&graph, include_bytes!("fixtures/three-inputs.rxgraph.json")).unwrap();
+    std::fs::write(&input, b"PRIVATE-INPUT-DO-NOT-RETAIN").unwrap();
+    let binding = format!("payload={}", input.display());
+    let result = rxchef_in(
+        &[
+            "graph",
+            "run",
+            "--graph",
+            graph.to_str().unwrap(),
+            "--input",
+            &binding,
+            "--select",
+            "original",
+            "--history",
+        ],
+        None,
+        &directory,
+        &home,
+    );
+    assert_success(&result);
+    assert_eq!(result.stdout, b"PRIVATE-INPUT-DO-NOT-RETAIN");
+    assert!(result.stderr.is_empty());
+    let history = std::fs::read_to_string(home.join("history.jsonl")).unwrap();
+    assert!(!history.contains("PRIVATE-INPUT-DO-NOT-RETAIN"));
+    let entry: serde_json::Value = serde_json::from_str(history.trim()).unwrap();
+    assert_eq!(entry["input_preview"], "");
+    assert_eq!(entry["output_preview"], "");
+    assert_eq!(entry["steps"][0]["args"], serde_json::json!([]));
+    assert_eq!(entry["input_bytes"], b"PRIVATE-INPUT-DO-NOT-RETAIN".len());
+    std::fs::remove_dir_all(directory).unwrap();
+}
+
+#[test]
+fn portable_projects_validate_and_export_without_opening_external_files() {
+    let (directory, home) = isolated_store();
+    let project = directory.join("session.rxproject.json");
+    let exported = directory.join("exported.rxproject.json");
+    assert_success(&rxchef_in(
+        &[
+            "project",
+            "new",
+            "Session",
+            "--destination",
+            project.to_str().unwrap(),
+        ],
+        None,
+        &directory,
+        &home,
+    ));
+    assert_success(&rxchef_in(
+        &["project", "validate", project.to_str().unwrap()],
+        None,
+        &directory,
+        &home,
+    ));
+    assert_success(&rxchef_in(
+        &[
+            "project",
+            "export",
+            project.to_str().unwrap(),
+            "--destination",
+            exported.to_str().unwrap(),
+        ],
+        None,
+        &directory,
+        &home,
+    ));
+    assert_eq!(
+        std::fs::read(&project).unwrap(),
+        std::fs::read(&exported).unwrap()
+    );
+    std::fs::write(&project, br#"{"version":1,"name":"bad","token":"SECRET"}"#).unwrap();
+    let failed = rxchef_in(
+        &["project", "validate", project.to_str().unwrap()],
+        None,
+        &directory,
+        &home,
+    );
+    assert!(!failed.status.success());
+    assert!(!String::from_utf8_lossy(&failed.stderr).contains("SECRET"));
+    std::fs::remove_dir_all(directory).unwrap();
+}
+
+#[test]
+fn graph_store_lifecycle_preserves_definitions_and_rejects_traversal() {
+    let (directory, home) = isolated_store();
+    let graph = directory.join("source.json");
+    std::fs::write(&graph, include_bytes!("fixtures/three-inputs.rxgraph.json")).unwrap();
+    let call = |args: &[&str]| rxchef_in(args, None, &directory, &home);
+    assert_success(&call(&[
+        "graph",
+        "store",
+        "--global",
+        "save",
+        "original",
+        "--graph",
+        graph.to_str().unwrap(),
+    ]));
+    assert!(!call(&[
+        "graph",
+        "store",
+        "--global",
+        "save",
+        "original",
+        "--graph",
+        graph.to_str().unwrap()
+    ])
+    .status
+    .success());
+    assert_success(&call(&[
+        "graph",
+        "store",
+        "--global",
+        "duplicate",
+        "original",
+        "copy",
+    ]));
+    assert_success(&call(&[
+        "graph", "store", "--global", "rename", "copy", "renamed",
+    ]));
+    let listed = call(&["graph", "store", "--global", "list"]);
+    assert_success(&listed);
+    let items: serde_json::Value = serde_json::from_slice(&listed.stdout).unwrap();
+    assert_eq!(items.as_array().unwrap().len(), 2);
+    let loaded = call(&["graph", "store", "--global", "load", "original"]);
+    assert_success(&loaded);
+    assert_eq!(
+        serde_json::from_slice::<serde_json::Value>(&loaded.stdout).unwrap(),
+        serde_json::from_slice::<serde_json::Value>(&std::fs::read(&graph).unwrap()).unwrap()
+    );
+    assert_success(&call(&["graph", "store", "--global", "delete", "renamed"]));
+    assert!(!call(&["graph", "store", "--global", "load", "../escape"])
+        .status
+        .success());
+    std::fs::remove_dir_all(directory).unwrap();
+}
+
+#[test]
+fn doctor_reports_unchecked_checks_and_fails_for_an_unreachable_requested_server() {
+    let (directory, home) = isolated_store();
+    let local = rxchef_in(&["doctor"], None, &directory, &home);
+    assert!(local.status.success());
+    let stdout = String::from_utf8(local.stdout).unwrap();
+    assert!(stdout.contains("PASS Core/client"));
+    assert!(stdout.contains("NOT TESTED Remote server"));
+    assert!(stdout.contains("NOT TESTED Desktop"));
+    let remote = rxchef_in(
+        &["doctor", "--server", "http://127.0.0.1:1"],
+        None,
+        &directory,
+        &home,
+    );
+    assert!(!remote.status.success());
+    let stdout = String::from_utf8(remote.stdout).unwrap();
+    assert!(stdout.contains("FAIL Server check"));
+    assert!(!stdout.contains("All local subsystems operational"));
+    std::fs::remove_dir_all(directory).unwrap();
+}
+
 fn rxchef(args: &[&str], stdin: Option<&[u8]>) -> Output {
     let mut command = Command::new(env!("CARGO_BIN_EXE_rxchef"));
     command

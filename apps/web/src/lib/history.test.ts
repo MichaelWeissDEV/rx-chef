@@ -11,3 +11,7 @@ it('undo/redo restores snapshots and new edits invalidate redo', () => {
   state = historyReducer(state, { type: 'set', value: 2 });
   expect(historyReducer(state, { type: 'redo' }).present).toBe(2);
 });
+it('opening another document clears history from the previous document', () => {
+  const state=historyReducer({past:['old'],present:'current',future:['future']},{type:'reset',value:'new'});
+  expect(historyReducer(state,{type:'undo'})).toEqual({past:[],present:'new',future:[]});
+});

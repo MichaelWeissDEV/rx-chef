@@ -7,6 +7,7 @@ use std::{fs, path::Path};
 
 #[derive(Serialize, JsonSchema)]
 struct Contracts {
+    workbench_project: rxchef_store::workbench::WorkbenchProject,
     operations: Vec<OperationDescriptor>,
     argument: ArgumentDescriptor,
     result: ExecutionResult,
@@ -48,6 +49,7 @@ fn main() {
         node.elapsed_ms = 0.0;
     }
     let fixture = Contracts {
+        workbench_project: rxchef_store::workbench::WorkbenchProject::new("Fixture project"),
         graph_request,
         graph_response,
         task: EngineTask::Execute(request.clone()),
@@ -82,6 +84,7 @@ fn main() {
             step: Some(2),
         },
         job: JobSnapshot {
+            graph_nodes: Vec::new(),
             id: "example".into(),
             status: JobStatus::Failed,
             progress: None,

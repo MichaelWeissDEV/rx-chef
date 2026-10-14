@@ -21,3 +21,14 @@
 .graph-inspector input, .graph-inspector select, .graph-inspector textarea { background: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border-strong); border-radius: 4px; padding: 6px; min-width: 0; width: 100%; }
 .graph-workbench button:disabled { opacity: .5; cursor: default; }
 .graph-workbench [role="status"], .graph-workbench [role="alert"] { margin: 0; padding: 8px 12px; }
+.graph-layout { grid-template-columns: minmax(180px, 240px) minmax(0, 1fr) minmax(240px, 320px); }
+.graph-operations { overflow: auto; border-right: 1px solid var(--border-subtle); padding: 12px; }
+.graph-operations input, .graph-operations select { width: 100%; background: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border-strong); border-radius: 4px; padding: 6px; margin-bottom: 8px; }
+.graph-operation-row { display: flex; margin: 4px 0; }
+.graph-operation-row button { text-align: left; flex: 1; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-subtle); padding: 7px; border-radius: 4px; cursor: pointer; }
+.graph-operation-row button:last-child { flex: 0 0 28px; }
+.graph-operation-row small { display: block; color: var(--text-muted); font-size: 10px; }
+.graph-inspector details { padding: 6px; border: 1px solid var(--border-subtle); margin-top: 6px; }
+.graph-inspector input[type=checkbox] { width: auto; }
+@media (max-width: 900px) { .graph-layout { grid-template-columns: minmax(0, 1fr) 260px; }.graph-operations { grid-column: 1 / -1; max-height: 180px; } }
+@media (max-width: 700px) { .graph-layout { display: flex; flex-direction: column; }.graph-inspector { width: 100%; }.graph-operations { max-height: 200px; } }

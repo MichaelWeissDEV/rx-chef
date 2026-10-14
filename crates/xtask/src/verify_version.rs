@@ -68,13 +68,16 @@ fn render_status(root: &std::path::Path) -> Result<String, String> {
         "version": WORKSPACE_VERSION,
         "workspace_crates": [
             "rxchef",
-            "rxchef_cli",
-            "rxchef_tui",
-            "rxchef_store",
-            "rxchef_client",
+            "rxchef-cli",
+            "rxchef-tui",
+            "rxchef-store",
+            "rxchef-client",
+            "rxchef-server",
+            "rxchef-gui",
             "cyberchef-rust-tests",
         ],
-        "binaries": ["rxchef"],
+        "binaries": ["rxchef", "rxchef_tui", "rxchef-server", "rxchef-gui"],
+        "protocol_version": rxchef::integration::PROTOCOL_VERSION,
         "features": declared_features(&manifest),
         "operations_count": names.len(),
         "feature_gated_operations": feature_gated,
@@ -115,6 +118,24 @@ pub fn run(check: bool) -> Result<(), String> {
     }
 
     // 2. The README states the version and operation count in prose.
+    for name in [
+        "apps/web/package.json",
+        "apps/web/package-lock.json",
+        "apps/desktop/src-tauri/tauri.conf.json",
+    ] {
+        let text = fs::read_to_string(root.join(name)).map_err(|error| error.to_string())?;
+        let document: Value = serde_json::from_str(&text).map_err(|error| error.to_string())?;
+        if document["version"].as_str() != Some(WORKSPACE_VERSION) {
+            errors.push(format!("{name} version differs from the workspace"));
+        }
+        if name.ends_with("package-lock.json")
+            && document["packages"][""]["version"].as_str() != Some(WORKSPACE_VERSION)
+        {
+            errors.push(format!(
+                "{name} root package version differs from the workspace"
+            ));
+        }
+    }
     let readme_path = root.join("README.md");
     let readme = fs::read_to_string(&readme_path)
         .map_err(|error| format!("cannot read {}: {error}", readme_path.display()))?;

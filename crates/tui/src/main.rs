@@ -49,11 +49,13 @@ use ratatui::{
 };
 use rxchef::{execution, runtime};
 use rxchef_client::{
-    EngineClient, ExecuteRequest, ExecutionPolicy, LocalEngineClient, RemoteEngineClient,
-    TraceLimits,
+    ExecuteRequest, ExecutionPolicy, LocalEngineClient, RemoteEngineClient, TraceLimits,
 };
 use rxchef_store as store;
 use std::time::Duration;
+mod client;
+mod events;
+mod screens;
 
 // ─── Data model ──────────────────────────────────────────────────────────────
 
@@ -154,6 +156,9 @@ struct App {
     checkpoints: Vec<TuiCheckpoint>,
     results: Vec<StepResult>,
     pending: Option<std::sync::mpsc::Receiver<(Vec<StepResult>, String)>>,
+    engine: Option<events::Client>,
+    cancellation: std::sync::Arc<std::sync::atomic::AtomicBool>,
+    pending_thread: Option<std::thread::JoinHandle<()>>,
     hex_view: bool,
     status: String,
 
@@ -199,7 +204,7 @@ impl App {
         let mut state = ListState::default();
         state.select(Some(0));
         let status = if let Some(ref url) = server_url {
-            format!("Connected to remote server: {url}")
+            format!("Remote configured: {url} (connection not checked yet)")
         } else {
             "Welcome! Press (a) to add a step, (?) for help.".into()
         };
@@ -210,6 +215,9 @@ impl App {
             input_text: String::new(),
             results: Vec::new(),
             pending: None,
+            engine: None,
+            cancellation: std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false)),
+            pending_thread: None,
             hex_view: false,
             status,
             search_query: String::new(),
@@ -254,13 +262,19 @@ impl App {
         let mut worker = Self::with_remote(self.server_url.clone(), self.server_token.clone());
         worker.pipeline = self.pipeline.clone();
         worker.input_text = self.input_text.clone();
+        worker.engine = self.engine.clone();
+        self.cancellation = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+        worker.cancellation = self.cancellation.clone();
         let (sender, receiver) = std::sync::mpsc::channel();
         self.pending = Some(receiver);
         self.status = "Running… terminal remains interactive".into();
-        std::thread::spawn(move || {
+        self.pending_thread = Some(std::thread::spawn(move || {
             worker.run_pipeline();
-            let _ = sender.send((worker.results, worker.status));
-        });
+            let _ = sender.send((
+                std::mem::take(&mut worker.results),
+                std::mem::take(&mut worker.status),
+            ));
+        }));
     }
 
     fn poll_pipeline(&mut self) {
@@ -298,13 +312,15 @@ impl App {
                 args: step.args.clone(),
             })
             .collect::<Vec<_>>();
-        let client: Box<dyn EngineClient> = if let Some(ref url) = self.server_url {
+        let client: events::Client = if let Some(engine) = &self.engine {
+            engine.clone()
+        } else if let Some(ref url) = self.server_url {
             match RemoteEngineClient::new(
                 url,
                 self.server_token.as_deref(),
                 Duration::from_secs(30),
             ) {
-                Ok(remote) => Box::new(remote),
+                Ok(remote) => std::sync::Arc::new(remote),
                 Err(err) => {
                     self.results.push(StepResult {
                         operation: "Remote client error".into(),
@@ -316,18 +332,31 @@ impl App {
                 }
             }
         } else {
-            Box::new(LocalEngineClient {
+            std::sync::Arc::new(LocalEngineClient {
                 policy: ExecutionPolicy {
                     allow_host_effects: true,
                     ..ExecutionPolicy::default()
                 },
             })
         };
-        let result = client.execute(ExecuteRequest {
+        let request = ExecuteRequest {
             input_base64: Some(STANDARD.encode(self.input_text.as_bytes())),
             recipe,
             variables: Default::default(),
             trace: Some(TraceLimits::default()),
+        };
+        let result = events::execute_task(
+            client.as_ref(),
+            rxchef_client::EngineTask::Execute(request),
+            &self.cancellation,
+            |_| {},
+        )
+        .and_then(|result| match result {
+            rxchef_client::TaskResult::Execution(response) => Ok(response),
+            _ => Err(rxchef_client::ClientError::new(
+                rxchef_client::ErrorKind::Protocol,
+                "Wrong recipe job result",
+            )),
         });
         match result {
             Ok(outcome) => {
@@ -629,6 +658,16 @@ impl App {
             self.selected = 0;
             self.status = format!("Restored checkpoint '{}'.", cp.name);
             self.results.clear();
+        }
+    }
+}
+
+impl Drop for App {
+    fn drop(&mut self) {
+        self.cancellation
+            .store(true, std::sync::atomic::Ordering::Release);
+        if let Some(thread) = self.pending_thread.take() {
+            let _ = thread.join();
         }
     }
 }
@@ -1465,9 +1504,17 @@ fn chrono_now_tui() -> String {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 fn main() -> io::Result<()> {
+    if std::env::args().nth(1).as_deref() == Some("--internal-worker") {
+        std::process::exit(if rxchef_client::worker::run().is_ok() {
+            0
+        } else {
+            70
+        });
+    }
     let args: Vec<String> = std::env::args().collect();
     let mut server_url = std::env::var("RXCHEF_SERVER").ok();
     let mut server_token = std::env::var("RXCHEF_TOKEN").ok();
+    let mut graph_path = None;
 
     let mut i = 1;
     while i < args.len() {
@@ -1484,6 +1531,7 @@ fn main() -> io::Result<()> {
                     "  --token <TOKEN>   Bearer token for remote server (or RXCHEF_TOKEN env)"
                 );
                 println!("  -h, --help        Show help\n");
+                println!("  --graph <FILE>   Open graph workbench (Tab switches recipe/graph)\n");
                 println!("Run without arguments for local execution.");
                 println!("For headless recipes use `rxchef bake`.");
                 return Ok(());
@@ -1510,6 +1558,12 @@ fn main() -> io::Result<()> {
                     ));
                 }
             }
+            "--graph" => {
+                i += 1;
+                graph_path = Some(std::path::PathBuf::from(args.get(i).ok_or_else(|| {
+                    io::Error::new(io::ErrorKind::InvalidInput, "--graph requires a file")
+                })?));
+            }
             arg => {
                 return Err(io::Error::new(
                     io::ErrorKind::InvalidInput,
@@ -1520,6 +1574,7 @@ fn main() -> io::Result<()> {
         i += 1;
     }
 
+    let session = client::Session::new(server_url.as_deref(), server_token.as_deref())?;
     // RAII restores the terminal on every error path and unwinding panic.
     struct TerminalRestore;
     impl Drop for TerminalRestore {
@@ -1536,27 +1591,66 @@ fn main() -> io::Result<()> {
     let mut terminal = Terminal::new(backend)?;
 
     let mut app = App::with_remote(server_url, server_token);
+    app.engine = Some(session.client.clone());
+    let mut graph_screen = screens::graphs::GraphScreen::new(session.client.clone());
+    let mut graph_visible = graph_path.is_some();
+    if let Some(path) = graph_path {
+        graph_screen.load(path);
+    }
     let mut quit = false;
 
     while !quit {
         app.poll_pipeline();
-        terminal.draw(|f| ui(f, &mut app))?;
+        graph_screen.poll();
+        terminal.draw(|f| {
+            if graph_visible {
+                graph_screen.render(f)
+            } else {
+                ui(f, &mut app)
+            }
+        })?;
 
         if event::poll(std::time::Duration::from_millis(16))? {
             if let Event::Key(key) = event::read()? {
                 // Global quit
-                if (key.code == KeyCode::Char('q') && app.mode == Mode::Normal)
+                if (key.code == KeyCode::Char('q')
+                    && if graph_visible {
+                        !graph_screen.editing()
+                    } else {
+                        app.mode == Mode::Normal
+                    })
                     || (key.code == KeyCode::Char('c')
                         && key.modifiers.contains(KeyModifiers::CONTROL))
                 {
                     quit = true;
+                } else if key.code == KeyCode::Tab
+                    && if graph_visible {
+                        !graph_screen.editing()
+                    } else {
+                        app.mode == Mode::Normal
+                    }
+                {
+                    graph_visible = !graph_visible;
+                } else if graph_visible {
+                    graph_screen.key(key);
+                } else if key.code == KeyCode::Char('c')
+                    && app.mode == Mode::Normal
+                    && app.pending.is_some()
+                {
+                    app.cancellation
+                        .store(true, std::sync::atomic::Ordering::Release);
+                    app.status = "Cancelling recipe; waiting for worker termination…".into();
                 } else {
                     handle_key(&mut app, key);
                 }
             }
         }
     }
-
+    app.cancellation
+        .store(true, std::sync::atomic::Ordering::Release);
+    if let Some(thread) = app.pending_thread.take() {
+        let _ = thread.join();
+    }
     Ok(())
 }
 

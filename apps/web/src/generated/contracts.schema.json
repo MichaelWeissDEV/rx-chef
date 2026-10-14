@@ -3,6 +3,9 @@
   "title": "Contracts",
   "type": "object",
   "properties": {
+    "workbench_project": {
+      "$ref": "#/$defs/WorkbenchProject"
+    },
     "operations": {
       "type": "array",
       "items": {
@@ -59,6 +62,7 @@
     }
   },
   "required": [
+    "workbench_project",
     "operations",
     "argument",
     "result",
@@ -76,369 +80,108 @@
     "task"
   ],
   "$defs": {
-    "OperationDescriptor": {
-      "description": "Serializable operation metadata used by CLI and editor integrations.",
+    "WorkbenchProject": {
       "type": "object",
       "properties": {
-        "name": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string"
-        },
-        "aliases": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "module": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "input_type": {
-          "type": "string"
-        },
-        "output_type": {
-          "type": "string"
-        },
-        "broken": {
-          "type": "boolean"
-        },
-        "input_requirement": {
-          "$ref": "#/$defs/InputRequirement"
-        },
-        "implementation_status": {
-          "$ref": "#/$defs/ImplementationStatus"
-        },
-        "availability": {
-          "$ref": "#/$defs/Availability"
-        },
-        "feature_requirements": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "platform_requirements": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "side_effects": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/SideEffect"
-          }
-        },
-        "deterministic": {
-          "type": "boolean"
-        },
-        "parity": {
-          "$ref": "#/$defs/ParityStatus"
-        },
-        "known_limitations": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "documentation_slug": {
-          "type": "string"
-        },
-        "args": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/ArgumentDescriptor"
-          }
-        }
-      },
-      "required": [
-        "name",
-        "id",
-        "aliases",
-        "module",
-        "description",
-        "input_type",
-        "output_type",
-        "broken",
-        "input_requirement",
-        "implementation_status",
-        "availability",
-        "feature_requirements",
-        "platform_requirements",
-        "side_effects",
-        "deterministic",
-        "parity",
-        "known_limitations",
-        "documentation_slug",
-        "args"
-      ]
-    },
-    "InputRequirement": {
-      "description": "Whether an operation consumes input bytes.",
-      "type": "string",
-      "enum": [
-        "required",
-        "optional",
-        "ignored"
-      ]
-    },
-    "ImplementationStatus": {
-      "description": "Verification state of an operation implementation.",
-      "type": "string",
-      "enum": [
-        "complete",
-        "partial",
-        "unsupported",
-        "experimental"
-      ]
-    },
-    "Availability": {
-      "description": "Whether an implementation can run in the current build and platform.",
-      "type": "string",
-      "enum": [
-        "available",
-        "feature_disabled",
-        "platform_unavailable"
-      ]
-    },
-    "SideEffect": {
-      "description": "Externally observable behavior an operation may perform.",
-      "type": "string",
-      "enum": [
-        "network",
-        "filesystem-read",
-        "filesystem-write",
-        "random",
-        "time",
-        "external-process",
-        "native-library"
-      ]
-    },
-    "ParityStatus": {
-      "description": "Compatibility level with upstream CyberChef behavior.",
-      "type": "string",
-      "enum": [
-        "exact",
-        "compatible",
-        "intentional_difference",
-        "unknown",
-        "not_applicable"
-      ]
-    },
-    "ArgumentDescriptor": {
-      "description": "One operation argument in a machine-readable descriptor.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "default": {
-          "type": "string"
-        },
-        "kind": {
-          "$ref": "#/$defs/ArgKind"
-        },
-        "required": {
-          "type": "boolean"
-        },
-        "choices": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "minimum": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "maximum": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "sensitive": {
-          "type": "boolean"
-        }
-      },
-      "required": [
-        "name",
-        "description",
-        "default",
-        "kind",
-        "required",
-        "choices",
-        "sensitive"
-      ]
-    },
-    "ArgKind": {
-      "description": "Machine-readable argument value category.",
-      "type": "string",
-      "enum": [
-        "string",
-        "integer",
-        "unsigned_integer",
-        "float",
-        "boolean",
-        "bytes",
-        "hex_bytes",
-        "base64_bytes",
-        "enum",
-        "regex",
-        "path",
-        "url"
-      ]
-    },
-    "ExecutionResult": {
-      "description": "Binary-safe result envelope.",
-      "type": "object",
-      "properties": {
-        "output": {
-          "description": "UTF-8-lossy convenience representation for editor UIs.",
-          "type": "string"
-        },
-        "output_base64": {
-          "description": "Exact output bytes encoded as standard padded Base64.",
-          "type": "string"
-        },
-        "output_len": {
+        "version": {
           "type": "integer",
-          "format": "uint",
+          "format": "uint32",
           "minimum": 0
         },
-        "output_is_utf8": {
-          "description": "Whether `output` is an exact UTF-8 representation (`false` means it is\nonly a lossy UI convenience and `output_base64` is authoritative).",
-          "type": "boolean"
-        }
-      },
-      "required": [
-        "output",
-        "output_base64",
-        "output_len",
-        "output_is_utf8"
-      ]
-    },
-    "ExecuteRequest": {
-      "type": "object",
-      "properties": {
-        "input_base64": {
-          "description": "None means no input source; Some(\"\") means explicitly empty input.",
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "recipe": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/RecipeStep"
-          }
-        },
-        "variables": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          },
-          "default": {}
-        },
-        "trace": {
-          "description": "Opt-in: trace payloads can contain sensitive data.",
-          "anyOf": [
-            {
-              "$ref": "#/$defs/TraceLimits"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null
-        }
-      },
-      "required": [
-        "recipe"
-      ]
-    },
-    "RecipeStep": {
-      "description": "One operation and its ordered argument values in a recipe.",
-      "type": "object",
-      "properties": {
-        "op": {
-          "description": "Operation name or normalized identifier.",
+        "name": {
           "type": "string"
         },
-        "args": {
-          "description": "Ordered raw arguments. Parsing is delegated to the shared registry\nruntime after variable and register expansion.",
+        "recipes": {
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "#/$defs/WorkbenchRecipe"
           },
           "default": []
-        }
-      },
-      "required": [
-        "op"
-      ]
-    },
-    "TraceLimits": {
-      "type": "object",
-      "properties": {
-        "max_entries": {
-          "type": "integer",
-          "format": "uint",
-          "minimum": 0
         },
-        "max_bytes_per_entry": {
-          "type": "integer",
-          "format": "uint",
-          "minimum": 0
-        },
-        "max_total_bytes": {
-          "type": "integer",
-          "format": "uint",
-          "minimum": 0
-        }
-      },
-      "required": [
-        "max_entries",
-        "max_bytes_per_entry",
-        "max_total_bytes"
-      ]
-    },
-    "GraphRequest": {
-      "type": "object",
-      "properties": {
-        "graph": {
-          "$ref": "#/$defs/Graph"
-        },
-        "inputs_base64": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          },
-          "default": {}
-        },
-        "outputs": {
-          "description": "Empty means all named outputs, otherwise exact output names.",
+        "graphs": {
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "#/$defs/Graph"
+          },
+          "default": []
+        },
+        "settings": {
+          "$ref": "#/$defs/WorkbenchSettings",
+          "default": {
+            "theme": "dark",
+            "selected_graph": null,
+            "selected_recipe": null
+          }
+        },
+        "input_files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/InputFileReference"
+          },
+          "default": []
+        },
+        "history": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/WorkbenchRun"
           },
           "default": []
         }
       },
       "additionalProperties": false,
       "required": [
-        "graph"
+        "version",
+        "name"
+      ]
+    },
+    "WorkbenchRecipe": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string",
+          "default": ""
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/WorkbenchStep"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "steps"
+      ]
+    },
+    "WorkbenchStep": {
+      "type": "object",
+      "properties": {
+        "op": {
+          "type": "string"
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "breakpoint": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "op"
       ]
     },
     "Graph": {
@@ -486,6 +229,13 @@
       "properties": {
         "id": {
           "type": "string"
+        },
+        "label": {
+          "description": "Optional display label; execution identity remains the stable ID.",
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
       "required": [
@@ -722,6 +472,45 @@
         }
       ]
     },
+    "ArgKind": {
+      "description": "Machine-readable argument value category.",
+      "type": "string",
+      "enum": [
+        "string",
+        "integer",
+        "unsigned_integer",
+        "float",
+        "boolean",
+        "bytes",
+        "hex_bytes",
+        "base64_bytes",
+        "enum",
+        "regex",
+        "path",
+        "url"
+      ]
+    },
+    "RecipeStep": {
+      "description": "One operation and its ordered argument values in a recipe.",
+      "type": "object",
+      "properties": {
+        "op": {
+          "description": "Operation name or normalized identifier.",
+          "type": "string"
+        },
+        "args": {
+          "description": "Ordered raw arguments. Parsing is delegated to the shared registry\nruntime after variable and register expansion.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "op"
+      ]
+    },
     "Edge": {
       "type": "object",
       "properties": {
@@ -766,6 +555,508 @@
       "required": [
         "x",
         "y"
+      ]
+    },
+    "WorkbenchSettings": {
+      "type": "object",
+      "properties": {
+        "theme": {
+          "$ref": "#/$defs/WorkbenchTheme",
+          "default": "dark"
+        },
+        "selected_graph": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "selected_recipe": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "additionalProperties": false
+    },
+    "WorkbenchTheme": {
+      "type": "string",
+      "enum": [
+        "dark",
+        "light"
+      ]
+    },
+    "InputFileReference": {
+      "type": "object",
+      "properties": {
+        "graph_id": {
+          "type": "string"
+        },
+        "input_name": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "external": {
+          "description": "Must be true: the file is a reference, not a bundled project payload.",
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "graph_id",
+        "input_name",
+        "path",
+        "external"
+      ]
+    },
+    "WorkbenchRun": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "run_id": {
+          "type": "string"
+        },
+        "graph_id": {
+          "type": "string"
+        },
+        "started_at": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/WorkbenchRunStatus"
+        },
+        "elapsed_ms": {
+          "type": "number",
+          "format": "double"
+        },
+        "output_sizes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "format": "uint",
+            "minimum": 0
+          },
+          "default": {}
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/WorkbenchErrorCode"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "run_id",
+        "graph_id",
+        "started_at",
+        "status",
+        "elapsed_ms"
+      ]
+    },
+    "WorkbenchRunStatus": {
+      "type": "string",
+      "enum": [
+        "succeeded",
+        "failed",
+        "cancelled",
+        "timed_out",
+        "discarded"
+      ]
+    },
+    "WorkbenchErrorCode": {
+      "type": "string",
+      "enum": [
+        "validation",
+        "operation",
+        "transport",
+        "limit",
+        "timeout",
+        "cancelled"
+      ]
+    },
+    "OperationDescriptor": {
+      "description": "Serializable operation metadata used by CLI and editor integrations.",
+      "type": "object",
+      "properties": {
+        "graph_operation": {
+          "description": "False for operations that must be embedded in a Recipe node.",
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "aliases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "module": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "input_type": {
+          "type": "string"
+        },
+        "output_type": {
+          "type": "string"
+        },
+        "broken": {
+          "type": "boolean"
+        },
+        "input_requirement": {
+          "$ref": "#/$defs/InputRequirement"
+        },
+        "implementation_status": {
+          "$ref": "#/$defs/ImplementationStatus"
+        },
+        "availability": {
+          "$ref": "#/$defs/Availability"
+        },
+        "feature_requirements": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "platform_requirements": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "side_effects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SideEffect"
+          }
+        },
+        "deterministic": {
+          "type": "boolean"
+        },
+        "parity": {
+          "$ref": "#/$defs/ParityStatus"
+        },
+        "known_limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "documentation_slug": {
+          "type": "string"
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ArgumentDescriptor"
+          }
+        }
+      },
+      "required": [
+        "graph_operation",
+        "name",
+        "id",
+        "aliases",
+        "module",
+        "description",
+        "input_type",
+        "output_type",
+        "broken",
+        "input_requirement",
+        "implementation_status",
+        "availability",
+        "feature_requirements",
+        "platform_requirements",
+        "side_effects",
+        "deterministic",
+        "parity",
+        "known_limitations",
+        "documentation_slug",
+        "args"
+      ]
+    },
+    "InputRequirement": {
+      "description": "Whether an operation consumes input bytes.",
+      "type": "string",
+      "enum": [
+        "required",
+        "optional",
+        "ignored"
+      ]
+    },
+    "ImplementationStatus": {
+      "description": "Verification state of an operation implementation.",
+      "type": "string",
+      "enum": [
+        "complete",
+        "partial",
+        "unsupported",
+        "experimental"
+      ]
+    },
+    "Availability": {
+      "description": "Whether an implementation can run in the current build and platform.",
+      "type": "string",
+      "enum": [
+        "available",
+        "feature_disabled",
+        "platform_unavailable"
+      ]
+    },
+    "SideEffect": {
+      "description": "Externally observable behavior an operation may perform.",
+      "type": "string",
+      "enum": [
+        "network",
+        "filesystem-read",
+        "filesystem-write",
+        "random",
+        "time",
+        "external-process",
+        "native-library"
+      ]
+    },
+    "ParityStatus": {
+      "description": "Compatibility level with upstream CyberChef behavior.",
+      "type": "string",
+      "enum": [
+        "exact",
+        "compatible",
+        "intentional_difference",
+        "unknown",
+        "not_applicable"
+      ]
+    },
+    "ArgumentDescriptor": {
+      "description": "One operation argument in a machine-readable descriptor.",
+      "type": "object",
+      "properties": {
+        "graph_port_id": {
+          "description": "Authoritative graph handle ID; clients must not reimplement normalization.",
+          "type": "string"
+        },
+        "graph_port_type": {
+          "$ref": "#/$defs/PortType"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "default": {
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/ArgKind"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "choices": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "minimum": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "maximum": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sensitive": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "graph_port_id",
+        "graph_port_type",
+        "name",
+        "description",
+        "default",
+        "kind",
+        "required",
+        "choices",
+        "sensitive"
+      ]
+    },
+    "PortType": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "bytes"
+            }
+          },
+          "required": [
+            "type"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "argument"
+            },
+            "kind": {
+              "$ref": "#/$defs/ArgKind"
+            }
+          },
+          "required": [
+            "type",
+            "kind"
+          ]
+        }
+      ]
+    },
+    "ExecutionResult": {
+      "description": "Binary-safe result envelope.",
+      "type": "object",
+      "properties": {
+        "output": {
+          "description": "UTF-8-lossy convenience representation for editor UIs.",
+          "type": "string"
+        },
+        "output_base64": {
+          "description": "Exact output bytes encoded as standard padded Base64.",
+          "type": "string"
+        },
+        "output_len": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "output_is_utf8": {
+          "description": "Whether `output` is an exact UTF-8 representation (`false` means it is\nonly a lossy UI convenience and `output_base64` is authoritative).",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "output",
+        "output_base64",
+        "output_len",
+        "output_is_utf8"
+      ]
+    },
+    "ExecuteRequest": {
+      "type": "object",
+      "properties": {
+        "input_base64": {
+          "description": "None means no input source; Some(\"\") means explicitly empty input.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "recipe": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RecipeStep"
+          }
+        },
+        "variables": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {}
+        },
+        "trace": {
+          "description": "Opt-in: trace payloads can contain sensitive data.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TraceLimits"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "recipe"
+      ]
+    },
+    "TraceLimits": {
+      "type": "object",
+      "properties": {
+        "max_entries": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "max_bytes_per_entry": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "max_total_bytes": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "max_entries",
+        "max_bytes_per_entry",
+        "max_total_bytes"
+      ]
+    },
+    "GraphRequest": {
+      "type": "object",
+      "properties": {
+        "graph": {
+          "$ref": "#/$defs/Graph"
+        },
+        "inputs_base64": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {}
+        },
+        "outputs": {
+          "description": "Empty means all named outputs, otherwise exact output names.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "graph"
       ]
     },
     "GraphResult": {
@@ -1008,6 +1299,10 @@
         },
         "graphs": {
           "description": "Versioned multi-input graph execution is available.",
+          "type": "boolean",
+          "default": false
+        },
+        "graph_events": {
           "type": "boolean",
           "default": false
         },
@@ -1306,6 +1601,13 @@
               "type": "null"
             }
           ]
+        },
+        "graph_nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/GraphNodeProgress"
+          },
+          "default": []
         }
       },
       "required": [
@@ -1326,6 +1628,22 @@
     },
     "TaskResult": {
       "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "project"
+            },
+            "value": {
+              "$ref": "#/$defs/WorkbenchProject"
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
         {
           "type": "object",
           "properties": {
@@ -1410,9 +1728,78 @@
         }
       ]
     },
+    "GraphNodeProgress": {
+      "type": "object",
+      "properties": {
+        "node_id": {
+          "type": "string"
+        },
+        "state": {
+          "$ref": "#/$defs/GraphNodeState"
+        },
+        "output_bytes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint",
+          "minimum": 0
+        },
+        "elapsed_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "format": "double"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/GraphError"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "node_id",
+        "state"
+      ]
+    },
+    "GraphNodeState": {
+      "type": "string",
+      "enum": [
+        "running",
+        "succeeded",
+        "failed",
+        "blocked",
+        "skipped",
+        "disconnected",
+        "cancelled",
+        "timed_out"
+      ]
+    },
     "EngineTask": {
       "description": "Shared job payload, also used for supervised local worker execution.",
       "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "type": "string",
+              "const": "project_validate"
+            },
+            "params": {
+              "$ref": "#/$defs/WorkbenchProject"
+            }
+          },
+          "required": [
+            "method",
+            "params"
+          ]
+        },
         {
           "type": "object",
           "properties": {

@@ -1,7 +1,10 @@
 import { expect, it } from 'vitest';
 import fixtures from '../generated/contracts.fixture.json';
-import { parseContract } from './contracts';
+import { parseContract,parseCapabilities } from './contracts';
 import type { Contracts } from '../generated/contracts';
+it('rejects incompatible engine protocols before sending work',()=>{
+  expect(()=>parseCapabilities({...fixtures.capabilities,protocol_version:fixtures.capabilities.protocol_version-1})).toThrow();
+});
 it('validates real Rust-serialized contracts', () => {
   for (const key of Object.keys(fixtures) as (keyof Contracts)[]) expect(() => parseContract(key, fixtures[key])).not.toThrow();
 });

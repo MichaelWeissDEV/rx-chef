@@ -121,6 +121,16 @@ impl RemoteEngineClient {
 }
 
 impl EngineClient for RemoteEngineClient {
+    fn validate_project(
+        &self,
+        project: crate::WorkbenchProject,
+    ) -> Result<crate::WorkbenchProject, ClientError> {
+        self.request(
+            reqwest::Method::POST,
+            &["projects", "validate"],
+            Some(&project),
+        )
+    }
     fn validate_graph(&self, request: &crate::GraphRequest) -> Result<(), ClientError> {
         self.request(
             reqwest::Method::POST,

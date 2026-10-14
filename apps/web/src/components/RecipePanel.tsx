@@ -10,6 +10,8 @@ interface RecipePanelProps {
   onToggleDisabled: (index: number) => void;
   onUpdateArg: (stepIndex: number, argIndex: number, value: string) => void;
   onBake: () => void;
+  onCancel?: () => void;
+  canCancel?: boolean;
   onClear: () => void;
   isExecuting: boolean;
 }
@@ -22,6 +24,8 @@ export const RecipePanel: React.FC<RecipePanelProps> = ({
   onToggleDisabled,
   onUpdateArg,
   onBake,
+  onCancel,
+  canCancel,
   onClear,
   isExecuting,
 }) => {
@@ -33,6 +37,7 @@ export const RecipePanel: React.FC<RecipePanelProps> = ({
           <button className="btn btn-secondary" style={{ padding: '2px 8px' }} onClick={onClear} title="Clear recipe">
             Clear
           </button>
+          {isExecuting && onCancel && <button className="btn btn-secondary" onClick={onCancel} disabled={!canCancel}>Cancel recipe</button>}
           <button className="btn btn-primary" style={{ padding: '2px 10px' }} onClick={onBake} disabled={isExecuting}>
             <Play size={12} fill="currentColor" /> {isExecuting ? 'Baking...' : 'Bake'}
           </button>

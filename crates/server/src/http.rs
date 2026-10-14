@@ -200,6 +200,10 @@ pub fn router(state: Shared) -> Router {
                 post(|s, a, b| body_call(s, a, "graph.validate", b)),
             )
             .route(
+                "/api/v1/projects/validate",
+                post(|s, a, b| body_call(s, a, "project.validate", b)),
+            )
+            .route(
                 "/api/v1/graphs/execute",
                 post(|s, a, b| body_call(s, a, "graph.execute", b)),
             )

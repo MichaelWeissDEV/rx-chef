@@ -1,6 +1,12 @@
 import { parseBase64 } from './bytes';
 import * as validators from '../generated/validators.js';
 import type { Contracts } from '../generated/contracts';
+import { PROTOCOL_VERSION } from '../generated/contracts';
+export function parseCapabilities(data:unknown) {
+  const capabilities=parseContract('capabilities',data);
+  if(capabilities.protocol_version!==PROTOCOL_VERSION) throw {kind:'protocol',message:`Incompatible engine protocol ${capabilities.protocol_version}; expected ${PROTOCOL_VERSION}.`};
+  return capabilities;
+}
 export function parseContract<K extends keyof Contracts>(name: K, data: unknown): Contracts[K] {
   if (!validators[name](data)) throw { kind: 'protocol', message: `Server ${name} response does not match the Rust contract.`, step: null };
   return data as Contracts[K];

@@ -1964,7 +1964,7 @@ dependencies = [
 
 [[package]]
 name = "cyberchef-rust-tests"
-version = "0.1.0"
+version = "0.2.0-rc.1"
 dependencies = [
  "base64 0.22.1",
  "bcrypt",
@@ -7051,7 +7051,7 @@ dependencies = [
 
 [[package]]
 name = "rxchef"
-version = "0.1.0"
+version = "0.2.0-rc.1"
 dependencies = [
  "ab_glyph",
  "aes 0.8.4",
@@ -7187,7 +7187,7 @@ dependencies = [
 
 [[package]]
 name = "rxchef-cli"
-version = "0.1.0"
+version = "0.2.0-rc.1"
 dependencies = [
  "base64 0.22.1",
  "chrono",
@@ -7208,21 +7208,26 @@ dependencies = [
 
 [[package]]
 name = "rxchef-client"
-version = "0.1.0"
+version = "0.2.0-rc.1"
 dependencies = [
  "base64 0.22.1",
+ "libc",
  "regex",
  "reqwest",
  "rxchef",
+ "rxchef-store",
  "schemars 1.2.3",
  "serde",
  "serde_json",
  "thiserror 1.0.69",
+ "tokio",
+ "uuid",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
 name = "rxchef-gui"
-version = "0.1.0"
+version = "0.2.0-rc.1"
 dependencies = [
  "base64 0.22.1",
  "rxchef-client",
@@ -7232,12 +7237,13 @@ dependencies = [
  "tauri-build",
  "tauri-plugin-dialog",
  "tauri-plugin-window-state",
+ "tempfile",
  "tokio",
 ]
 
 [[package]]
 name = "rxchef-server"
-version = "0.1.0"
+version = "0.2.0-rc.1"
 dependencies = [
  "axum",
  "base64 0.22.1",
@@ -7260,10 +7266,13 @@ dependencies = [
 
 [[package]]
 name = "rxchef-store"
-version = "0.1.0"
+version = "0.2.0-rc.1"
 dependencies = [
  "chrono",
  "dirs 5.0.1",
+ "libc",
+ "rxchef",
+ "schemars 1.2.3",
  "serde",
  "serde_json",
  "serde_yaml",
@@ -7273,16 +7282,19 @@ dependencies = [
 
 [[package]]
 name = "rxchef-tui"
-version = "0.1.0"
+version = "0.2.0-rc.1"
 dependencies = [
  "base64 0.22.1",
  "chrono",
  "crossterm 0.27.0",
+ "hex",
  "ratatui",
  "rxchef",
  "rxchef-client",
  "rxchef-store",
  "serde_json",
+ "tempfile",
+ "tokio",
 ]
 
 [[package]]
@@ -10832,7 +10844,7 @@ dependencies = [
 
 [[package]]
 name = "xtask"
-version = "0.1.0"
+version = "0.2.0-rc.1"
 dependencies = [
  "regex",
  "rxchef",

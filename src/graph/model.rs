@@ -30,6 +30,9 @@ pub struct Position {
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Node {
     pub id: String,
+    /// Optional display label; execution identity remains the stable ID.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub label: Option<String>,
     #[serde(flatten)]
     pub kind: NodeKind,
 }
@@ -205,16 +208,19 @@ impl Graph {
             id,
             nodes: vec![
                 Node {
+                    label: None,
                     id: "input".into(),
                     kind: NodeKind::Input {
                         name: "input".into(),
                     },
                 },
                 Node {
+                    label: None,
                     id: "recipe".into(),
                     kind: NodeKind::Recipe { steps },
                 },
                 Node {
+                    label: None,
                     id: "output".into(),
                     kind: NodeKind::Output {
                         name: "output".into(),

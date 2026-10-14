@@ -5,8 +5,10 @@ mod execution;
 mod model;
 mod validation;
 
-pub use execution::{execute, ExecutionControl, GraphResult, NodeResult, NodeStatus, OutputResult};
+pub use execution::{
+    execute, ExecutionControl, GraphEvent, GraphResult, NodeResult, NodeStatus, OutputResult,
+};
 pub use model::*;
-pub use validation::{validate, GraphPlan};
+pub use validation::{argument_type, operation_requires_recipe, validate, GraphPlan};
 #[cfg(test)]
 mod tests;

@@ -1,44 +1,11 @@
 /* Generated from Rust serialization. Run npm run contracts:generate. Do not edit. */
 
-/**
- * Whether an operation consumes input bytes.
- */
-export type InputRequirement = "required" | "optional" | "ignored";
-/**
- * Verification state of an operation implementation.
- */
-export type ImplementationStatus = "complete" | "partial" | "unsupported" | "experimental";
-/**
- * Whether an implementation can run in the current build and platform.
- */
-export type Availability = "available" | "feature_disabled" | "platform_unavailable";
-/**
- * Externally observable behavior an operation may perform.
- */
-export type SideEffect =
-  "network" | "filesystem-read" | "filesystem-write" | "random" | "time" | "external-process" | "native-library";
-/**
- * Compatibility level with upstream CyberChef behavior.
- */
-export type ParityStatus = "exact" | "compatible" | "intentional_difference" | "unknown" | "not_applicable";
-/**
- * Machine-readable argument value category.
- */
-export type ArgKind =
-  | "string"
-  | "integer"
-  | "unsigned_integer"
-  | "float"
-  | "boolean"
-  | "bytes"
-  | "hex_bytes"
-  | "base64_bytes"
-  | "enum"
-  | "regex"
-  | "path"
-  | "url";
 export type Node = {
   id: string;
+  /**
+   * Optional display label; execution identity remains the stable ID.
+   */
+  label?: string | null;
 } & Node1;
 export type Node1 =
   | {
@@ -93,6 +60,53 @@ export type Combine =
   | {
       kind: "interleave";
     };
+/**
+ * Machine-readable argument value category.
+ */
+export type ArgKind =
+  | "string"
+  | "integer"
+  | "unsigned_integer"
+  | "float"
+  | "boolean"
+  | "bytes"
+  | "hex_bytes"
+  | "base64_bytes"
+  | "enum"
+  | "regex"
+  | "path"
+  | "url";
+export type WorkbenchRunStatus = "succeeded" | "failed" | "cancelled" | "timed_out" | "discarded";
+export type WorkbenchErrorCode = "validation" | "operation" | "transport" | "limit" | "timeout" | "cancelled";
+/**
+ * Whether an operation consumes input bytes.
+ */
+export type InputRequirement = "required" | "optional" | "ignored";
+/**
+ * Verification state of an operation implementation.
+ */
+export type ImplementationStatus = "complete" | "partial" | "unsupported" | "experimental";
+/**
+ * Whether an implementation can run in the current build and platform.
+ */
+export type Availability = "available" | "feature_disabled" | "platform_unavailable";
+/**
+ * Externally observable behavior an operation may perform.
+ */
+export type SideEffect =
+  "network" | "filesystem-read" | "filesystem-write" | "random" | "time" | "external-process" | "native-library";
+/**
+ * Compatibility level with upstream CyberChef behavior.
+ */
+export type ParityStatus = "exact" | "compatible" | "intentional_difference" | "unknown" | "not_applicable";
+export type PortType =
+  | {
+      type: "bytes";
+    }
+  | {
+      type: "argument";
+      kind: ArgKind;
+    };
 export type GraphErrorKind =
   | "validation"
   | "version"
@@ -129,6 +143,10 @@ export type ErrorKind =
 export type JobStatus = "queued" | "running" | "succeeded" | "failed" | "cancelled" | "timed_out";
 export type TaskResult =
   | {
+      kind: "project";
+      value: WorkbenchProject;
+    }
+  | {
       kind: "execution";
       value: ExecuteResponse;
     }
@@ -147,10 +165,16 @@ export type TaskResult =
       kind: "scan";
       value: Finding[];
     };
+export type GraphNodeState =
+  "running" | "succeeded" | "failed" | "blocked" | "skipped" | "disconnected" | "cancelled" | "timed_out";
 /**
  * Shared job payload, also used for supervised local worker execution.
  */
 export type EngineTask =
+  | {
+      method: "project_validate";
+      params: WorkbenchProject;
+    }
   | {
       method: "execute";
       params: ExecuteRequest;
@@ -177,6 +201,7 @@ export type EngineTask =
     };
 
 export interface Contracts {
+  workbench_project: WorkbenchProject;
   operations: OperationDescriptor[];
   argument: ArgumentDescriptor;
   result: ExecutionResult;
@@ -193,10 +218,98 @@ export interface Contracts {
   job: JobSnapshot;
   task: EngineTask;
 }
+export interface WorkbenchProject {
+  version: number;
+  name: string;
+  recipes?: WorkbenchRecipe[];
+  graphs?: Graph[];
+  settings?: WorkbenchSettings;
+  input_files?: InputFileReference[];
+  history?: WorkbenchRun[];
+}
+export interface WorkbenchRecipe {
+  name: string;
+  description?: string;
+  steps: WorkbenchStep[];
+}
+export interface WorkbenchStep {
+  op: string;
+  args?: string[];
+  enabled?: boolean;
+  breakpoint?: boolean;
+}
+/**
+ * Definitions contain no payloads or local paths. Inputs are bound explicitly
+ * at execution time. UI positions do not affect execution identities or order.
+ */
+export interface Graph {
+  version: number;
+  id: string;
+  nodes: Node[];
+  edges: Edge[];
+  presentation?: {
+    [k: string]: Position;
+  };
+}
+/**
+ * One operation and its ordered argument values in a recipe.
+ */
+export interface RecipeStep {
+  /**
+   * Operation name or normalized identifier.
+   */
+  op: string;
+  /**
+   * Ordered raw arguments. Parsing is delegated to the shared registry
+   * runtime after variable and register expansion.
+   */
+  args?: string[];
+}
+export interface Edge {
+  id: string;
+  source_node: string;
+  source_port: string;
+  target_node: string;
+  target_port: string;
+}
+export interface Position {
+  x: number;
+  y: number;
+}
+export interface WorkbenchSettings {
+  theme?: "dark" | "light";
+  selected_graph?: string | null;
+  selected_recipe?: string | null;
+}
+export interface InputFileReference {
+  graph_id: string;
+  input_name: string;
+  path: string;
+  /**
+   * Must be true: the file is a reference, not a bundled project payload.
+   */
+  external: boolean;
+}
+export interface WorkbenchRun {
+  id: string;
+  run_id: string;
+  graph_id: string;
+  started_at: string;
+  status: WorkbenchRunStatus;
+  elapsed_ms: number;
+  output_sizes?: {
+    [k: string]: number;
+  };
+  error_code?: WorkbenchErrorCode | null;
+}
 /**
  * Serializable operation metadata used by CLI and editor integrations.
  */
 export interface OperationDescriptor {
+  /**
+   * False for operations that must be embedded in a Recipe node.
+   */
+  graph_operation: boolean;
   name: string;
   id: string;
   aliases: string[];
@@ -221,6 +334,11 @@ export interface OperationDescriptor {
  * One operation argument in a machine-readable descriptor.
  */
 export interface ArgumentDescriptor {
+  /**
+   * Authoritative graph handle ID; clients must not reimplement normalization.
+   */
+  graph_port_id: string;
+  graph_port_type: PortType;
   name: string;
   description: string;
   default: string;
@@ -264,20 +382,6 @@ export interface ExecuteRequest {
    */
   trace?: TraceLimits | null;
 }
-/**
- * One operation and its ordered argument values in a recipe.
- */
-export interface RecipeStep {
-  /**
-   * Operation name or normalized identifier.
-   */
-  op: string;
-  /**
-   * Ordered raw arguments. Parsing is delegated to the shared registry
-   * runtime after variable and register expansion.
-   */
-  args?: string[];
-}
 export interface TraceLimits {
   max_entries: number;
   max_bytes_per_entry: number;
@@ -292,30 +396,6 @@ export interface GraphRequest {
    * Empty means all named outputs, otherwise exact output names.
    */
   outputs?: string[];
-}
-/**
- * Definitions contain no payloads or local paths. Inputs are bound explicitly
- * at execution time. UI positions do not affect execution identities or order.
- */
-export interface Graph {
-  version: number;
-  id: string;
-  nodes: Node[];
-  edges: Edge[];
-  presentation?: {
-    [k: string]: Position;
-  };
-}
-export interface Edge {
-  id: string;
-  source_node: string;
-  source_port: string;
-  target_node: string;
-  target_port: string;
-}
-export interface Position {
-  x: number;
-  y: number;
 }
 export interface GraphResult {
   outputs: OutputResult[];
@@ -380,6 +460,7 @@ export interface Capabilities {
    * Versioned multi-input graph execution is available.
    */
   graphs?: boolean;
+  graph_events?: boolean;
   max_input_bytes: number;
   max_output_bytes: number;
   max_steps: number;
@@ -464,4 +545,14 @@ export interface JobSnapshot {
   progress?: number | null;
   result?: TaskResult | null;
   error?: ClientError | null;
+  graph_nodes?: GraphNodeProgress[];
 }
+export interface GraphNodeProgress {
+  node_id: string;
+  state: GraphNodeState;
+  output_bytes?: number | null;
+  elapsed_ms?: number | null;
+  error?: GraphError | null;
+}
+
+export const PROTOCOL_VERSION = 2 as const;

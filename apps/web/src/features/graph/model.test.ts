@@ -26,3 +26,11 @@ describe('graph presentation contracts', () => {
     expect(canConnect(graph, 'input', 'hash', port.id, operations)).toBe(false);
   });
 });
+
+it('uses Rust-provided port IDs and types for all registered descriptors', () => {
+  for (const op of operations) {
+    const actual = ports({ id: 'operation', type: 'operation', operation: op.id }, operations).slice(1);
+    expect(actual).toEqual(op.args.map(arg => ({ id: arg.graph_port_id, type: arg.graph_port_type.type === 'bytes' ? 'bytes' : `arg:${arg.graph_port_type.kind}` })));
+    expect(new Set(actual.map(port => port.id)).size).toBe(actual.length);
+  }
+});

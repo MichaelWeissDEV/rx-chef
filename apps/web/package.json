@@ -1,7 +1,7 @@
 {
   "name": "rxchef-web",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0-rc.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,7 +11,7 @@
     "test": "vitest run src",
     "contracts:generate": "cargo run --manifest-path ../../Cargo.toml -p rxchef-client --features schema --example export_contracts && node scripts/contracts.mjs",
     "contracts:check": "cargo run --manifest-path ../../Cargo.toml -p rxchef-client --features schema --example export_contracts -- --check && node scripts/contracts.mjs --check",
-    "test:e2e": "playwright test",
+    "test:e2e": "npm run build && cargo build --locked --manifest-path ../../Cargo.toml -p rxchef-server --features web-ui && playwright test",
     "desktop:dev": "node scripts/desktop.mjs dev",
     "desktop:build": "node scripts/desktop.mjs build",
     "typecheck": "tsc -b --pretty false",

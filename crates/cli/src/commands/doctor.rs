@@ -1,67 +1,83 @@
-//! Environment and installation diagnostic command: `rxchef doctor`
-use rxchef_client::{EngineClient, RemoteEngineClient};
+//! Evidence-based environment checks: requested remote failures are command failures.
+use rxchef_client::{EngineClient, LocalEngineClient, RemoteEngineClient, PROTOCOL_VERSION};
 use std::time::Duration;
 
 pub(crate) fn cmd_doctor(server_url: Option<String>, token: Option<String>) -> Result<(), String> {
-    println!("rx-chef Diagnostics (Doctor)");
-    println!("============================");
-
-    // 1. Core library & Operations Registry
-    let op_count = rxchef::catalog::operations()
-        .map(|ops| ops.len())
-        .unwrap_or(0);
-    println!(
-        "✓ Core library: v{} ({} operations registered)",
-        env!("CARGO_PKG_VERSION"),
-        op_count
-    );
-
-    // 2. Feature availability
-    println!("✓ Subsystems: Catalog, Pipeline Engine, Magic & Scan active");
-
-    // 3. Persistent store directories
-    match rxchef_store::default_scope() {
-        scope => {
-            println!("✓ Local store scope: active ({:?})", scope);
-            let recipes = rxchef_store::list_recipes(None);
-            println!("  - Saved recipes: {}", recipes.len());
-            let vars = rxchef_store::list_vars(None);
-            println!("  - Stored variables: {}", vars.len());
-        }
+    let local = LocalEngineClient::default();
+    let operations = local.operations().map_err(|e| e.to_string())?;
+    if operations.is_empty() {
+        println!("FAIL Core: empty operations registry");
+        return Err("Core registry check failed".into());
     }
-
-    // 4. Remote server check if requested
+    let capabilities = local.capabilities().map_err(|e| e.to_string())?;
+    println!(
+        "PASS Core/client v{}: {} operations, protocol {}",
+        capabilities.version,
+        operations.len(),
+        capabilities.protocol_version
+    );
+    println!("PASS Graph capability: {}", capabilities.graphs);
+    let available = operations
+        .iter()
+        .filter(|op| matches!(op.availability, rxchef::operation::Availability::Available))
+        .count();
+    println!(
+        "PASS Feature matrix: {available}/{} operations available in this build",
+        operations.len()
+    );
+    let scope = rxchef_store::default_scope();
+    let directory = match scope {
+        rxchef_store::Scope::Global => rxchef_store::global_dir(),
+        rxchef_store::Scope::Project => rxchef_store::project_dir(),
+    };
+    if directory.exists() {
+        if let Err(error) = std::fs::read_dir(&directory) {
+            println!("FAIL Store: cannot read {}", directory.display());
+            return Err(format!("Store access check failed: {error}"));
+        }
+        println!(
+            "PASS Store read access: {} ({scope:?})",
+            directory.display()
+        );
+        println!("NOT TESTED Store write access (diagnostics do not modify stored data)");
+    } else {
+        println!(
+            "WARN Store directory not initialized: {}",
+            directory.display()
+        );
+    }
     if let Some(url) = server_url {
-        println!("\nTesting remote server connection to {}...", url);
-        match RemoteEngineClient::new(&url, token.as_deref(), Duration::from_secs(5)) {
-            Ok(client) => match client.capabilities() {
-                Ok(caps) => {
+        let result = RemoteEngineClient::new(&url, token.as_deref(), Duration::from_secs(5))
+            .and_then(|client| client.capabilities());
+        match result {
+            Ok(caps) => {
+                if caps.protocol_version != PROTOCOL_VERSION
+                    || !caps.graphs
+                    || caps.binary_transport != "base64"
+                {
                     println!(
-                        "✓ Server reachable: protocol v{} ({})",
-                        caps.protocol_version, caps.version
+                        "FAIL Server compatibility: protocol {}, graphs {}, binary {}",
+                        caps.protocol_version, caps.graphs, caps.binary_transport
                     );
-                    println!(
-                        "  - Supervised jobs: {}",
-                        if caps.jobs { "supported" } else { "disabled" }
-                    );
-                    println!("  - Binary transport: {}", caps.binary_transport);
-                    println!(
-                        "  - Max input/output: {} / {} bytes",
-                        caps.max_input_bytes, caps.max_output_bytes
-                    );
+                    return Err("Requested server is incompatible with graph workflows".into());
                 }
-                Err(err) => {
-                    println!("✗ Server connection failed: {}", err);
-                }
-            },
-            Err(err) => {
-                println!("✗ Invalid server configuration: {}", err);
+                println!(
+                    "PASS Server v{}: protocol {}, graphs {}, supervised jobs {}",
+                    caps.version, caps.protocol_version, caps.graphs, caps.jobs
+                );
+                println!(
+                    "PASS Server input/output limits: {} / {} bytes",
+                    caps.max_input_bytes, caps.max_output_bytes
+                );
+            }
+            Err(error) => {
+                println!("FAIL Server check: {error}");
+                return Err("Requested remote diagnostic failed".into());
             }
         }
     } else {
-        println!("\nTip: Run `rxchef doctor --server http://127.0.0.1:8787 [--token ...]` to test a server connection.");
+        println!("NOT TESTED Remote server (supply --server to check)");
     }
-
-    println!("\nAll local subsystems operational.");
+    println!("NOT TESTED Desktop installation and native launch");
     Ok(())
 }

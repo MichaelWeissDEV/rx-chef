@@ -62,6 +62,10 @@ run_gate "wire contracts" npm --prefix apps/web run contracts:check
 run_gate "frontend unit tests" npm --prefix apps/web test
 run_gate "frontend lint" npm --prefix apps/web run lint
 run_gate "frontend build" npm --prefix apps/web run build
+if [[ "$mode" == "linux" || "$mode" == "linux-arm" ]]; then
+    run_gate "browser runtime" npm --prefix apps/web exec -- playwright install --with-deps chromium
+fi
+run_gate "browser E2E" npm --prefix apps/web run test:e2e
 
 # --- Static checks ---------------------------------------------------------
 
@@ -108,6 +112,11 @@ fi
 run_gate "release CLI" cargo build --locked --release -p rxchef-cli
 run_gate "release TUI" cargo build --locked --release -p rxchef-tui
 run_gate "release library/FFI" cargo build --locked --release -p rxchef
+run_gate "release server" cargo build --locked --release -p rxchef-server
+case "$(uname -s)" in
+    Darwin|Linux) run_gate "real terminal graph smoke" python3 scripts/tui-graph-smoke.py "$CARGO_TARGET_DIR/release/rxchef_tui" --server-binary "$CARGO_TARGET_DIR/release/rxchef-server" ;;
+    *) skip_gate "real terminal graph smoke" "POSIX PTY test requires macOS/Linux; native Windows console tests required" ;;
+esac
 
 rxchef="$CARGO_TARGET_DIR/release/rxchef"
 
@@ -160,12 +169,16 @@ run_gate "server smoke" python3 docker/server-smoke.py "$rxchef"
 
 # --- Linux x86_64 only -----------------------------------------------------
 
-if [[ "$mode" == "linux" ]]; then
+if [[ "$mode" == "linux" || "$mode" == "linux-arm" ]]; then
     run_gate "FFI C compile" cc -std=c11 -Wall -Wextra -Werror -Iinclude \
         docker/ffi-smoke.c -L"$CARGO_TARGET_DIR/release" -lrxchef -o /tmp/rxchef-ffi-smoke
     run_gate "FFI C execute" \
         env LD_LIBRARY_PATH="$CARGO_TARGET_DIR/release" /tmp/rxchef-ffi-smoke
-    run_gate "quick Linux benchmarks" cargo run --locked --package xtask -- bench-docs --quick
+    if [[ "$mode" == "linux" ]]; then
+        run_gate "quick Linux benchmarks" cargo run --locked --package xtask -- bench-docs --quick
+    else
+        skip_gate "quick x86_64 Linux benchmarks" "this runner is Linux aarch64; do not label its measurements as x86_64"
+    fi
     run_gate "Core package" cargo package --locked -p rxchef --allow-dirty
     run_gate "Store package" cargo package --locked -p rxchef-store --allow-dirty
     run_gate "Client package contents" \
@@ -204,8 +217,8 @@ if ((${#failed[@]} > 0)); then
     exit 1
 fi
 
-if [[ "$mode" == "linux" ]]; then
-    echo "Mode: Linux x86_64 container (complete gate set)"
+if [[ "$mode" == "linux" || "$mode" == "linux-arm" ]]; then
+    echo "Mode: Linux container ($(uname -m))"
 else
     echo "Mode: host ($(uname -s) $(uname -m)) — Linux-only gates were skipped"
 fi

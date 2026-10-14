@@ -114,24 +114,67 @@ Server requests contain selected bytes, never local file paths.
 
 ## Browser and desktop editor
 
-Choose **Graph mode**. Add input/operation/combine/output nodes, edit their names
+Choose **Graph mode**. Add input/operation/argument/recipe/combine/output nodes, edit their names
 and parameters in the inspector, and connect handles or use the keyboard-accessible
 Source/Target/Port controls. Add up to 64 combine inputs in the inspector. Select
 nodes through the canvas or the inspector selector. React Flow provides pan,
 zoom, fit-to-view, minimap, selection, movement and keyboard deletion.
 
-**Run graph** uses remote supervised jobs when available. **Cancel graph** calls
-the server job API; local desktop calls currently cannot interrupt a running
-operation. Output tabs expose bounded HEX/text/Base64 previews and exact binary
+**Run graph** freezes the definition and input bindings with a run ID and graph,
+input and connection revisions. Later edits invalidate the result. Superseded
+runs cannot publish outputs. Desktop and server use the same process supervisor;
+**Cancel graph** waits for worker termination. Output tabs expose bounded HEX/text/Base64 previews and exact binary
 downloads. Metadata shows final node status, byte length, elapsed time and error.
 
 Save/load preserves the definition and node positions. It excludes input bytes
 and results, so bind inputs again after loading. Browser Save refuses sensitive
 literal arguments; supply them through separate named input nodes. Embedded
-recipe imports are supported, but advanced recipe/subgraph editing and typed
-argument adapter creation still need editor controls. There is no automatic
-execution on edits or movement. Persistent projects, live per-node trace payloads,
-advanced editing, conversion buttons and TUI graph workflows are not complete.
+recipe imports and step editors are supported. Argument nodes expose registry
+types; byte adapters preserve all bytes, while other adapters validate textual
+values using the Rust argument parser. Argument port IDs and types come directly
+from Rust descriptors. There is no automatic execution on edits or movement.
+The operation browser provides search, categories, favorites and recent items.
+Arrange places connected nodes in DAG layers; copy/paste retains only selected
+definitions and their internal connections. Ctrl/Cmd Z, Shift Z, C, V and Enter
+provide undo, redo, copy, paste and run; these shortcuts preserve normal editing
+inside inputs. Node start/completion events travel through bounded worker IPC
+into job snapshots and the existing WebSocket subscriptions. The canvas and
+inspector show actual running and interrupted nodes. Timing/byte counts remain
+pending until known. Intermediate payloads and artificial percentages are excluded.
+
+**Project** supports multiple graphs and recipes, explicit local library saves,
+portable `.rxproject.json` export/import, settings and bounded status/size history.
+Restore clears bindings and results. External file references are metadata and
+are never automatically opened, including by the server. Known sensitive literal
+arguments are rejected; bind them through input nodes. Other literal definition
+arguments remain part of the project.
+
+`rxchef graph store [--global]` supports save/load/list/rename/duplicate/delete.
+Names use portable ASCII characters, exclude Windows device names and cannot
+differ only by case. Rename changes the storage key atomically while retaining
+execution identity. `rxchef project new/validate/inspect/export` handles portable
+sessions alongside legacy projects. `graph run --history` opts into metadata-only
+history with empty input/output previews and argument lists.
+
+The client/server contract uses protocol **2**. Update clients and servers together.
+Byte adapters accept decoded bytes; insert From HEX / From Base64 when a source
+file contains encoded text that must first be decoded.
+
+## Terminal graph workbench
+
+Start `rxchef_tui --graph examples/graphs/linear.rxgraph.json`. Tab switches between
+recipes and graphs. `l` opens a graph file or lists JSON files in an explicitly
+selected directory. Arrow keys select nodes. For an Input node, `i`, `h`, `b`,
+and `f` bind text, strict HEX, Base64 and a regular file respectively. `r` runs,
+`c` cancels, `o` selects the next output, and `e` exports the complete bytes.
+`s` saves the definition, excluding bound payloads and results; sensitive literal
+arguments must first be replaced by named input bindings. Input changes discard
+older results. Final node states, connections, errors and timings appear in the
+inspector. The output is a bounded HEX preview, never the export source.
+
+Add `--server URL` and supply `RXCHEF_TOKEN` for remote jobs. Network requests run
+on background threads. Local execution uses bounded child workers without a
+server. Exit cancels active work and restores raw mode and the alternate screen.
 
 React Flow was selected using its official MIT license, accessibility and release
 documentation: https://reactflow.dev/pro,

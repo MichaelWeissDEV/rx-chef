@@ -11,12 +11,27 @@ use std::{
     time::{Duration, Instant},
 };
 
-#[derive(Debug, Clone, Default)]
+#[derive(Clone, Default)]
 pub struct ExecutionControl {
     pub cancelled: Option<Arc<AtomicBool>>,
     pub timeout: Option<Duration>,
+    pub observer: Option<Arc<dyn Fn(GraphEvent) + Send + Sync>>,
+}
+impl std::fmt::Debug for ExecutionControl {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ExecutionControl")
+            .field("cancelled", &self.cancelled)
+            .field("timeout", &self.timeout)
+            .field("observer", &self.observer.is_some())
+            .finish()
+    }
 }
 impl ExecutionControl {
+    fn emit(&self, event: GraphEvent) {
+        if let Some(observer) = &self.observer {
+            observer(event);
+        }
+    }
     fn check(&self, started: Instant) -> Result<(), GraphError> {
         if self
             .cancelled
@@ -57,6 +72,13 @@ pub struct NodeResult {
     pub output_bytes: usize,
     pub elapsed_ms: f64,
     pub error: Option<GraphError>,
+}
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+pub enum GraphEvent {
+    Started { node_id: String },
+    Finished { node: NodeResult },
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
@@ -129,6 +151,13 @@ pub fn execute(
             }
         }
     }
+    if stack.is_empty() {
+        return Err(GraphError::new(
+            GraphErrorKind::Validation,
+            None,
+            "execution requires at least one output",
+        ));
+    }
     if stack.len() < names.len() {
         return Err(GraphError::new(
             GraphErrorKind::Validation,
@@ -200,7 +229,7 @@ pub fn execute(
         control.check(started)?;
         let node = &graph.nodes[index];
         if !active.contains(&index) {
-            result.nodes.push(NodeResult {
+            let finished = NodeResult {
                 node_id: node.id.clone(),
                 status: if plan.disconnected.contains(&node.id) {
                     NodeStatus::Disconnected
@@ -210,7 +239,11 @@ pub fn execute(
                 output_bytes: 0,
                 elapsed_ms: 0.0,
                 error: None,
+            };
+            control.emit(GraphEvent::Finished {
+                node: finished.clone(),
             });
+            result.nodes.push(finished);
             continue;
         }
         let node_started = Instant::now();
@@ -229,6 +262,7 @@ pub fn execute(
             .inbound
             .iter()
             .any(|((i, _), source)| *i == index && values.get(source).is_some_and(Result::is_err));
+        let bypassed = matches!(&node.kind, NodeKind::Operation { enabled: false, .. });
         let mut value = if failed_dependency {
             Err(GraphError::new(
                 GraphErrorKind::Dependency,
@@ -236,6 +270,11 @@ pub fn execute(
                 "upstream dependency failed",
             ))
         } else {
+            if !bypassed {
+                control.emit(GraphEvent::Started {
+                    node_id: node.id.clone(),
+                });
+            }
             run_node(node, &incoming, &mut inputs, policy)
         };
         control.check(started)?;
@@ -255,10 +294,10 @@ pub fn execute(
                 "node byte limit",
             ));
         }
-        if value
-            .as_ref()
-            .is_ok_and(|v| live.saturating_add(v.len()) > policy.limits.max_live_bytes)
-        {
+        if value.as_ref().is_ok_and(|v| {
+            live.checked_add(v.len())
+                .is_none_or(|n| n > policy.limits.max_live_bytes)
+        }) {
             value = Err(GraphError::new(
                 GraphErrorKind::Limit,
                 Some(&node.id),
@@ -267,7 +306,9 @@ pub fn execute(
         }
         if let NodeKind::Output { name } = &node.kind {
             if value.as_ref().is_ok_and(|v| {
-                output_total.saturating_add(v.len()) > policy.limits.max_output_bytes
+                output_total
+                    .checked_add(v.len())
+                    .is_none_or(|n| n > policy.limits.max_output_bytes)
             }) {
                 value = Err(GraphError::new(
                     GraphErrorKind::OutputLimit,
@@ -291,7 +332,15 @@ pub fn execute(
             });
         }
         let (status, len, error) = match &value {
-            Ok(v) => (NodeStatus::Succeeded, v.len(), None),
+            Ok(v) => (
+                if bypassed {
+                    NodeStatus::Skipped
+                } else {
+                    NodeStatus::Succeeded
+                },
+                v.len(),
+                None,
+            ),
             Err(e) => (
                 if e.kind == GraphErrorKind::Dependency {
                     NodeStatus::Blocked
@@ -302,13 +351,17 @@ pub fn execute(
                 Some(e.clone()),
             ),
         };
-        result.nodes.push(NodeResult {
+        let finished = NodeResult {
             node_id: node.id.clone(),
             status,
             output_bytes: len,
             elapsed_ms: node_started.elapsed().as_secs_f64() * 1000.0,
             error,
+        };
+        control.emit(GraphEvent::Finished {
+            node: finished.clone(),
         });
+        result.nodes.push(finished);
         live += len;
         values.insert(index, value);
         // Each target port counts as one reference, including multiple ports
@@ -355,10 +408,25 @@ fn run_node(
             .map(|v| (*v).clone())
             .ok_or_else(|| fail(GraphErrorKind::Input, "missing output data")),
         NodeKind::Argument { kind } => {
+            if matches!(
+                kind,
+                ArgKind::Bytes | ArgKind::HexBytes | ArgKind::Base64Bytes
+            ) {
+                return incoming
+                    .get("data")
+                    .map(|value| (*value).clone())
+                    .ok_or_else(|| fail(GraphErrorKind::Input, "missing adapter data"));
+            }
             let text = std::str::from_utf8(data("data")?).map_err(|_| {
                 fail(
                     GraphErrorKind::InvalidArgument,
                     "argument requires valid UTF-8",
+                )
+            })?;
+            crate::runtime::validate_argument_kind(text, *kind).map_err(|_| {
+                fail(
+                    GraphErrorKind::InvalidArgument,
+                    "argument adapter value has invalid syntax",
                 )
             })?;
             Ok(Value::Argument {

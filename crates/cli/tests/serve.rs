@@ -162,7 +162,10 @@ fn request_size_limit_is_enforced_and_connection_recovers() {
     assert_eq!(response["error"]["code"], -32004);
 
     session.send(json!({"id": 1, "method": "ping"}));
-    assert_eq!(session.recv()["result"]["protocol_version"], 1);
+    assert_eq!(
+        session.recv()["result"]["protocol_version"],
+        rxchef_client::PROTOCOL_VERSION
+    );
     let (status, stderr) = session.finish();
     assert!(status.success());
     assert!(stderr.is_empty(), "unexpected stderr: {stderr}");
@@ -183,7 +186,10 @@ fn ping_reports_server_name_version_and_protocol() {
     // The server version is derived from Cargo metadata, not a hand-maintained
     // protocol constant.
     assert_eq!(response["result"]["version"], env!("CARGO_PKG_VERSION"));
-    assert_eq!(response["result"]["protocol_version"], 1);
+    assert_eq!(
+        response["result"]["protocol_version"],
+        rxchef_client::PROTOCOL_VERSION
+    );
 
     let (status, stderr) = session.finish();
     assert!(status.success());

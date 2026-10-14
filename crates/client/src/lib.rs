@@ -14,6 +14,7 @@ pub use remote::RemoteEngineClient;
 mod graph;
 pub use graph::{graph_output_bytes, GraphRequest};
 pub use rxchef::graph::GraphResult;
+pub use rxchef_store::workbench::WorkbenchProject;
 
 mod analysis;
 pub use analysis::{MagicCandidate, MagicRequest, ScanRequest};
@@ -104,6 +105,8 @@ pub struct Capabilities {
     /// Versioned multi-input graph execution is available.
     #[serde(default)]
     pub graphs: bool,
+    #[serde(default)]
+    pub graph_events: bool,
     pub max_input_bytes: usize,
     pub max_output_bytes: usize,
     pub max_steps: usize,
@@ -166,6 +169,15 @@ pub struct ExecuteResponse {
 /// A synchronous interface intended for a frontend's worker thread.
 /// UI event loops must not call long-running transformations inline.
 pub trait EngineClient {
+    fn validate_project(
+        &self,
+        _project: WorkbenchProject,
+    ) -> Result<WorkbenchProject, ClientError> {
+        Err(ClientError::new(
+            ErrorKind::Unavailable,
+            "project API unavailable",
+        ))
+    }
     fn capabilities(&self) -> Result<Capabilities, ClientError>;
     fn operations(&self) -> Result<Vec<integration::OperationDescriptor>, ClientError>;
     fn describe(&self, operation: &str) -> Result<integration::OperationDescriptor, ClientError>;
@@ -338,6 +350,19 @@ impl LocalEngineClient {
 }
 
 impl EngineClient for LocalEngineClient {
+    fn validate_project(&self, project: WorkbenchProject) -> Result<WorkbenchProject, ClientError> {
+        project
+            .validate()
+            .map_err(|error| ClientError::new(ErrorKind::InvalidInput, error.to_string()))?;
+        for graph in &project.graphs {
+            self.validate_graph(&GraphRequest {
+                graph: graph.clone(),
+                inputs_base64: Default::default(),
+                outputs: Vec::new(),
+            })?;
+        }
+        Ok(project)
+    }
     fn validate_graph(&self, request: &GraphRequest) -> Result<(), ClientError> {
         self.validate_graph_request(request)
     }
@@ -360,6 +385,7 @@ impl EngineClient for LocalEngineClient {
             trace: true,
             jobs: false,
             graphs: true,
+            graph_events: false,
             max_input_bytes: self.policy.max_input_bytes,
             max_output_bytes: self.policy.max_output_bytes,
             max_steps: self.policy.max_steps,
@@ -452,6 +478,7 @@ pub fn export_bytes(result: &integration::ExecutionResult) -> Result<Vec<u8>, Cl
 #[serde(tag = "method", content = "params", rename_all = "snake_case")]
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub enum EngineTask {
+    ProjectValidate(WorkbenchProject),
     Execute(ExecuteRequest),
     GraphExecute(GraphRequest),
     GraphValidate(GraphRequest),
@@ -464,6 +491,7 @@ pub enum EngineTask {
 #[serde(tag = "kind", content = "value", rename_all = "snake_case")]
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub enum TaskResult {
+    Project(WorkbenchProject),
     Execution(ExecuteResponse),
     Graph(GraphResult),
     Validated,
@@ -474,6 +502,9 @@ pub enum TaskResult {
 impl LocalEngineClient {
     pub fn perform(&self, task: EngineTask) -> Result<TaskResult, ClientError> {
         match task {
+            EngineTask::ProjectValidate(project) => {
+                self.validate_project(project).map(TaskResult::Project)
+            }
             EngineTask::GraphExecute(request) => self.execute_graph(request).map(TaskResult::Graph),
             EngineTask::GraphValidate(request) => {
                 self.validate_graph(&request).map(|_| TaskResult::Validated)
@@ -514,4 +545,39 @@ pub struct JobSnapshot {
     pub progress: Option<f64>,
     pub result: Option<TaskResult>,
     pub error: Option<ClientError>,
+    #[serde(default)]
+    pub graph_nodes: Vec<GraphNodeProgress>,
 }
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+pub enum GraphNodeState {
+    Running,
+    Succeeded,
+    Failed,
+    Blocked,
+    Skipped,
+    Disconnected,
+    Cancelled,
+    TimedOut,
+}
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+pub struct GraphNodeProgress {
+    pub node_id: String,
+    pub state: GraphNodeState,
+    pub output_bytes: Option<usize>,
+    pub elapsed_ms: Option<f64>,
+    pub error: Option<rxchef::graph::GraphError>,
+}
+
+#[cfg(feature = "worker")]
+pub mod jobs;
+#[cfg(feature = "worker")]
+mod supervised;
+#[cfg(feature = "worker")]
+pub mod worker;
+#[cfg(feature = "worker")]
+mod worker_resources;
+#[cfg(feature = "worker")]
+pub use supervised::SupervisedEngineClient;

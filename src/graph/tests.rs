@@ -8,6 +8,7 @@ use std::{
 
 fn node(id: &str, kind: NodeKind) -> Node {
     Node {
+        label: None,
         id: id.into(),
         kind,
     }
@@ -308,6 +309,7 @@ fn cancellation_and_deadline_return_typed_errors() {
     let cancelled = ExecutionControl {
         cancelled: Some(Arc::new(AtomicBool::new(true))),
         timeout: None,
+        observer: None,
     };
     assert_eq!(
         execute(
@@ -324,6 +326,7 @@ fn cancellation_and_deadline_return_typed_errors() {
     let timeout = ExecutionControl {
         timeout: Some(Duration::ZERO),
         cancelled: None,
+        observer: None,
     };
     assert_eq!(
         execute(&g, BTreeMap::new(), &[], &GraphPolicy::default(), &timeout)
@@ -331,6 +334,85 @@ fn cancellation_and_deadline_return_typed_errors() {
             .kind,
         GraphErrorKind::Timeout
     );
+}
+#[test]
+fn node_events_follow_actual_execution_and_never_include_intermediate_payloads() {
+    let events = Arc::new(std::sync::Mutex::new(Vec::new()));
+    let observer = events.clone();
+    let graph = Graph::from_recipe(
+        "events".into(),
+        vec![crate::execution::RecipeStep {
+            op: "To Base64".into(),
+            args: Vec::new(),
+        }],
+    );
+    let result = execute(
+        &graph,
+        BTreeMap::from([("input".into(), b"PRIVATE-INPUT".to_vec())]),
+        &[],
+        &GraphPolicy::default(),
+        &ExecutionControl {
+            observer: Some(Arc::new(move |event| observer.lock().unwrap().push(event))),
+            ..Default::default()
+        },
+    )
+    .unwrap();
+    let events = events.lock().unwrap();
+    assert_eq!(events.len(), 6);
+    for pair in events.chunks_exact(2) {
+        let GraphEvent::Started { node_id } = &pair[0] else {
+            panic!()
+        };
+        let GraphEvent::Finished { node } = &pair[1] else {
+            panic!()
+        };
+        assert_eq!(node_id, &node.node_id);
+        assert!(result
+            .nodes
+            .iter()
+            .any(|finished| finished.node_id == node.node_id
+                && finished.output_bytes == node.output_bytes));
+    }
+    let serialized = serde_json::to_string(&*events).unwrap();
+    assert!(!serialized.contains("PRIVATE-INPUT"));
+    assert!(!serialized.contains("output_base64"));
+}
+#[test]
+fn disabled_nodes_pass_bytes_through_and_report_skipped_without_starting() {
+    let mut disabled = op("disabled", "To Base64");
+    if let NodeKind::Operation { enabled, .. } = &mut disabled.kind {
+        *enabled = false;
+    }
+    let graph = graph(
+        vec![input("input"), disabled, output("output")],
+        vec![
+            edge("input", "disabled", "data"),
+            edge("disabled", "output", "data"),
+        ],
+    );
+    let events = Arc::new(std::sync::Mutex::new(Vec::new()));
+    let collected = events.clone();
+    let result = execute(
+        &graph,
+        BTreeMap::from([("input".into(), vec![0, 255, 192])]),
+        &[],
+        &GraphPolicy::default(),
+        &ExecutionControl {
+            observer: Some(Arc::new(move |event| collected.lock().unwrap().push(event))),
+            ..Default::default()
+        },
+    )
+    .unwrap();
+    assert_eq!(bytes(&result, "output"), vec![0, 255, 192]);
+    assert!(result
+        .nodes
+        .iter()
+        .any(|node| node.node_id == "disabled" && node.status == NodeStatus::Skipped));
+    assert!(!events
+        .lock()
+        .unwrap()
+        .iter()
+        .any(|event| matches!(event,GraphEvent::Started{node_id} if node_id=="disabled")));
 }
 #[test]
 fn combine_semantics_include_strict_xor_and_utf8() {
@@ -553,4 +635,143 @@ fn file_references_and_unknown_node_fields_are_rejected() {
         &GraphPolicy::default()
     )
     .is_err());
+}
+
+#[test]
+fn byte_argument_adapters_preserve_every_byte_for_all_byte_kinds() {
+    let bytes: Vec<u8> = (0..=255).collect();
+    for kind in [
+        crate::ArgKind::Bytes,
+        crate::ArgKind::HexBytes,
+        crate::ArgKind::Base64Bytes,
+    ] {
+        let g = graph(
+            vec![
+                input("input"),
+                node("adapter", NodeKind::Argument { kind }),
+                output("out"),
+            ],
+            vec![
+                edge("input", "adapter", "data"),
+                edge("adapter", "out", "data"),
+            ],
+        );
+        assert_eq!(super::argument_type(kind), PortType::Bytes);
+        assert_eq!(self::bytes(&run(&g, &[("input", &bytes)]), "out"), bytes);
+    }
+}
+#[test]
+fn every_registered_argument_has_one_authoritative_unique_graph_port() {
+    for descriptor in crate::integration::operations().unwrap() {
+        let mut ids = std::collections::BTreeSet::new();
+        for arg in descriptor.args {
+            assert_eq!(
+                arg.graph_port_id,
+                format!("arg:{}", crate::runtime::canonical_identifier(&arg.name))
+            );
+            assert!(ids.insert(arg.graph_port_id));
+            assert_eq!(arg.graph_port_type, super::argument_type(arg.kind));
+        }
+    }
+}
+#[test]
+fn non_normalized_ids_and_orphan_positions_are_rejected() {
+    let mut g = Graph::from_recipe("normal".into(), vec![]);
+    g.id = "e\u{301}".into();
+    assert!(validate(&g, &GraphPolicy::default()).is_err());
+    g.id = "é".into();
+    assert!(validate(&g, &GraphPolicy::default()).is_ok());
+    g.presentation
+        .insert("unknown".into(), Position { x: 0.0, y: 0.0 });
+    assert!(validate(&g, &GraphPolicy::default()).is_err());
+}
+#[test]
+fn changed_combine_counts_reject_existing_edges_and_invalid_selection() {
+    let mut g = binary_graph();
+    if let NodeKind::Combine { combine } = &mut g.nodes[5].kind {
+        *combine = Combine::Concatenate { inputs: 1 };
+    }
+    assert!(validate(&g, &GraphPolicy::default()).is_err());
+    let g = Graph::from_recipe("output".into(), vec![]);
+    assert!(execute(
+        &g,
+        BTreeMap::new(),
+        &["unknown".into()],
+        &GraphPolicy::default(),
+        &ExecutionControl::default()
+    )
+    .is_err());
+    assert!(execute(
+        &g,
+        BTreeMap::new(),
+        &["output".into(), "output".into()],
+        &GraphPolicy::default(),
+        &ExecutionControl::default()
+    )
+    .is_err());
+    assert!(execute(
+        &graph(vec![input("input")], vec![]),
+        BTreeMap::new(),
+        &[],
+        &GraphPolicy::default(),
+        &ExecutionControl::default()
+    )
+    .is_err());
+}
+#[test]
+fn invalid_adapter_syntax_blocks_only_its_dependency_branch() {
+    let info = crate::runtime::operation_info("SHA2").unwrap();
+    let argument = &info.args[0];
+    let g = graph(
+        vec![
+            input("input"),
+            input("parameter"),
+            node(
+                "adapter",
+                NodeKind::Argument {
+                    kind: argument.kind,
+                },
+            ),
+            op("hash", "SHA2"),
+            output("good"),
+            output("bad"),
+        ],
+        vec![
+            edge("input", "good", "data"),
+            edge("input", "hash", "data"),
+            edge("parameter", "adapter", "data"),
+            edge(
+                "adapter",
+                "hash",
+                &format!(
+                    "arg:{}",
+                    crate::runtime::canonical_identifier(argument.name)
+                ),
+            ),
+            edge("hash", "bad", "data"),
+        ],
+    );
+    let result = run(&g, &[("input", b"hello"), ("parameter", &[255])]);
+    assert_eq!(bytes(&result, "good"), b"hello");
+    assert_eq!(
+        result
+            .nodes
+            .iter()
+            .find(|n| n.node_id == "adapter")
+            .unwrap()
+            .error
+            .as_ref()
+            .unwrap()
+            .kind,
+        GraphErrorKind::InvalidArgument
+    );
+    assert_eq!(
+        result
+            .nodes
+            .iter()
+            .find(|n| n.node_id == "hash")
+            .unwrap()
+            .status,
+        NodeStatus::Blocked
+    );
 }

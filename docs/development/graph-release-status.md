@@ -1,5 +1,8 @@
 # Development evidence and continuation boundary — 2026-10-14
 
+This records the previous checkpoint. For the subsequent binding assignment and
+current implementation evidence, see [the continuation report](graph-integration-progress.md).
+
 This is an implementation checkpoint, **not a completed first production release**.
 The shared graph domain, local/remote API, CLI and initial visual editor are usable
 and tested on macOS Apple Silicon. Remaining mandatory work is recorded below.
