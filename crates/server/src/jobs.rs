@@ -25,6 +25,7 @@ struct Entry {
 
 #[derive(Default)]
 struct Table {
+    closed: bool,
     jobs: HashMap<String, Entry>,
     /// Queued plus running jobs.
     active: usize,
@@ -82,6 +83,9 @@ impl JobManager {
         let (cancel, cancel_rx) = watch::channel(false);
         {
             let mut table = lock(&self.table);
+            if table.closed {
+                return Err(ClientError::new(ErrorKind::Busy, "server is shutting down"));
+            }
             self.evict(&mut table);
             if table.active >= self.config.max_pending {
                 return Err(ClientError::new(ErrorKind::Busy, "job queue is full"));
@@ -227,6 +231,15 @@ impl JobManager {
         .await;
         let snapshot = rx.borrow().clone();
         Ok(snapshot)
+    }
+
+    /// Atomically stop admission before cancelling queued and running jobs.
+    pub fn shutdown(&self) {
+        let mut table = lock(&self.table);
+        table.closed = true;
+        for entry in table.jobs.values() {
+            entry.cancel.send_replace(true);
+        }
     }
 
     pub fn cancel_all(&self) {

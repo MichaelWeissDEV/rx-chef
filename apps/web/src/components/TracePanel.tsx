@@ -1,55 +1,19 @@
-import React from 'react';
-import { TraceArtifact } from '../types';
-
-interface TracePanelProps {
-  trace: TraceArtifact[];
-  truncated: boolean;
-}
-
-export const TracePanel: React.FC<TracePanelProps> = ({ trace, truncated }) => {
-  if (trace.length === 0) return null;
-
-  return (
-    <div
-      style={{
-        height: '140px',
-        backgroundColor: 'var(--bg-secondary)',
-        borderTop: '1px solid var(--border-subtle)',
-        display: 'flex',
-        flexDirection: 'column',
-        flexShrink: 0,
-      }}
-    >
-      <div className="panel-header" style={{ height: '28px', fontSize: '11px' }}>
-        <span>Trace & Step Inspector ({trace.length} steps logged{truncated ? ', Truncated' : ''})</span>
-      </div>
-
-      <div style={{ flex: 1, overflowY: 'auto', padding: '6px 12px', fontFamily: 'var(--font-mono)', fontSize: '11px' }}>
-        {trace.map((t, idx) => (
-          <div
-            key={idx}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '2px 0',
-              borderBottom: '1px solid var(--border-subtle)',
-            }}
-          >
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <span style={{ color: 'var(--text-muted)' }}>Step {t.step_index + 1}:</span>
-              <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{t.operation}</span>
-              {t.control_flow && <span style={{ color: 'var(--accent-primary)' }}>[ControlFlow]</span>}
-            </div>
-
-            <div style={{ display: 'flex', gap: '16px', color: 'var(--text-secondary)' }}>
-              <span>In: {t.input_bytes} B</span>
-              <span>Out: {t.output_bytes} B</span>
-              <span>{t.elapsed_ms.toFixed(2)} ms</span>
-            </div>
-          </div>
-        ))}
-      </div>
+import { useState } from 'react';
+import type { TraceArtifact } from '../types';
+import { parseBase64, encodeHex, previewUtf8 } from '../lib/bytes';
+export function TracePanel({ trace, truncated }: { trace: TraceArtifact[]; truncated: boolean }) {
+  const [selected, setSelected] = useState(0);
+  const [mode, setMode] = useState('hex');
+  if (!trace.length) return null;
+  const item = trace[Math.min(selected, trace.length - 1)];
+  let preview: string;
+  try { const bytes = parseBase64(item.output_base64); preview = mode === 'hex' ? encodeHex(bytes) : previewUtf8(bytes); } catch { preview = 'Invalid trace bytes'; }
+  return <section className="trace-panel" aria-label="Trace inspector">
+    <div className="panel-header"><span>Trace ({trace.length} entries){truncated && ' · truncated'}</span>
+      <select aria-label="Trace view" value={mode} onChange={e => setMode(e.target.value)}><option value="hex">HEX</option><option value="text">Text preview</option></select>
     </div>
-  );
-};
+    <div className="trace-content"><div className="trace-list">{trace.map((t, i) => <button className={i === selected ? 'active' : ''} key={i} onClick={() => { setSelected(i); document.getElementById(`recipe-step-${t.step_index}`)?.focus(); }}>
+      Step {t.step_index + 1}: {t.operation} · {t.input_bytes} → {t.output_bytes} B · {t.elapsed_ms.toFixed(2)} ms
+    </button>)}</div><div><small>{item.truncated ? 'Prefix only; remaining bytes were not captured.' : 'Captured output bytes.'} {mode === 'text' && 'Text may be lossy.'}</small><pre>{preview}</pre></div></div>
+  </section>;
+}

@@ -1,0 +1,23 @@
+.graph-workbench { height: calc(100vh - 90px); display: flex; flex-direction: column; min-height: 600px; }
+.graph-toolbar, .graph-connection { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--border-subtle); align-items: center; }
+.graph-toolbar button, .graph-connection button, .graph-inspector button, .graph-outputs button { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-strong); border-radius: 5px; padding: 6px 10px; cursor: pointer; }
+.graph-toolbar select { max-width: 180px; }
+.graph-connection select { max-width: 220px; }
+.graph-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 320px); flex: 1; min-height: 360px; }
+.graph-canvas { background: var(--bg-primary); min-width: 0; }
+.graph-inspector { padding: 12px; border-left: 1px solid var(--border-subtle); overflow: auto; resize: horizontal; }
+.graph-inspector label { display: grid; gap: 4px; margin: 8px 0; }
+.graph-inspector p { overflow-wrap: anywhere; }
+.graph-inspector textarea { width: 100%; min-height: 110px; }
+.graph-inspector button { display: block; margin: 5px 0; max-width: 100%; overflow-wrap: anywhere; }
+.graph-card { width: 200px; padding: 14px; border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text-primary); border-radius: 8px; }
+.graph-card strong, .graph-card small { display: block; overflow-wrap: anywhere; }
+.graph-card small { margin: 8px 0; color: var(--text-secondary); }
+.graph-port { height: 24px; font-size: 12px; }
+.graph-outputs { padding: 12px; height: 180px; overflow: auto; border-top: 1px solid var(--border-subtle); }
+.graph-outputs pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+.graph-workbench button:focus-visible { outline: 2px solid var(--accent-primary); outline-offset: 2px; }
+@media (max-width: 700px) { .graph-layout { grid-template-columns: 1fr; }.graph-inspector { max-height: 250px; }.graph-workbench { height: auto; }.graph-canvas { height: 400px; } }
+.graph-inspector input, .graph-inspector select, .graph-inspector textarea { background: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border-strong); border-radius: 4px; padding: 6px; min-width: 0; width: 100%; }
+.graph-workbench button:disabled { opacity: .5; cursor: default; }
+.graph-workbench [role="status"], .graph-workbench [role="alert"] { margin: 0; padding: 8px 12px; }

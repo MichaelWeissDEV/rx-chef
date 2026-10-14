@@ -1,0 +1,29 @@
+[package]
+name = "rxchef-gui"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Native rx-chef workbench"
+
+[dependencies]
+rxchef-client = { path = "../../../crates/client", version = "0.1.0", features = ["remote"] }
+serde_json = "1"
+serde = "1"
+tokio = { version = "1", features = ["sync"] }
+base64 = "0.22"
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-window-state = "2"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[package.metadata.dist]
+dist = false
+
+[features]
+default = []
+ui-test = []
+custom-protocol = ["tauri/custom-protocol"]

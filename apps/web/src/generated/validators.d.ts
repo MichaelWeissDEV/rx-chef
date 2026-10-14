@@ -1,0 +1,16 @@
+import type { Contracts } from './contracts';
+export const operations: (data: unknown) => data is Contracts['operations'];
+export const argument: (data: unknown) => data is Contracts['argument'];
+export const result: (data: unknown) => data is Contracts['result'];
+export const request: (data: unknown) => data is Contracts['request'];
+export const graph_request: (data: unknown) => data is Contracts['graph_request'];
+export const graph_response: (data: unknown) => data is Contracts['graph_response'];
+export const response: (data: unknown) => data is Contracts['response'];
+export const capabilities: (data: unknown) => data is Contracts['capabilities'];
+export const magic_request: (data: unknown) => data is Contracts['magic_request'];
+export const magic: (data: unknown) => data is Contracts['magic'];
+export const scan_request: (data: unknown) => data is Contracts['scan_request'];
+export const scan: (data: unknown) => data is Contracts['scan'];
+export const error: (data: unknown) => data is Contracts['error'];
+export const job: (data: unknown) => data is Contracts['job'];
+export const task: (data: unknown) => data is Contracts['task'];

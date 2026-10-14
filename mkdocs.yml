@@ -42,6 +42,7 @@ nav:
       - Operation arguments: concepts/operation-arguments.md
       - Pipelines: concepts/pipelines.md
       - Recipes: concepts/recipes.md
+      - Multi-input graphs: concepts/graphs.md
       - Security model: concepts/security-model.md
       - Storage: concepts/storage.md
       - Variables: concepts/variables.md
@@ -91,6 +92,7 @@ nav:
       - Product completion roadmap: development/product-roadmap.md
       - Shared engine clients: architecture/client.md
       - Release readiness: development/release-readiness.md
+      - Graph development evidence: development/graph-release-status.md
 
 markdown_extensions:
   - toc:

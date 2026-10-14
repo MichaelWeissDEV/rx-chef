@@ -1,5 +1,6 @@
 import {
   Capabilities,
+  EngineTask,
   ClientError,
   ExecuteRequest,
   ExecuteResponse,
@@ -65,6 +66,12 @@ export class HttpRxchefClient implements RxchefClient {
     return response.json();
   }
 
+  async validateGraph(request: import('../types').GraphRequest): Promise<void> {
+    await this.request('graphs/validate', { method: 'POST', body: JSON.stringify(request) });
+  }
+  async executeGraph(request: import('../types').GraphRequest) {
+    return parseContract('graph_response', await this.request('graphs/execute', { method: 'POST', body: JSON.stringify(request) }));
+  }
   async capabilities(): Promise<Capabilities> {
     return parseContract('capabilities', await this.request('capabilities'));
   }
@@ -105,7 +112,7 @@ export class HttpRxchefClient implements RxchefClient {
     }));
   }
 
-  async submitJob(task: { method: string; params: unknown }): Promise<JobSnapshot> {
+  async submitJob(task: EngineTask): Promise<JobSnapshot> {
     return parseContract('job', await this.request('jobs', {
       method: 'POST',
       body: JSON.stringify(task),

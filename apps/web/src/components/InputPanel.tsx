@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { CodeEditor } from './CodeEditor';
 import { Upload, Copy } from 'lucide-react';
 
 interface InputPanelProps {
@@ -7,6 +8,7 @@ interface InputPanelProps {
   inputType: 'text' | 'hex' | 'base64';
   onChangeInputType: (type: 'text' | 'hex' | 'base64') => void;
   onFileUpload: (file: File) => void;
+  onNativeImport?: () => void;
 }
 
 export const InputPanel: React.FC<InputPanelProps> = ({
@@ -15,6 +17,7 @@ export const InputPanel: React.FC<InputPanelProps> = ({
   inputType,
   onChangeInputType,
   onFileUpload,
+  onNativeImport,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -35,6 +38,7 @@ export const InputPanel: React.FC<InputPanelProps> = ({
         <span>Input ({input.length} chars)</span>
         <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
           <select
+            aria-label="Input encoding"
             value={inputType}
             onChange={(e) => onChangeInputType(e.target.value as 'text' | 'hex' | 'base64')}
             style={{ padding: '2px 6px', fontSize: '11px' }}
@@ -45,6 +49,7 @@ export const InputPanel: React.FC<InputPanelProps> = ({
           </select>
           <input
             type="file"
+            aria-label="Input file"
             ref={fileInputRef}
             style={{ display: 'none' }}
             onChange={(e) => {
@@ -55,7 +60,7 @@ export const InputPanel: React.FC<InputPanelProps> = ({
           />
           <button
             className="btn-icon"
-            onClick={() => fileInputRef.current?.click()}
+            onClick={() => onNativeImport ? onNativeImport() : fileInputRef.current?.click()}
             title="Import file"
           >
             <Upload size={13} />
@@ -67,14 +72,7 @@ export const InputPanel: React.FC<InputPanelProps> = ({
       </div>
 
       <div className="panel-body">
-        <textarea
-          className="editor"
-          aria-label="Input data"
-          value={input}
-          onChange={(e) => onChangeInput(e.target.value)}
-          placeholder="Input data goes here, or drag & drop a file..."
-          spellCheck={false}
-        />
+        <CodeEditor value={input} onChange={onChangeInput} />
       </div>
     </div>
   );

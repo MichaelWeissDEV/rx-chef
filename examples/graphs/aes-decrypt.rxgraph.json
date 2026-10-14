@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "id": "aes-decrypt",
+  "nodes": [
+    {
+      "id": "ciphertext",
+      "type": "input",
+      "name": "ciphertext"
+    },
+    {
+      "id": "key",
+      "type": "input",
+      "name": "key"
+    },
+    {
+      "id": "iv",
+      "type": "input",
+      "name": "iv"
+    },
+    {
+      "id": "aes",
+      "type": "operation",
+      "operation": "aes_decrypt",
+      "args": {
+        "Input": "Raw"
+      },
+      "enabled": true
+    },
+    {
+      "id": "plaintext",
+      "type": "output",
+      "name": "plaintext"
+    }
+  ],
+  "edges": [
+    {
+      "id": "ciphertext-aes-data",
+      "source_node": "ciphertext",
+      "source_port": "data",
+      "target_node": "aes",
+      "target_port": "data"
+    },
+    {
+      "id": "key-aes-arg:key",
+      "source_node": "key",
+      "source_port": "data",
+      "target_node": "aes",
+      "target_port": "arg:key"
+    },
+    {
+      "id": "iv-aes-arg:iv",
+      "source_node": "iv",
+      "source_port": "data",
+      "target_node": "aes",
+      "target_port": "arg:iv"
+    },
+    {
+      "id": "aes-plaintext-data",
+      "source_node": "aes",
+      "source_port": "data",
+      "target_node": "plaintext",
+      "target_port": "data"
+    }
+  ],
+  "presentation": {}
+}

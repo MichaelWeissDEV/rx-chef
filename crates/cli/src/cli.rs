@@ -25,6 +25,11 @@ pub(crate) struct Cli {
 
 #[derive(Debug, Subcommand)]
 pub(crate) enum Command {
+    /// Validate, inspect, execute, and manage versioned multi-input graphs.
+    Graph {
+        #[command(subcommand)]
+        command: GraphCommand,
+    },
     /// List complete operation descriptors for machine integrations.
     Operations(OperationsArgs),
     /// Inspect an operation through the integration API.
@@ -665,3 +670,58 @@ pub(crate) enum ProjectAction {
 }
 
 // ─── Entry point ─────────────────────────────────────────────────────────────
+
+#[derive(Debug, Subcommand)]
+pub(crate) enum GraphCommand {
+    /// Validate a graph definition and report disconnected editor nodes as JSON.
+    Validate {
+        #[arg(long)]
+        graph: PathBuf,
+    },
+    /// Inspect a validated canonical graph definition as JSON.
+    Inspect {
+        #[arg(long)]
+        graph: PathBuf,
+    },
+    /// Execute exact named inputs and export named outputs.
+    Run {
+        #[arg(long)]
+        graph: PathBuf,
+        /// Repeat NAME=FILE for each local input; only bytes reach a server.
+        #[arg(long)]
+        input: Vec<String>,
+        /// Repeat NAME=FILE for each output to export.
+        #[arg(long)]
+        output: Vec<String>,
+        /// Choose one exact named output for binary stdout.
+        #[arg(long = "select")]
+        selected: Option<String>,
+        /// Complete results, per-output errors and node metadata as JSON.
+        #[arg(long)]
+        json: bool,
+        #[arg(long)]
+        server: Option<String>,
+        /// Bearer credential; RXCHEF_TOKEN is read when the flag is omitted.
+        #[arg(long)]
+        token: Option<String>,
+    },
+    /// List .rxgraph.json files in a directory as JSON.
+    List {
+        #[arg(long, default_value = ".rxchef/graphs")]
+        directory: PathBuf,
+    },
+    /// Validate and copy a graph definition to an explicit destination.
+    Import {
+        #[arg(long)]
+        graph: PathBuf,
+        #[arg(long)]
+        destination: PathBuf,
+    },
+    /// Export a validated definition without input payloads or output artifacts.
+    Export {
+        #[arg(long)]
+        graph: PathBuf,
+        #[arg(long)]
+        destination: PathBuf,
+    },
+}

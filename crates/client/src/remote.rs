@@ -121,6 +121,35 @@ impl RemoteEngineClient {
 }
 
 impl EngineClient for RemoteEngineClient {
+    fn validate_graph(&self, request: &crate::GraphRequest) -> Result<(), ClientError> {
+        self.request(
+            reqwest::Method::POST,
+            &["graphs", "validate"],
+            Some(request),
+        )
+    }
+    fn execute_graph(
+        &self,
+        request: crate::GraphRequest,
+    ) -> Result<crate::GraphResult, ClientError> {
+        let result: crate::GraphResult = self.request(
+            reqwest::Method::POST,
+            &["graphs", "execute"],
+            Some(&request),
+        )?;
+        for output in &result.outputs {
+            if output.error.is_none() {
+                crate::graph_output_bytes(output)?;
+            } else if output.output_base64.is_some() || output.output_bytes != 0 {
+                return Err(ClientError::new(
+                    ErrorKind::Protocol,
+                    "failed graph output has payload",
+                ));
+            }
+        }
+        Ok(result)
+    }
+
     fn submit_job(&self, task: EngineTask) -> Result<JobSnapshot, ClientError> {
         self.request(reqwest::Method::POST, &["jobs"], Some(&task))
     }
@@ -217,6 +246,8 @@ mod tests {
                     Err(error) => panic!("{error}"),
                 }
             };
+            // macOS may inherit O_NONBLOCK from the listening socket.
+            stream.set_nonblocking(false).unwrap();
             stream
                 .set_read_timeout(Some(Duration::from_secs(5)))
                 .unwrap();

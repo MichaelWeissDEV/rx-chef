@@ -18,6 +18,12 @@
     "request": {
       "$ref": "#/$defs/ExecuteRequest"
     },
+    "graph_request": {
+      "$ref": "#/$defs/GraphRequest"
+    },
+    "graph_response": {
+      "$ref": "#/$defs/GraphResult"
+    },
     "response": {
       "$ref": "#/$defs/ExecuteResponse"
     },
@@ -57,6 +63,8 @@
     "argument",
     "result",
     "request",
+    "graph_request",
+    "graph_response",
     "response",
     "capabilities",
     "magic_request",
@@ -406,6 +414,507 @@
         "max_total_bytes"
       ]
     },
+    "GraphRequest": {
+      "type": "object",
+      "properties": {
+        "graph": {
+          "$ref": "#/$defs/Graph"
+        },
+        "inputs_base64": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {}
+        },
+        "outputs": {
+          "description": "Empty means all named outputs, otherwise exact output names.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "graph"
+      ]
+    },
+    "Graph": {
+      "description": "Definitions contain no payloads or local paths. Inputs are bound explicitly\nat execution time. UI positions do not affect execution identities or order.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "id": {
+          "type": "string"
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Node"
+          }
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Edge"
+          }
+        },
+        "presentation": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/Position"
+          },
+          "default": {}
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "id",
+        "nodes",
+        "edges"
+      ]
+    },
+    "Node": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "input"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "name"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "operation"
+            },
+            "operation": {
+              "type": "string"
+            },
+            "args": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              },
+              "default": {}
+            },
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          "required": [
+            "type",
+            "operation"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "combine"
+            },
+            "combine": {
+              "$ref": "#/$defs/Combine"
+            }
+          },
+          "required": [
+            "type",
+            "combine"
+          ]
+        },
+        {
+          "description": "Explicit strict UTF-8 interpretation as a registry argument kind.",
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "argument"
+            },
+            "kind": {
+              "$ref": "#/$defs/ArgKind"
+            }
+          },
+          "required": [
+            "type",
+            "kind"
+          ]
+        },
+        {
+          "description": "Retains Recipe Engine control-flow semantics. No graph references means\nrecursion is unrepresentable; the first version supports one recipe level.",
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "recipe"
+            },
+            "steps": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/RecipeStep"
+              }
+            }
+          },
+          "required": [
+            "type",
+            "steps"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "output"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "name"
+          ]
+        }
+      ]
+    },
+    "Combine": {
+      "oneOf": [
+        {
+          "description": "Ports in order: input:0 .. input:(inputs-1).",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "concatenate"
+            },
+            "inputs": {
+              "type": "integer",
+              "format": "uint",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "inputs"
+          ]
+        },
+        {
+          "description": "Ports left/right; output is one byte: 1 for equal, 0 for unequal.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "compare"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "description": "Ports left/right. Unequal lengths fail, never truncate or pad.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "xor"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "description": "Strict UTF-8, ports input:0 .. input:(inputs-1).",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "join_text"
+            },
+            "inputs": {
+              "type": "integer",
+              "format": "uint",
+              "minimum": 0
+            },
+            "separator": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "inputs",
+            "separator"
+          ]
+        },
+        {
+          "description": "All inputs are dependencies; selected is a zero-based port index.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "select"
+            },
+            "inputs": {
+              "type": "integer",
+              "format": "uint",
+              "minimum": 0
+            },
+            "selected": {
+              "type": "integer",
+              "format": "uint",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "inputs",
+            "selected"
+          ]
+        },
+        {
+          "description": "Alternate left/right bytes, then append remaining bytes in order.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "interleave"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "Edge": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "source_node": {
+          "type": "string"
+        },
+        "source_port": {
+          "type": "string"
+        },
+        "target_node": {
+          "type": "string"
+        },
+        "target_port": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "source_node",
+        "source_port",
+        "target_node",
+        "target_port"
+      ]
+    },
+    "Position": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "number",
+          "format": "double"
+        },
+        "y": {
+          "type": "number",
+          "format": "double"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "GraphResult": {
+      "type": "object",
+      "properties": {
+        "outputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/OutputResult"
+          }
+        },
+        "nodes": {
+          "description": "Metadata only. No intermediate payloads or argument values retained.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NodeResult"
+          }
+        }
+      },
+      "required": [
+        "outputs",
+        "nodes"
+      ]
+    },
+    "OutputResult": {
+      "type": "object",
+      "properties": {
+        "node_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "output_base64": {
+          "description": "Present only for complete successful output; empty output is Some(\"\").",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "output_bytes": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/GraphError"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "node_id",
+        "name",
+        "output_bytes"
+      ]
+    },
+    "GraphError": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/GraphErrorKind"
+        },
+        "node": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "message"
+      ]
+    },
+    "GraphErrorKind": {
+      "type": "string",
+      "enum": [
+        "validation",
+        "version",
+        "cycle",
+        "invalid_port",
+        "invalid_argument",
+        "unknown_operation",
+        "unavailable",
+        "input",
+        "operation",
+        "dependency",
+        "limit",
+        "output_limit",
+        "policy_denied",
+        "cancelled",
+        "timeout"
+      ]
+    },
+    "NodeResult": {
+      "type": "object",
+      "properties": {
+        "node_id": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/NodeStatus"
+        },
+        "output_bytes": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "elapsed_ms": {
+          "type": "number",
+          "format": "double"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/GraphError"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "node_id",
+        "status",
+        "output_bytes",
+        "elapsed_ms"
+      ]
+    },
+    "NodeStatus": {
+      "type": "string",
+      "enum": [
+        "succeeded",
+        "failed",
+        "blocked",
+        "disconnected",
+        "skipped"
+      ]
+    },
     "ExecuteResponse": {
       "type": "object",
       "properties": {
@@ -496,6 +1005,11 @@
         "jobs": {
           "description": "True when the endpoint offers process-supervised, cancellable jobs.",
           "type": "boolean"
+        },
+        "graphs": {
+          "description": "Versioned multi-input graph execution is available.",
+          "type": "boolean",
+          "default": false
         },
         "max_input_bytes": {
           "type": "integer",
@@ -833,6 +1347,22 @@
           "properties": {
             "kind": {
               "type": "string",
+              "const": "graph"
+            },
+            "value": {
+              "$ref": "#/$defs/GraphResult"
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
               "const": "validated"
             }
           },
@@ -892,6 +1422,38 @@
             },
             "params": {
               "$ref": "#/$defs/ExecuteRequest"
+            }
+          },
+          "required": [
+            "method",
+            "params"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "type": "string",
+              "const": "graph_execute"
+            },
+            "params": {
+              "$ref": "#/$defs/GraphRequest"
+            }
+          },
+          "required": [
+            "method",
+            "params"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "type": "string",
+              "const": "graph_validate"
+            },
+            "params": {
+              "$ref": "#/$defs/GraphRequest"
             }
           },
           "required": [

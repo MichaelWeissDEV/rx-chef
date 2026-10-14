@@ -11,6 +11,8 @@ struct Contracts {
     argument: ArgumentDescriptor,
     result: ExecutionResult,
     request: ExecuteRequest,
+    graph_request: GraphRequest,
+    graph_response: GraphResult,
     response: ExecuteResponse,
     capabilities: Capabilities,
     magic_request: MagicRequest,
@@ -35,7 +37,19 @@ fn main() {
         trace: Some(TraceLimits::default()),
     };
     let response = client.execute(request.clone()).unwrap();
+    let graph_request = GraphRequest {
+        graph: rxchef::graph::Graph::from_recipe("fixture".into(), vec![]),
+        inputs_base64: std::collections::BTreeMap::from([("input".into(), "AP/A".into())]),
+        outputs: vec![],
+    };
+    let mut graph_response = client.execute_graph(graph_request.clone()).unwrap();
+    // Timing is inherently variable; canonical fixtures use a neutral duration.
+    for node in &mut graph_response.nodes {
+        node.elapsed_ms = 0.0;
+    }
     let fixture = Contracts {
+        graph_request,
+        graph_response,
         task: EngineTask::Execute(request.clone()),
         operations,
         argument: client.describe("AES Encrypt").unwrap().args.remove(0),

@@ -254,3 +254,41 @@ textarea.editor {
   border-left: 1px solid var(--border-subtle);
   padding-left: 12px;
 }
+/* Workbench panels use native resizers on wide windows and stack on smaller screens. */
+.workbench-main > .panel { resize: horizontal; min-width: 220px !important; max-width: 65vw; }
+.panel-header { min-height: 38px; height: auto; flex-wrap: wrap; gap: 6px; padding: 6px 10px; }
+.recipe-tools { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 12px; align-items: center; border-bottom: 1px solid var(--border-subtle); }
+.recipe-tools small { color: var(--text-secondary); }
+.palette-toggle { position: absolute; top: 7px; left: 310px; }
+.code-editor { height: 100%; display: flex; flex-direction: column; }
+.editor-host { flex: 1; min-height: 0; overflow: hidden; }
+.code-editor footer { padding: 4px 10px; color: var(--text-secondary); border-top: 1px solid var(--border-subtle); }
+.operation-details { padding: 8px; font-size: 12px; user-select: text; }
+.operation-details p { margin-top: 6px; }
+.trace-panel { height: 210px; flex-shrink: 0; border-top: 1px solid var(--border-strong); resize: vertical; overflow: auto; }
+.trace-content { display: grid; grid-template-columns: 40% 1fr; height: calc(100% - 38px); }
+.trace-content > div { overflow: auto; padding: 8px; }
+.trace-content pre { user-select: text; white-space: pre-wrap; overflow-wrap: anywhere; }
+.trace-list button, .palette-result { display: block; text-align: left; width: 100%; padding: 8px; border: 0; background: var(--bg-secondary); color: var(--text-primary); cursor: pointer; }
+.trace-list .active, .palette-result:hover { background: var(--bg-hover); }
+.modal-backdrop { position: fixed; inset: 0; background: #0009; display: grid; place-items: center; z-index: 1100; }
+.command-palette { width: min(560px, 90vw); max-height: 70vh; overflow: auto; padding: 16px; border: 1px solid var(--border-strong); border-radius: 10px; background: var(--bg-secondary); }
+.command-palette input { width: 100%; margin-bottom: 10px; }
+.palette-result small { float: right; color: var(--text-secondary); }
+button:disabled { opacity: .45; cursor: default; }
+:focus-visible { outline: 2px solid var(--accent-primary); outline-offset: 2px; }
+@media (max-width: 1200px) {
+  body { overflow: auto; }
+  #root { min-height: 100vh; height: auto; }
+  .workbench-main { display: grid; grid-template-columns: 1fr 1fr; overflow: visible; }
+  .workbench-main > .panel { width: 100% !important; max-width: none; height: 420px; resize: none; }
+}
+@media (max-width: 650px) {
+  .workbench-main { grid-template-columns: minmax(0, 1fr); }
+  .workbench-header { height: auto; min-height: 50px; flex-wrap: wrap; padding: 8px; }
+  .palette-toggle { position: static; margin: 8px; }
+  .trace-content { grid-template-columns: 1fr; }
+}
+.workbench-mode { display: flex; gap: 6px; padding: 8px 12px; background: var(--bg-secondary); border-bottom: 1px solid var(--border-subtle); }
+.workbench-mode button { background: var(--bg-primary); color: var(--text-secondary); border: 1px solid var(--border-strong); padding: 5px 12px; border-radius: 5px; cursor: pointer; }
+.workbench-mode button[aria-pressed="true"] { color: var(--accent-primary); border-color: var(--accent-primary); }

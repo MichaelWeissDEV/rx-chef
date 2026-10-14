@@ -83,6 +83,7 @@ fn run() -> Result<(), CliError> {
         return Ok(());
     };
     match command {
+        Command::Graph { command } => commands::graph::cmd_graph(command),
         Command::Operations(a) => operations::cmd_operations(a).map_err(CliError::Execution),
         Command::Operation(a) => operations::cmd_operation(a).map_err(CliError::InvalidInput),
         Command::List(a) => operations::cmd_list(a).map_err(CliError::Execution),

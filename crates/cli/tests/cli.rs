@@ -692,3 +692,84 @@ fn omitted_optional_arguments_use_their_defaults() {
     assert!(output.status.success(), "optional arguments should default");
     assert_eq!(output.stdout, b"foobar");
 }
+
+#[test]
+fn graph_named_files_and_raw_stdout_preserve_binary_and_reject_ambiguity() {
+    let (root, _) = isolated_store();
+    let graph = root.join("workflow.rxgraph.json");
+    std::fs::write(&graph, include_bytes!("fixtures/three-inputs.rxgraph.json")).unwrap();
+    let payload = root.join("payload.bin");
+    let second = root.join("second.bin");
+    let third = root.join("third.bin");
+    let bytes: Vec<u8> = (0..=255).collect();
+    std::fs::write(&payload, &bytes).unwrap();
+    std::fs::write(&second, [0, 255]).unwrap();
+    std::fs::write(&third, []).unwrap();
+    let input = format!("payload={}", payload.display());
+    let input2 = format!("second={}", second.display());
+    let input3 = format!("third={}", third.display());
+    let selected = rxchef(
+        &[
+            "graph",
+            "run",
+            "--graph",
+            graph.to_str().unwrap(),
+            "--input",
+            &input,
+            "--select",
+            "original",
+        ],
+        None,
+    );
+    assert_success(&selected);
+    assert_eq!(selected.stdout, bytes);
+    assert!(selected.stderr.is_empty());
+    let ambiguous = rxchef(
+        &[
+            "graph",
+            "run",
+            "--graph",
+            graph.to_str().unwrap(),
+            "--input",
+            &input,
+        ],
+        None,
+    );
+    assert_eq!(ambiguous.status.code(), Some(3));
+    assert!(ambiguous.stdout.is_empty());
+    let out = root.join("combined.bin");
+    let binding = format!("combined={}", out.display());
+    let exported = rxchef(
+        &[
+            "graph",
+            "run",
+            "--graph",
+            graph.to_str().unwrap(),
+            "--input",
+            &input,
+            "--input",
+            &input2,
+            "--input",
+            &input3,
+            "--output",
+            &binding,
+        ],
+        None,
+    );
+    assert_success(&exported);
+    assert!(exported.stdout.is_empty());
+    assert_eq!(
+        std::fs::read(&out).unwrap(),
+        [bytes.as_slice(), &[0, 255]].concat()
+    );
+    let valid = rxchef(
+        &["graph", "validate", "--graph", graph.to_str().unwrap()],
+        None,
+    );
+    assert_success(&valid);
+    assert_eq!(
+        serde_json::from_slice::<serde_json::Value>(&valid.stdout).unwrap()["valid"],
+        true
+    );
+    std::fs::remove_dir_all(root).unwrap();
+}

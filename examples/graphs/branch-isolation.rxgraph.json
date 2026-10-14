@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "id": "branch-isolation",
+  "nodes": [
+    {
+      "id": "payload",
+      "type": "input",
+      "name": "payload"
+    },
+    {
+      "id": "bad-aes",
+      "type": "operation",
+      "operation": "aes_decrypt",
+      "args": {
+        "Key": "hex:00",
+        "Input": "Raw"
+      },
+      "enabled": true
+    },
+    {
+      "id": "failed",
+      "type": "output",
+      "name": "failed"
+    },
+    {
+      "id": "original",
+      "type": "output",
+      "name": "original"
+    }
+  ],
+  "edges": [
+    {
+      "id": "payload-bad-aes-data",
+      "source_node": "payload",
+      "source_port": "data",
+      "target_node": "bad-aes",
+      "target_port": "data"
+    },
+    {
+      "id": "bad-aes-failed-data",
+      "source_node": "bad-aes",
+      "source_port": "data",
+      "target_node": "failed",
+      "target_port": "data"
+    },
+    {
+      "id": "payload-original-data",
+      "source_node": "payload",
+      "source_port": "data",
+      "target_node": "original",
+      "target_port": "data"
+    }
+  ],
+  "presentation": {}
+}

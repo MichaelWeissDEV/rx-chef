@@ -116,7 +116,7 @@ export const OperationsPanel: React.FC<OperationsPanelProps> = ({
                   {op.name}
                 </div>
                 <div style={{ fontSize: '11px', color: 'var(--text-muted)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                  {op.module}
+                  {op.module} · {op.availability} {op.side_effects.length > 0 && '· side effects'}
                 </div>
               </div>
 

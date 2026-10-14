@@ -62,9 +62,11 @@ data and must be treated as sensitive output.
 
 ## HTTP contract foundation
 
-Build with `--features remote` for `RemoteEngineClient`. No network server is
-implemented yet. The adapter is verified with loopback HTTP contract fixtures;
-these fixtures are not a production server.
+Build with `--features remote` for `RemoteEngineClient`. The standalone
+`rxchef-server` provides authenticated REST, JSON-RPC and WebSocket transports
+and supervised cancellable jobs. See the [server guide](../server/configuration.md).
+Graph execution uses the shared Rust domain through the same worker manager;
+`Capabilities.graphs` advertises this additive API.
 
 | Method | Endpoint under `/api/v1/` | Response |
 |---|---|---|

@@ -36,6 +36,7 @@ members = [
     "crates/store",
     "crates/client",
     "crates/server",
+    "apps/desktop/src-tauri",
     "tests",
     "crates/xtask",
 ]

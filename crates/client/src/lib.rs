@@ -11,6 +11,10 @@ mod remote;
 #[cfg(feature = "remote")]
 pub use remote::RemoteEngineClient;
 
+mod graph;
+pub use graph::{graph_output_bytes, GraphRequest};
+pub use rxchef::graph::GraphResult;
+
 mod analysis;
 pub use analysis::{MagicCandidate, MagicRequest, ScanRequest};
 
@@ -97,6 +101,9 @@ pub struct Capabilities {
     pub trace: bool,
     /// True when the endpoint offers process-supervised, cancellable jobs.
     pub jobs: bool,
+    /// Versioned multi-input graph execution is available.
+    #[serde(default)]
+    pub graphs: bool,
     pub max_input_bytes: usize,
     pub max_output_bytes: usize,
     pub max_steps: usize,
@@ -164,6 +171,19 @@ pub trait EngineClient {
     fn describe(&self, operation: &str) -> Result<integration::OperationDescriptor, ClientError>;
     fn validate(&self, request: &ExecuteRequest) -> Result<(), ClientError>;
     fn execute(&self, request: ExecuteRequest) -> Result<ExecuteResponse, ClientError>;
+
+    fn validate_graph(&self, _request: &GraphRequest) -> Result<(), ClientError> {
+        Err(ClientError::new(
+            ErrorKind::Unavailable,
+            "graph API unavailable",
+        ))
+    }
+    fn execute_graph(&self, _request: GraphRequest) -> Result<GraphResult, ClientError> {
+        Err(ClientError::new(
+            ErrorKind::Unavailable,
+            "graph API unavailable",
+        ))
+    }
 
     fn submit_job(&self, _task: EngineTask) -> Result<JobSnapshot, ClientError> {
         Err(ClientError::new(
@@ -318,6 +338,13 @@ impl LocalEngineClient {
 }
 
 impl EngineClient for LocalEngineClient {
+    fn validate_graph(&self, request: &GraphRequest) -> Result<(), ClientError> {
+        self.validate_graph_request(request)
+    }
+    fn execute_graph(&self, request: GraphRequest) -> Result<GraphResult, ClientError> {
+        self.execute_graph_request(request)
+    }
+
     fn magic(&self, request: MagicRequest) -> Result<Vec<MagicCandidate>, ClientError> {
         self.magic_request(request)
     }
@@ -332,6 +359,7 @@ impl EngineClient for LocalEngineClient {
             binary_transport: "base64".into(),
             trace: true,
             jobs: false,
+            graphs: true,
             max_input_bytes: self.policy.max_input_bytes,
             max_output_bytes: self.policy.max_output_bytes,
             max_steps: self.policy.max_steps,
@@ -425,6 +453,8 @@ pub fn export_bytes(result: &integration::ExecutionResult) -> Result<Vec<u8>, Cl
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub enum EngineTask {
     Execute(ExecuteRequest),
+    GraphExecute(GraphRequest),
+    GraphValidate(GraphRequest),
     Validate(ExecuteRequest),
     Magic(MagicRequest),
     Scan(ScanRequest),
@@ -435,6 +465,7 @@ pub enum EngineTask {
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub enum TaskResult {
     Execution(ExecuteResponse),
+    Graph(GraphResult),
     Validated,
     Magic(Vec<MagicCandidate>),
     Scan(Vec<rxchef::scan::Finding>),
@@ -443,6 +474,10 @@ pub enum TaskResult {
 impl LocalEngineClient {
     pub fn perform(&self, task: EngineTask) -> Result<TaskResult, ClientError> {
         match task {
+            EngineTask::GraphExecute(request) => self.execute_graph(request).map(TaskResult::Graph),
+            EngineTask::GraphValidate(request) => {
+                self.validate_graph(&request).map(|_| TaskResult::Validated)
+            }
             EngineTask::Execute(request) => self.execute(request).map(TaskResult::Execution),
             EngineTask::Validate(request) => self.validate(&request).map(|_| TaskResult::Validated),
             EngineTask::Magic(request) => self.magic(request).map(TaskResult::Magic),

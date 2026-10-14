@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useReducer } from 'react';
 import { HttpRxchefClient } from './clients/http';
-import { TauriRxchefClient } from './clients/tauri';
+import { TauriRxchefClient, configureConnection, importNativeFile } from './clients/tauri';
 import { OperationDescriptor, RecipeStep, ExecuteResponse, RxchefClient } from './types';
 import { OperationsPanel } from './components/OperationsPanel';
 import { RecipePanel } from './components/RecipePanel';
@@ -11,11 +11,20 @@ import { Sun, Moon, Shield, Key } from 'lucide-react';
 import './styles/workbench.css';
 import { encodeBase64, parseInput } from './lib/bytes';
 import { prepareRecipe } from './lib/recipe';
+import { historyReducer } from './lib/history';
+import { CommandPalette } from './components/CommandPalette';
+import { RecipeTools } from './components/RecipeTools';
+const GraphEditor = React.lazy(() => import('./features/graph/GraphEditor').then(module => ({ default: module.GraphEditor })));
 import { errorMessage } from './lib/contracts';
 
 export const App: React.FC = () => {
+  const [mode, setMode] = useState<'list' | 'graph'>('list');
+  const [graphOpened, setGraphOpened] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [token, setToken] = useState<string>('');
+  const [connectionVersion, setConnectionVersion] = useState(0);
+  const [remoteUrl, setRemoteUrl] = useState('');
+  const [connectedRemote, setConnectedRemote] = useState(false);
   const [tokenDraft, setTokenDraft] = useState('');
   useEffect(() => {
     try { localStorage.removeItem('rxchef_token'); sessionStorage.removeItem('rxchef_token'); } catch { /* storage may be unavailable */ }
@@ -29,18 +38,19 @@ export const App: React.FC = () => {
       return new TauriRxchefClient();
     }
     return new HttpRxchefClient('', token || null);
-  }, [isTauri, token]);
+  }, [isTauri, token, connectionVersion]);
 
   const [operations, setOperations] = useState<OperationDescriptor[]>([]);
-  const [recipe, setRecipe] = useState<RecipeStep[]>([
-    { op: 'To Base64', args: [] },
-  ]);
+  const [history, dispatch] = useReducer(historyReducer<RecipeStep[]>, { past: [], present: [{ op: 'To Base64', args: [] }], future: [] });
+  const recipe = history.present;
+  const setRecipe = (value: RecipeStep[] | ((steps: RecipeStep[]) => RecipeStep[])) => dispatch({ type: 'set', value });
   const [input, setInput] = useState<string>('Hello CyberChef from rx-chef!');
   const [inputType, setInputType] = useState<'text' | 'hex' | 'base64'>('text');
   const [outputViewMode, setOutputViewMode] = useState<'text' | 'hex' | 'base64'>('text');
   const [response, setResponse] = useState<ExecuteResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isExecuting, setIsExecuting] = useState<boolean>(false);
+  const [palette, setPalette] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [favorites, setFavorites] = useState<string[]>(() => {
@@ -58,23 +68,28 @@ export const App: React.FC = () => {
 
   // Save favorites
   useEffect(() => {
-    localStorage.setItem('rxchef_favs', JSON.stringify(favorites));
+    try { localStorage.setItem('rxchef_favs', JSON.stringify(favorites)); } catch { /* private storage */ }
   }, [favorites]);
 
   // Load operations on start
   useEffect(() => {
+    let active = true;
+    setOperations([]);
     client
       .operations()
       .then((ops) => {
+        if (!active) return;
         setOperations(ops);
         setError(null);
       })
       .catch((err) => {
+        if (!active) return;
         setError(err.message || 'Failed to load operations from server');
         if (err.kind === 'unauthorized') {
           setShowTokenDialog(true);
         }
       });
+    return () => { active = false; };
   }, [client]);
 
   const operationsMap = useMemo(() => {
@@ -85,12 +100,15 @@ export const App: React.FC = () => {
 
   // Execute Recipe
   const handleBake = useCallback(async () => {
+    if (isExecuting) return;
     setIsExecuting(true);
     setError(null);
 
+    let sourceIndices: number[] = [];
     try {
       const input_base64 = encodeBase64(parseInput(input, inputType));
-      const { steps, sourceIndices } = prepareRecipe(recipe);
+      const prepared = prepareRecipe(recipe);
+      const steps = prepared.steps; sourceIndices = prepared.sourceIndices;
       const request = { input_base64, recipe: steps, trace: {
         max_entries: 64, max_bytes_per_entry: 512, max_total_bytes: 65536,
       }};
@@ -99,12 +117,26 @@ export const App: React.FC = () => {
       res.trace = res.trace.map(entry => ({ ...entry, step_index: sourceIndices[entry.step_index] }));
       setResponse(res);
     } catch (err: unknown) {
-      setError(errorMessage(err));
+      const step = err && typeof err === 'object' && 'step' in err && typeof err.step === 'number' ? sourceIndices[err.step - 1] : undefined;
+      setError(`${step === undefined ? '' : `Step ${step + 1}: `}${errorMessage(err)}`);
       setResponse(null);
     } finally {
       setIsExecuting(false);
     }
-  }, [client, input, inputType, recipe]);
+  }, [client, input, inputType, recipe, isExecuting]);
+
+  useEffect(() => {
+    const shortcut = (event: KeyboardEvent) => {
+      if (mode !== 'list' || !(event.metaKey || event.ctrlKey)) return;
+      if (event.key === 'Enter') { event.preventDefault(); void handleBake(); }
+      if (event.key.toLowerCase() === 'k') { event.preventDefault(); setPalette(value => !value); }
+      if (event.key.toLowerCase() === 'z' && !(event.target instanceof HTMLElement && (event.target.closest('.cm-editor') || ['INPUT', 'TEXTAREA'].includes(event.target.tagName)))) {
+        event.preventDefault(); dispatch({ type: event.shiftKey ? 'redo' : 'undo' });
+      }
+    };
+    window.addEventListener('keydown', shortcut);
+    return () => window.removeEventListener('keydown', shortcut);
+  }, [handleBake, mode]);
 
   const handleAddOperation = (op: OperationDescriptor) => {
     const defaultArgs = op.args.map((a) => a.default || '');
@@ -168,18 +200,18 @@ export const App: React.FC = () => {
             rx-chef
           </span>
           <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '4px' }}>
-            v0.1.0 {isTauri ? '(Desktop Standalone)' : '(Web / Remote)'}
+            v0.1.0 {isTauri ? (connectedRemote ? '(Desktop / Remote)' : '(Desktop / Local)') : '(Web / Remote)'}
           </span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {!isTauri && (
+          {(
             <button
               className="btn btn-secondary"
               onClick={() => { setTokenDraft(token); setShowTokenDialog(true); }}
               title="Server Auth Token"
             >
-              <Key size={13} /> {token ? 'Authenticated' : 'Set Token'}
+              <Key size={13} /> {isTauri ? 'Connection' : operations.length ? 'Connected' : 'Set Token'}
             </button>
           )}
 
@@ -193,7 +225,12 @@ export const App: React.FC = () => {
         </div>
       </header>
 
-      {/* Main 4-column workbench */}
+      {mode === 'list' && palette && <CommandPalette operations={operations} onSelect={handleAddOperation} onClose={() => setPalette(false)} />}
+      {mode === 'list' && <button className="palette-toggle btn btn-secondary" onClick={() => setPalette(true)}>Commands · ⌘/Ctrl K</button>}
+      <nav className="workbench-mode" aria-label="Workbench mode"><button onClick={() => setMode('list')} aria-pressed={mode === 'list'}>List mode</button><button onClick={() => { setGraphOpened(true); setMode('graph'); }} aria-pressed={mode === 'graph'}>Graph mode</button></nav>
+      <div hidden={mode !== 'graph'}>{graphOpened && <React.Suspense fallback={<p role="status">Loading graph editor…</p>}><GraphEditor client={client} operations={operations} theme={theme} visible={mode === 'graph'} /></React.Suspense>}</div>
+      {mode === 'list' && <><RecipeTools recipe={recipe} onLoad={setRecipe} onError={setError} undo={() => dispatch({ type: 'undo' })} redo={() => dispatch({ type: 'redo' })} canUndo={!!history.past.length} canRedo={!!history.future.length} />
+      {/* Main workbench */}
       <main className="workbench-main">
         <OperationsPanel
           operations={operations}
@@ -224,6 +261,7 @@ export const App: React.FC = () => {
           inputType={inputType}
           onChangeInputType={setInputType}
           onFileUpload={handleFileUpload}
+          onNativeImport={isTauri ? async () => { try { const data = await importNativeFile(); if (data !== null) { setInput(data); setInputType('base64'); } } catch (error) { setError(errorMessage(error)); } } : undefined}
         />
 
         <OutputPanel
@@ -239,6 +277,7 @@ export const App: React.FC = () => {
         <TracePanel trace={response.trace} truncated={response.trace_truncated} />
       )}
 
+      </>}
       {/* Token Modal */}
       {showTokenDialog && (
         <div
@@ -269,6 +308,7 @@ export const App: React.FC = () => {
             <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
               Enter the access token printed by <code>rxchef-server</code> on startup.
             </div>
+            {isTauri && <label>Server URL (empty = local engine)<input aria-label="Server URL" type="text" value={remoteUrl} onChange={e => setRemoteUrl(e.target.value)} placeholder="https://chef.example" /></label>}
             <input
               type="password"
               placeholder="e.g. test-token-0123456789abcdef"
@@ -287,8 +327,12 @@ export const App: React.FC = () => {
               </button>
               <button
                 className="btn btn-primary"
-                onClick={() => {
-                  setToken(tokenDraft);
+                onClick={async () => {
+                  if (isTauri) {
+                    try { await configureConnection(remoteUrl, tokenDraft); setConnectedRemote(!!remoteUrl); setConnectionVersion(v => v + 1); }
+                    catch (error) { setError(errorMessage(error)); return; }
+                  }
+                  setToken(isTauri ? '' : tokenDraft);
                   setTokenDraft('');
                   setShowTokenDialog(false);
 

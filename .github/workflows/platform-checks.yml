@@ -70,6 +70,11 @@ jobs:
         run: |
           rustup toolchain install 1.96.1 --profile minimal --component rustfmt,clippy
           rustup default 1.96.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.20.0"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
       - name: Install documentation dependencies
         run: python -m pip install --disable-pip-version-check -r docs/requirements.txt
       - name: Run the native portability gate

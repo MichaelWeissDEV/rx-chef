@@ -41,6 +41,8 @@ pub const METHODS: &[&str] = &[
     "search",
     "validate",
     "execute",
+    "graph.validate",
+    "graph.execute",
     "magic",
     "scan",
     "job.submit",
@@ -125,6 +127,8 @@ impl AppState {
             "describe" => encode(self.local.describe(&text(&input, "operation")?)?),
             "search" => encode(self.local.search(&text(&input, "query")?)?),
             "validate" => self.run(EngineTask::Validate(params(input)?)).await,
+            "graph.validate" => self.run(EngineTask::GraphValidate(params(input)?)).await,
+            "graph.execute" => self.run(EngineTask::GraphExecute(params(input)?)).await,
             "execute" => self.run(EngineTask::Execute(params(input)?)).await,
             "magic" => self.run(EngineTask::Magic(params(input)?)).await,
             "scan" => self.run(EngineTask::Scan(params(input)?)).await,
@@ -141,6 +145,7 @@ impl AppState {
     async fn run(&self, task: EngineTask) -> Result<Value, ClientError> {
         match self.jobs.run_to_completion(task).await? {
             TaskResult::Execution(r) => encode(r),
+            TaskResult::Graph(r) => encode(r),
             TaskResult::Validated => Ok(Value::Null),
             TaskResult::Magic(r) => encode(r),
             TaskResult::Scan(r) => encode(r),

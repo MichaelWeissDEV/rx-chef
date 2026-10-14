@@ -56,6 +56,13 @@ skip_gate() {
 run_gate "cargo metadata (locked)" \
     cargo metadata --locked --format-version 1 --no-deps >/dev/null
 
+# Web source generation precedes all-features Rust builds (embedded assets).
+run_gate "frontend clean install" npm --prefix apps/web ci
+run_gate "wire contracts" npm --prefix apps/web run contracts:check
+run_gate "frontend unit tests" npm --prefix apps/web test
+run_gate "frontend lint" npm --prefix apps/web run lint
+run_gate "frontend build" npm --prefix apps/web run build
+
 # --- Static checks ---------------------------------------------------------
 
 run_gate "format" cargo fmt --all -- --check

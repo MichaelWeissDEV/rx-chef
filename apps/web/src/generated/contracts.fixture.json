@@ -23283,6 +23283,84 @@
       "max_total_bytes": 1048576
     }
   },
+  "graph_request": {
+    "graph": {
+      "version": 1,
+      "id": "fixture",
+      "nodes": [
+        {
+          "id": "input",
+          "type": "input",
+          "name": "input"
+        },
+        {
+          "id": "recipe",
+          "type": "recipe",
+          "steps": []
+        },
+        {
+          "id": "output",
+          "type": "output",
+          "name": "output"
+        }
+      ],
+      "edges": [
+        {
+          "id": "input-recipe",
+          "source_node": "input",
+          "source_port": "data",
+          "target_node": "recipe",
+          "target_port": "data"
+        },
+        {
+          "id": "recipe-output",
+          "source_node": "recipe",
+          "source_port": "data",
+          "target_node": "output",
+          "target_port": "data"
+        }
+      ],
+      "presentation": {}
+    },
+    "inputs_base64": {
+      "input": "AP/A"
+    },
+    "outputs": []
+  },
+  "graph_response": {
+    "outputs": [
+      {
+        "node_id": "output",
+        "name": "output",
+        "output_base64": "AP/A",
+        "output_bytes": 3,
+        "error": null
+      }
+    ],
+    "nodes": [
+      {
+        "node_id": "input",
+        "status": "succeeded",
+        "output_bytes": 3,
+        "elapsed_ms": 0.0,
+        "error": null
+      },
+      {
+        "node_id": "recipe",
+        "status": "succeeded",
+        "output_bytes": 3,
+        "elapsed_ms": 0.0,
+        "error": null
+      },
+      {
+        "node_id": "output",
+        "status": "succeeded",
+        "output_bytes": 3,
+        "elapsed_ms": 0.0,
+        "error": null
+      }
+    ]
+  },
   "response": {
     "result": {
       "output": "\u0000��",
@@ -23299,6 +23377,7 @@
     "binary_transport": "base64",
     "trace": true,
     "jobs": false,
+    "graphs": true,
     "max_input_bytes": 8388608,
     "max_output_bytes": 8388608,
     "max_steps": 100000

@@ -11,7 +11,10 @@ rxchef provides one shared execution engine and operation registry across a
 native command-line interface, reusable Rust library, interactive TUI,
 experimental C-compatible FFI, and persistent JSONL/JSON-RPC server. Its 478 registered operations cover
 encoding, cryptography, hashing, compression, structured data, networking,
-forensics, image processing, and more.
+forensics, image processing, and more. Versioned multi-input graphs now share
+the Rust engine across the CLI, authenticated HTTP server and browser/desktop
+workbench. See the [graph guide](docs/concepts/graphs.md) and
+[current development evidence](docs/development/graph-release-status.md).
 
 **[Documentation](https://rx-chef.readthedocs.io/en/latest/)** ·
 **[CLI reference](https://rx-chef.readthedocs.io/en/latest/cli/reference/)** ·
@@ -44,9 +47,9 @@ The [product roadmap](docs/development/product-roadmap.md) guides rx-chef's
 expansion into a multi-interface suite:
 - **Core, Client & Store**: Complete 478 operations, binary-safe contracts, and isolated local storage.
 - **Server**: Axum/Tokio HTTP, JSON-RPC, WebSocket, bearer auth, and process worker supervision (`rxchef-server`).
-- **Web Workbench**: Modern React/TypeScript frontend (`apps/web`) with dark/light themes, offline execution, and trace inspection.
+- **Web Workbench**: Modern React/TypeScript frontend (`apps/web`) with dark/light themes, exact binary I/O, recipe tracing and a visual graph editor. Browser execution requires a server; assets are local.
 - **TUI & CLI**: Interactive terminal workbench (`rxchef_tui` / `rxchef tui`) with local & remote server support, diagnostic `doctor`, connection testing `connect`, and verified `examples`.
-- **Desktop GUI**: Cross-platform desktop shell sharing the web workbench frontend.
+- **Desktop GUI**: Tauri native backend sharing the web workbench frontend, with local and remote execution. Installer and platform verification are still required.
 
 ## Release verification
 

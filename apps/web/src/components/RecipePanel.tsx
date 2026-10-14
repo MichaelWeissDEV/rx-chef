@@ -47,10 +47,12 @@ export const RecipePanel: React.FC<RecipePanelProps> = ({
         ) : (
           recipe.map((step, stepIdx) => {
             const desc = operationsMap.get(step.op);
-            const isControlFlow = ['Fork', 'Merge', 'Subsection', 'Register', 'Jump', 'Return'].includes(step.op);
+            const isControlFlow = ['Fork', 'Merge', 'Subsection', 'Register', 'Jump', 'Conditional Jump', 'Label', 'Return'].includes(step.op);
 
             return (
               <div
+                id={`recipe-step-${stepIdx}`}
+                tabIndex={-1}
                 key={stepIdx}
                 style={{
                   backgroundColor: step.disabled ? 'var(--bg-primary)' : 'var(--bg-tertiary)',
@@ -95,6 +97,7 @@ export const RecipePanel: React.FC<RecipePanelProps> = ({
                     </button>
                     <button
                       className="btn-icon"
+                      disabled={isControlFlow}
                       onClick={() => onToggleDisabled(stepIdx)}
                       title={step.disabled ? 'Enable step' : 'Disable step'}
                     >
@@ -110,6 +113,12 @@ export const RecipePanel: React.FC<RecipePanelProps> = ({
                   </div>
                 </div>
 
+                {desc && <details className="operation-details"><summary>Details · {desc.implementation_status} · {desc.availability}</summary>
+                  <p>{desc.description.replace(/<[^>]*>/g, ' ')}</p><small>ID: {desc.id} · {desc.module}</small>
+                  {desc.feature_requirements.length > 0 && <p>Features: {desc.feature_requirements.join(', ')}</p>}
+                  {desc.side_effects.length > 0 && <p role="note">Side effects: {desc.side_effects.join(', ')}. Remote policy may refuse execution.</p>}
+                  {desc.known_limitations.map((limitation, i) => <p key={i}>{limitation}</p>)}
+                </details>}
                 {/* Step Arguments */}
                 {desc && desc.args && desc.args.length > 0 && (
                   <div style={{ padding: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -123,6 +132,7 @@ export const RecipePanel: React.FC<RecipePanelProps> = ({
                           </label>
                           {argSchema.choices && argSchema.choices.length > 0 ? (
                             <select
+                              aria-label={argSchema.name}
                               value={val}
                               onChange={(e) => onUpdateArg(stepIdx, argIdx, e.target.value)}
                               style={{ width: '100%' }}
@@ -133,9 +143,15 @@ export const RecipePanel: React.FC<RecipePanelProps> = ({
                                 </option>
                               ))}
                             </select>
-                          ) : (
+                          ) : argSchema.kind === 'boolean' ? (<select aria-label={argSchema.name} value={val} onChange={e => onUpdateArg(stepIdx, argIdx, e.target.value)}><option value="true">true</option><option value="false">false</option></select>) : (
                             <input
-                              type={argSchema.sensitive ? 'password' : 'text'}
+                              aria-label={argSchema.name}
+                              title={argSchema.description}
+                              required={argSchema.required}
+                              min={argSchema.minimum ?? undefined}
+                              max={argSchema.maximum ?? undefined}
+                              autoComplete="off"
+                              type={argSchema.sensitive ? 'password' : ['integer', 'unsigned_integer', 'float'].includes(argSchema.kind) ? 'number' : 'text'}
                               value={val}
                               onChange={(e) => onUpdateArg(stepIdx, argIdx, e.target.value)}
                               placeholder={argSchema.default}

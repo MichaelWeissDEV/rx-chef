@@ -1,4 +1,4 @@
-/* Generated from Rust serialization. Run npm run contracts. Do not edit. */
+/* Generated from Rust serialization. Run npm run contracts:generate. Do not edit. */
 
 /**
  * Whether an operation consumes input bytes.
@@ -37,6 +37,79 @@ export type ArgKind =
   | "regex"
   | "path"
   | "url";
+export type Node = {
+  id: string;
+} & Node1;
+export type Node1 =
+  | {
+      type: "input";
+      name: string;
+    }
+  | {
+      type: "operation";
+      operation: string;
+      args?: {
+        [k: string]: string;
+      };
+      enabled?: boolean;
+    }
+  | {
+      type: "combine";
+      combine: Combine;
+    }
+  | {
+      type: "argument";
+      kind: ArgKind;
+    }
+  | {
+      type: "recipe";
+      steps: RecipeStep[];
+    }
+  | {
+      type: "output";
+      name: string;
+    };
+export type Combine =
+  | {
+      kind: "concatenate";
+      inputs: number;
+    }
+  | {
+      kind: "compare";
+    }
+  | {
+      kind: "xor";
+    }
+  | {
+      kind: "join_text";
+      inputs: number;
+      separator: string;
+    }
+  | {
+      kind: "select";
+      inputs: number;
+      selected: number;
+    }
+  | {
+      kind: "interleave";
+    };
+export type GraphErrorKind =
+  | "validation"
+  | "version"
+  | "cycle"
+  | "invalid_port"
+  | "invalid_argument"
+  | "unknown_operation"
+  | "unavailable"
+  | "input"
+  | "operation"
+  | "dependency"
+  | "limit"
+  | "output_limit"
+  | "policy_denied"
+  | "cancelled"
+  | "timeout";
+export type NodeStatus = "succeeded" | "failed" | "blocked" | "disconnected" | "skipped";
 export type ErrorKind =
   | "invalid_input"
   | "invalid_recipe"
@@ -60,6 +133,10 @@ export type TaskResult =
       value: ExecuteResponse;
     }
   | {
+      kind: "graph";
+      value: GraphResult;
+    }
+  | {
       kind: "validated";
     }
   | {
@@ -79,6 +156,14 @@ export type EngineTask =
       params: ExecuteRequest;
     }
   | {
+      method: "graph_execute";
+      params: GraphRequest;
+    }
+  | {
+      method: "graph_validate";
+      params: GraphRequest;
+    }
+  | {
       method: "validate";
       params: ExecuteRequest;
     }
@@ -96,6 +181,8 @@ export interface Contracts {
   argument: ArgumentDescriptor;
   result: ExecutionResult;
   request: ExecuteRequest;
+  graph_request: GraphRequest;
+  graph_response: GraphResult;
   response: ExecuteResponse;
   capabilities: Capabilities;
   magic_request: MagicRequest;
@@ -196,6 +283,69 @@ export interface TraceLimits {
   max_bytes_per_entry: number;
   max_total_bytes: number;
 }
+export interface GraphRequest {
+  graph: Graph;
+  inputs_base64?: {
+    [k: string]: string;
+  };
+  /**
+   * Empty means all named outputs, otherwise exact output names.
+   */
+  outputs?: string[];
+}
+/**
+ * Definitions contain no payloads or local paths. Inputs are bound explicitly
+ * at execution time. UI positions do not affect execution identities or order.
+ */
+export interface Graph {
+  version: number;
+  id: string;
+  nodes: Node[];
+  edges: Edge[];
+  presentation?: {
+    [k: string]: Position;
+  };
+}
+export interface Edge {
+  id: string;
+  source_node: string;
+  source_port: string;
+  target_node: string;
+  target_port: string;
+}
+export interface Position {
+  x: number;
+  y: number;
+}
+export interface GraphResult {
+  outputs: OutputResult[];
+  /**
+   * Metadata only. No intermediate payloads or argument values retained.
+   */
+  nodes: NodeResult[];
+}
+export interface OutputResult {
+  node_id: string;
+  name: string;
+  /**
+   * Present only for complete successful output; empty output is Some("").
+   */
+  output_base64?: string | null;
+  output_bytes: number;
+  error?: GraphError | null;
+}
+export interface GraphError {
+  kind: GraphErrorKind;
+  node?: string | null;
+  message: string;
+}
+export interface NodeResult {
+  node_id: string;
+  status: NodeStatus;
+  output_bytes: number;
+  elapsed_ms: number;
+  error?: GraphError | null;
+}
 export interface ExecuteResponse {
   result: ExecutionResult;
   trace: TraceArtifact[];
@@ -226,6 +376,10 @@ export interface Capabilities {
    * True when the endpoint offers process-supervised, cancellable jobs.
    */
   jobs: boolean;
+  /**
+   * Versioned multi-input graph execution is available.
+   */
+  graphs?: boolean;
   max_input_bytes: number;
   max_output_bytes: number;
   max_steps: number;

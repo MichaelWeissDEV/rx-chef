@@ -20,3 +20,5 @@ pub(crate) mod run;
 pub(crate) mod scan;
 pub(crate) mod serve;
 pub(crate) mod var;
+
+pub(crate) mod graph;

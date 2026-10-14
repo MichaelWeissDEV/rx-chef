@@ -1,0 +1,6 @@
+{
+  "identifier": "main",
+  "description": "Local workbench window; no shell, filesystem or remote-webview privileges.",
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}

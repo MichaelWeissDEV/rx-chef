@@ -1,5 +1,7 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Download, Copy, AlertTriangle } from 'lucide-react';
+import { exportNativeFile } from '../clients/tauri';
+import { errorMessage } from '../lib/contracts';
 import { ExecuteResponse } from '../types';
 import { parseBase64, encodeHex, previewUtf8, downloadBytes } from '../lib/bytes';
 
@@ -18,6 +20,7 @@ export const OutputPanel: React.FC<OutputPanelProps> = ({
   onChangeViewMode,
   elapsedMs,
 }) => {
+  const [exportError, setExportError] = useState<string | null>(null);
   const decoded = useMemo(() => {
     try {
       const bytes = parseBase64(response?.result.output_base64 ?? '');
@@ -26,7 +29,7 @@ export const OutputPanel: React.FC<OutputPanelProps> = ({
     } catch { return { bytes: new Uint8Array(), error: 'Invalid binary result from server.' }; }
   }, [response]);
   const bytes = decoded.bytes;
-  error = error || decoded.error;
+  error = error || decoded.error || exportError;
   const textOutput = useMemo(() => previewUtf8(bytes), [bytes]);
   // Render hex rows
   const hexRows = useMemo(() => {
@@ -55,7 +58,11 @@ export const OutputPanel: React.FC<OutputPanelProps> = ({
     return rows;
   }, [bytes]);
 
-  const handleDownload = () => { if (response && !error) downloadBytes(bytes); };
+  const handleDownload = async () => {
+    if (!response || error) return;
+    try { if (window.__TAURI_INTERNALS__) await exportNativeFile(response.result.output_base64); else downloadBytes(bytes); }
+    catch (error) { setExportError(errorMessage(error)); }
+  };
 
   return (
     <div className="panel" style={{ flex: 1, minWidth: '300px' }}>

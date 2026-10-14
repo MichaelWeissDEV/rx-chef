@@ -398,6 +398,18 @@ pub fn parse_operation_arg(raw: &str) -> Result<ArgValue, String> {
     Ok(ArgValue::Str(raw.to_string()))
 }
 
+/// Parse and validate one schema argument without executing an operation.
+/// Graph bindings use this same contract as ordered recipes.
+pub fn validate_argument(raw: &str, schema: &ArgSchema) -> Result<ArgValue, RuntimeError> {
+    let failure = |reason| RuntimeError::InvalidArgument {
+        name: schema.name.into(),
+        reason,
+    };
+    let value = parse_schema_argument(raw, schema.kind).map_err(failure)?;
+    validate_schema_argument(raw, &value, schema).map_err(failure)?;
+    Ok(value)
+}
+
 fn parse_schema_argument(raw: &str, kind: ArgKind) -> Result<ArgValue, String> {
     if let Some(prefix) = typed_prefix(raw) {
         if !prefix_is_compatible_with_kind(prefix, kind) {

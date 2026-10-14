@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "id": "linear",
+  "nodes": [
+    {
+      "id": "payload",
+      "type": "input",
+      "name": "payload"
+    },
+    {
+      "id": "encode",
+      "type": "operation",
+      "operation": "to_base64",
+      "args": {},
+      "enabled": true
+    },
+    {
+      "id": "encoded",
+      "type": "output",
+      "name": "encoded"
+    }
+  ],
+  "edges": [
+    {
+      "id": "payload-encode-data",
+      "source_node": "payload",
+      "source_port": "data",
+      "target_node": "encode",
+      "target_port": "data"
+    },
+    {
+      "id": "encode-encoded-data",
+      "source_node": "encode",
+      "source_port": "data",
+      "target_node": "encoded",
+      "target_port": "data"
+    }
+  ],
+  "presentation": {}
+}

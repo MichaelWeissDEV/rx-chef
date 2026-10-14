@@ -20,7 +20,8 @@ Layout:
 Keys (Normal mode):
   j/↓   next step          k/↑   previous step
   a     add step           d     delete selected step
-  e     edit args          r     run pipeline
+  e     edit args          r     run pipeline (background)
+  x     toggle HEX output
   i     edit input         s     save recipe
   l     load recipe        ?     toggle help
   q/Esc quit
@@ -152,6 +153,8 @@ struct App {
     input_text: String,
     checkpoints: Vec<TuiCheckpoint>,
     results: Vec<StepResult>,
+    pending: Option<std::sync::mpsc::Receiver<(Vec<StepResult>, String)>>,
+    hex_view: bool,
     status: String,
 
     // Add-step search
@@ -206,6 +209,8 @@ impl App {
             selected: 0,
             input_text: String::new(),
             results: Vec::new(),
+            pending: None,
+            hex_view: false,
             status,
             search_query: String::new(),
             search_results: all_ops,
@@ -240,6 +245,42 @@ impl App {
     fn selected_search_result(&self) -> Option<&str> {
         let idx = self.search_list_state.selected()?;
         self.search_results.get(idx).map(|s| s.as_str())
+    }
+
+    fn start_pipeline(&mut self) {
+        if self.pending.is_some() {
+            return;
+        }
+        let mut worker = Self::with_remote(self.server_url.clone(), self.server_token.clone());
+        worker.pipeline = self.pipeline.clone();
+        worker.input_text = self.input_text.clone();
+        let (sender, receiver) = std::sync::mpsc::channel();
+        self.pending = Some(receiver);
+        self.status = "Running… terminal remains interactive".into();
+        std::thread::spawn(move || {
+            worker.run_pipeline();
+            let _ = sender.send((worker.results, worker.status));
+        });
+    }
+
+    fn poll_pipeline(&mut self) {
+        let Some(receiver) = self.pending.as_ref() else {
+            return;
+        };
+        match receiver.try_recv() {
+            Ok((results, status)) => {
+                self.results = results;
+                self.status = status;
+                self.pending = None;
+                self.output_step_view = self.results.len().saturating_sub(1);
+                self.output_scroll = 0;
+            }
+            Err(std::sync::mpsc::TryRecvError::Empty) => {}
+            Err(_) => {
+                self.pending = None;
+                self.status = "Execution worker failed".into();
+            }
+        }
     }
 
     fn run_pipeline(&mut self) {
@@ -529,7 +570,27 @@ impl App {
             return String::new();
         }
         let idx = self.output_step_view.min(self.results.len() - 1);
-        self.results[idx].display()
+        if self.hex_view {
+            self.results[idx]
+                .output
+                .chunks(16)
+                .take(256)
+                .enumerate()
+                .map(|(offset, row)| {
+                    format!(
+                        "{:08x}  {}",
+                        offset * 16,
+                        row.iter()
+                            .map(|b| format!("{b:02x}"))
+                            .collect::<Vec<_>>()
+                            .join(" ")
+                    )
+                })
+                .collect::<Vec<_>>()
+                .join("\n")
+        } else {
+            self.results[idx].display()
+        }
     }
 
     fn output_step_label(&self) -> String {
@@ -1085,8 +1146,11 @@ fn handle_normal(app: &mut App, key: KeyEvent) {
         (KeyCode::Char('a'), _) => app.start_add(),
         (KeyCode::Char('d'), _) => app.delete_selected(),
         (KeyCode::Char('e'), _) => app.start_edit_args(),
+        (KeyCode::Char('x'), _) => {
+            app.hex_view = !app.hex_view;
+        }
         (KeyCode::Char('r'), _) => {
-            app.run_pipeline();
+            app.start_pipeline();
         }
         (KeyCode::Char('i'), _) => app.mode = Mode::EditInput,
         (KeyCode::Char('?'), _) => app.mode = Mode::Help,
@@ -1456,8 +1520,16 @@ fn main() -> io::Result<()> {
         i += 1;
     }
 
-    // Interactive TUI
+    // RAII restores the terminal on every error path and unwinding panic.
+    struct TerminalRestore;
+    impl Drop for TerminalRestore {
+        fn drop(&mut self) {
+            let _ = disable_raw_mode();
+            let _ = execute!(io::stdout(), LeaveAlternateScreen, crossterm::cursor::Show);
+        }
+    }
     enable_raw_mode()?;
+    let _restore = TerminalRestore;
     let mut stdout = io::stdout();
     execute!(stdout, EnterAlternateScreen)?;
     let backend = CrosstermBackend::new(stdout);
@@ -1467,6 +1539,7 @@ fn main() -> io::Result<()> {
     let mut quit = false;
 
     while !quit {
+        app.poll_pipeline();
         terminal.draw(|f| ui(f, &mut app))?;
 
         if event::poll(std::time::Duration::from_millis(16))? {
@@ -1484,9 +1557,6 @@ fn main() -> io::Result<()> {
         }
     }
 
-    disable_raw_mode()?;
-    execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
-    terminal.show_cursor()?;
     Ok(())
 }
 

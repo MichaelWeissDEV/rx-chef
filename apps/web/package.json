@@ -5,15 +5,24 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && node scripts/stage-assets.mjs",
+    "build": "npm run contracts:check && tsc -b && vite build && node scripts/stage-assets.mjs",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run src",
+    "contracts:generate": "cargo run --manifest-path ../../Cargo.toml -p rxchef-client --features schema --example export_contracts && node scripts/contracts.mjs",
+    "contracts:check": "cargo run --manifest-path ../../Cargo.toml -p rxchef-client --features schema --example export_contracts -- --check && node scripts/contracts.mjs --check",
+    "test:e2e": "playwright test",
+    "desktop:dev": "node scripts/desktop.mjs dev",
+    "desktop:build": "node scripts/desktop.mjs build",
+    "typecheck": "tsc -b --pretty false",
+    "test:unit": "vitest run src"
   },
   "dependencies": {
     "@codemirror/commands": "^6.11.1",
     "@codemirror/state": "^6.7.6",
     "@codemirror/view": "^6.43.14",
     "@tauri-apps/api": "^2.12.3",
+    "@xyflow/react": "^12.12.0",
     "lucide-react": "^1.16.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
@@ -21,6 +30,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.64.0",
+    "@tauri-apps/cli": "^2.12.2",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",

@@ -195,6 +195,14 @@ pub fn router(state: Shared) -> Router {
                 "/api/v1/validate",
                 post(|s, a, b| body_call(s, a, "validate", b)),
             )
+            .route(
+                "/api/v1/graphs/validate",
+                post(|s, a, b| body_call(s, a, "graph.validate", b)),
+            )
+            .route(
+                "/api/v1/graphs/execute",
+                post(|s, a, b| body_call(s, a, "graph.execute", b)),
+            )
             .route("/api/v1/magic", post(|s, a, b| body_call(s, a, "magic", b)))
             .route("/api/v1/scan", post(|s, a, b| body_call(s, a, "scan", b)))
             .route(
@@ -419,6 +427,9 @@ async fn socket_loop(
     let mut idle_deadline = tokio::time::Instant::now() + state.config.ws_idle_timeout;
 
     loop {
+        if *stopping.borrow() {
+            break;
+        }
         tokio::select! {
             _ = stopping.changed() => break,
             _ = tokio::time::sleep_until(idle_deadline) => break,
@@ -547,7 +558,7 @@ pub async fn serve(
         .with_graceful_shutdown(async move {
             shutdown.await;
             shutdown_signal.send_replace(true);
-            jobs.cancel_all();
+            jobs.shutdown();
         })
         .await
 }

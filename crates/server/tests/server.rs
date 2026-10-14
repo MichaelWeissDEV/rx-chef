@@ -123,7 +123,9 @@ fn remote_and_local_are_byte_identical_for_all_byte_values() {
     nul_and_invalid_utf8.extend(&all);
     for input in [vec![], all, nul_and_invalid_utf8, vec![0xAB; 3 << 20]] {
         for recipe in [
-            vec![step("To Hex", &[])],
+            vec![],
+            vec![step("To Base64", &[]), step("From Base64", &[])],
+            vec![step("To Hex", &["None"])],
             vec![
                 step("To Base64", &[]),
                 step("From Base64", &[]),
@@ -135,8 +137,17 @@ fn remote_and_local_are_byte_identical_for_all_byte_values() {
                 step("Merge", &[]),
             ],
         ] {
-            let a = local.execute(request(&input, recipe.clone())).unwrap();
-            let b = remote.execute(request(&input, recipe)).unwrap();
+            let a = local.execute(request(&input, recipe.clone()));
+            let b = remote.execute(request(&input, recipe));
+            // Text operations may expand invalid UTF-8 past the output budget.
+            // Verify identical bounded rejection rather than increasing production limits.
+            if let Err(error) = a.as_ref() {
+                assert_eq!(error.kind, ErrorKind::LimitExceeded);
+                assert_eq!(b.unwrap_err().kind, error.kind);
+                continue;
+            }
+            let a = a.unwrap();
+            let b = b.unwrap();
             assert_eq!(
                 export_bytes(&a.result).unwrap(),
                 export_bytes(&b.result).unwrap()
@@ -220,7 +231,7 @@ fn magic_and_scan_work_remotely() {
     assert!(candidates.iter().any(|c| c.matched_crib));
     let findings = remote
         .scan(ScanRequest {
-            input_base64: STANDARD.encode(b"mail me at alice@example.com please"),
+            input_base64: STANDARD.encode(b"embedded SGVsbG8gV29ybGQ= payload"),
             min_len: 8,
             max_findings: 50,
             decode: false,
@@ -689,46 +700,114 @@ mod websocket {
         assert_eq!(reply["error"]["data"]["kind"], "busy");
 
         // Test subscription limit on ws2
-        let job = server
-            .client()
-            .submit_job(EngineTask::Execute(request(
-                b"test",
-                vec![step("To Hex", &[])],
-            )))
+        ws2.send(Message::Text(json!({"jsonrpc":"2.0","id":"submit","method":"job.submit","params":{"method":"execute","params":slow_request()}}).to_string().into())).await.unwrap();
+        let job_id = recv(&mut ws2).await.unwrap()["result"]["id"]
+            .as_str()
+            .unwrap()
+            .to_string();
+        for id in 0..100 {
+            ws2.send(Message::Text(
+                json!({"jsonrpc":"2.0","id":id,"method":"job.subscribe","params":{"id":job_id}})
+                    .to_string()
+                    .into(),
+            ))
+            .await
             .unwrap();
-        ws2.send(Message::Text(
-            json!({"jsonrpc": "2.0", "id": 1, "method": "job.subscribe", "params": {"id": job.id}})
-                .to_string()
-                .into(),
-        ))
-        .await
-        .unwrap();
-        let _ = recv(&mut ws2).await; // subscribed
-        ws2.send(Message::Text(
-            json!({"jsonrpc": "2.0", "id": 2, "method": "job.subscribe", "params": {"id": job.id}})
-                .to_string()
-                .into(),
-        ))
-        .await
-        .unwrap();
-        let _ = recv(&mut ws2).await; // subscribed
-                                      // 3rd subscription exceeds max_ws_subscriptions_per_conn (2)
-        ws2.send(Message::Text(
-            json!({"jsonrpc": "2.0", "id": 3, "method": "job.subscribe", "params": {"id": job.id}})
-                .to_string()
-                .into(),
-        ))
-        .await
-        .unwrap();
-        let reply3 = recv(&mut ws2).await.unwrap();
-        assert_eq!(reply3["id"], 3);
-        assert_eq!(reply3["error"]["data"]["kind"], "limit_exceeded");
+        }
+        let mut accepted = 0;
+        let mut rejected = 0;
+        while accepted + rejected < 100 {
+            let reply = recv(&mut ws2).await.expect("subscription response");
+            if reply["id"].is_number() {
+                if reply.get("error").is_some() {
+                    assert_eq!(reply["error"]["data"]["kind"], "limit_exceeded");
+                    rejected += 1;
+                } else {
+                    accepted += 1;
+                }
+            }
+        }
+        assert_eq!(accepted, 2);
+        assert_eq!(rejected, 98);
 
         drop(ws1);
         drop(ws2);
         tokio::task::spawn_blocking(move || drop(server))
             .await
             .unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn websocket_flood_disconnect_releases_workers_and_connections() {
+        for _ in 0..3 {
+            let server = tokio::task::spawn_blocking(|| {
+                TestServer::with(|c| {
+                    c.max_ws_connections = 1;
+                    c.max_ws_inflight_per_conn = 1;
+                    c.workers = 1;
+                    c.ws_idle_timeout = Duration::from_secs(5);
+                })
+            })
+            .await
+            .unwrap();
+            let url = format!("ws://{}/api/v1/ws", server.addr);
+            let (mut ws, _) = connect_async(&url).await.unwrap();
+            ws.send(Message::Text(
+                json!({"type":"auth","token":TOKEN}).to_string().into(),
+            ))
+            .await
+            .unwrap();
+            assert_eq!(recv(&mut ws).await.unwrap()["type"], "ready");
+            ws.send(Message::Text("{bad".into())).await.unwrap();
+            assert_eq!(recv(&mut ws).await.unwrap()["error"]["code"], -32700);
+            ws.send(Message::Text(
+                json!({"jsonrpc":"2.0","id":"slow","method":"execute","params":slow_request()})
+                    .to_string()
+                    .into(),
+            ))
+            .await
+            .unwrap();
+            for id in 0..100 {
+                // Deliberately do not read: admission and the outgoing queue stay bounded.
+                if ws
+                    .send(Message::Text(
+                        json!({"jsonrpc":"2.0","id":id,"method":"capabilities"})
+                            .to_string()
+                            .into(),
+                    ))
+                    .await
+                    .is_err()
+                {
+                    break;
+                }
+            }
+            drop(ws);
+            let deadline = Instant::now() + Duration::from_secs(8);
+            let mut next = loop {
+                if let Ok((ws, _)) = connect_async(&url).await {
+                    break ws;
+                }
+                assert!(Instant::now() < deadline, "connection permit was leaked");
+                tokio::time::sleep(Duration::from_millis(25)).await;
+            };
+            next.send(Message::Text(
+                json!({"type":"auth","token":TOKEN}).to_string().into(),
+            ))
+            .await
+            .unwrap();
+            assert_eq!(recv(&mut next).await.unwrap()["type"], "ready");
+            next.send(Message::Text(json!({"jsonrpc":"2.0","id":"after","method":"execute","params":request(b"ok",vec![])}).to_string().into())).await.unwrap();
+            assert_eq!(
+                recv(&mut next).await.unwrap()["result"]["result"]["output"],
+                "ok"
+            );
+            // Incoming inactivity closes even a client that never sends Close.
+            assert!(recv(&mut next).await.is_none());
+            drop(next);
+            tokio::task::spawn_blocking(move || drop(server))
+                .await
+                .unwrap();
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -826,4 +905,229 @@ fn remote_configuration_requires_explicit_opt_in() {
     assert!(parse(&["--max-ws-connections", "0"]).is_err());
     assert!(parse(&["--max-ws-inflight-per-conn", "0"]).is_err());
     assert!(parse(&["--ws-idle-timeout-secs", "0"]).is_err());
+}
+
+#[cfg(feature = "web-ui")]
+#[test]
+fn public_embedded_assets_do_not_unlock_api_or_bypass_host_checks() {
+    let server = TestServer::start();
+    let http = server.http();
+    for path in ["/", "/index.html"] {
+        let response = http.get(server.url(path)).send().unwrap();
+        assert_eq!(response.status(), 200);
+        assert!(response.headers()["content-type"]
+            .to_str()
+            .unwrap()
+            .contains("text/html"));
+        let html = response.text().unwrap();
+        for asset in html.split('"').filter(|s| s.starts_with("/assets/")) {
+            let response = http.get(server.url(asset)).send().unwrap();
+            assert_eq!(response.status(), 200);
+            assert!(!response.bytes().unwrap().is_empty());
+        }
+    }
+    for path in ["/api/v1/operations", "/api/v1/jobs", "/api/unknown"] {
+        assert_eq!(http.get(server.url(path)).send().unwrap().status(), 401);
+    }
+    let unknown = http
+        .get(server.url("/api/unknown"))
+        .bearer_auth(TOKEN)
+        .send()
+        .unwrap();
+    assert_eq!(unknown.status(), 404);
+    assert!(!unknown.text().unwrap().contains("<!doctype"));
+    assert_eq!(
+        http.get(server.url("/"))
+            .header("Host", "evil.example")
+            .send()
+            .unwrap()
+            .status(),
+        403
+    );
+    assert_eq!(
+        http.get(server.url("/"))
+            .header("Origin", "https://evil.example")
+            .send()
+            .unwrap()
+            .status(),
+        403
+    );
+    assert_eq!(
+        http.head(server.url("/"))
+            .send()
+            .unwrap()
+            .bytes()
+            .unwrap()
+            .len(),
+        0
+    );
+}
+
+#[test]
+fn shutdown_refuses_job_from_request_with_late_body() {
+    use std::io::{Read, Write};
+    let mut server = TestServer::start();
+    let body = serde_json::to_vec(&slow_request()).unwrap();
+    let mut socket = std::net::TcpStream::connect(server.addr).unwrap();
+    socket
+        .set_read_timeout(Some(Duration::from_secs(5)))
+        .unwrap();
+    write!(socket, "POST /api/v1/execute HTTP/1.1\r\nHost: {}\r\nAuthorization: Bearer {}\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n", server.addr, TOKEN, body.len()).unwrap();
+    socket.write_all(&body[..1]).unwrap();
+    thread::sleep(Duration::from_millis(100));
+    server.stop.take().unwrap().send(()).unwrap();
+    thread::sleep(Duration::from_millis(100));
+    socket.write_all(&body[1..]).unwrap();
+    let mut response = String::new();
+    socket.read_to_string(&mut response).unwrap();
+    assert!(response.starts_with("HTTP/1.1 503"), "{response}");
+    assert!(response.contains("server is shutting down"));
+    drop(server);
+}
+
+fn multi_input_graph_request() -> rxchef_client::GraphRequest {
+    rxchef_client::GraphRequest {
+        graph: rxchef::graph::Graph::from_json(
+            include_bytes!("fixtures/three-inputs.rxgraph.json"),
+            &rxchef::graph::GraphPolicy::default(),
+        )
+        .unwrap(),
+        inputs_base64: std::collections::BTreeMap::from([
+            (
+                "payload".into(),
+                STANDARD.encode((0u8..=255).collect::<Vec<_>>()),
+            ),
+            ("second".into(), STANDARD.encode([0, 255, 192])),
+            ("third".into(), STANDARD.encode(b"text")),
+        ]),
+        outputs: vec![],
+    }
+}
+#[test]
+fn graph_rest_rpc_jobs_and_local_preserve_three_inputs_and_named_outputs() {
+    let server = TestServer::start();
+    let remote = server.client();
+    assert!(remote.capabilities().unwrap().graphs);
+    let request = multi_input_graph_request();
+    remote.validate_graph(&request).unwrap();
+    let local = LocalEngineClient::default()
+        .execute_graph(request.clone())
+        .unwrap();
+    let rest = remote.execute_graph(request.clone()).unwrap();
+    let rpc = server
+        .http()
+        .post(server.url("/api/v1/rpc"))
+        .bearer_auth(TOKEN)
+        .json(&json!({"jsonrpc":"2.0","id":1,"method":"graph.execute","params":request}))
+        .send()
+        .unwrap();
+    assert!(rpc.status().is_success());
+    let rpc: Value = rpc.json().unwrap();
+    let rpc: rxchef_client::GraphResult = serde_json::from_value(rpc["result"].clone()).unwrap();
+    let job = remote
+        .submit_job(EngineTask::GraphExecute(request))
+        .unwrap();
+    let deadline = Instant::now() + Duration::from_secs(10);
+    let job = loop {
+        let state = remote.job(&job.id).unwrap();
+        if state.status == JobStatus::Succeeded {
+            break state;
+        }
+        assert_ne!(state.status, JobStatus::Failed, "{:?}", state.error);
+        assert!(Instant::now() < deadline);
+        thread::sleep(Duration::from_millis(10));
+    };
+    let Some(rxchef_client::TaskResult::Graph(job)) = job.result else {
+        panic!("missing graph result")
+    };
+    for actual in [rest, rpc, job] {
+        for expected in &local.outputs {
+            let actual = actual
+                .outputs
+                .iter()
+                .find(|o| o.name == expected.name)
+                .unwrap();
+            assert_eq!(
+                rxchef_client::graph_output_bytes(actual).unwrap(),
+                rxchef_client::graph_output_bytes(expected).unwrap()
+            );
+        }
+        assert_eq!(
+            actual
+                .nodes
+                .iter()
+                .filter(|n| n.node_id == "encode")
+                .count(),
+            1
+        );
+    }
+}
+#[test]
+fn graph_methods_enforce_auth_scopes_and_resource_limits() {
+    let server = TestServer::with(|config| {
+        config.read_token = Some("read-only-graph-token-0123456789".into());
+        config.policy.max_input_bytes = 1;
+    });
+    let request = multi_input_graph_request();
+    for endpoint in ["/api/v1/graphs/validate", "/api/v1/graphs/execute"] {
+        assert_eq!(
+            server
+                .http()
+                .post(server.url(endpoint))
+                .json(&request)
+                .send()
+                .unwrap()
+                .status(),
+            401
+        );
+        assert_eq!(
+            server
+                .http()
+                .post(server.url(endpoint))
+                .bearer_auth("read-only-graph-token-0123456789")
+                .json(&request)
+                .send()
+                .unwrap()
+                .status(),
+            403
+        );
+    }
+    assert_eq!(
+        server.client().execute_graph(request).unwrap_err().kind,
+        ErrorKind::LimitExceeded
+    );
+}
+
+fn slow_graph_request() -> rxchef_client::GraphRequest {
+    rxchef_client::GraphRequest {
+        graph: rxchef::graph::Graph::from_recipe("slow-graph".into(), slow_request().recipe),
+        inputs_base64: std::collections::BTreeMap::from([("input".into(), String::new())]),
+        outputs: vec![],
+    }
+}
+#[test]
+fn graph_cancellation_kills_the_worker_and_releases_capacity() {
+    let server = TestServer::start();
+    let remote = server.client();
+    let job = remote
+        .submit_job(EngineTask::GraphExecute(slow_graph_request()))
+        .unwrap();
+    thread::sleep(Duration::from_millis(300));
+    let cancelled = remote.cancel_job(&job.id).unwrap();
+    assert_eq!(cancelled.status, JobStatus::Cancelled);
+    assert!(cancelled.result.is_none());
+    assert!(remote.execute_graph(multi_input_graph_request()).is_ok());
+}
+#[test]
+fn graph_deadlines_kill_cpu_bound_embedded_recipe_work() {
+    let server = TestServer::with(|c| c.timeout = Duration::from_secs(1));
+    let remote = server.client();
+    let job = remote
+        .submit_job(EngineTask::GraphExecute(slow_graph_request()))
+        .unwrap();
+    assert_eq!(wait_terminal(&remote, &job.id).status, JobStatus::TimedOut);
+    assert_eq!(
+        remote.execute_graph(slow_graph_request()).unwrap_err().kind,
+        ErrorKind::Timeout
+    );
 }

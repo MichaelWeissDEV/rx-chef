@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "id": "three-inputs",
+  "nodes": [
+    {
+      "id": "payload",
+      "type": "input",
+      "name": "payload"
+    },
+    {
+      "id": "second",
+      "type": "input",
+      "name": "second"
+    },
+    {
+      "id": "third",
+      "type": "input",
+      "name": "third"
+    },
+    {
+      "id": "encode",
+      "type": "operation",
+      "operation": "to_base64",
+      "args": {},
+      "enabled": true
+    },
+    {
+      "id": "decode",
+      "type": "operation",
+      "operation": "from_base64",
+      "args": {},
+      "enabled": true
+    },
+    {
+      "id": "concat",
+      "type": "combine",
+      "combine": {
+        "kind": "concatenate",
+        "inputs": 3
+      }
+    },
+    {
+      "id": "combined",
+      "type": "output",
+      "name": "combined"
+    },
+    {
+      "id": "encoded",
+      "type": "output",
+      "name": "encoded"
+    },
+    {
+      "id": "original",
+      "type": "output",
+      "name": "original"
+    }
+  ],
+  "edges": [
+    {
+      "id": "payload-encode-data",
+      "source_node": "payload",
+      "source_port": "data",
+      "target_node": "encode",
+      "target_port": "data"
+    },
+    {
+      "id": "encode-decode-data",
+      "source_node": "encode",
+      "source_port": "data",
+      "target_node": "decode",
+      "target_port": "data"
+    },
+    {
+      "id": "decode-concat-input:0",
+      "source_node": "decode",
+      "source_port": "data",
+      "target_node": "concat",
+      "target_port": "input:0"
+    },
+    {
+      "id": "second-concat-input:1",
+      "source_node": "second",
+      "source_port": "data",
+      "target_node": "concat",
+      "target_port": "input:1"
+    },
+    {
+      "id": "third-concat-input:2",
+      "source_node": "third",
+      "source_port": "data",
+      "target_node": "concat",
+      "target_port": "input:2"
+    },
+    {
+      "id": "concat-combined-data",
+      "source_node": "concat",
+      "source_port": "data",
+      "target_node": "combined",
+      "target_port": "data"
+    },
+    {
+      "id": "encode-encoded-data",
+      "source_node": "encode",
+      "source_port": "data",
+      "target_node": "encoded",
+      "target_port": "data"
+    },
+    {
+      "id": "decode-original-data",
+      "source_node": "decode",
+      "source_port": "data",
+      "target_node": "original",
+      "target_port": "data"
+    }
+  ],
+  "presentation": {}
+}

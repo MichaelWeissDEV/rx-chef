@@ -235,3 +235,43 @@ fn remote_rejects_insecure_origins_and_embedded_secrets() {
     .is_err());
     assert!(RemoteEngineClient::new("http://[::1]:9876", None, Duration::from_secs(1)).is_ok());
 }
+
+#[test]
+fn graph_transport_roundtrip_and_total_input_policy() {
+    let graph = rxchef::graph::Graph::from_json(
+        include_bytes!("fixtures/three-inputs.rxgraph.json"),
+        &rxchef::graph::GraphPolicy::default(),
+    )
+    .unwrap();
+    let request = GraphRequest {
+        graph,
+        inputs_base64: std::collections::BTreeMap::from([
+            ("payload".into(), STANDARD.encode([0, 255, 192])),
+            ("second".into(), STANDARD.encode([0, 128])),
+            ("third".into(), String::new()),
+        ]),
+        outputs: vec![],
+    };
+    let wire = serde_json::to_vec(&request).unwrap();
+    let restored: GraphRequest = serde_json::from_slice(&wire).unwrap();
+    let result = LocalEngineClient::default()
+        .execute_graph(restored)
+        .unwrap();
+    assert_eq!(
+        graph_output_bytes(
+            result
+                .outputs
+                .iter()
+                .find(|o| o.name == "combined")
+                .unwrap()
+        )
+        .unwrap(),
+        [0, 255, 192, 0, 128]
+    );
+    let mut client = LocalEngineClient::default();
+    client.policy.max_input_bytes = 4;
+    assert_eq!(
+        client.execute_graph(request).unwrap_err().kind,
+        ErrorKind::LimitExceeded
+    );
+}

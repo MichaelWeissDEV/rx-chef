@@ -13,6 +13,7 @@ pub mod catalog;
 pub mod execute;
 pub mod execution;
 pub mod ffi;
+pub mod graph;
 pub mod integration;
 pub mod magic;
 pub mod operation;

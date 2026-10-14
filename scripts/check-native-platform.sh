@@ -8,6 +8,12 @@ echo "==> Native platform: $(uname -s) $(uname -m)"
 rustc --version
 cargo --version
 
+npm --prefix apps/web ci
+npm --prefix apps/web run contracts:check
+npm --prefix apps/web run build
+npm --prefix apps/web test
+npm --prefix apps/web run lint
+
 cargo fmt --all -- --check
 cargo check --locked --workspace --all-targets
 cargo test --locked --workspace

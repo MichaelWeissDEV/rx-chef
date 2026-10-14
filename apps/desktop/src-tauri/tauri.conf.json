@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "rx-chef",
+  "version": "0.1.0",
+  "identifier": "dev.michaelweiss.rxchef",
+  "build": {
+    "beforeDevCommand": "npm --prefix ../web run dev -- --host 127.0.0.1",
+    "beforeBuildCommand": "npm --prefix ../web run build",
+    "devUrl": "http://127.0.0.1:5173",
+    "frontendDist": "../../web/dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "rx-chef",
+        "width": 1440,
+        "height": 960,
+        "minWidth": 360,
+        "minHeight": 480,
+        "dragDropEnabled": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src ipc: http://ipc.localhost; img-src 'self' data: blob:"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "app",
+      "dmg"
+    ],
+    "shortDescription": "Local binary transformation workbench"
+  }
+}
