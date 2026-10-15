@@ -8,6 +8,7 @@ import pathlib
 import platform
 import subprocess
 import shutil
+import re
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--stage", type=pathlib.Path, help="Prepare a fresh flat directory for the release host's artifacts/* glob")
@@ -19,9 +20,14 @@ destination.mkdir(parents=True, exist_ok=True)
 metadata = json.loads(subprocess.check_output(["cargo", "metadata", "--locked", "--no-deps", "--format-version", "1"]))
 version = next(p["version"] for p in metadata["packages"] if p["name"] == "rxchef")
 commit = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
-packages = list(destination.glob("*.tar.gz"))
+packages = list(destination.glob(f"rxchef-{version}-*.tar.gz"))
 for extension in ("dmg", "deb", "rpm", "AppImage", "exe", "msi"):
-    packages.extend((target / "release/bundle").rglob("*." + extension))
+    for package in (target / "release/bundle").rglob("*." + extension):
+        # Local build directories may retain installers from earlier versions.
+        # Never relabel or upload those as the current release.
+        current = bool(re.search(r"-" + re.escape(version) + r"-\d+\.", package.name)) if extension == "rpm" else f"_{version}_" in package.name
+        if current:
+            packages.append(package)
 records = []
 for package in sorted(packages):
     digest = hashlib.sha256()
