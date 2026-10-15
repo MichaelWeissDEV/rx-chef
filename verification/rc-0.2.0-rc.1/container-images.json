@@ -4,10 +4,10 @@
       "rxchef-server:0.2.0-rc.1-web",
       "rxchef-server:local"
     ],
-    "image_id": "sha256:bec173a534d1545133c7992fbd79a0e51ff7c3a5707f003202b409e38d031048",
+    "image_id": "sha256:bb36a22d09719b4618b63d4f2272d25b17bed1bb6123a71b947d9cc4eb8d201b",
     "platform": "linux",
     "architecture": "arm64",
-    "bytes": 49501214,
+    "bytes": 49505034,
     "user": "65532:65532",
     "entrypoint": [
       "/usr/local/bin/rxchef-server"
@@ -16,7 +16,7 @@
       "--listen",
       "127.0.0.1:8787"
     ],
-    "build_commit": null,
+    "build_commit": "0148292a03512d4f164e8d1bb8cbcf6b85a76583",
     "runtime_test": "PASS",
     "registry_push": "NOT PERFORMED"
   },
