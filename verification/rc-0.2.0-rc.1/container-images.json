@@ -4,10 +4,10 @@
       "rxchef-server:0.2.0-rc.1-web",
       "rxchef-server:local"
     ],
-    "image_id": "sha256:e233e6e2856dae4bb9278a4ac846119790767e50116c3e4e9634e93f5689d7e9",
+    "image_id": "sha256:bec173a534d1545133c7992fbd79a0e51ff7c3a5707f003202b409e38d031048",
     "platform": "linux",
     "architecture": "arm64",
-    "bytes": 49494803,
+    "bytes": 49501214,
     "user": "65532:65532",
     "entrypoint": [
       "/usr/local/bin/rxchef-server"
