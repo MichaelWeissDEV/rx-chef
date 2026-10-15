@@ -1,0 +1,27 @@
+{
+  "platform": "darwin",
+  "architecture": "arm64",
+  "measurements": [
+    {
+      "nodes": 10,
+      "edges": 9,
+      "import_render_ms": 881.3844160000008,
+      "arrange_and_two_theme_changes_ms": 154.62574999999924,
+      "js_heap_used_bytes": 24294240
+    },
+    {
+      "nodes": 50,
+      "edges": 49,
+      "import_render_ms": 72.94266599999901,
+      "arrange_and_two_theme_changes_ms": 155.55516700000226,
+      "js_heap_used_bytes": 19237908
+    },
+    {
+      "nodes": 100,
+      "edges": 99,
+      "import_render_ms": 140.02062500000102,
+      "arrange_and_two_theme_changes_ms": 181.06345800000054,
+      "js_heap_used_bytes": 32994716
+    }
+  ]
+}
