@@ -7,6 +7,10 @@ members = ["cargo:."]
 cargo-dist-version = "0.32.0"
 # CI backends to support
 ci = "github"
+# The repository owns release.yml: the upstream host condition permits skipped
+# gates after validation failure. Keep our fail-closed publication guard.
+# Regression coverage: scripts/test-release-version.py.
+allow-dirty = ["ci"]
 # The installers to generate for each app
 installers = ["shell", "homebrew"]
 # Target platforms to build apps for (Rust target-triple syntax)

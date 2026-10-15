@@ -79,6 +79,25 @@ class ReleaseVersionTests(unittest.TestCase):
             with self.subTest(scope=scope):
                 self.assertGreaterEqual(levels[grants.get(scope, 'none')], levels[permission])
 
+    def test_publication_rejects_skipped_failed_and_cancelled_gates(self):
+        root = pathlib.Path(__file__).resolve().parent.parent
+        workflow = (root / '.github/workflows/release.yml').read_text()
+        host = workflow.split('  host:\n', 1)[1].split('  publish-homebrew-formula:', 1)[0]
+        dependencies = re.findall(r'^      - ([a-z-]+)$', host, re.MULTILINE)
+        required = {'plan', 'custom-validate-tag', 'custom-release-gates', 'build-local-artifacts',
+                    'build-global-artifacts', 'custom-build-deb', 'custom-build-rpm',
+                    'custom-build-aur', 'custom-build-workbench'}
+        self.assertTrue(required.issubset(dependencies))
+        condition = next(line for line in host.splitlines() if line.startswith('    if:'))
+        for result in ['failure', 'cancelled', 'skipped']:
+            self.assertIn("!contains(needs.*.result, '" + result + "')", condition)
+        self.assertIn("needs.plan.outputs.publishing == 'true'", condition)
+
+    def test_tag_validation_installs_registry_formatter(self):
+        root = pathlib.Path(__file__).resolve().parent.parent
+        workflow = (root / '.github/workflows/validate-tag.yml').read_text()
+        self.assertRegex(workflow, r'toolchain install [^\n]+--component rustfmt')
+
     def test_invalid_identifiers(self):
         for version in ["01.2.0", "0.02.0", "0.2.00", "0.2.0-01", "0.2.0-rc.01", "0.2.0-", "0.2.0-rc..1", "0.2.0-rc_1", "0.2.0+", "0.2.0+a..b", "0.2.0\n"]:
             with self.subTest(version=version), self.assertRaises(ValueError):

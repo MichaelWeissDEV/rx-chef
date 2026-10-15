@@ -124,7 +124,12 @@ installers, but never touch the Homebrew tap or crates.io — see
 
 Nothing here is hand-maintained YAML you should edit directly for its
 build/host jobs: `dist-workspace.toml` configures `dist`, and
-`dist generate` regenerates `.github/workflows/release.yml` from it. The
+The repository maintains `.github/workflows/release.yml` from the cargo-dist
+0.32.0 baseline with a stricter publication condition. `allow-dirty = ["ci"]`
+prevents regeneration from restoring the upstream condition that accepts skipped
+builds after a failed tag validator. Every required validation/build must succeed;
+`test-release-version.py` checks these dependencies and rejects skipped, cancelled
+or failed gates. Update the workflow deliberately when changing dist configuration. The
 custom jobs (`validate-tag`, `release-gates`, `build-deb`, `build-rpm`,
 `build-aur`, `publish-crates`) are `dist`'s documented extension points
 (`plan-jobs`, `local-artifacts-jobs`, `global-artifacts-jobs`,
@@ -304,3 +309,7 @@ publication. This change does not publish a tag, dispatch CI, upload artifacts,
 change repository environments or mark the current UI accepted. Validate the
 release rules with `python3 scripts/test-ui-acceptance.py`, `actionlint` and
 `dist generate --check` before using them.
+
+Tag validation installs `rustfmt` explicitly: the minimal Rust profile does not
+include the formatter used by `xtask check-registry`. Registry diagnostics remain
+visible so a missing tool is not misreported as stale generated code.

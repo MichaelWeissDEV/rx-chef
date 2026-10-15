@@ -137,10 +137,10 @@ fi
 
 # --- Registry consistency --------------------------------------------------
 
-if cargo run --locked --package xtask -- check-registry >/dev/null 2>&1; then
+if cargo run --locked --package xtask -- check-registry; then
     ok "operation registry is current"
 else
-    fail "operation registry is stale (run 'cargo run -p xtask -- generate-registry')"
+    fail "operation registry validation failed (run 'cargo run -p xtask -- generate-registry')"
 fi
 
 # --- Operation audit is green ----------------------------------------------

@@ -19,4 +19,5 @@ jobs:
           gh api repos/"$GH_REPO"/releases/414292578 > /tmp/release.json
           jq -e '.tag_name == "v0.0.1" and .target_commitish == "3cd535accc7b1cb5f934b79464f20249d85ff99a" and (.assets | length == 1) and .assets[0].name == "dist-manifest.json" and .assets[0].download_count == 0' /tmp/release.json
           gh api --method PATCH repos/"$GH_REPO"/releases/414292578 -F draft=true --silent
-          echo 'Empty failed announcement withdrawn; source tag preserved.'
+          gh api --method DELETE repos/"$GH_REPO"/releases/414292578 --silent
+          echo 'Empty failed announcement removed; source tag preserved.'
