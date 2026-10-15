@@ -39,5 +39,10 @@ original recipe index, so repeated Fork steps are not mislabeled as subsequent
 recipe operations. Bounded prefixes are marked as truncated, and final output
 is a separate view. Binary preview formatting inspects at most 256 bytes.
 
-The event loop still blocks during execution. Async execution, remote sessions,
-module separation and broader interaction tests remain on the product roadmap.
+Recipe and graph execution use background client work, keeping the event loop
+responsive to cancellation, resize and exit. Both local supervised workers and
+remote server sessions use the shared job contract. The graph screen lives in
+`crates/tui/src/screens/graphs.rs`; network/client coordination lives in
+`crates/tui/src/client.rs`. See the [terminal guide](../workbench/terminal.md)
+for graph keys and the [testing handbook](../development/testing.md) for the real
+PTY checks, including exact file output and terminal-state restoration.

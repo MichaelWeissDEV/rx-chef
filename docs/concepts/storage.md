@@ -216,9 +216,9 @@ The recorded steps are executable; the recorded preview is not. This prevents a
 truncated, lossy, or redacted preview from becoming data without explicit user
 choice.
 
-## Concurrency
+## Legacy Store concurrency
 
-Store writes are atomic but there is no cross-process transaction or advisory
+Legacy recipe/variable Store writes are atomic but there is no cross-process transaction or advisory
 lock spanning read-modify-write operations. Two processes updating the same
 variable map or recipe at the same time may race, with the last complete rename
 winning.
@@ -231,6 +231,12 @@ For automation that mutates shared state:
 - export and review recipes before replacing shared names.
 
 Read-only execution and the stateless `bake` API do not have this concern.
+
+Graph and portable-project repositories are newer APIs with cooperative writer
+locks and count/byte quotas. Browser projects use IndexedDB transactions. Their
+formats, validation boundaries, backup and recovery steps are documented in
+[portable projects](../workbench/portable-projects.md). These libraries do not
+synchronize with each other or with the legacy Store automatically.
 
 ## Corruption and recovery
 

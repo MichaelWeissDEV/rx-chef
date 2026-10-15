@@ -38,6 +38,10 @@ same Cargo, documentation, protocol, and smoke-test gates directly.
 | Build on Linux, macOS, or Windows | [Platform support](getting-started/platforms.md) |
 | Run the first transformations | [Quickstart](getting-started/quickstart.md) |
 | Learn the complete terminal workflow | [CLI handbook](cli/handbook.md) |
+| Use the graphical workbench | [Browser](workbench/browser.md) and [desktop](workbench/desktop.md) |
+| Execute multi-input graphs | [Terminal workflow](workbench/terminal.md) |
+| Move and recover saved sessions | [Portable projects](workbench/portable-projects.md) |
+| Integrate HTTP and cancellable jobs | [Server protocol](server/protocol.md) |
 | Understand stdin, files, and stdout | [Input and output](concepts/input-output.md) |
 | Explore every CLI command | [CLI reference](cli/reference.md) |
 | Compose operations | [Pipelines](concepts/pipelines.md) and [recipes](cli/recipes.md) |

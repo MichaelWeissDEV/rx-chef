@@ -2,7 +2,7 @@
 
 `rxchef-server` ist der eigenständige Headless-Server für rx-chef. Er stellt eine HTTP-basierte REST-, JSON-RPC 2.0- und WebSocket-Schnittstelle bereit.
 
-Transformationsaufgaben werden in isolierten Worker-Kindprozessen (`--internal-worker`) ausgeführt, um Parent-Crashs, unkontrollierte Memory-Leaks oder blockierende CPU-Schleifen zu verhindern.
+Transformationsaufgaben werden in begrenzten Worker-Kindprozessen (`--internal-worker`) ausgeführt. Der Supervisor setzt Zeit-/Speichergrenzen durch und beendet sowie erntet abgebrochene Worker. Diese Prozesse sind keine vollständige Betriebssystem-Sandbox; plattformspezifische Grenzen stehen unten. Das gemeinsame Clientprotokoll hat Version 2, unabhängig vom HTTP-Pfad `/api/v1` und dem JSON-RPC-2.0-Umschlag. Beispiele und Jobzustände stehen im [Protokollleitfaden](protocol.md).
 
 ## 1. Start und Grundkonfiguration
 
@@ -49,7 +49,7 @@ rxchef-server \
 
 ## 2. Authentifizierung und Scopes
 
-Jede Anfrage (außer `/api/v1/health` und initialem WebSocket-Upgrade) erfordert einen Bearer-Token:
+API-Anfragen (außer `/api/v1/health` und initialem WebSocket-Upgrade) erfordern einen Bearer-Token. Im `web-ui`-Build sind zusätzlich GET/HEAD für die Oberfläche `/`, `/index.html` und `/assets/*` öffentlich; das gewährt keinen Zugriff auf Ausführungen:
 
 - **Full-Access-Token (`--token`, `--token-file`, `RXCHEF_TOKEN`)**: Erlaubt alle Endpunkte, Job-Submissions und Cancellation.
 - **Read-Only-Token (`--read-token`, `RXCHEF_READ_TOKEN`)**: Erlaubt nur Lese-/Discovery-Endpunkte (`version`, `capabilities`, `operations`, `describe`, `search`). Ausführungen und Jobs werden mit `403 PolicyDenied` abgelehnt.
@@ -108,6 +108,9 @@ LocalEngineClient / Registry / Execution Engine
 - `GET  /api/v1/operations`
 - `GET  /api/v1/operations/{id}`
 - `POST /api/v1/validate`
+- `POST /api/v1/graphs/validate`
+- `POST /api/v1/graphs/execute`
+- `POST /api/v1/projects/validate`
 - `POST /api/v1/execute`
 - `POST /api/v1/recipes/execute` (Alias zu `execute`)
 - `POST /api/v1/magic`
@@ -118,7 +121,7 @@ LocalEngineClient / Registry / Execution Engine
 
 ### JSON-RPC 2.0 über HTTP (`POST /api/v1/rpc`)
 
-Unterstützt alle Methoden: `version`, `capabilities`, `operations`, `describe`, `search`, `validate`, `execute`, `magic`, `scan`, `job.submit`, `job.get`, `job.cancel`.
+Unterstützt: `version`, `capabilities`, `operations`, `describe`, `search`, `validate`, `execute`, `graph.validate`, `graph.execute`, `project.validate`, `magic`, `scan`, `job.submit`, `job.get`, `job.cancel`.
 
 ### WebSocket (`/api/v1/ws`)
 

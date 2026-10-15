@@ -70,6 +70,15 @@ nav:
       - Var: cli/var.md
   - Operations:
       - Overview: operations/index.md
+  - Workbench:
+      - Browser: workbench/browser.md
+      - Desktop: workbench/desktop.md
+      - Terminal graphs: workbench/terminal.md
+      - Portable projects: workbench/portable-projects.md
+      - Troubleshooting: workbench/troubleshooting.md
+  - HTTP server:
+      - Configuration: server/configuration.md
+      - Protocol and jobs: server/protocol.md
   - Rust library: library.md
   - Performance:
       - Methodology: performance/methodology.md
@@ -85,6 +94,7 @@ nav:
       - Adding an operation: development/adding-an-operation.md
       - Documenting an operation: development/documenting-an-operation.md
       - Testing: development/testing.md
+      - Acceptance matrix: development/acceptance-matrix.md
       - Benchmarking: development/benchmarking.md
       - Fuzzing: development/fuzzing.md
       - Releasing: development/releasing.md

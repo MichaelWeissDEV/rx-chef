@@ -176,6 +176,7 @@ run_gate "invalid input exits non-zero" bash -c \
     _ "$rxchef"
 
 run_gate "server smoke" python3 docker/server-smoke.py "$rxchef"
+run_gate "executable handbook examples" python3 scripts/test-workbench-docs.py --cli "$rxchef"
 
 # Keep variants in a fresh directory: never silently reuse or overwrite a
 # previous release rehearsal. Web and headless snapshots stay distinct.

@@ -104,6 +104,174 @@ fn binary_graph() -> Graph {
         ],
     )
 }
+
+fn two_input_combine(combine: Combine) -> Graph {
+    graph(
+        vec![
+            input("a"),
+            input("b"),
+            node("combine", NodeKind::Combine { combine }),
+            output("out"),
+        ],
+        vec![
+            edge("a", "combine", "left"),
+            edge("b", "combine", "right"),
+            edge("combine", "out", "data"),
+        ],
+    )
+}
+
+#[test]
+fn xor_is_reversible_for_all_byte_values_and_empty_input() {
+    let g = two_input_combine(Combine::Xor);
+    for length in [0, 1, 255, 256, 257, 4096] {
+        let original: Vec<u8> = (0..length).map(|i| i as u8).collect();
+        let mask: Vec<u8> = (0..length).map(|i| (i * 73 + 19) as u8).collect();
+        let encrypted = bytes(&run(&g, &[("a", &original), ("b", &mask)]), "out");
+        assert_eq!(encrypted.len(), original.len());
+        assert_eq!(
+            bytes(&run(&g, &[("a", &encrypted), ("b", &mask)]), "out"),
+            original
+        );
+        assert_eq!(
+            bytes(&run(&g, &[("a", &mask), ("b", &mask)]), "out"),
+            vec![0; length]
+        );
+    }
+}
+
+#[test]
+fn compare_distinguishes_empty_length_and_every_single_byte_difference() {
+    let g = two_input_combine(Combine::Compare);
+    assert_eq!(bytes(&run(&g, &[("a", &[]), ("b", &[])]), "out"), [1]);
+    assert_eq!(bytes(&run(&g, &[("a", &[]), ("b", &[0])]), "out"), [0]);
+    let original: Vec<u8> = (0..=255).collect();
+    for index in 0..original.len() {
+        let mut changed = original.clone();
+        changed[index] ^= 1;
+        assert_eq!(
+            bytes(&run(&g, &[("a", &original), ("b", &changed)]), "out"),
+            [0]
+        );
+    }
+}
+
+#[test]
+fn interleave_preserves_order_and_unmatched_tail_at_binary_boundaries() {
+    let g = two_input_combine(Combine::Interleave);
+    for left_len in [0, 1, 255, 256, 257] {
+        for right_len in [0, 1, 255, 256, 257] {
+            let left: Vec<u8> = (0..left_len).map(|i| i as u8).collect();
+            let right: Vec<u8> = (0..right_len).map(|i| 255 - i as u8).collect();
+            let mut expected = Vec::new();
+            for index in 0..left_len.max(right_len) {
+                if let Some(byte) = left.get(index) {
+                    expected.push(*byte);
+                }
+                if let Some(byte) = right.get(index) {
+                    expected.push(*byte);
+                }
+            }
+            assert_eq!(
+                bytes(&run(&g, &[("a", &left), ("b", &right)]), "out"),
+                expected
+            );
+        }
+    }
+}
+
+#[test]
+fn exact_structural_limits_accept_boundary_and_reject_one_less() {
+    let g = Graph::from_recipe("limits".into(), vec![]);
+    let mut p = GraphPolicy::default();
+    p.limits.max_nodes = 3;
+    p.limits.max_edges = 2;
+    p.limits.max_depth = 3;
+    p.limits.max_definition_bytes = serde_json::to_vec(&g).unwrap().len();
+    validate(&g, &p).unwrap();
+    for field in 0..4 {
+        let mut too_small = p.clone();
+        match field {
+            0 => too_small.limits.max_nodes -= 1,
+            1 => too_small.limits.max_edges -= 1,
+            2 => too_small.limits.max_depth -= 1,
+            _ => too_small.limits.max_definition_bytes -= 1,
+        }
+        assert_eq!(
+            validate(&g, &too_small).unwrap_err().kind,
+            GraphErrorKind::Limit
+        );
+    }
+}
+
+#[test]
+fn aggregate_output_budget_counts_each_export_and_never_returns_partial_bytes() {
+    let g = graph(
+        vec![input("in"), output("first"), output("second")],
+        vec![edge("in", "first", "data"), edge("in", "second", "data")],
+    );
+    let mut p = GraphPolicy::default();
+    p.limits.max_output_bytes = 7;
+    let result = execute(
+        &g,
+        BTreeMap::from([("in".into(), vec![0, 255, 192, 1])]),
+        &[],
+        &p,
+        &ExecutionControl::default(),
+    )
+    .unwrap();
+    assert_eq!(bytes(&result, "first"), [0, 255, 192, 1]);
+    let second = result
+        .outputs
+        .iter()
+        .find(|out| out.name == "second")
+        .unwrap();
+    assert_eq!(
+        second.error.as_ref().unwrap().kind,
+        GraphErrorKind::OutputLimit
+    );
+    assert!(second.output_base64.is_none());
+    assert_eq!(second.output_bytes, 0);
+    p.limits.max_output_bytes = 8;
+    let complete = execute(
+        &g,
+        BTreeMap::from([("in".into(), vec![0, 255, 192, 1])]),
+        &[],
+        &p,
+        &ExecutionControl::default(),
+    )
+    .unwrap();
+    assert!(complete
+        .outputs
+        .iter()
+        .all(|out| out.error.is_none() && out.output_bytes == 4));
+}
+
+#[test]
+fn observer_cancellation_after_first_node_prevents_downstream_start() {
+    let cancelled = Arc::new(AtomicBool::new(false));
+    let flag = cancelled.clone();
+    let events = Arc::new(std::sync::Mutex::new(Vec::new()));
+    let collected = events.clone();
+    let result = execute(
+        &Graph::from_recipe("cancel-between".into(), vec![]),
+        BTreeMap::from([("input".into(), vec![0, 255])]),
+        &[],
+        &GraphPolicy::default(),
+        &ExecutionControl {
+            cancelled: Some(cancelled),
+            observer: Some(Arc::new(move |event| {
+                if matches!(event, GraphEvent::Finished { .. }) {
+                    flag.store(true, std::sync::atomic::Ordering::Release);
+                }
+                collected.lock().unwrap().push(event);
+            })),
+            timeout: None,
+        },
+    );
+    assert_eq!(result.unwrap_err().kind, GraphErrorKind::Cancelled);
+    assert_eq!(events.lock().unwrap().len(), 2);
+}
 #[test]
 fn three_inputs_fan_in_fan_out_three_named_outputs_preserve_all_bytes() {
     let a: Vec<u8> = (0..=255).collect();
