@@ -1,0 +1,118 @@
+{
+  "run_id": 38812265039,
+  "url": "https://github.com/MichaelWeissDEV/rx-chef/actions/runs/38812265039",
+  "source_commit": "28b5692dfaf0653f03f7950ceaec1d0c3be3c2f9",
+  "status": "failed_validation",
+  "note": "Superseded by MD6 static-linkage fix; completed Docker/archive observations retained, no binary release published.",
+  "observed_at": "2026-10-15 22:08:25 UTC",
+  "jobs": [
+    {
+      "id": 116688130705,
+      "name": "plan",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 116688130999,
+      "name": "custom-validate-tag / validate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 116690229059,
+      "name": "build-local-artifacts (aarch64-apple-darwin)",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 116690229061,
+      "name": "build-local-artifacts (aarch64-unknown-linux-gnu)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 116690229115,
+      "name": "build-local-artifacts (x86_64-pc-windows-msvc)",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 116690229160,
+      "name": "build-local-artifacts (x86_64-apple-darwin)",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 116690229299,
+      "name": "build-local-artifacts (x86_64-unknown-linux-gnu)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 116690229512,
+      "name": "custom-release-gates / containers / container (ubuntu-24.04-arm, web)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 116690229519,
+      "name": "custom-release-gates / containers / container (ubuntu-24.04, web)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 116690229686,
+      "name": "custom-release-gates / containers / container (ubuntu-24.04-arm, headless)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 116690229698,
+      "name": "custom-release-gates / containers / container (ubuntu-24.04, headless)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 116690230629,
+      "name": "custom-release-gates / gates / Windows GNU cross-build container",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 116690230855,
+      "name": "custom-release-gates / gates / Native ubuntu-24.04",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 116690230973,
+      "name": "custom-release-gates / gates / Native macos-15-intel",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 116690231004,
+      "name": "custom-release-gates / gates / Native ubuntu-24.04-arm",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 116690231091,
+      "name": "custom-release-gates / gates / Native windows-latest",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 116690231113,
+      "name": "custom-release-gates / gates / Native macos-15",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 116690231313,
+      "name": "custom-release-gates / gates / Linux release container",
+      "status": "in_progress",
+      "conclusion": null
+    }
+  ]
+}

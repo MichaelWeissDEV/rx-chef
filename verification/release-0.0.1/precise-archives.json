@@ -1,0 +1,23 @@
+[
+  {
+    "archive": "rxchef-cli-aarch64-apple-darwin.tar.xz",
+    "sha256": "93152b7b9b871f5a5cc05bb16b35be84759c9febea2a20eb9d08dbfa90afaff5",
+    "version": "rxchef 0.0.1",
+    "result": "PASS",
+    "scope": "macOS ARM64 extracted cargo-dist archive; CLI exact bytes / authenticated server graph / TUI help"
+  },
+  {
+    "archive": "rxchef-tui-aarch64-apple-darwin.tar.xz",
+    "sha256": "d6c428854e1cd16f8d3cb088f00d3dc8b2d5868bb086eb8114944dd6b594dcfa",
+    "version": null,
+    "result": "PASS",
+    "scope": "macOS ARM64 extracted cargo-dist archive; CLI exact bytes / authenticated server graph / TUI help"
+  },
+  {
+    "archive": "rxchef-server-aarch64-apple-darwin.tar.xz",
+    "sha256": "6fb1ce506ee67a0484d1063d28a702614e8ccaf7c3fcd152cebd06baff883211",
+    "version": "rxchef-server 0.0.1",
+    "result": "PASS",
+    "scope": "macOS ARM64 extracted cargo-dist archive; CLI exact bytes / authenticated server graph / TUI help"
+  }
+]

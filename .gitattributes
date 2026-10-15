@@ -1,2 +1,4 @@
+# Generated registry/docs checks compare text bytes on native Windows too.
+* text=auto eol=lf
 # Shell scripts are also executed by Git Bash on native Windows runners.
 *.sh text eol=lf

@@ -11,7 +11,9 @@
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
 use std::ffi::c_int;
 
-#[link(name = "md6")]
+// md6's build script supplies a static C archive. Explicit linkage avoids
+// dllimport references to __imp_md6_* when compiling on native Windows.
+#[link(name = "md6", kind = "static")]
 unsafe extern "C" {
     fn md6_default_r(d: c_int, keylen: c_int) -> c_int;
     fn md6_full_hash(
