@@ -1,5 +1,29 @@
 # Releasing
 
+## Deliverables and first-release acceptance
+
+| Deliverable | Local build/start | Release output |
+|---|---|---|
+| CLI | `cargo build --locked --release -p rxchef-cli`; `target/release/rxchef --help` | CLI archive/installers and packaged command help |
+| TUI | `cargo build --locked --release -p rxchef-tui`; `target/release/rxchef_tui` | Separate TUI archive/native packages |
+| Native HTTP server | `cargo build --locked --release -p rxchef-server` | Headless server archive |
+| Browser workbench server | Build web assets, then server with `--features web-ui` | Separate embedded-web archive |
+| Desktop GUI | `npm --prefix apps/web run desktop:build` | Tauri native app/installers |
+| Container | `docker build -f docker/Dockerfile.server --target web -t rxchef-server:local .` | Locally built web/headless images; container CI on AMD64/ARM64 |
+
+The [Docker guide](../server/docker.md) covers host-network local use and real
+TLS-proxy deployment. Container CI currently builds/tests without an image-push step;
+no public registry image is advertised before publication. CLI/TUI/server help,
+all five shell completions and the generated manual are checked by
+`scripts/test-command-help.py` in both native CI and the host release gate.
+[Local storage](../workbench/local-storage.md) documents what survives restart
+and what must be saved explicitly by each client.
+
+For the first public release, record native install/launch/uninstall/reinstall,
+GUI dialogs/offline work, byte-exact saves and missing platform evidence before
+tagging. A green host gate and a configured image workflow are individual
+checks, not automatic approval of all native products.
+
 ## Current release rehearsal
 
 The prepared version is `0.2.0-rc.1`; no tag or external publication is authorized

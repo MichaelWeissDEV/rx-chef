@@ -21,3 +21,6 @@ permissions:
 jobs:
   gates:
     uses: ./.github/workflows/platform-checks.yml
+
+  containers:
+    uses: ./.github/workflows/container.yml

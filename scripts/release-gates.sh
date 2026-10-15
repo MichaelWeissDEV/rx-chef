@@ -175,6 +175,7 @@ run_gate "invalid input exits non-zero" bash -c \
     '! printf "SGVsbG8!" | "$1" run "From Base64" "A-Za-z0-9+/=" false true >/dev/null 2>&1' \
     _ "$rxchef"
 
+run_gate "shipped command help" python3 scripts/test-command-help.py --directory "$CARGO_TARGET_DIR/release"
 run_gate "server smoke" python3 docker/server-smoke.py "$rxchef"
 run_gate "executable handbook examples" python3 scripts/test-workbench-docs.py --cli "$rxchef"
 

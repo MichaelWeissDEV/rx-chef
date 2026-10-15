@@ -7,3 +7,15 @@ site
 *.crate
 __pycache__
 *.py[cod]
+apps/web/test-results
+apps/web/playwright-report
+apps/web/dist
+crates/server/web-dist
+.env
+.env.*
+*.log
+.codex
+.agents
+.aws
+.ssh
+local-rxchef-state

@@ -44,6 +44,7 @@ esac
 
 "$rxchef_binary" --version
 "$rxchef_binary" operations --all --json >/dev/null
+"$python_command" scripts/test-command-help.py
 "$python_command" docker/server-smoke.py "$rxchef_binary"
 case "$(uname -s)" in
     Darwin|Linux)

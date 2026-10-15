@@ -25,6 +25,20 @@ archive hash does not prove that an installer starts or uninstalls correctly.
 Current evidence and untested platforms are in the
 [RC readiness report](../development/0.2.0-rc.1-release-readiness.md).
 
+## Start the built application
+
+On macOS, open the production bundle from the repository root:
+
+```sh
+open -n "target/release/bundle/macos/rx-chef.app"
+```
+
+The local engine needs no separately started server. To develop with live
+frontend reload instead, run `npm --prefix apps/web run desktop:dev`.
+Use List mode for sequential recipes and Graph mode for multiple named inputs
+and outputs. See [local saves and exact exports](local-storage.md) before
+closing work you want to keep.
+
 ## Choose the engine
 
 Open **Connection**. An empty **Server URL** selects the local engine. For remote

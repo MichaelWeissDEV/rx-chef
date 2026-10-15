@@ -1,5 +1,12 @@
 # Installation
 
+The current source checkout prepares `0.2.0-rc.1`. Package-manager and release
+download commands below describe distribution channels; they do not imply this
+RC has already been published. For immediate local use see the
+[desktop start guide](../workbench/desktop.md), [native HTTP server](../server/configuration.md)
+and [Docker/Compose deployment](../server/docker.md). Current acceptance limits
+are recorded in the [RC report](../development/0.2.0-rc.1-release-readiness.md).
+
 rx-chef ships as prebuilt binaries, native OS packages, and Rust crates.
 Pick whichever fits your platform; all of them install the same `rxchef`
 CLI and `rxchef_tui` terminal interface.

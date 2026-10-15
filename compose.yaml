@@ -1,0 +1,21 @@
+# Local host-network deployment. Linux; Docker Desktop requires Host networking enabled.
+services:
+  rxchef:
+    image: rxchef-server:local
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.server
+      target: web
+    network_mode: host
+    environment:
+      RXCHEF_TOKEN: ${RXCHEF_TOKEN:?Set RXCHEF_TOKEN to at least 16 printable characters}
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 256
+    mem_limit: 2g
+    restart: unless-stopped

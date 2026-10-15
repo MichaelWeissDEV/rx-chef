@@ -75,10 +75,12 @@ nav:
       - Desktop: workbench/desktop.md
       - Terminal graphs: workbench/terminal.md
       - Portable projects: workbench/portable-projects.md
+      - Local storage and backups: workbench/local-storage.md
       - Troubleshooting: workbench/troubleshooting.md
   - HTTP server:
       - Configuration: server/configuration.md
       - Protocol and jobs: server/protocol.md
+      - Docker: server/docker.md
   - Rust library: library.md
   - Performance:
       - Methodology: performance/methodology.md

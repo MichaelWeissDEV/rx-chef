@@ -16,6 +16,11 @@ the Rust engine across the CLI, authenticated HTTP server and browser/desktop
 workbench. See the [graph guide](docs/concepts/graphs.md) and
 [current RC readiness evidence](docs/development/0.2.0-rc.1-release-readiness.md).
 
+Start the built macOS GUI: `open -n target/release/bundle/macos/rx-chef.app`.
+The local engine needs no server. For an HTTP/browser workbench, use the
+[native server guide](docs/server/configuration.md) or the
+[Docker/Compose guide](docs/server/docker.md).
+
 Workbench guides: [browser](docs/workbench/browser.md),
 [desktop](docs/workbench/desktop.md), [terminal graphs](docs/workbench/terminal.md),
 [portable projects and recovery](docs/workbench/portable-projects.md), and

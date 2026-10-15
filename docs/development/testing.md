@@ -84,6 +84,19 @@ path, include NUL, invalid UTF-8, all 256 byte values, empty data, boundary leng
 and independent expected output. A text preview assertion alone cannot prove
 binary correctness. For limits, test exact-boundary success and one-over failure.
 
+## Help, manuals and container deployment
+
+`python3 scripts/test-command-help.py` exercises 19 CLI help paths, server/TUI
+flags, all five shell completions and generated manpage output, without leaking
+a session token. Both release and native CI gates invoke it after building the
+shipped binaries.
+
+`python3 scripts/test-container.py --image rxchef-server:local --variant web`
+checks the actual non-root/read-only image, worker byte output and shutdown.
+The separate container CI matrix builds web/headless images on Linux AMD64 and
+ARM64, runs isolated and host-network tests and validates Compose. Local host
+networking requires the platform prerequisites in the [Docker guide](../server/docker.md).
+
 ## Process, terminal and installed archives
 
 ```sh
