@@ -1,8 +1,8 @@
 {
   "version": "0.0.1",
-  "status": "pending",
-  "accepted_commit": null,
-  "reviewer": null,
-  "reviewed_at": null,
-  "notes": "User explicitly accepted the UI and authorized release as 0.0.1. Version-only changes are included in that authorization; acceptance commit is recorded after preparation."
+  "status": "accepted",
+  "accepted_commit": "f8a18aebd64815d1175ba6b5a2d7f7d791b2691e",
+  "reviewer": "Maintainer: explicit UI acceptance and release authorization in this conversation",
+  "reviewed_at": "2026-10-15T20:56:31.821626+00:00",
+  "notes": "User accepted the compact desktop/browser UI and explicitly requested release 0.0.1 after CLI/server verification. Prepared commit changes the version and release documentation; no UI behavior is changed."
 }
