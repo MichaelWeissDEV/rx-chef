@@ -30,6 +30,9 @@ tap = "MichaelWeissDEV/homebrew-tap"
 # the real aur.archlinux.org remote — this is a deliberate scope decision,
 # not a placeholder. See docs/development/releasing.md if that changes.
 publish-jobs = ["homebrew", "./publish-crates"]
+# Explicit custom-job scopes replace cargo-dist's defaults. The called workflow
+# needs checkout access as well as an OIDC token for crates.io.
+github-custom-job-permissions = { "publish-crates" = { contents = "read", id-token = "write" } }
 # Validate the tag itself (version/changelog/lockfile/docs/audit — see
 # scripts/check-release-tag.sh) before dist does anything else, and rerun
 # the full release gate on the exact tag commit rather than trusting that

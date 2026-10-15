@@ -66,6 +66,19 @@ class ReleaseVersionTests(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError, 'Git Bash'):
                     bash_executable(platform='nt')
 
+    def test_custom_publish_caller_grants_reusable_workflow_permissions(self):
+        root = pathlib.Path(__file__).resolve().parent.parent
+        generated = (root / '.github/workflows/release.yml').read_text()
+        caller = generated.split('  custom-publish-crates:\n', 1)[1].split('\n  announce:', 1)[0]
+        called = (root / '.github/workflows/publish-crates.yml').read_text()
+        pattern = r'^\s+["\']?([a-z-]+)["\']?: ["\']?(read|write)["\']?\s*$'
+        grants = dict(re.findall(pattern, caller, re.MULTILINE))
+        requires = dict(re.findall(pattern, called, re.MULTILINE))
+        levels = {'none': 0, 'read': 1, 'write': 2}
+        for scope, permission in requires.items():
+            with self.subTest(scope=scope):
+                self.assertGreaterEqual(levels[grants.get(scope, 'none')], levels[permission])
+
     def test_invalid_identifiers(self):
         for version in ["01.2.0", "0.02.0", "0.2.00", "0.2.0-01", "0.2.0-rc.01", "0.2.0-", "0.2.0-rc..1", "0.2.0-rc_1", "0.2.0+", "0.2.0+a..b", "0.2.0\n"]:
             with self.subTest(version=version), self.assertRaises(ValueError):

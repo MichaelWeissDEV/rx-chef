@@ -160,6 +160,13 @@ Add a Ruleset (repo Settings → Rules → Rulesets) restricting who can push to
 maintainer. Without this, anyone with write access can trigger a full
 publish across five external systems by pushing a tag.
 
+Custom publish jobs explicitly grant `contents: read` and `id-token: write`
+through cargo-dist's
+[`github-custom-job-permissions`](https://axodotdev.github.io/cargo-dist/book/reference/config.html#github-custom-job-permissions)
+configuration. An explicit job permission map replaces defaults; the caller must
+cover the reusable publisher's requested scopes. Release-version regression tests
+compare these scopes so GitHub does not reject the workflow before jobs start.
+
 ### 2. crates.io: bootstrap, then Trusted Publishing
 
 crates.io Trusted Publishing (GitHub OIDC, no stored token) can only be
