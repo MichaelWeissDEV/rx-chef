@@ -5,7 +5,7 @@ import { OperationDescriptor, RecipeStep, ExecuteResponse, RxchefClient, Graph, 
 import { OperationsPanel } from './components/OperationsPanel';
 import { RecipePanel } from './components/RecipePanel';
 import { InputPanel } from './components/InputPanel';
-import { OutputPanel } from './components/OutputPanel';
+import { RecipeResults } from './components/RecipeResults';
 import { TracePanel } from './components/TracePanel';
 import { Sun, Moon, Shield, Key } from 'lucide-react';
 import './styles/workbench.css';
@@ -19,6 +19,8 @@ import { useTaskExecution } from './hooks/useTaskExecution';
 import { errorMessage } from './lib/contracts';
 import { ProjectPanel } from './components/ProjectPanel';
 import { readPreferenceList } from './lib/preferences';
+import { DockPanel } from './components/DockPanel';
+import { useAutoBake } from './hooks/useAutoBake';
 import { starterGraph } from './features/graph/model';
 
 export const App: React.FC = () => {
@@ -60,6 +62,12 @@ export const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const recipeExecution = useTaskExecution(client);
   const isExecuting = recipeExecution.running;
+  const [autoBake, setAutoBake] = useState(false);
+  const [listOperations, setListOperations] = useState(true);
+  const [listInput, setListInput] = useState(true);
+  const [traceOpen, setTraceOpen] = useState(false);
+  const recipeRevision = JSON.stringify([input, inputType, recipe, connectionVersion, projectEpoch, token]);
+  const latestRecipeRevision = useRef(recipeRevision); latestRecipeRevision.current = recipeRevision;
   const [palette, setPalette] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -106,6 +114,7 @@ export const App: React.FC = () => {
   const handleBake = useCallback(async () => {
     if (isExecuting) return;
     setError(null);
+    const owner = latestRecipeRevision.current;
 
     let sourceIndices: number[] = [];
     try {
@@ -116,17 +125,24 @@ export const App: React.FC = () => {
         max_entries: 64, max_bytes_per_entry: 512, max_total_bytes: 65536,
       }};
       const outcome = await recipeExecution.run({ method: 'execute', params: request });
-      if (!outcome) return;
+      if (!outcome || latestRecipeRevision.current !== owner) return;
       if (outcome.kind !== 'execution') throw new Error('Worker returned the wrong result.');
       const res = outcome.value;
       res.trace = res.trace.map(entry => ({ ...entry, step_index: sourceIndices[entry.step_index] }));
       setResponse(res);
     } catch (err: unknown) {
+      if (latestRecipeRevision.current !== owner) return;
       const step = err && typeof err === 'object' && 'step' in err && typeof err.step === 'number' ? sourceIndices[err.step - 1] : undefined;
       setError(`${step === undefined ? '' : `Step ${step + 1}: `}${errorMessage(err)}`);
       setResponse(null);
     }
   }, [client, input, inputType, recipe, isExecuting, recipeExecution]);
+
+  useEffect(() => {
+    setResponse(null);
+    void recipeExecution.cancel().catch(() => {});
+  }, [recipeRevision]);
+  useAutoBake({ enabled: autoBake, visible: mode === 'list', ready: operations.length > 0, running: isExecuting, revision: recipeRevision, run: handleBake });
 
   useEffect(() => {
     const shortcut = (event: KeyboardEvent) => {
@@ -260,21 +276,20 @@ export const App: React.FC = () => {
           </button>
         </div>
       </header>
-      <ProjectPanel project={currentProject} client={client} onOpen={openProject}
+      <div className="workspace-bar"><ProjectPanel project={currentProject} client={client} onOpen={openProject}
         onRename={name=>setProject(previous=>({...previous,name}))}
         onSelectGraph={id=>{setProject({...currentProject,settings:{...currentProject.settings,selected_graph:id}});setDocumentVersion(v=>v+1);setGraphOpened(true);setMode('graph');}}
         onSelectRecipe={name=>selectProjectRecipe(currentProject,name)}
         onAddGraph={()=>{const graph={...starterGraph(),id:`graph-${crypto.randomUUID().slice(0,8)}`};setProject({...currentProject,graphs:[...(currentProject.graphs??[]),graph],settings:{...currentProject.settings,selected_graph:graph.id}});setDocumentVersion(v=>v+1);setGraphOpened(true);setMode('graph');}}
         onAddRecipe={()=>{const name=`Recipe ${crypto.randomUUID().slice(0,8)}`;selectProjectRecipe({...currentProject,recipes:[...(currentProject.recipes??[]),{name,steps:[]}]},name);}} />
 
+      <nav className="workbench-mode" aria-label="Workbench mode"><button onClick={() => setMode('list')} aria-pressed={mode === 'list'}>List mode</button><button onClick={() => { setGraphOpened(true); setMode('graph'); }} aria-pressed={mode === 'graph'}>Graph mode</button></nav></div>
       {mode === 'list' && palette && <CommandPalette operations={operations} onSelect={handleAddOperation} onClose={() => setPalette(false)} />}
-      {mode === 'list' && <button className="palette-toggle btn btn-secondary" onClick={() => setPalette(true)}>Commands · ⌘/Ctrl K</button>}
-      <nav className="workbench-mode" aria-label="Workbench mode"><button onClick={() => setMode('list')} aria-pressed={mode === 'list'}>List mode</button><button onClick={() => { setGraphOpened(true); setMode('graph'); }} aria-pressed={mode === 'graph'}>Graph mode</button></nav>
       <div className="graph-host" hidden={mode !== 'graph'}>{graphOpened && <React.Suspense fallback={<p role="status">Loading graph editor…</p>}><GraphEditor client={client} operations={operations} favorites={favorites} onToggleFavorite={handleToggleFavorite} theme={theme} visible={mode === 'graph'} reservedIds={project.graphs?.filter(graph => graph.id !== project.settings?.selected_graph).map(graph => graph.id)} document={project.graphs?.find(graph=>graph.id===project.settings?.selected_graph)} documentVersion={documentVersion} projectEpoch={projectEpoch} onDocumentChange={graphChanged} onRun={graphRun} /></React.Suspense>}</div>
-      {mode === 'list' && <><RecipeTools recipe={recipe} onLoad={setRecipe} onError={setError} undo={() => dispatch({ type: 'undo' })} redo={() => dispatch({ type: 'redo' })} canUndo={!!history.past.length} canRedo={!!history.future.length} />
+      {mode === 'list' && <><div className="list-toolbar"><button onClick={() => setPalette(true)}>Commands · ⌘/Ctrl K</button><button aria-pressed={listOperations} onClick={() => setListOperations(value => !value)}>Operations sidebar</button><button aria-pressed={listInput} onClick={() => setListInput(value => !value)}>Input panel</button><label><input type="checkbox" checked={autoBake} onChange={event => setAutoBake(event.target.checked)} />Auto-Bake recipe</label><button aria-pressed={traceOpen} onClick={() => setTraceOpen(value => !value)}>Transformation trace</button><details className="recipe-file-menu"><summary>Recipe files & tools</summary><RecipeTools recipe={recipe} onLoad={setRecipe} onError={setError} undo={() => dispatch({ type: 'undo' })} redo={() => dispatch({ type: 'redo' })} canUndo={!!history.past.length} canRedo={!!history.future.length} /></details></div>
       {/* Main workbench */}
       <main className="workbench-main">
-        <OperationsPanel
+        <div className="list-operations-shell" hidden={!listOperations}><OperationsPanel
           operations={operations}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -283,7 +298,7 @@ export const App: React.FC = () => {
           onAddOperation={handleAddOperation}
           favorites={favorites}
           onToggleFavorite={handleToggleFavorite}
-        />
+        /></div>
 
         <RecipePanel
           recipe={recipe}
@@ -299,25 +314,25 @@ export const App: React.FC = () => {
           isExecuting={isExecuting}
         />
 
-        <InputPanel
+        <div className="list-input-shell" hidden={!listInput}><InputPanel
           input={input}
           onChangeInput={setInput}
           inputType={inputType}
           onChangeInputType={setInputType}
           onFileUpload={handleFileUpload}
           onNativeImport={isTauri ? async () => { try { const data = await importNativeFile(); if (data !== null) { setInput(data); setInputType('base64'); } } catch (error) { setError(errorMessage(error)); } } : undefined}
-        />
+        /></div>
 
-        <OutputPanel
+        <DockPanel title="Recipe results"><RecipeResults
           response={response}
           error={error}
           outputViewMode={outputViewMode}
           onChangeViewMode={setOutputViewMode}
-        />
+        /></DockPanel>
       </main>
 
       {/* Trace inspector drawer */}
-      {response && response.trace && (
+      {traceOpen && response && response.trace && (
         <TracePanel trace={response.trace} truncated={response.trace_truncated} />
       )}
 

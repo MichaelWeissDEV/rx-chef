@@ -13,6 +13,13 @@ Prepared locally; publication and final release approval are pending.
 
 ### Added
 
+- Compact shared workbench chrome; collapsible sidebars and resizable/floating
+  output panels, side-by-side graph outputs and bounded recipe result snapshots.
+- Opt-in debounced Auto-Bake for recipes and graphs, selectable edge styles,
+  ongoing automatic layout, transformation explanations and standalone SVG flow export.
+- Version/source-bound UI acceptance gate before release publication, with rehearsal
+  still available while acceptance is pending.
+
 - Multi-input graph workbench with argument and embedded recipe nodes, typed
   Rust-owned ports, DAG layout, output selection, binary exports and revisioned runs.
 - Shared process supervision for server, desktop and terminal jobs, real node

@@ -54,7 +54,9 @@ cannot execute or validate projects/graphs through the protected execution API.
 
 ## Files and exact bytes
 
-Follow the [browser workflow](browser.md) for recipe and graph editing. Native
+Follow the [browser workflow](browser.md) for compact menus, recipe/graph editing,
+Auto-Bake, panel docking, output comparisons and SVG transformation reports.
+Floating result panels stay inside the current app window. Native
 import/export actions use operating-system dialogs. Cancelling a dialog leaves
 the existing session in place. Choose a complete destination path through the
 dialog's folder selection and name controls, then verify the resulting file.

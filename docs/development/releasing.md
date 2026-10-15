@@ -263,3 +263,35 @@ YARA, or disassembly backends, which pull in native system dependencies
 remain discoverable in `rxchef operations` and report why they're
 unavailable; users who need them build from source with `--features full`
 (see `docs/reference/feature-matrix.md`).
+
+## UI acceptance before publication
+
+The first release remains blocked until the desktop and browser UI have been
+reviewed. `.release/ui-acceptance.json` currently records `pending`;
+automated browser success alone must not change that status.
+
+1. Review the built production desktop app and the matching server-served UI,
+   including compact menus, panel docking, Auto-Bake, multiple outputs,
+   transformation reports and selective project export/import.
+2. After explicit acceptance, record `status: "accepted"`, the complete reviewed
+   commit SHA in `accepted_commit`, the reviewer and an ISO-8601 `reviewed_at`
+   time with timezone. Keep the version equal to Cargo's complete version.
+3. Commit the acceptance record. `python3 scripts/check-ui-acceptance.py` checks
+   that the reviewed commit is an ancestor and its GUI source matches the
+   current release source. Later GUI/dependency/native changes require review
+   again. Documentation-only acceptance commits can retain the reviewed SHA.
+4. Run **Release dry run** with artifact retention if reviewable CI packages are
+   wanted. Pending UI acceptance permits rehearsal, while the summary now waits
+   for desktop/workbench packaging and fails for cancelled/skipped required jobs.
+5. Only after the UI and the remaining platform/installation release criteria
+   pass, create/push the version tag according to the workflow above. The tag
+   validation job enforces UI acceptance before builds/publication proceed.
+   cargo-dist's plan may prepare a GitHub draft before custom validation; failed
+   acceptance blocks the publishing/announcement jobs. A draft is not approval.
+
+The generated cargo-dist release workflow still builds archives/installers and
+attaches workbench packages, with prereleases excluded from stable package
+publication. This change does not publish a tag, dispatch CI, upload artifacts,
+change repository environments or mark the current UI accepted. Validate the
+release rules with `python3 scripts/test-ui-acceptance.py`, `actionlint` and
+`dist generate --check` before using them.

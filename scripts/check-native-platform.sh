@@ -8,6 +8,7 @@ echo "==> Native platform: $(uname -s) $(uname -m)"
 rustc --version
 cargo --version
 python3 scripts/test-release-version.py
+python3 scripts/test-ui-acceptance.py
 
 npm --prefix apps/web ci
 npm --prefix apps/web run contracts:check

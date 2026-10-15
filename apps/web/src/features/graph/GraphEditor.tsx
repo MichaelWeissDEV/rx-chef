@@ -14,6 +14,9 @@ import { GraphInspector } from './GraphInspector';
 import { GraphOperations } from './GraphOperations';
 import { GraphOutputs } from './GraphOutputs';
 import './graph.css';
+import { useAutoBake } from '../../hooks/useAutoBake';
+import { GraphReport } from './GraphReport';
+import type { EdgeStyle } from './report';
 import { arrangeGraph } from './layout';
 
 type WithoutId<T> = T extends unknown ? Omit<T, 'id'> : never;
@@ -24,6 +27,12 @@ function Editor({ client, operations, favorites, onToggleFavorite, theme, visibl
   const flow = useReactFlow<Card>();
   const initialized = useNodesInitialized();
   const toolbox = useRef<HTMLDetailsElement>(null);
+  const [showOperations, setShowOperations] = useState(true);
+  const [showInspector, setShowInspector] = useState(true);
+  const [edgeStyle, setEdgeStyle] = useState<EdgeStyle>('smoothstep');
+  const [autoAlign, setAutoAlign] = useState(false);
+  const [autoBake, setAutoBake] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const [fitRevision, setFitRevision] = useState(0);
   const [sizes, setSizes] = useState<Record<string, { width: number; height: number }>>({});
   const [history, rawDispatch] = useReducer(historyReducer<Graph>, { past: [], present: document ?? starterGraph(), future: [] });
@@ -47,8 +56,8 @@ function Editor({ client, operations, favorites, onToggleFavorite, theme, visibl
   const dispatch = (action: HistoryAction<Graph>) => { const next = historyReducer(history, action); if (executionKey(next.present) !== executionKey(history.present)) { bindingEpoch.current++; controller.editGraph(); } rawDispatch(action); };
   const graph = history.present;
   useEffect(() => {
-    if (initialized && visible) requestAnimationFrame(() => { void flow.fitView({ padding: 0.15 }); });
-  }, [initialized, fitRevision, flow, visible]);
+    if (initialized && visible) requestAnimationFrame(() => { void flow.fitView({ padding: 0.15, maxZoom: 1.2 }); });
+  }, [initialized, fitRevision, flow, visible, showOperations, showInspector]);
   const [selected, rawSelect] = useState('input');
   const [selectedIds, setSelectedIds] = useState(['input']);
   const select = (id: string) => { rawSelect(id); setSelectedIds([id]); };
@@ -143,6 +152,13 @@ function Editor({ client, operations, favorites, onToggleFavorite, theme, visibl
     try { setError(''); runProjectEpoch.current=projectEpoch; await controller.start(request()); }
     catch (error) { setError(errorMessage(error)); }
   };
+  useAutoBake({ enabled: autoBake, visible, ready: operations.length > 0 && issues.length === 0 && graph.nodes.some(node => node.type === 'output'), running, revision: JSON.stringify([executionKey(graph), values, selectedOutputs, projectEpoch, documentVersion]), run });
+  const structureKey = JSON.stringify([graph.nodes.map(node => node.id), graph.edges]);
+  useEffect(() => {
+    if (!autoAlign) return;
+    const presentation = arrangeGraph(graph, sizes);
+    if (JSON.stringify(presentation) !== JSON.stringify(graph.presentation)) { setGraph({ ...graph, presentation }); setFitRevision(value => value + 1); }
+  }, [autoAlign, structureKey, sizes]);
   const cancel = () => controller.cancel();
   const loadOwner = () => ({ ticket: ++loadTicket.current, epoch: bindingEpoch.current, client: currentClient.current });
   const load = async (file?: File, suppliedOwner?: ReturnType<typeof loadOwner>) => {
@@ -182,11 +198,18 @@ function Editor({ client, operations, favorites, onToggleFavorite, theme, visibl
     else if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); changes(selectedIds.map(id => ({ type: 'remove', id }))); }
   }}>
     <div className="graph-toolbar">
-      <div className="graph-heading"><small>GRAPH WORKBENCH</small><strong>Connect your data, step by step</strong></div>
-      <div className="graph-primary-actions"><button className="graph-run" disabled={running || !operations.length} onClick={() => void run()}>Run graph</button><button onClick={() => void cancel()} disabled={!running || !execution.canCancel}>Cancel graph</button><button onClick={() => void save()}>Save graph</button></div>
+      <label className="graph-name-label">Graph<input aria-label="Graph name" value={graph.id} onChange={e => { if (reservedIds.includes(e.target.value)) { setError('Graph name already exists in this project. Choose another name.'); return; } setError(''); setGraph({ ...graph, id:e.target.value }); }} /></label>
+      <div className="graph-primary-actions"><button className="graph-run" disabled={running || !operations.length} onClick={() => void run()}>Run graph</button><button onClick={() => void cancel()} disabled={!running || !execution.canCancel}>Cancel graph</button><label><input type="checkbox" checked={autoBake} onChange={event => setAutoBake(event.target.checked)} />Auto-Bake graph</label><button onClick={() => void save()}>Save graph</button>
+      <button onClick={() => { setGraph({ ...graph, presentation: arrangeGraph(graph, sizes) }); setFitRevision(v => v + 1); }}>Arrange nodes</button>
+      <details className="graph-view-menu"><summary>View</summary><div>
+        <label><input type="checkbox" checked={showOperations} onChange={event => setShowOperations(event.target.checked)} />Operations sidebar</label>
+        <label><input type="checkbox" checked={showInspector} onChange={event => setShowInspector(event.target.checked)} />Inspector sidebar</label>
+        <label><input type="checkbox" checked={autoAlign} onChange={event => setAutoAlign(event.target.checked)} />Auto-align nodes</label>
+        <label>Edge style<select aria-label="Graph edge style" value={edgeStyle} onChange={event => setEdgeStyle(event.target.value as EdgeStyle)}><option value="smoothstep">Rounded corners</option><option value="step">Square corners</option><option value="default">Flowing curves</option></select></label>
+      </div></details><button onClick={() => setReportOpen(true)}>Transformation steps</button></div>
     </div>
+    <details className="graph-tools-menu"><summary>Graph tools & connections <span>{graph.nodes.length} nodes · {graph.edges.length} connections{issues.length > 0 ? ` · ${issues.length} items need attention` : ''}</span></summary>
     <div className="graph-document-tools">
-      <label>Graph name<input aria-label="Graph name" value={graph.id} onChange={e => { if (reservedIds.includes(e.target.value)) { setError('Graph name already exists in this project. Choose another name.'); return; } setError(''); setGraph({ ...graph, id:e.target.value }); }} /></label>
       <details className="graph-output-picker"><summary>{selectedOutputs.length ? `${selectedOutputs.length} outputs selected` : 'Run all outputs'}</summary><fieldset aria-label="Graph output selection">
         <label><input type="checkbox" checked={!selectedOutputs.length} onChange={() => { controller.editGraph(); setSelectedOutputs([]); }} />All outputs</label>
         <small>Or choose specific outputs:</small>{graph.nodes.filter(node => node.type === 'output').map(node => <label key={node.id}><input type="checkbox" checked={selectedOutputs.includes(node.id)} onChange={event => { controller.editGraph(); setSelectedOutputs(previous => event.target.checked ? [...previous, node.id] : previous.filter(id => id !== node.id)); }} />{node.name}</label>)}
@@ -203,27 +226,29 @@ function Editor({ client, operations, favorites, onToggleFavorite, theme, visibl
       </div></details>
       <button onClick={copyNodes}>Copy nodes</button><button onClick={pasteNodes} disabled={!fragment?.nodes.length}>Paste nodes</button>
       <button onClick={() => dispatch({ type: 'undo' })} disabled={!history.past.length}>Undo graph</button><button onClick={() => dispatch({ type: 'redo' })} disabled={!history.future.length}>Redo graph</button>
-      <button onClick={() => { setGraph({ ...graph, presentation: arrangeGraph(graph, sizes) }); setFitRevision(v => v + 1); }}>Arrange nodes</button><label className="graph-open-file">Open graph<input className="visually-hidden" aria-label="Graph file" type="file" accept=".json" onChange={e => { const file = e.target.files?.[0]; e.target.value = ''; void load(file); }} /></label>
+      <label className="graph-open-file">Open graph<input className="visually-hidden" aria-label="Graph file" type="file" accept=".json" onChange={e => { const file = e.target.files?.[0]; e.target.value = ''; void load(file); }} /></label>
       {Boolean(window.__TAURI_INTERNALS__) && <button onClick={async () => { try { const owner = loadOwner(); const data = await importNativeFile(); if (data !== null) await load(new File([new TextDecoder('utf-8', {fatal:true}).decode(parseBase64(data))], 'graph.rxgraph.json'), owner); } catch (error) { setError(errorMessage(error)); } }}>Open native graph file</button>}
     </div>
-    <div className="graph-guide"><div><strong>1 · Bind inputs</strong><small>Choose an input node and enter data.</small></div><div><strong>2 · Add operations</strong><small>Click an operation to insert it into the selected chain.</small></div><div><strong>3 · Run & export</strong><small>Results appear below; downloads keep every byte.</small></div></div>
-    <div className="graph-readiness"><label><input type="checkbox" checked={automatic} onChange={event => setAutomatic(event.target.checked)} />Connect new operations automatically</label><span>{graph.nodes.length} nodes · {graph.edges.length} connections</span>{issues.length ? issues.map(issue => <button key={issue.node} onClick={() => select(issue.node)}>{issue.message} →</button>) : <span className="graph-ready">Inputs ready · run to validate</span>}</div>
+    <div className="graph-guide"><strong>Connect your data, step by step</strong><div><strong>1 · Bind inputs</strong><small>Choose an input node and enter data.</small></div><div><strong>2 · Add operations</strong><small>Click an operation to insert it into the selected chain.</small></div><div><strong>3 · Run & export</strong><small>Results appear below; downloads keep every byte.</small></div></div>
+    <div className="graph-readiness"><label><input type="checkbox" checked={automatic} onChange={event => setAutomatic(event.target.checked)} />Connect new operations automatically</label><span>{graph.nodes.length} nodes · {graph.edges.length} connections</span>{issues.length ? issues.map(issue => <button key={issue.node} onClick={() => { select(issue.node); setShowInspector(true); }}>{issue.message} →</button>) : <span className="graph-ready">Inputs ready · run to validate</span>}</div>
     <details className="graph-wiring"><summary>Connect nodes manually</summary><div className="graph-connection"><label>Source<select aria-label="Connection source" value={activeSource} onChange={e => setSource(e.target.value)}>{graph.nodes.filter(n => n.type !== 'output').map(n => <option value={n.id} key={n.id}>{title(n)} · {n.id}</option>)}</select></label>
       <label>Target<select aria-label="Connection target" value={activeTarget} onChange={e => { setTarget(e.target.value); setPort('data'); }}>{graph.nodes.filter(n => n.type !== 'input').map(n => <option value={n.id} key={n.id}>{title(n)} · {n.id}</option>)}</select></label>
       <label>Port<select aria-label="Connection port" value={activePort} onChange={e => setPort(e.target.value)}>{targetPorts.map(p => <option key={p.id}>{p.id}</option>)}</select></label>
       <button disabled={!activeSource || !activeTarget || !activePort} onClick={() => connect({ source: activeSource, target: activeTarget, sourceHandle: 'data', targetHandle: activePort })}>Connect nodes</button>
     </div></details>
+    </details>
     {(execution.notice || notice) && <p role="status">{execution.notice || notice}</p>}
     <div className="graph-run-summary"><p aria-label="Graph run status">{execution.status === 'idle' ? 'Ready when you are' : execution.status}{execution.cancellationRequested && running && ' · stopping earlier work…'}</p>{execution.snapshot && <details><summary>Run details</summary><code>{execution.snapshot.run_id} · revision {execution.snapshot.graph_revision}</code></details>}</div>
     {(error || execution.error) && <p role="alert">{error || execution.error}</p>}
-    <div className="graph-layout"><GraphOperations operations={operations} favorites={favorites} onToggleFavorite={onToggleFavorite} add={op => addOperation(op.id)} /><GraphCanvas theme={theme} nodes={nodes} edges={edges} changes={changes} connect={connect} valid={c => Boolean(connectionGraph({ source: c.source, target: c.target, sourceHandle: c.sourceHandle ?? 'data', targetHandle: c.targetHandle ?? 'data' }))}
+    <div className="graph-layout" style={{ gridTemplateColumns: `${showOperations ? '205px' : '0px'} minmax(0,1fr) ${showInspector ? '280px' : '0px'}` }}><div className="graph-operation-shell" hidden={!showOperations}><GraphOperations operations={operations} favorites={favorites} onToggleFavorite={onToggleFavorite} add={op => addOperation(op.id)} /></div><GraphCanvas edgeStyle={edgeStyle} theme={theme} nodes={nodes} edges={edges} changes={changes} connect={connect} valid={c => Boolean(connectionGraph({ source: c.source, target: c.target, sourceHandle: c.sourceHandle ?? 'data', targetHandle: c.targetHandle ?? 'data' }))}
       deleteEdges={deleted => setGraph({ ...graph, edges: graph.edges.filter(e => !deleted.some(d => d.id === e.id)) })} reconnect={(edge, connection) => connect(connection, { ...graph, edges: graph.edges.filter(e => e.id !== edge.id) })}
       drop={e => { e.preventDefault(); const op = operations.find(op => op.id === e.dataTransfer.getData('application/rxchef-operation')); if (!op?.graph_operation || op.availability !== 'available') return; const id = crypto.randomUUID(); setGraph({ ...graph, nodes: [...graph.nodes, { id, type: 'operation', operation: op.id, args: {}, enabled: true }], presentation: { ...graph.presentation, [id]: flow.screenToFlowPosition({ x: e.clientX, y: e.clientY }) } }); select(id); }} />
-      <GraphInspector graph={graph} selected={selected} select={select} title={title} operations={operations} values={values} setValues={setValues} updateNode={updateNode}
+      <div className="graph-inspector-shell" hidden={!showInspector}><GraphInspector graph={graph} selected={selected} select={select} title={title} operations={operations} values={values} setValues={setValues} updateNode={updateNode}
         inputStamp={inputStamp} inputCurrent={inputCurrent}
         remove={id => changes([{ type: 'remove', id }])} duplicate={id => { const node = graph.nodes.find(n => n.id === id); if (!node) return; const copy = structuredClone(node); const newId = crypto.randomUUID(); if ('name' in copy) copy.name += `-copy-${newId.slice(0, 8)}`; setGraph({ ...graph, nodes: [...graph.nodes, { ...copy, id: newId }], presentation: { ...graph.presentation, [newId]: { x: (graph.presentation?.[id]?.x ?? 40) + 40, y: (graph.presentation?.[id]?.y ?? 40) + 40 } } }); select(newId); }}
-        result={result} progress={execution.nodes} client={client} onError={setError} disconnect={id => setGraph({ ...graph, edges: graph.edges.filter(e => e.id !== id) })} />
+        result={result} progress={execution.nodes} client={client} onError={setError} disconnect={id => setGraph({ ...graph, edges: graph.edges.filter(e => e.id !== id) })} /></div>
     </div>
     <GraphOutputs result={result} />
+    {reportOpen && <GraphReport graph={graph} operations={operations} result={result} style={edgeStyle} onClose={() => setReportOpen(false)} />}
   </section>;
 }

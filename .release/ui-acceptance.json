@@ -1,0 +1,8 @@
+{
+  "version": "0.2.0-rc.1",
+  "status": "pending",
+  "accepted_commit": null,
+  "reviewer": null,
+  "reviewed_at": null,
+  "notes": "Awaiting review of the compact desktop and browser workbenches. Do not mark accepted from automated tests alone."
+}

@@ -125,3 +125,51 @@ If storage is denied, full, corrupt or blocked by another tab, the workbench
 reports a failure. A successful `put` request alone is not a successful save.
 Keep the current page open, export a validated project if possible, close stale
 tabs and retry. Refreshing loses in-memory input and connection credentials.
+
+## Compact panels, Auto-Bake and flow reports
+
+The mode switch, project save/export and project library share one workspace
+bar. **Graph tools & connections** contains node creation, graph import,
+selection/copy, undo/redo, output selection, guidance and manual connections.
+The closed menu leaves the canvas available for editing.
+
+In **View**, toggle the operations and inspector sidebars, choose rounded,
+square or flowing edges, and enable **Auto-align nodes** for ongoing dependency
+layout. **Arrange nodes** performs a single arrangement. These presentation
+changes preserve results.
+
+**Auto-Bake graph** and **Auto-Bake recipe** are off initially. When enabled,
+input/definition edits wait 500 ms before execution. Each revision is submitted
+once, and another worker is allowed to finish/cancel before the next revision
+starts. Graph Auto-Bake waits for required inputs and outputs. It does not run
+from layout edits or while Graph mode is hidden. Disable Auto-Bake to return to
+explicit execution. Existing resource limits and cancellation still apply.
+
+Both result areas offer **Collapse**, **Undock**, and **Dock**. An undocked panel
+is a movable, resizable window inside the current app page; it does not open a
+second OS application or transfer data to another service. The docked graph
+result area can also be resized vertically. Named graph outputs use tabs;
+**Compare graph outputs** lays them out side by side. Hide individual outputs
+and restore them with **Show all graph outputs**.
+
+In List mode, **Keep recipe result** retains a completed result as a numbered
+tab for comparison with later runs. Up to six results / 16 MiB can be retained
+in memory; they are excluded from project export and disappear when leaving
+List mode or reloading. Remove snapshots when no longer needed. Operation and
+input panels can be hidden from the List toolbar. **Recipe files & tools**
+contains recipe save/load and undo/redo; **Transformation trace** opens the
+existing bounded actual step-output trace after execution.
+
+**Transformation steps** in Graph mode opens a readable dependency list without
+exporting. It explains node operations, parameters/defaults, connections,
+embedded recipe order and available status/timing/output-size metadata.
+Independent branches are listed in dependency order, not chronological execution
+order. Graph execution does not capture intermediate payloads.
+
+**Export data flow SVG** saves a standalone scalable image containing all graph
+nodes, edges and the transformation list, using the current layout and edge
+style. Input/output payloads are omitted and sensitive argument values are
+redacted. Review ordinary literals before sharing. Image fields over 1000
+characters are shortened; the interactive list and project definition remain
+the sources for full ordinary values. A draft diagram or a description of a
+step is not proof that it executed successfully.

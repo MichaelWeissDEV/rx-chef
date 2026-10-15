@@ -50,6 +50,7 @@ test('recipe history, metadata defaults, save/load, trace and narrow window', as
   await page.getByRole('button', { name: 'Connect (this session)' }).click();
   await expect(page.getByText('Operations (478)')).toBeVisible();
   await page.getByTitle('Clear recipe').click();
+  await page.getByText('Recipe files & tools', { exact: true }).click();
   await page.getByRole('button', { name: 'Undo', exact: true }).click();
   await expect(page.getByText('Recipe (1 steps)')).toBeVisible();
   await page.getByRole('button', { name: 'Redo', exact: true }).click();
@@ -59,6 +60,7 @@ test('recipe history, metadata defaults, save/load, trace and narrow window', as
   await page.getByRole('dialog').getByRole('button', { name: 'Add To Hex', exact: true }).click();
   await expect(page.getByLabel('Delimiter')).toHaveValue('Space');
   await page.getByRole('button', { name: 'Bake', exact: true }).click();
+  await page.getByRole('button', { name: 'Transformation trace', exact: true }).click();
   await expect(page.getByLabel('Trace inspector')).toBeVisible();
   const downloaded = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Save recipe' }).click();
@@ -86,6 +88,7 @@ test('acceptance A: Base64 to HEX recipe copies, saves, reloads and repeats exac
   await expect(page.getByText('Output (14 bytes)')).toBeVisible();
   await page.getByTitle('Copy Text').click();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('48 65 6c 6c 6f');
+  await page.getByText('Recipe files & tools', { exact: true }).click();
   const downloaded = page.waitForEvent('download'); await page.getByRole('button', { name: 'Save recipe', exact: true }).click();
   const bytes = await readFile((await (await downloaded).path())!);
   await page.getByTitle('Clear recipe').click();

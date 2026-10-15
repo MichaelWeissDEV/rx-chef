@@ -1,4 +1,5 @@
 import { ReactFlow, Background, Controls, MiniMap, Handle, Position, type Connection, type Edge, type Node as FlowNode, type NodeChange, type NodeProps, MarkerType } from '@xyflow/react';
+import type { EdgeStyle } from './report';
 import type { Node } from '../../types';
 export type GraphCardNode = FlowNode<{ domain: Node; title: string; ports: string[]; status: string; category: string; summary: string; timing?: string }>;
 function GraphCard({ data }: NodeProps<GraphCardNode>) {
@@ -9,10 +10,10 @@ function GraphCard({ data }: NodeProps<GraphCardNode>) {
   </div>;
 }
 const nodeTypes = { graph: GraphCard };
-interface Props { nodes: GraphCardNode[]; edges: Edge[]; theme: 'dark' | 'light'; changes(changes: NodeChange<GraphCardNode>[]): void;
+interface Props { nodes: GraphCardNode[]; edges: Edge[]; theme: 'dark' | 'light'; edgeStyle: EdgeStyle; changes(changes: NodeChange<GraphCardNode>[]): void;
   connect(connection: Connection): void; valid(connection: Connection | Edge): boolean; deleteEdges(edges: Edge[]): void;
   reconnect(edge: Edge, connection: Connection): void; drop(event: React.DragEvent): void;
 }
-export function GraphCanvas({ nodes, edges, theme, changes, connect, valid, deleteEdges, reconnect, drop }: Props) {
-  return <div className="graph-canvas" onDragOver={e => e.preventDefault()} onDrop={drop}><ReactFlow colorMode={theme} nodes={nodes} edges={edges} nodeTypes={nodeTypes} onNodesChange={changes} onConnect={connect} isValidConnection={valid} onEdgesDelete={deleteEdges} onReconnect={reconnect} panOnDrag selectionKeyCode="Shift" defaultEdgeOptions={{ type: 'smoothstep', markerEnd: { type: MarkerType.ArrowClosed } }} fitView><Background /><Controls /><MiniMap /></ReactFlow></div>;
+export function GraphCanvas({ nodes, edges, theme, edgeStyle, changes, connect, valid, deleteEdges, reconnect, drop }: Props) {
+  return <div className="graph-canvas" onDragOver={e => e.preventDefault()} onDrop={drop}><ReactFlow colorMode={theme} nodes={nodes} edges={edges.map(edge => ({ ...edge, type: edgeStyle }))} nodeTypes={nodeTypes} onNodesChange={changes} onConnect={connect} isValidConnection={valid} onEdgesDelete={deleteEdges} onReconnect={reconnect} panOnDrag selectionKeyCode="Shift" defaultEdgeOptions={{ type: edgeStyle, markerEnd: { type: MarkerType.ArrowClosed } }} fitView fitViewOptions={{ maxZoom: 1.2 }}><Background /><Controls /><MiniMap /></ReactFlow></div>;
 }

@@ -20,7 +20,7 @@ test('build and run three-input graph with fan-out and three exact named downloa
   await page.goto('/'); await page.getByLabel('Server Bearer Token').fill('browser-test-token-0123456789');
   await page.getByRole('button', { name: 'Connect (this session)' }).click();
   await expect(page.getByText('Operations (478)')).toBeVisible();
-  await page.getByRole('button', { name: 'Graph mode', exact: true }).click();
+  await page.getByRole('button', { name: 'Graph mode', exact: true }).click(); if (!(await page.locator('.graph-tools-menu').evaluate(element => (element as HTMLDetailsElement).open))) await page.locator('.graph-tools-menu > summary').click();
   await page.getByLabel('Connect new operations automatically').uncheck();
   const bytes = Buffer.from(Array.from({ length: 256 }, (_, i) => i)); const hex = bytes.toString('hex');
   await input(page, 'input', hex);
@@ -50,7 +50,7 @@ test('build and run three-input graph with fan-out and three exact named downloa
     expect(await readFile((await (await download).path())!)).toEqual(expected);
   }
   await page.getByRole('button', { name: 'List mode', exact: true }).click();
-  await page.getByRole('button', { name: 'Graph mode', exact: true }).click();
+  await page.getByRole('button', { name: 'Graph mode', exact: true }).click(); if (!(await page.locator('.graph-tools-menu').evaluate(element => (element as HTMLDetailsElement).open))) await page.locator('.graph-tools-menu > summary').click();
   await page.getByLabel('Connect new operations automatically').uncheck();
   await expect(page.getByRole('tab', { name: 'combined', exact: true })).toBeVisible();
   const download = page.waitForEvent('download'); await page.getByRole('button', { name: 'Save graph', exact: true }).click();
@@ -71,7 +71,7 @@ test('build and run three-input graph with fan-out and three exact named downloa
 test('graph import validation and cancellation use the real supervised server', async ({ page }) => {
   await page.goto('/'); await page.getByLabel('Server Bearer Token').fill('browser-test-token-0123456789');
   await page.getByRole('button', { name: 'Connect (this session)' }).click(); await expect(page.getByText('Operations (478)')).toBeVisible();
-  await page.getByRole('button', { name: 'Graph mode', exact: true }).click();
+  await page.getByRole('button', { name: 'Graph mode', exact: true }).click(); if (!(await page.locator('.graph-tools-menu').evaluate(element => (element as HTMLDetailsElement).open))) await page.locator('.graph-tools-menu > summary').click();
   await page.getByLabel('Connect new operations automatically').uncheck();
   const definition = { version: 1, id: 'slow', nodes: [
     { id: 'input', type: 'input', name: 'input' },
@@ -98,7 +98,7 @@ for (const change of ['input', 'node', 'port']) {
   test(`stale graph results are discarded after ${change} edits`, async ({ page }) => {
     await page.goto('/'); await page.getByLabel('Server Bearer Token').fill('browser-test-token-0123456789');
     await page.getByRole('button', { name: 'Connect (this session)' }).click(); await expect(page.getByText('Operations (478)')).toBeVisible();
-    await page.getByRole('button', { name: 'Graph mode', exact: true }).click();
+    await page.getByRole('button', { name: 'Graph mode', exact: true }).click(); if (!(await page.locator('.graph-tools-menu').evaluate(element => (element as HTMLDetailsElement).open))) await page.locator('.graph-tools-menu > summary').click();
   await page.getByLabel('Connect new operations automatically').uncheck();
     await page.getByRole('button', {name:'Bind empty input',exact:true}).click();
     let release!: () => void; const gate = new Promise<void>(resolve => { release = resolve; });
@@ -120,7 +120,7 @@ for (const change of ['input', 'node', 'port']) {
 test('argument and recipe nodes can be created, connected and executed through the GUI', async ({ page }) => {
   await page.goto('/'); await page.getByLabel('Server Bearer Token').fill('browser-test-token-0123456789');
   await page.getByRole('button', { name: 'Connect (this session)' }).click(); await expect(page.getByText('Operations (478)')).toBeVisible();
-  await page.getByRole('button', { name: 'Graph mode', exact: true }).click();
+  await page.getByRole('button', { name: 'Graph mode', exact: true }).click(); if (!(await page.locator('.graph-tools-menu').evaluate(element => (element as HTMLDetailsElement).open))) await page.locator('.graph-tools-menu > summary').click();
   await page.getByLabel('Connect new operations automatically').uncheck();
   await input(page, 'input', '00ffc000');
   await page.locator('.graph-toolbox > summary').click(); await page.getByRole('button', { name: 'Add argument', exact: true }).click();
@@ -143,7 +143,7 @@ test('AES key and IV bind as separate byte inputs with exact plaintext download'
   const ciphertext = Buffer.concat([cipher.update(plaintext), cipher.final()]);
   await page.goto('/'); await page.getByLabel('Server Bearer Token').fill('browser-test-token-0123456789');
   await page.getByRole('button', {name:'Connect (this session)'}).click(); await expect(page.getByText('Operations (478)')).toBeVisible();
-  await page.getByRole('button', {name:'Graph mode',exact:true}).click();
+  await page.getByRole('button', {name:'Graph mode',exact:true}).click(); if (!(await page.locator('.graph-tools-menu').evaluate(element => (element as HTMLDetailsElement).open))) await page.locator('.graph-tools-menu > summary').click();
   await input(page, 'input', ciphertext.toString('hex'));
   for (const [name, bytes] of [['key',key],['iv',iv]] as const) {
     await page.getByRole('button', {name:'Add input',exact:true}).click(); await page.getByLabel('Node name').fill(name);
@@ -167,7 +167,7 @@ test('AES key and IV bind as separate byte inputs with exact plaintext download'
 
 test('selected outputs run only the required named input branch',async({page})=>{
   await page.goto('/');await page.getByLabel('Server Bearer Token').fill('browser-test-token-0123456789');await page.getByRole('button',{name:'Connect (this session)'}).click();await expect(page.getByText('Operations (478)')).toBeVisible();
-  await page.getByRole('button',{name:'Graph mode',exact:true}).click();await input(page,'input','00ff');
+  await page.getByRole('button',{name:'Graph mode',exact:true}).click();await page.locator('.graph-tools-menu > summary').click();await input(page,'input','00ff');
   await page.getByRole('button',{name:'Add input',exact:true}).click();await page.getByLabel('Node name').fill('secondary');
   await page.getByRole('button',{name:'Add output',exact:true}).click();await page.getByLabel('Node name').fill('unused');await connect(page,'secondary','unused','data');
   await page.locator('.graph-output-picker > summary').click(); await page.getByRole('group', {name:'Graph output selection'}).getByRole('checkbox', {name:'output',exact:true}).check();await page.getByRole('button',{name:'Run graph',exact:true}).click();
@@ -179,7 +179,7 @@ test('10, 50 and 100-node graphs render and keep theme/layout controls responsiv
   await page.goto('/'); await page.getByLabel('Server Bearer Token').fill('browser-test-token-0123456789');
   await page.getByRole('button', { name: 'Connect (this session)' }).click();
   await expect(page.getByText('Operations (478)')).toBeVisible();
-  await page.getByRole('button', { name: 'Graph mode', exact: true }).click();
+  await page.getByRole('button', { name: 'Graph mode', exact: true }).click(); if (!(await page.locator('.graph-tools-menu').evaluate(element => (element as HTMLDetailsElement).open))) await page.locator('.graph-tools-menu > summary').click();
   await page.getByLabel('Connect new operations automatically').uncheck();
   const cdp = await context.newCDPSession(page); await cdp.send('Performance.enable');
   const measurements = [];

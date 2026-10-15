@@ -26,6 +26,18 @@ permissions:
   contents: read
 
 jobs:
+  ui-acceptance:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Check UI acceptance rules without requiring human acceptance for rehearsal
+        run: |
+          python3 scripts/test-ui-acceptance.py
+          python3 scripts/check-ui-acceptance.py --allow-pending
+
   validate-tag:
     uses: ./.github/workflows/validate-tag.yml
 
@@ -192,6 +204,9 @@ jobs:
 
   summary:
     needs:
+      - ui-acceptance
+      - build-workbench
+      - validate-tag
       - release-gates
       - dist-plan-and-build
       - build-deb
@@ -204,13 +219,15 @@ jobs:
       - name: Report
         run: |
           echo "This was a dry run: no GitHub Release, no crates.io upload, no AUR push, no Homebrew push."
+          echo "ui-acceptance:            ${{ needs.ui-acceptance.result }}"
+          echo "build-workbench:          ${{ needs.build-workbench.result }}"
           echo "release-gates:            ${{ needs.release-gates.result }}"
           echo "dist-plan-and-build:      ${{ needs.dist-plan-and-build.result }}"
           echo "build-deb:                ${{ needs.build-deb.result }}"
           echo "build-rpm:                ${{ needs.build-rpm.result }}"
           echo "build-aur:                ${{ needs.build-aur.result }}"
           echo "publish-crates-dry-run:   ${{ needs.publish-crates-dry-run.result }}"
-          if [[ "${{ contains(needs.*.result, 'failure') }}" == "true" ]]; then
+          if [[ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped') }}" == "true" ]]; then
             echo "DRY RUN: FAIL"
             exit 1
           fi

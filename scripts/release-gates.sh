@@ -111,6 +111,8 @@ run_gate "generated operation reference" \
 run_gate "fuzz targets compile" \
     cargo check --locked --manifest-path fuzz/Cargo.toml --bins
 
+run_gate "UI acceptance rules" python3 scripts/test-ui-acceptance.py
+
 if command -v mkdocs >/dev/null 2>&1; then
     run_gate "MkDocs strict" mkdocs build --strict
 else

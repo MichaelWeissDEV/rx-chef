@@ -334,3 +334,43 @@ button:disabled { opacity: .45; cursor: default; }
 @media(max-width:700px) { .project-export-dialog footer { bottom:-16px; margin-bottom:-16px; padding-bottom:16px; } }
 .project-feedback { padding:5px 16px; font-size:11px; background:var(--bg-secondary); color:var(--color-success); }
 .project-feedback [role=alert] { color:var(--color-danger); }
+
+/* A single workspace bar leaves the document, rather than its chrome, in focus. */
+.workspace-bar { display:flex; align-items:center; min-height:44px; flex-shrink:0; position:relative; background:var(--bg-secondary); border-bottom:1px solid var(--border-subtle); }
+.workspace-bar .workbench-mode { order:-1; border:0; padding:5px 10px; flex-shrink:0; }
+.workspace-bar .project-strip { flex:1; padding:4px 10px; border:0; gap:10px; min-width:0; }
+.workspace-bar .project-strip strong { font-size:12px; }.workspace-bar .project-strip small { font-size:10px; }
+.workspace-bar .project-strip button { padding:5px 9px; font-size:11px; }
+.workspace-bar .project-panel { padding:6px 10px; border:0; overflow:visible; max-height:none; }
+.workspace-bar .project-panel[open] { position:absolute; right:8px; top:44px; width:min(780px,96vw); max-height:65vh; overflow:auto; z-index:40; border:1px solid var(--border-strong); border-radius:8px; box-shadow:var(--shadow-md); }
+.workspace-bar .project-feedback { position:absolute; top:44px; right:0; max-width:min(600px,95vw); z-index:35; box-shadow:var(--shadow-md); }
+.list-toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:5px 10px; border-bottom:1px solid var(--border-subtle); }
+.list-toolbar button, .list-toolbar summary, .dock-panel button, .dock-restore { color:var(--text-primary); background:var(--bg-tertiary); border:1px solid var(--border-strong); border-radius:5px; padding:4px 8px; cursor:pointer; font-size:11px; }
+.list-toolbar label { display:flex; align-items:center; gap:5px; font-size:11px; }.list-toolbar input { accent-color:var(--accent-primary); }
+.recipe-file-menu { position:relative; }.recipe-file-menu .recipe-tools { position:absolute; top:28px; right:0; width:min(700px,90vw); z-index:20; background:var(--bg-secondary); border:1px solid var(--border-strong); border-radius:8px; box-shadow:var(--shadow-md); }
+.list-operations-shell { width:270px; flex-shrink:0; min-width:0; }.list-input-shell { width:300px; flex-shrink:0; min-width:0; }
+.list-operations-shell > .panel, .list-input-shell > .panel { width:100% !important; height:100%; min-width:0 !important; }
+[hidden] { display:none !important; }
+.dock-panel { display:flex; flex-direction:column; min-height:0; min-width:0; background:var(--bg-secondary); border-top:1px solid var(--border-subtle); }
+.dock-heading { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:5px 12px; min-height:34px; flex-shrink:0; border-bottom:1px solid var(--border-subtle); }
+.dock-heading strong { font-size:12px; }.dock-heading button + button { margin-left:6px; }
+.dock-body { min-height:0; flex:1; overflow:auto; }
+.dock-panel.is-floating { position:fixed; z-index:60; right:24px; bottom:24px; width:min(850px,94vw); height:360px; min-width:min(340px,94vw); min-height:120px; max-width:96vw; max-height:85vh; resize:both; border:1px solid var(--border-strong); border-radius:10px; box-shadow:0 15px 50px #0008; }
+.dock-panel.is-floating .dock-heading { cursor:move; touch-action:none; }
+.dock-panel.is-collapsed { height:34px !important; min-height:34px; resize:none; flex:0 0 34px; }
+.dock-restore { align-self:flex-start; margin:4px 12px; }
+.workbench-main > .dock-panel { flex:1; border-left:1px solid var(--border-subtle); }
+.workbench-main > .dock-panel.is-collapsed { flex:0 0 100px; height:auto !important; }.workbench-main > .dock-panel.is-collapsed .dock-heading { flex-wrap:wrap; align-content:flex-start; }
+.recipe-results { height:100%; display:flex; flex-direction:column; }.recipe-results .result-cards { flex:1; min-height:0; }
+.result-controls { display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:5px 0; font-size:11px; }.result-controls label { display:flex; align-items:center; gap:5px; }.result-controls small { color:var(--text-secondary); }
+.result-controls [role=tablist] { display:flex; flex-wrap:wrap; gap:3px; }.result-controls [aria-selected=true] { color:var(--accent-primary); border-bottom:2px solid var(--accent-primary); }
+.result-cards { overflow:auto; }.result-cards.compare { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:12px; }
+.result-cards > section, .result-cards > div { min-width:0; }.recipe-results .result-cards > section { height:100%; display:flex; flex-direction:column; }.recipe-results .result-cards .panel { flex:1; min-height:200px; min-width:0 !important; }
+.transformation-steps { padding-left:24px; }.transformation-steps > li { margin:16px 0; border-bottom:1px solid var(--border-subtle); padding-bottom:12px; }.transformation-steps small { display:block; color:var(--text-secondary); }.transformation-steps li { overflow-wrap:anywhere; }.transformation-steps ul { padding-left:20px; }
+@media(max-width:1200px) { .list-operations-shell, .list-input-shell { width:auto; height:420px; }.workbench-main > .dock-panel { min-height:350px; }.workbench-main > .dock-panel.is-collapsed { min-height:34px; }.workspace-bar { flex-wrap:wrap; }.workspace-bar .project-strip { min-width:270px; } }
+@media(max-width:650px) { .result-cards.compare { grid-template-columns:minmax(0,1fr); }.workspace-bar .project-strip small { display:none; }.workspace-bar .project-strip { min-width:0; }.workspace-bar .project-strip > div:last-child { display:flex; }.workspace-bar .project-strip button { white-space:nowrap; }.workspace-bar .project-strip strong { max-width:80px; overflow:hidden; text-overflow:ellipsis; }.workspace-bar .project-panel { margin-left:auto; }.workspace-bar .project-panel[open] { top:100%; } }
+.workspace-bar { flex-wrap:wrap; }.workspace-bar .project-panel[open] { position:static; order:5; width:100%; border:0; border-top:1px solid var(--border-subtle); box-shadow:none; border-radius:0; max-height:45vh; }
+.recipe-file-menu[open] { flex-basis:100%; }.recipe-file-menu .recipe-tools { position:static; width:100%; box-shadow:none; margin-top:5px; }
+@media(max-width:650px) { .workspace-bar .project-strip { flex:1 1 100%; order:1; width:100%; }.workspace-bar .project-panel { order:0; max-width:190px; }.workspace-bar .project-panel[open] { order:5; max-width:none; }.workspace-bar .project-strip strong { max-width:110px; } }
+/* Save/export feedback must never cover Run or the graph's editing controls. */
+.workspace-bar .project-feedback { position:static; flex-basis:100%; order:6; box-shadow:none; max-width:none; }

@@ -15,7 +15,7 @@ function shareProject() {
     history: [{ id: 'old-run', run_id: 'run-1', graph_id: 'z', started_at: '2026-10-15T00:00:00Z', status: 'succeeded', elapsed_ms: 1, output_sizes: { output: 3 } }] };
 }
 test('guided graph builds a real byte chain and layout edits preserve exact results', async ({ page }, info) => {
-  await ready(page); await page.getByRole('button', { name: 'Graph mode', exact: true }).click();
+  await ready(page); await page.getByRole('button', { name: 'Graph mode', exact: true }).click(); if (!(await page.locator('.graph-tools-menu').evaluate(element => (element as HTMLDetailsElement).open))) await page.locator('.graph-tools-menu > summary').click();
   await expect(page.getByText('Connect your data, step by step', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Add argument', exact: true })).not.toBeVisible();
   await page.getByRole('button', { name: 'Bind input input →', exact: true }).click();
@@ -40,7 +40,7 @@ test('guided graph builds a real byte chain and layout edits preserve exact resu
 });
 
 test('late graph import cannot replace a graph edited during validation', async ({ page }) => {
-  await ready(page); await page.getByRole('button', { name: 'Graph mode', exact: true }).click();
+  await ready(page); await page.getByRole('button', { name: 'Graph mode', exact: true }).click(); if (!(await page.locator('.graph-tools-menu').evaluate(element => (element as HTMLDetailsElement).open))) await page.locator('.graph-tools-menu > summary').click();
   let release!: () => void; let received!: () => void;
   const gate = new Promise<void>(resolve => { release = resolve; }); const pending = new Promise<void>(resolve => { received = resolve; });
   await page.route('**/api/v1/graphs/validate', async route => { const response = await route.fetch(); received(); await gate; await route.fulfill({ response }); });
@@ -135,12 +135,12 @@ test('export is keyboard dismissible, prevents empty selection and fits a narrow
 
 test('operation search ranks exact names first and favorites stay shared between modes', async ({ page }) => {
   await page.addInitScript(() => { localStorage.setItem('rxchef_favs', '{}'); localStorage.setItem('rxchef_recent_ops', '{broken'); });
-  await ready(page); await page.getByRole('button', { name: 'Graph mode', exact: true }).click();
+  await ready(page); await page.getByRole('button', { name: 'Graph mode', exact: true }).click(); if (!(await page.locator('.graph-tools-menu').evaluate(element => (element as HTMLDetailsElement).open))) await page.locator('.graph-tools-menu > summary').click();
   await page.getByLabel('Search graph operations').fill('To Base64');
   await expect(page.locator('.graph-operation-row').first().getByRole('button', { name: 'Add graph operation To Base64', exact: true })).toBeVisible();
   const favorite = page.getByRole('button', { name: 'Favorite To Base64', exact: true });
   const previous = await favorite.getAttribute('aria-pressed'); await favorite.click();
   await page.getByRole('button', { name: 'List mode', exact: true }).click();
-  await page.getByRole('button', { name: 'Graph mode', exact: true }).click();
+  await page.getByRole('button', { name: 'Graph mode', exact: true }).click(); if (!(await page.locator('.graph-tools-menu').evaluate(element => (element as HTMLDetailsElement).open))) await page.locator('.graph-tools-menu > summary').click();
   await expect(favorite).toHaveAttribute('aria-pressed', previous === 'true' ? 'false' : 'true');
 });
