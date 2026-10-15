@@ -60,9 +60,13 @@ jobs:
         # Strawberry Perl in bash shells on the windows-latest runner. That
         # perl lacks Locale::Maketext::Simple (used by IPC::Cmd), which
         # breaks openssl-sys's vendored OpenSSL build (see Cargo.toml's
-        # windows `openssl` dependency). Put Strawberry Perl first instead.
+        # windows `openssl` dependency). Select it explicitly: Bash may prepend
+        # its own bin directory again even after GITHUB_PATH is updated.
         if: matrix.os == 'windows-latest'
-        run: echo "C:/Strawberry/perl/bin" >> "$GITHUB_PATH"
+        run: |
+          echo 'C:/Strawberry/perl/bin' >> "$GITHUB_PATH"
+          echo 'OPENSSL_SRC_PERL=C:/Strawberry/perl/bin/perl.exe' >> "$GITHUB_ENV"
+          'C:/Strawberry/perl/bin/perl.exe' -MLocale::Maketext::Simple -MIPC::Cmd -e 'print "OpenSSL Perl ready\n"'
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"

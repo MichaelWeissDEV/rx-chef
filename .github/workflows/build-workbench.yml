@@ -51,7 +51,10 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential pkg-config libssl-dev libayatana-appindicator3-dev librsvg2-dev patchelf rpm
       - name: Prefer Strawberry Perl for OpenSSL
         if: runner.os == 'Windows'
-        run: echo 'C:/Strawberry/perl/bin' >> "$GITHUB_PATH"
+        run: |
+          echo 'C:/Strawberry/perl/bin' >> "$GITHUB_PATH"
+          echo 'OPENSSL_SRC_PERL=C:/Strawberry/perl/bin/perl.exe' >> "$GITHUB_ENV"
+          'C:/Strawberry/perl/bin/perl.exe' -MLocale::Maketext::Simple -MIPC::Cmd -e 'print "OpenSSL Perl ready\n"'
       - name: Install pinned Rust
         run: |
           rustup toolchain install 1.96.1 --profile minimal
