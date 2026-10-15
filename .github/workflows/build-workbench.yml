@@ -6,6 +6,9 @@ on:
       plan:
         required: true
         type: string
+      upload-artifacts:
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -59,18 +62,14 @@ jobs:
           bash scripts/build-distributions.sh web
       - name: Build desktop bundles
         run: npm --prefix apps/web run desktop:build -- --bundles ${{ matrix.bundles }}
+      - name: Install and smoke-test headless and web archives
+        run: python3 scripts/smoke-distributions.py
       - name: Inventory and hash packages
-        run: python3 scripts/inventory-release-artifacts.py
+        run: python3 scripts/inventory-release-artifacts.py --stage target/workbench-artifacts
       - name: Retain packages for the release host job
+        if: inputs.upload-artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: artifacts-workbench-${{ matrix.os }}
-          path: |
-            target/distributions/*
-            target/release/bundle/**/*.dmg
-            target/release/bundle/**/*.deb
-            target/release/bundle/**/*.rpm
-            target/release/bundle/**/*.AppImage
-            target/release/bundle/**/*.exe
-            target/release/bundle/**/*.msi
+          path: target/workbench-artifacts/*
           if-no-files-found: error

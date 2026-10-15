@@ -28,6 +28,9 @@ variants, tests temporary install/uninstall/reinstall, builds host GUI bundles
 and checks dist plan/build. `SKIPPED`, `NOT TESTED` and `FAIL` remain separate;
 host PASS covers only executed host gates. GUI interaction, network-disabled
 offline acceptance and other native platforms still require their own evidence.
+The GitHub rehearsal includes the web/desktop package matrix and defaults to no
+artifact uploads. Retention in GitHub Actions storage requires explicitly opting
+in with `retain-artifacts`; no such workflow was dispatched during local testing.
 All commands can be wrapped in `scripts/record-release-check.py --label NAME -- COMMAND`
 to retain JSON metadata and complete logs under `target/rc-evidence`.
 

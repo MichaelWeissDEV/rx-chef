@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
 """Hash locally produced packages; never upload or publish."""
 import hashlib
+import argparse
 import json
 import os
 import pathlib
 import platform
 import subprocess
+import shutil
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--stage", type=pathlib.Path, help="Prepare a fresh flat directory for the release host's artifacts/* glob")
+args = parser.parse_args()
 
 target = pathlib.Path(os.environ.get("CARGO_TARGET_DIR", "target"))
 destination = pathlib.Path(os.environ.get("RXCHEF_DISTRIBUTION_DIR", str(target / "distributions")))
@@ -25,7 +31,8 @@ for package in sorted(packages):
     checksum = digest.hexdigest()
     package.with_suffix(package.suffix + ".sha256").write_text(f"{checksum}  {package.name}\n")
     records.append({"filename": package.name, "path": str(package.resolve()), "version": version,
-                    "os": platform.system(), "architecture": platform.machine(), "commit": commit,
+                    "os": platform.system(), "architecture": platform.machine(), "inventory_commit": commit,
+                    "build_commit": None,
                     "bytes": package.stat().st_size, "sha256": checksum, "build": "PASS",
                     "installation": "NOT TESTED", "smoke": "NOT TESTED"})
 manifest = destination / f"artifacts-{platform.system()}-{platform.machine()}.json"
@@ -33,3 +40,15 @@ manifest.write_text(json.dumps(records, indent=2) + "\n")
 print(f"{len(records)} packages: {manifest}")
 if not records:
     raise SystemExit("No release packages found")
+if args.stage:
+    # upload-artifact otherwise preserves differing parent directories, while
+    # cargo-dist's generated GitHub release step consumes a flat artifacts/*.
+    files = [manifest]
+    for package in packages:
+        files.extend([package, package.with_suffix(package.suffix + ".sha256")])
+    if len({file.name for file in files}) != len(files):
+        raise SystemExit("Duplicate artifact basename; refusing to flatten")
+    args.stage.mkdir(parents=True, exist_ok=False)
+    for file in files:
+        shutil.copy2(file, args.stage / file.name)
+    print(f"Staged {len(files)} files in {args.stage}")

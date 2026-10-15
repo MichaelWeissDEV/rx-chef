@@ -15,7 +15,12 @@ name: Release dry run
 # Run before cutting a real tag to catch problems for free.
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      retain-artifacts:
+        description: Explicitly upload rehearsal artifacts to GitHub Actions storage
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -29,6 +34,13 @@ jobs:
     uses: ./.github/workflows/release-gates.yml
     with:
       plan: "dry-run"
+
+  build-workbench:
+    needs: validate-tag
+    uses: ./.github/workflows/build-workbench.yml
+    with:
+      plan: "dry-run"
+      upload-artifacts: ${{ inputs.retain-artifacts }}
 
   dist-plan-and-build:
     needs: validate-tag
@@ -77,6 +89,7 @@ jobs:
       - name: Build (no install/functional test — see build-deb.yml for that)
         run: ./scripts/build-deb.sh
       - name: Upload for inspection
+        if: inputs.retain-artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: dry-run-deb-packages
@@ -103,6 +116,7 @@ jobs:
       - name: Build (no install/functional test — see build-rpm.yml for that)
         run: ./scripts/build-rpm.sh
       - name: Upload for inspection
+        if: inputs.retain-artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: dry-run-rpm-packages
@@ -146,6 +160,7 @@ jobs:
             namcap PKGBUILD || true
           '
       - name: Upload for inspection
+        if: inputs.retain-artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: dry-run-aur-packages
