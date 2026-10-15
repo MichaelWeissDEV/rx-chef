@@ -43,10 +43,10 @@ pub(crate) fn cmd_history(a: HistoryArgs) -> Result<(), String> {
             for e in &entries {
                 println!(
                     "{:<20} {:<22} {:>5}  {}",
-                    e.id,
-                    e.timestamp,
+                    output::terminal_text(&e.id),
+                    output::terminal_text(&e.timestamp),
                     e.steps.len(),
-                    e.input_preview
+                    output::terminal_text(&e.input_preview)
                 );
             }
         }
@@ -54,31 +54,40 @@ pub(crate) fn cmd_history(a: HistoryArgs) -> Result<(), String> {
         HistoryAction::Show { id } => {
             let entry = store::get_history(&id)
                 .ok_or_else(|| format!("history entry '{}' not found", id))?;
-            println!("ID:        {}", entry.id);
-            println!("Timestamp: {}", entry.timestamp);
+            println!("ID:        {}", output::terminal_text(&entry.id));
+            println!("Timestamp: {}", output::terminal_text(&entry.timestamp));
             if let Some(n) = &entry.pipeline_name {
-                println!("Pipeline:  {}", n);
+                println!("Pipeline:  {}", output::terminal_text(n));
             }
             println!(
                 "Input:     {} ({} bytes)",
-                entry.input_preview, entry.input_bytes
+                output::terminal_text(&entry.input_preview),
+                entry.input_bytes
             );
             println!("Success:   {}", entry.success);
             println!();
             for (i, step) in entry.steps.iter().enumerate() {
-                println!("Step {}  {} [{}]", i + 1, step.op, step.args.join(", "));
+                println!(
+                    "Step {}  {} [{}]",
+                    i + 1,
+                    output::terminal_text(&step.op),
+                    output::terminal_text(&step.args.join(", "))
+                );
                 if let Some(e) = &step.error {
-                    println!("  ERROR: {}", e);
+                    println!("  ERROR: {}", output::terminal_text(e));
                 } else {
                     println!(
                         "  output ({} bytes, {:.3} ms): {}",
-                        step.output_bytes, step.duration_ms, step.output_preview
+                        step.output_bytes,
+                        step.duration_ms,
+                        output::terminal_text(&step.output_preview)
                     );
                 }
             }
             println!(
                 "\nFinal output ({} bytes):\n{}",
-                entry.output_bytes, entry.output_preview
+                entry.output_bytes,
+                output::terminal_text(&entry.output_preview)
             );
         }
 

@@ -1,5 +1,9 @@
 # Development evidence and continuation boundary — 2026-10-14
 
+**Historical checkpoint.** The entire document below, including its checklist
+and next tasks, describes an earlier development state. The authoritative
+current assessment is [0.2.0-rc.1 readiness](0.2.0-rc.1-release-readiness.md).
+
 This records the previous checkpoint. For the subsequent binding assignment and
 current implementation evidence, see [the continuation report](graph-integration-progress.md).
 

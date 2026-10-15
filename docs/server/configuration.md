@@ -79,7 +79,7 @@ LocalEngineClient / Registry / Execution Engine
 | `--max-input-mib` | `8` | Maximalgröße der Eingabedaten für Recipes (max. 32 MiB durch Worker IPC). |
 | `--max-output-mib` | `8` | Maximalgröße der Ausgabedaten für Recipes (max. 48 MiB durch Worker IPC). |
 | `--timeout-secs` | `30` | Maximalzeit pro Job; danach wird der Worker-Prozess getötet (`SIGKILL`). |
-| `--memory-mib` | `1024` | Adressraumlimit pro Worker (unter Linux via `RLIMIT_AS`). |
+| `--memory-mib` | `1024` | Speicherbudget pro Worker: Linux `RLIMIT_AS`, macOS gemessener Footprint, Windows Job Object. |
 | `--workers` | `4` | Maximale Anzahl gleichzeitig laufender Worker-Prozesse. |
 | `--max-pending` | `64` | Maximale Anzahl gepufferter + laufender Jobs (Warteschlange). |
 | `--retain` | `32` | Anzahl vorgehaltener fertiger Jobs zur Ergebnisabholung. |

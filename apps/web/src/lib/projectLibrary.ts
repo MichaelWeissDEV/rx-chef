@@ -5,10 +5,15 @@ const collection = 'projects';
 function open(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(database, 1);
+    let blocked = false;
     request.onupgradeneeded = () => request.result.createObjectStore(collection, { keyPath: 'name' });
-    request.onsuccess = () => resolve(request.result);
+    request.onsuccess = () => {
+      const db = request.result;
+      db.onversionchange = () => db.close();
+      if (blocked) db.close(); else resolve(db);
+    };
     request.onerror = () => reject(request.error);
-    request.onblocked = () => reject(new Error('Project library is blocked by another window.'));
+    request.onblocked = () => { blocked = true; reject(new Error('Project library is blocked by another window.')); };
   });
 }
 async function transaction<T>(mode: IDBTransactionMode, run: (store: IDBObjectStore, done: (result: T) => void, fail: (error: unknown) => void) => void): Promise<T> {

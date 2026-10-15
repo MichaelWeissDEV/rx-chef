@@ -1,0 +1,76 @@
+name: Build web server and desktop packages
+
+on:
+  workflow_call:
+    inputs:
+      plan:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  packages:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-15
+            bundles: app,dmg
+          - os: macos-15-intel
+            bundles: app,dmg
+          - os: ubuntu-24.04
+            bundles: deb,rpm,appimage
+          - os: ubuntu-24.04-arm
+            bundles: deb,rpm,appimage
+          - os: windows-latest
+            bundles: nsis,msi
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.20.0'
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install native build dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential pkg-config libssl-dev libayatana-appindicator3-dev librsvg2-dev patchelf rpm
+      - name: Prefer Strawberry Perl for OpenSSL
+        if: runner.os == 'Windows'
+        run: echo 'C:/Strawberry/perl/bin' >> "$GITHUB_PATH"
+      - name: Install pinned Rust
+        run: |
+          rustup toolchain install 1.96.1 --profile minimal
+          rustup default 1.96.1
+      - name: Build distinct headless and web server archives
+        run: |
+          bash scripts/build-distributions.sh headless
+          bash scripts/build-distributions.sh web
+      - name: Build desktop bundles
+        run: npm --prefix apps/web run desktop:build -- --bundles ${{ matrix.bundles }}
+      - name: Inventory and hash packages
+        run: python3 scripts/inventory-release-artifacts.py
+      - name: Retain packages for the release host job
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: artifacts-workbench-${{ matrix.os }}
+          path: |
+            target/distributions/*
+            target/release/bundle/**/*.dmg
+            target/release/bundle/**/*.deb
+            target/release/bundle/**/*.rpm
+            target/release/bundle/**/*.AppImage
+            target/release/bundle/**/*.exe
+            target/release/bundle/**/*.msi
+          if-no-files-found: error

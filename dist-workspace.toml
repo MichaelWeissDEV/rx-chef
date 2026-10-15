@@ -40,7 +40,7 @@ local-artifacts-jobs = ["./release-gates"]
 # artifact jobs use, so the `host` job's `pattern: artifacts-*` download
 # picks these up and attaches them to the GitHub release automatically —
 # no custom hosting logic needed.
-global-artifacts-jobs = ["./build-deb", "./build-rpm", "./build-aur"]
+global-artifacts-jobs = ["./build-deb", "./build-rpm", "./build-aur", "./build-workbench"]
 
 # Pin third-party GitHub Actions used by the generated workflow to specific
 # commits rather than trusting a mutable tag at release time.

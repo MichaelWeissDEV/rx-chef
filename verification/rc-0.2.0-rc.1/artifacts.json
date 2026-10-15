@@ -1,0 +1,67 @@
+[
+  {
+    "filename": "rxchef-0.2.0-rc.1-cli-Darwin-arm64.tar.gz",
+    "path": "/Users/michaelweiss/git/github/rx-chef/target/distributions/rxchef-0.2.0-rc.1-cli-Darwin-arm64.tar.gz",
+    "version": "0.2.0-rc.1",
+    "os": "Darwin",
+    "architecture": "arm64",
+    "commit": "de287614b1082e85e9619de6cd9178353a992f4f",
+    "bytes": 13395222,
+    "sha256": "deb1a75df2cf7bea19876cea033f6a0a2d2128893be244315e05ab71d40f39ac",
+    "build": "PASS",
+    "installation": "NOT TESTED",
+    "smoke": "NOT TESTED"
+  },
+  {
+    "filename": "rxchef-0.2.0-rc.1-headless-Darwin-arm64.tar.gz",
+    "path": "/Users/michaelweiss/git/github/rx-chef/target/distributions/rxchef-0.2.0-rc.1-headless-Darwin-arm64.tar.gz",
+    "version": "0.2.0-rc.1",
+    "os": "Darwin",
+    "architecture": "arm64",
+    "commit": "de287614b1082e85e9619de6cd9178353a992f4f",
+    "bytes": 13614267,
+    "sha256": "3fab6967ef1fc741e440285280c60c2eee846c07d8c15335da9128f6345a09e0",
+    "build": "PASS",
+    "installation": "NOT TESTED",
+    "smoke": "NOT TESTED"
+  },
+  {
+    "filename": "rxchef-0.2.0-rc.1-tui-Darwin-arm64.tar.gz",
+    "path": "/Users/michaelweiss/git/github/rx-chef/target/distributions/rxchef-0.2.0-rc.1-tui-Darwin-arm64.tar.gz",
+    "version": "0.2.0-rc.1",
+    "os": "Darwin",
+    "architecture": "arm64",
+    "commit": "de287614b1082e85e9619de6cd9178353a992f4f",
+    "bytes": 12922099,
+    "sha256": "c69b674c29776e72fe2e20db0260976201ae5444f27c9a05ba55801106e7cc85",
+    "build": "PASS",
+    "installation": "NOT TESTED",
+    "smoke": "NOT TESTED"
+  },
+  {
+    "filename": "rxchef-0.2.0-rc.1-web-Darwin-arm64.tar.gz",
+    "path": "/Users/michaelweiss/git/github/rx-chef/target/distributions/rxchef-0.2.0-rc.1-web-Darwin-arm64.tar.gz",
+    "version": "0.2.0-rc.1",
+    "os": "Darwin",
+    "architecture": "arm64",
+    "commit": "de287614b1082e85e9619de6cd9178353a992f4f",
+    "bytes": 13897484,
+    "sha256": "05686647c42e8b8b5c2d8bd6cea9c26f8f6fffd41b7747b0da3392d2e631ae8d",
+    "build": "PASS",
+    "installation": "NOT TESTED",
+    "smoke": "NOT TESTED"
+  },
+  {
+    "filename": "rx-chef_0.2.0-rc.1_aarch64.dmg",
+    "path": "/Users/michaelweiss/git/github/rx-chef/target/release/bundle/dmg/rx-chef_0.2.0-rc.1_aarch64.dmg",
+    "version": "0.2.0-rc.1",
+    "os": "Darwin",
+    "architecture": "arm64",
+    "commit": "de287614b1082e85e9619de6cd9178353a992f4f",
+    "bytes": 15429574,
+    "sha256": "8389b62c776b4fe4e45566d0667b8cff35927b067559abb9997992419096fe3e",
+    "build": "PASS",
+    "installation": "NOT TESTED",
+    "smoke": "NOT TESTED"
+  }
+]

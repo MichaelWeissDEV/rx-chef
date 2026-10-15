@@ -276,7 +276,9 @@ impl JobManager {
     }
 
     pub fn get(&self, id: &str) -> Result<JobSnapshot, ClientError> {
-        lock(&self.table)
+        let mut table = lock(&self.table);
+        self.evict(&mut table);
+        table
             .jobs
             .get(id)
             .map(|e| e.snapshot.borrow().clone())
@@ -284,7 +286,9 @@ impl JobManager {
     }
 
     pub fn subscribe(&self, id: &str) -> Result<watch::Receiver<JobSnapshot>, ClientError> {
-        lock(&self.table)
+        let mut table = lock(&self.table);
+        self.evict(&mut table);
+        table
             .jobs
             .get(id)
             .map(|e| e.snapshot.subscribe())
@@ -374,5 +378,105 @@ impl Drop for Guard {
         {
             table.jobs.remove(&self.id);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn manager() -> JobManager {
+        let mut config = WorkerConfig::local("unused-worker".into());
+        config.workers = 0; // Keep jobs queued without starting a process.
+        config.max_pending = 2;
+        config.retain_for = Duration::from_secs(1);
+        JobManager::new(Arc::new(config))
+    }
+
+    fn task() -> EngineTask {
+        EngineTask::Execute(crate::ExecuteRequest {
+            input_base64: Some(String::new()),
+            recipe: vec![],
+            variables: Default::default(),
+            trace: None,
+        })
+    }
+
+    #[tokio::test]
+    async fn expiration_is_enforced_by_reads_without_subsequent_submissions() {
+        let manager = manager();
+        let (id, _) = manager.submit(task()).unwrap();
+        manager.cancel(&id).await.unwrap();
+        lock(&manager.table).jobs.get_mut(&id).unwrap().finished =
+            Some(Instant::now() - Duration::from_secs(2));
+        assert_eq!(manager.get(&id).unwrap_err().kind, ErrorKind::NotFound);
+        assert!(manager.subscribe(&id).is_err());
+        assert_eq!(
+            manager.cancel(&id).await.unwrap_err().kind,
+            ErrorKind::NotFound
+        );
+        assert_eq!(manager.active(), 0);
+    }
+
+    #[tokio::test]
+    async fn admission_queued_cancellation_and_shutdown_release_all_slots() {
+        let manager = manager();
+        let (a, _) = manager.submit(task()).unwrap();
+        let (b, _) = manager.submit(task()).unwrap();
+        assert_eq!(manager.submit(task()).unwrap_err().kind, ErrorKind::Busy);
+        assert_eq!(manager.get(&a).unwrap().status, JobStatus::Queued);
+        assert_eq!(
+            manager.cancel(&a).await.unwrap().status,
+            JobStatus::Cancelled
+        );
+        let (c, _) = manager.submit(task()).unwrap();
+        manager.shutdown();
+        manager.drain().await;
+        assert_eq!(manager.get(&b).unwrap().status, JobStatus::Cancelled);
+        assert_eq!(manager.get(&c).unwrap().status, JobStatus::Cancelled);
+        assert_eq!(manager.active(), 0);
+        assert_eq!(manager.submit(task()).unwrap_err().kind, ErrorKind::Busy);
+    }
+
+    #[tokio::test]
+    async fn cancellation_wait_timeout_preserves_running_until_worker_finishes() {
+        let manager = manager();
+        let (snapshot, _) = watch::channel(JobSnapshot {
+            id: "pending-termination".into(),
+            status: JobStatus::Running,
+            progress: None,
+            result: None,
+            error: None,
+            graph_nodes: vec![],
+        });
+        let (cancel, cancel_rx) = watch::channel(false);
+        {
+            let mut table = lock(&manager.table);
+            table.active = 1;
+            table.jobs.insert(
+                "pending-termination".into(),
+                Entry {
+                    snapshot,
+                    cancel,
+                    finished: None,
+                    bytes: 0,
+                },
+            );
+        }
+        // Hold the simulated worker's terminal snapshot beyond the public
+        // cancellation wait budget; requesting a kill is not proof of exit.
+        let pending = manager.cancel("pending-termination").await.unwrap();
+        assert!(*cancel_rx.borrow());
+        assert_eq!(pending.status, JobStatus::Running);
+        assert_eq!(manager.active(), 1);
+        manager.finish(
+            "pending-termination",
+            Err(ClientError::new(ErrorKind::Cancelled, "worker reaped")),
+        );
+        assert_eq!(
+            manager.get("pending-termination").unwrap().status,
+            JobStatus::Cancelled
+        );
+        assert_eq!(manager.active(), 0);
     }
 }

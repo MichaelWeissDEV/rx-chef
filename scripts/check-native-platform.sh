@@ -7,12 +7,16 @@ cd "$repo_root"
 echo "==> Native platform: $(uname -s) $(uname -m)"
 rustc --version
 cargo --version
+python3 scripts/test-release-version.py
 
 npm --prefix apps/web ci
 npm --prefix apps/web run contracts:check
+npm --prefix apps/web run typecheck
 npm --prefix apps/web run build
 npm --prefix apps/web test
 npm --prefix apps/web run lint
+npm --prefix apps/web exec -- playwright install chromium
+npm --prefix apps/web run test:e2e
 
 cargo fmt --all -- --check
 cargo check --locked --workspace --all-targets

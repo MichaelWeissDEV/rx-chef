@@ -1,5 +1,48 @@
 # Releasing
 
+## Current release rehearsal
+
+The prepared version is `0.2.0-rc.1`; no tag or external publication is authorized
+by the local finalization work. See the [readiness report](0.2.0-rc.1-release-readiness.md)
+before considering the publication instructions below.
+
+`scripts/check-release-tag.sh v0.2.0-rc.1 HEAD` validates a synthetic tag string
+without creating a Git tag. The full version must match Cargo and an exact
+changelog section. SemVer numeric leading zeroes, empty identifiers and malformed
+prerelease/build metadata are rejected. Build metadata participates in the exact
+comparison; only a prerelease identifier classifies a tag as an RC. Run
+`python3 scripts/test-release-version.py` for the version and clean-fixture gates.
+
+The actual cargo-dist 0.32.0 plan includes CLI, TUI and the default headless
+server. Desktop is explicitly excluded from cargo-dist and uses Tauri bundles.
+The `build-workbench` global artifact job separately builds headless/web snapshots
+and native GUI packages on both macOS architectures, both Linux architectures,
+and Windows x86_64. These configured jobs require native CI execution; YAML alone
+is not platform certification. Runner labels follow the
+[GitHub runner reference](https://docs.github.com/en/actions/reference/runners/github-hosted-runners).
+
+For a local rehearsal install the pinned `dist`, then run
+`bash scripts/release-gates.sh host`. It builds from current web source, checks
+both Rust feature sets, runs real browser/PTY tests, creates fresh local archive
+variants, tests temporary install/uninstall/reinstall, builds host GUI bundles
+and checks dist plan/build. `SKIPPED`, `NOT TESTED` and `FAIL` remain separate;
+host PASS covers only executed host gates. GUI interaction, network-disabled
+offline acceptance and other native platforms still require their own evidence.
+All commands can be wrapped in `scripts/record-release-check.py --label NAME -- COMMAND`
+to retain JSON metadata and complete logs under `target/rc-evidence`.
+
+`scripts/build-distributions.sh` refuses existing archive names, including stale
+ones. Use a fresh `RXCHEF_DISTRIBUTION_DIR` for another rehearsal. Run
+`python3 scripts/inventory-release-artifacts.py` to record SHA-256 and sizes;
+inventory creation alone does not claim installation or smoke success. The
+temporary archive smoke results are recorded separately by
+`python3 scripts/smoke-distributions.py`. Local macOS bundles are unsigned and
+not notarized for public distribution; Windows/Linux installer and signing
+claims require tests on those native systems.
+
+Protocol version 2 is intentional across JSONL and HTTP clients/servers. Update
+both sides together; incompatible remote capabilities must fail explicitly.
+
 Pushing a signed, correctly-versioned stable tag (`vX.Y.Z`) triggers the
 release: platform binaries, a GitHub Release, a shell installer, `.deb` and
 `.rpm` packages, a Homebrew tap update, and five crates published to

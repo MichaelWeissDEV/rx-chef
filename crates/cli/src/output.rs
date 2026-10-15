@@ -9,6 +9,20 @@ use std::io::{self, IsTerminal, Write};
 use crate::cli::OutputFormat;
 use crate::steps::{RunResult, Step};
 
+/// Escape terminal control characters in human-facing metadata, including
+/// historic records written before presentation filtering was introduced.
+pub(crate) fn terminal_text(text: &str) -> String {
+    text.chars()
+        .flat_map(|character| {
+            if character.is_control() && !matches!(character, '\n' | '\t') {
+                character.escape_default().collect::<Vec<_>>()
+            } else {
+                vec![character]
+            }
+        })
+        .collect()
+}
+
 pub(crate) fn write_output(output: &[u8], hex: bool) -> Result<(), String> {
     write_formatted_output(
         output,

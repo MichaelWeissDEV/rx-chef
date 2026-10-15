@@ -772,7 +772,7 @@ mod tests {
             .collect();
         assert_eq!(responses.len(), 4);
         assert_eq!(responses[0]["error"]["code"], -32700);
-        assert_eq!(responses[1]["result"]["protocol_version"], 1);
+        assert_eq!(responses[1]["result"]["protocol_version"], 2);
         assert_eq!(responses[2]["result"]["output"], "SEVMTE8=");
         assert_eq!(responses[3]["result"]["shutdown"], true);
     }
@@ -823,9 +823,9 @@ mod tests {
             .map(|line| serde_json::from_str::<Value>(line).unwrap())
             .collect::<Vec<_>>();
         assert_eq!(responses.len(), 3);
-        assert_eq!(responses[0]["result"]["protocol_version"], 1);
+        assert_eq!(responses[0]["result"]["protocol_version"], 2);
         assert_eq!(responses[1]["error"]["code"], -32004);
-        assert_eq!(responses[2]["result"]["protocol_version"], 1);
+        assert_eq!(responses[2]["result"]["protocol_version"], 2);
     }
 
     #[cfg(all(feature = "pgp", feature = "jsonata", feature = "tesseract"))]

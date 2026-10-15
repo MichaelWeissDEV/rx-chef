@@ -69,3 +69,28 @@ test('recipe history, metadata defaults, save/load, trace and narrow window', as
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
+
+test('acceptance A: Base64 to HEX recipe copies, saves, reloads and repeats exact output', async ({ page, context, baseURL }) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: baseURL! });
+  await page.goto('/');
+  await page.getByLabel('Server Bearer Token').fill(token);
+  await page.getByRole('button', { name: 'Connect (this session)' }).click();
+  await expect(page.getByText('Operations (478)')).toBeVisible();
+  await page.getByTitle('Clear recipe').click();
+  for (const operation of ['From Base64', 'To Hex']) {
+    await page.getByPlaceholder('Search operations...').fill(operation);
+    await page.locator('.op-item').filter({ has: page.getByText(operation, { exact: true }) }).getByTitle('Add to Recipe').click();
+  }
+  await page.getByLabel('Input data').fill('SGVsbG8=');
+  await page.getByRole('button', { name: 'Bake', exact: true }).click();
+  await expect(page.getByText('Output (14 bytes)')).toBeVisible();
+  await page.getByTitle('Copy Text').click();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('48 65 6c 6c 6f');
+  const downloaded = page.waitForEvent('download'); await page.getByRole('button', { name: 'Save recipe', exact: true }).click();
+  const bytes = await readFile((await (await downloaded).path())!);
+  await page.getByTitle('Clear recipe').click();
+  await page.getByLabel('Recipe file').setInputFiles({ name: 'accepted.json', mimeType: 'application/json', buffer: bytes });
+  await page.getByRole('button', { name: 'Bake', exact: true }).click();
+  const output = page.waitForEvent('download'); await page.getByTitle('Download Raw Bytes').click();
+  expect(await readFile((await (await output).path())!)).toEqual(Buffer.from('48 65 6c 6c 6f'));
+});

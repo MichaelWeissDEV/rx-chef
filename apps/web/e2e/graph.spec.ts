@@ -1,6 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
-import { readFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 import { createCipheriv } from 'node:crypto';
+import type { Graph } from '../src/types';
 async function selectNamed(page: Page, label: string, name: string) {
   const select = page.getByLabel(label, { exact: true });
   const value = await select.locator('option').filter({ hasText: new RegExp(`^${name} ·`) }).first().getAttribute('value');
@@ -164,4 +165,44 @@ test('selected outputs run only the required named input branch',async({page})=>
   await page.getByLabel('Graph output selection').selectOption('output');await page.getByRole('button',{name:'Run graph',exact:true}).click();
   await expect(page.getByRole('tab',{name:'output',exact:true})).toBeVisible();await expect(page.getByRole('tab')).toHaveCount(1);
   const download=page.waitForEvent('download');await page.getByRole('button',{name:'Download graph output'}).click();expect(await readFile((await (await download).path())!)).toEqual(Buffer.from([0,255]));
+});
+
+test('10, 50 and 100-node graphs render and keep theme/layout controls responsive', async ({ page, context }, testInfo) => {
+  await page.goto('/'); await page.getByLabel('Server Bearer Token').fill('browser-test-token-0123456789');
+  await page.getByRole('button', { name: 'Connect (this session)' }).click();
+  await expect(page.getByText('Operations (478)')).toBeVisible();
+  await page.getByRole('button', { name: 'Graph mode', exact: true }).click();
+  const cdp = await context.newCDPSession(page); await cdp.send('Performance.enable');
+  const measurements = [];
+  for (const size of [10, 50, 100]) {
+    const graph: Graph = { version: 1, id: `measured-${size}`, nodes: [{ id: 'input', type: 'input', name: 'input' }], edges: [], presentation: { input: { x: 0, y: 0 } } };
+    const operations = Math.floor((size - 1) / 2);
+    for (let i = 0; i < operations; i++) {
+      graph.nodes.push({ id: `op-${i}`, type: 'operation', operation: 'to_hex', args: {}, enabled: true });
+      graph.edges.push({ id: `in-${i}`, source_node: 'input', source_port: 'data', target_node: `op-${i}`, target_port: 'data' });
+      graph.presentation![`op-${i}`] = { x: 300, y: i * 150 };
+    }
+    for (let i = 0; graph.nodes.length < size; i++) {
+      graph.nodes.push({ id: `out-${i}`, type: 'output', name: `out-${i}` });
+      graph.edges.push({ id: `edge-out-${i}`, source_node: `op-${i % operations}`, source_port: 'data', target_node: `out-${i}`, target_port: 'data' });
+      graph.presentation![`out-${i}`] = { x: 650, y: i * 150 };
+    }
+    const started = performance.now();
+    await page.getByLabel('Graph file', { exact: true }).setInputFiles({ name: 'measured.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(graph)) });
+    await expect(page.getByLabel('Graph name', { exact: true })).toHaveValue(graph.id);
+    await expect(page.locator('.react-flow__node')).toHaveCount(size);
+    const imported = performance.now();
+    await page.getByRole('button', { name: 'Arrange nodes', exact: true }).click();
+    await page.getByTitle('Switch to light mode').click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await page.getByTitle('Switch to dark mode').click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    const metrics = await cdp.send('Performance.getMetrics');
+    measurements.push({ nodes: size, edges: graph.edges.length, import_render_ms: imported - started,
+      arrange_and_two_theme_changes_ms: performance.now() - imported,
+      js_heap_used_bytes: metrics.metrics.find((metric: { name: string }) => metric.name === 'JSHeapUsedSize')?.value });
+  }
+  const measurementFile = testInfo.outputPath('graph-render-measurements.json');
+  await writeFile(measurementFile, JSON.stringify({ platform: process.platform, architecture: process.arch, measurements }, null, 2));
+  await testInfo.attach('graph-render-measurements.json', { path: measurementFile, contentType: 'application/json' });
 });

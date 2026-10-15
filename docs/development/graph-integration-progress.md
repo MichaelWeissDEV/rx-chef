@@ -1,5 +1,10 @@
 # Graph integration continuation — 2026-10-14
 
+**Historical checkpoints only.** The dates, counts and remaining-work tables
+below are preserved as development history and are not current release gates.
+Use the [consolidated RC readiness report](0.2.0-rc.1-release-readiness.md)
+for the current implementation, fresh evidence and release blockers.
+
 Updated 2026-10-15: stored graph/project repositories, portable session contracts,
 browser project library/import/export and metadata history are implemented.
 The first complete pre-persistence workspace regression passed **2,478 tests**;

@@ -47,7 +47,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, windows-latest]
+        os: [macos-15, macos-15-intel, ubuntu-24.04, ubuntu-24.04-arm, windows-latest]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     defaults:
@@ -77,5 +77,10 @@ jobs:
           cache-dependency-path: apps/web/package-lock.json
       - name: Install documentation dependencies
         run: python -m pip install --disable-pip-version-check -r docs/requirements.txt
+      - name: Install Linux desktop dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential pkg-config libssl-dev libayatana-appindicator3-dev librsvg2-dev patchelf
       - name: Run the native portability gate
         run: ./scripts/check-native-platform.sh
+      - name: Build native desktop installer
+        run: npm --prefix apps/web run desktop:build

@@ -51,20 +51,12 @@ ok() {
 # --- Tag shape ---------------------------------------------------------
 
 # Stable: v0.1.0, v1.2.3. Prerelease: v0.2.0-rc.1, v0.2.0-beta.1.
-tag_re='^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?$'
-if [[ "$tag" =~ $tag_re ]]; then
-    ok "tag shape ($tag)"
-else
-    fail "tag '$tag' does not look like v<major>.<minor>.<patch>[-<prerelease>]"
-fi
-
-if [[ "$tag" == *-* ]]; then
+tag_version=${tag#v}
+version_without_build=${tag_version%%+*}
+if [[ "$version_without_build" == *-* ]]; then
     prerelease=true
     ok "prerelease tag detected — will not gate on AUR/Homebrew-stable checks"
 fi
-
-tag_version=${tag#v}
-version_core=${tag_version%%-*}
 
 # --- Cargo.toml version match -------------------------------------------
 
@@ -81,18 +73,14 @@ print(versions.get('rxchef', ''))
 )
 if [[ -z "$workspace_version" ]]; then
     fail "could not read workspace.package.version from Cargo.toml"
-elif [[ "$workspace_version" == "$version_core" ]]; then
-    ok "tag version matches Cargo.toml workspace version ($workspace_version)"
-else
-    fail "tag version '$version_core' != Cargo.toml workspace version '$workspace_version'"
 fi
 
 # --- CHANGELOG has this exact version -----------------------------------
 
-if grep -qE "^## \[$version_core\]" CHANGELOG.md; then
-    ok "CHANGELOG.md has a [$version_core] section"
+if version_details=$(python3 scripts/release-version.py "$tag" "$workspace_version" CHANGELOG.md 2>&1); then
+    ok "SemVer, Cargo and exact CHANGELOG version: $version_details"
 else
-    fail "CHANGELOG.md has no '## [$version_core]' section (still under [Unreleased]?)"
+    fail "$version_details"
 fi
 
 # --- Tag commit is reachable from master ---------------------------------

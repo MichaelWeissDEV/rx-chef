@@ -70,11 +70,27 @@ return no payload, never partial bytes. Metadata excludes argument values and
 intermediate payloads.
 
 The current scheduler is sequential (bounded to one node at a time). Parallel
-branch scheduling remains a release requirement. Local cancellation/deadlines
-are checked between nodes and after operation completion. They cannot interrupt
-an individual registered operation. Remote graph jobs use one supervised worker
-for the whole graph; cancellation/deadlines kill that worker. Hard memory
-isolation remains platform dependent as documented in the server guide.
+branch scheduling is a post-release optimization, not required for this RC.
+Direct in-process library calls check cancellation/deadlines between nodes and
+after operation completion; they cannot interrupt an individual operation.
+Desktop, TUI and remote server jobs use the shared process supervisor, so
+cancellation/deadlines terminate and reap the whole graph worker.
+
+Graph byte accounting is a logical budget for retained values and outputs.
+Shared `Arc<[u8]>` fan-out avoids duplicate buffers; the logical graph budget is
+not a measurement of total allocated process memory. Operation scratch buffers,
+allocator overhead and IPC expansion consume additional process memory. Worker
+OS memory controls are a separate boundary: Linux address space, sampled macOS
+physical footprint, and Windows Job Objects, with the platform limitations in
+the server guide. Store locks coordinate cooperating processes; an attacker who
+can replace the owner's root directory during filesystem calls is outside the
+current path-based race guarantees.
+
+Editing graph structure or input bytes immediately invalidates old results and
+requests cancellation. If submission has not returned an ID, the request is
+remembered and sent when the ID arrives. The UI continues observing the job;
+an acknowledged request alone does not mean its worker has terminated. Transport
+failure remains visible and allows retry. Old-revision outcomes are discarded.
 
 ## CLI
 
@@ -96,7 +112,10 @@ output makes the command exit nonzero, even when unrelated outputs succeed.
 `--server URL` selects the remote client; `RXCHEF_TOKEN` supplies a credential
 without adding it to command-line arguments. `graph list --directory DIR`
 lists graph files. Import/export validate definitions and copy to an explicitly
-selected `--destination`; they do not yet integrate Store project persistence.
+selected `--destination`. Store graph/project libraries and browser IndexedDB
+are separate local stores. Portable JSON export/import shares Rust validation;
+it does not imply a synchronized database or automatically move files between
+the browser, desktop and CLI libraries.
 
 ## Server
 

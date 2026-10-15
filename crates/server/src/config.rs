@@ -44,7 +44,7 @@ pub struct Cli {
     /// Per-job wall-clock limit in seconds; the worker process is killed.
     #[arg(long, default_value_t = 30)]
     pub timeout_secs: u64,
-    /// Worker address-space limit in MiB (enforced on Linux only).
+    /// Worker memory limit in MiB (Linux address space, macOS sampled footprint, Windows Job Object).
     #[arg(long, default_value_t = 1024)]
     pub memory_mib: u64,
     /// Maximum number of concurrently running worker processes.

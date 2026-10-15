@@ -4,9 +4,78 @@ use rxchef_client::{
     JobStatus, SupervisedEngineClient,
 };
 use std::{
+    io::Write,
+    process::{Command, Stdio},
     thread,
     time::{Duration, Instant},
 };
+
+fn internal_worker() -> std::process::Child {
+    Command::new(env!("CARGO_BIN_EXE_rxchef-server"))
+        .arg("--internal-worker")
+        .stdin(Stdio::piped())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()
+        .unwrap()
+}
+
+fn reap_with_deadline(child: &mut std::process::Child) -> std::process::ExitStatus {
+    let deadline = Instant::now() + Duration::from_secs(5);
+    loop {
+        if let Some(status) = child.try_wait().unwrap() {
+            return status;
+        }
+        if Instant::now() >= deadline {
+            child.kill().unwrap();
+            child.wait().unwrap();
+            panic!("worker failed to terminate within five seconds");
+        }
+        thread::sleep(Duration::from_millis(10));
+    }
+}
+
+#[test]
+fn worker_lifeline_eof_terminates_cpu_bound_execution_and_is_reaped() {
+    let mut child = internal_worker();
+    let mut input = child.stdin.take().unwrap();
+    let invocation = rxchef_client::worker::Invocation {
+        policy: Default::default(),
+        task: slow(),
+    };
+    let request = serde_json::to_vec(&invocation).unwrap();
+    input
+        .write_all(&(request.len() as u32).to_be_bytes())
+        .unwrap();
+    input.write_all(&request).unwrap();
+    input.flush().unwrap();
+    thread::sleep(Duration::from_millis(100));
+    assert!(
+        child.try_wait().unwrap().is_none(),
+        "CPU-bound worker must be alive before losing its lifeline"
+    );
+    drop(input);
+    assert_eq!(reap_with_deadline(&mut child).code(), Some(75));
+}
+
+#[test]
+fn worker_rejects_oversized_truncated_and_invalid_json_requests() {
+    for (length, body) in [
+        (
+            (rxchef_client::worker::MAX_REQUEST + 1) as u32,
+            b"".as_slice(),
+        ),
+        (1024, b"{short".as_slice()),
+        (1, b"{".as_slice()),
+    ] {
+        let mut child = internal_worker();
+        let mut input = child.stdin.take().unwrap();
+        input.write_all(&length.to_be_bytes()).unwrap();
+        input.write_all(body).unwrap();
+        drop(input);
+        assert!(!reap_with_deadline(&mut child).success());
+    }
+}
 fn host(timeout: Duration) -> (tokio::runtime::Runtime, SupervisedEngineClient) {
     let runtime = tokio::runtime::Runtime::new().unwrap();
     let mut config = WorkerConfig::local(env!("CARGO_BIN_EXE_rxchef-server").into());

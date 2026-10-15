@@ -54,3 +54,76 @@ it('cancels a job whose ID arrives after closing the connection', async () => {
   submitted.resolve({ id: 'late', status: 'queued' }); await pending;
   expect(cancelJob).toHaveBeenCalledWith('late'); expect(run.state.result).toBeNull();
 });
+
+function supervised(overrides: Partial<RxchefClient> = {}) {
+  return {
+    capabilities: async () => ({ ...fixture.capabilities, jobs: true }),
+    validateGraph: async () => {},
+    submitJob: vi.fn(async () => ({ id: 'job', status: 'queued' })),
+    cancelJob: vi.fn(async () => ({ id: 'job', status: 'running' })),
+    getJob: vi.fn(async () => ({ id: 'job', status: 'succeeded', result: { kind: 'graph', value: response() } })),
+    ...overrides,
+  } as unknown as RxchefClient;
+}
+for (const edit of ['graph', 'inputs']) {
+  it(`remembers ${edit} edits during submission and cancels once the ID arrives`, async () => {
+    const submitted = deferred<JobSnapshot>(); const terminal = deferred<JobSnapshot>();
+    const cancelJob = vi.fn(async () => ({ id: 'late', status: 'running' } as JobSnapshot));
+    const client = supervised({ submitJob: () => submitted.promise, cancelJob, getJob: () => terminal.promise });
+    const run = new GraphExecution(); run.connect(client);
+    const pending = run.start(request()); await flush();
+    if (edit === 'graph') run.editGraph(); else run.editInputs();
+    expect(run.state.cancellationRequested).toBe(true); expect(run.state.result).toBeNull();
+    submitted.resolve({ id: 'late', status: 'queued' }); await flush();
+    expect(cancelJob).toHaveBeenCalledExactlyOnceWith('late');
+    expect(run.state.status).not.toBe('cancelled');
+    terminal.resolve({ id: 'late', status: 'cancelled' }); await pending;
+    expect(run.state.status).toBe('discarded');
+  });
+}
+it('edits before validation completes prevent job submission', async () => {
+  const validation = deferred<void>(); const client = supervised({ validateGraph: () => validation.promise });
+  const run = new GraphExecution(); run.connect(client); const pending = run.start(request()); await flush();
+  run.editGraph(); validation.resolve(); await pending;
+  expect(client.submitJob).not.toHaveBeenCalled(); expect(run.state.status).toBe('discarded');
+});
+it('edits before capabilities arrive prevent validation and submission', async () => {
+  const capabilities = deferred<Awaited<ReturnType<RxchefClient['capabilities']>>>();
+  const client = supervised({ capabilities: () => capabilities.promise, validateGraph: vi.fn(async () => {}) });
+  const run = new GraphExecution(); run.connect(client); const pending = run.start(request()); run.editInputs();
+  capabilities.resolve({ ...fixture.capabilities, jobs: true }); await pending;
+  expect(client.validateGraph).not.toHaveBeenCalled(); expect(client.submitJob).not.toHaveBeenCalled();
+});
+it('cancels immediately after dispatch, deduplicates repeated edits and waits for worker termination', async () => {
+  const terminal = deferred<JobSnapshot>(); const client = supervised({ getJob: () => terminal.promise });
+  const run = new GraphExecution(); run.connect(client); const pending = run.start(request()); await flush();
+  run.editGraph(); run.editInputs(); await run.cancel();
+  expect(client.cancelJob).toHaveBeenCalledTimes(1); expect(run.state.status).not.toBe('cancelled');
+  terminal.resolve({ id: 'job', status: 'cancelled' }); await pending;
+  expect(run.state.status).toBe('discarded');
+});
+it('failed remote cancellation keeps observing the worker and discards its late success', async () => {
+  const submitted = deferred<JobSnapshot>(); const terminal = deferred<JobSnapshot>();
+  const client = supervised({ submitJob: () => submitted.promise, getJob: () => terminal.promise,
+    cancelJob: vi.fn(async () => { throw new Error('Remote cancellation unavailable'); }) });
+  const run = new GraphExecution(); run.connect(client); const pending = run.start(request()); await flush();
+  run.editGraph(); submitted.resolve({ id: 'job', status: 'queued' }); await flush();
+  expect(run.state.error).toContain('Remote cancellation unavailable');
+  expect(run.state.canCancel).toBe(true); expect(run.state.status).not.toBe('cancelled');
+  terminal.resolve({ id: 'job', status: 'succeeded', result: { kind: 'graph', value: response() } }); await pending;
+  expect(run.state.status).toBe('discarded'); expect(run.state.result).toBeNull();
+});
+it('explicit cancellation only reports cancelled after a terminal snapshot', async () => {
+  const terminal = deferred<JobSnapshot>(); const client = supervised({ getJob: () => terminal.promise });
+  const run = new GraphExecution(); run.connect(client); const pending = run.start(request()); await flush();
+  await run.cancel(); expect(run.state.cancellationRequested).toBe(true);
+  expect(run.state.status).not.toBe('cancelled');
+  terminal.resolve({ id: 'job', status: 'cancelled' }); await pending; expect(run.state.status).toBe('cancelled');
+});
+it('connection replacement during submit cancels the old client without replacing the new result', async () => {
+  const submitted = deferred<JobSnapshot>(); const client = supervised({ submitJob: () => submitted.promise });
+  const run = new GraphExecution(); run.connect(client); const pending = run.start(request()); await flush();
+  run.connect(local(async () => response())); await run.start(request());
+  submitted.resolve({ id: 'job', status: 'queued' }); await pending;
+  expect(client.cancelJob).toHaveBeenCalledExactlyOnceWith('job'); expect(run.state.status).toBe('succeeded');
+});

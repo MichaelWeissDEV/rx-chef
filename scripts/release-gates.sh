@@ -29,6 +29,7 @@ mkdir -p "$RXCHEF_HOME"
 
 skipped=()
 failed=()
+not_tested=()
 
 run_gate() {
     local label=$1
@@ -51,14 +52,21 @@ skip_gate() {
     skipped+=("$label — $reason")
 }
 
+not_tested_gate() {
+    printf '==> %s [NOT TESTED: %s]\n' "$1" "$2"
+    not_tested+=("$1 — $2")
+}
+
 # --- Toolchain and lockfile ------------------------------------------------
 
 run_gate "cargo metadata (locked)" \
     cargo metadata --locked --format-version 1 --no-deps >/dev/null
+run_gate "release version regression" python3 scripts/test-release-version.py
 
 # Web source generation precedes all-features Rust builds (embedded assets).
 run_gate "frontend clean install" npm --prefix apps/web ci
 run_gate "wire contracts" npm --prefix apps/web run contracts:check
+run_gate "frontend typecheck" npm --prefix apps/web run typecheck
 run_gate "frontend unit tests" npm --prefix apps/web test
 run_gate "frontend lint" npm --prefix apps/web run lint
 run_gate "frontend build" npm --prefix apps/web run build
@@ -87,6 +95,8 @@ run_gate "clippy all-features (correctness, suspicious)" \
 # --- Tests -----------------------------------------------------------------
 
 run_gate "workspace tests" cargo test --locked --workspace
+run_gate "remote client tests" cargo test --locked -p rxchef-client --features remote
+run_gate "web-enabled server tests" cargo test --locked -p rxchef-server --features web-ui
 run_gate "all-features check" cargo check --locked --workspace --all-targets --all-features
 run_gate "all-features tests" cargo test --locked --workspace --all-features
 
@@ -167,6 +177,32 @@ run_gate "invalid input exits non-zero" bash -c \
 
 run_gate "server smoke" python3 docker/server-smoke.py "$rxchef"
 
+# Keep variants in a fresh directory: never silently reuse or overwrite a
+# previous release rehearsal. Web and headless snapshots stay distinct.
+export RXCHEF_DISTRIBUTION_DIR
+RXCHEF_DISTRIBUTION_DIR=$(mktemp -d "$CARGO_TARGET_DIR/rc-packages-XXXXXXXX")
+for variant in cli tui headless web; do
+    run_gate "package $variant" bash scripts/build-distributions.sh "$variant"
+done
+run_gate "archive installation/reinstallation smoke" \
+    python3 scripts/smoke-distributions.py --directory "$RXCHEF_DISTRIBUTION_DIR"
+case "$(uname -s)" in
+    Darwin) run_gate "native desktop app/DMG bundle" npm --prefix apps/web run desktop:build -- --bundles app,dmg ;;
+    Linux) run_gate "native desktop bundles" npm --prefix apps/web run desktop:build ;;
+    *) not_tested_gate "native desktop bundles" "use the native Windows installer matrix" ;;
+esac
+run_gate "package inventory and SHA-256" python3 scripts/inventory-release-artifacts.py
+if command -v dist >/dev/null 2>&1; then
+    run_gate "cargo-dist generated workflow" dist generate --check
+    run_gate "cargo-dist plan" dist plan
+    host_target=$(rustc -vV | sed -n 's/^host: //p')
+    run_gate "cargo-dist host archives" dist build --artifacts local --target "$host_target"
+else
+    not_tested_gate "cargo-dist plan/build" "install configured cargo-dist 0.32.0 before approval"
+fi
+not_tested_gate "native GUI installer acceptance" "manual GUI/dialog/offline/uninstall evidence must be reviewed separately"
+not_tested_gate "other native platforms" "a host gate cannot certify other OS/architectures"
+
 # --- Linux x86_64 only -----------------------------------------------------
 
 if [[ "$mode" == "linux" || "$mode" == "linux-arm" ]]; then
@@ -201,6 +237,10 @@ fi
 
 echo
 echo "-----------------------------------------------------------------------"
+if ((${#not_tested[@]} > 0)); then
+    echo "Not tested by this gate (${#not_tested[@]}):"
+    for entry in "${not_tested[@]}"; do echo "  - $entry"; done
+fi
 if ((${#skipped[@]} > 0)); then
     echo "Skipped gates (${#skipped[@]}):"
     for entry in "${skipped[@]}"; do
@@ -223,3 +263,4 @@ else
     echo "Mode: host ($(uname -s) $(uname -m)) — Linux-only gates were skipped"
 fi
 echo "RX-CHEF RELEASE CHECK: PASS"
+echo "Scope: checks executed above on this host only; skips and missing native installer/platform evidence still block RC approval."

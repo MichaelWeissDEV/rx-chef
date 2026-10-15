@@ -31,6 +31,18 @@ Prepared locally; publication and final release approval are pending.
 
 ### Fixed
 
+- Release tags compare the complete SemVer version, including prerelease/build
+  identifiers, against Cargo and an exact changelog heading. Invalid identifiers
+  and leading zeroes are rejected without creating tags in tests.
+- Graph/input edits request cancellation immediately and preserve the request
+  while submission is pending. Results remain invalidated until termination is
+  observed; cancellation transport failures do not masquerade as worker exit.
+- Job status/subscription reads enforce retention expiry even without later job
+  submissions. CLI REPL and historical display escape terminal control sequences
+  while exact transformation bytes and machine output remain unchanged.
+- Local archives carry versions, licenses and SHA-256 checksums, use fresh
+  staging directories and refuse overwrites. Native web/desktop package jobs
+  supplement cargo-dist's CLI/TUI/headless matrix.
 - Superseded runs and delayed file imports cannot publish data into a newer
   document. Generated contracts gate builds and E2E uses freshly embedded assets.
 - Strict binary adapters, identifier normalization, port validation and atomic

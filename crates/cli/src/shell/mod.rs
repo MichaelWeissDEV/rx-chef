@@ -33,7 +33,7 @@ pub(crate) fn cmd_interactive() -> Result<(), String> {
                     match handle_repl_line(&line, &mut data) {
                         Ok(false) => break,
                         Ok(true) => {}
-                        Err(error) => eprintln!("rxchef: {error}"),
+                        Err(error) => eprintln!("rxchef: {}", crate::output::terminal_text(&error)),
                     }
                 }
                 Err(ReadlineError::Interrupted) => continue,
@@ -47,7 +47,7 @@ pub(crate) fn cmd_interactive() -> Result<(), String> {
             match handle_repl_line(&line.map_err(|error| error.to_string())?, &mut data) {
                 Ok(false) => break,
                 Ok(true) => {}
-                Err(error) => eprintln!("rxchef: {error}"),
+                Err(error) => eprintln!("rxchef: {}", crate::output::terminal_text(&error)),
             }
         }
     }
@@ -104,7 +104,10 @@ pub(crate) fn handle_repl_line(line: &str, data: &mut Vec<u8>) -> Result<bool, S
         if step.args.is_empty() {
             println!("  {canonical}");
         } else {
-            println!("  {canonical} ({})", step.args.join(", "));
+            println!(
+                "  {canonical} ({})",
+                crate::output::terminal_text(&step.args.join(", "))
+            );
         }
     }
     println!("Result:");
@@ -133,7 +136,7 @@ pub(crate) fn parse_repl_pipeline(line: &str) -> Result<Vec<Step>, String> {
 
 pub(crate) fn print_repl_result(data: &[u8]) {
     match std::str::from_utf8(data) {
-        Ok(text) => println!("{text}"),
+        Ok(text) => println!("{}", crate::output::terminal_text(text)),
         Err(_) => println!("hex:{}", hex::encode(data)),
     }
 }

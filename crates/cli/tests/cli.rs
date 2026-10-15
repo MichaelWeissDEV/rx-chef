@@ -4,6 +4,46 @@ use std::process::{Command, Output, Stdio};
 use base64::{engine::general_purpose, Engine as _};
 
 #[test]
+fn interactive_results_escape_terminal_controls_without_changing_pipeline_bytes() {
+    let bytes = b"\x1b]52;c;SGVsbG8=\x07\x1b[2J\xc2\x9b31m";
+    let encoded = general_purpose::STANDARD.encode(bytes);
+    let input = format!("data {encoded}\nFrom Base64\nTo Base64\nquit\n");
+    let result = rxchef(&["--interactive"], Some(input.as_bytes()));
+    assert_success(&result);
+    assert!(!result.stdout.contains(&0x1b));
+    assert!(!result.stdout.contains(&0x07));
+    assert!(String::from_utf8_lossy(&result.stdout).contains(&encoded));
+    assert!(String::from_utf8_lossy(&result.stdout).contains("\\u{1b}"));
+}
+
+#[test]
+fn history_presentation_escapes_controls_in_existing_records() {
+    let (directory, home) = isolated_store();
+    std::fs::create_dir_all(&home).unwrap();
+    let attack = "\u{1b}]52;c;SGVsbG8=\u{7}\u{1b}[2J\u{9b}31m";
+    let entry = serde_json::json!({
+        "id": "terminal-test", "timestamp": attack, "pipeline_name": attack,
+        "input_preview": attack, "input_bytes": 1, "output_preview": attack,
+        "output_bytes": 1, "success": true,
+        "steps": [{"op": attack, "args": [attack], "output_preview": attack,
+                   "output_bytes": 1, "duration_ms": 0, "error": attack}]
+    });
+    std::fs::write(home.join("history.jsonl"), format!("{entry}\n")).unwrap();
+    for args in [
+        vec!["history", "list"],
+        vec!["history", "show", "terminal-test"],
+    ] {
+        let result = rxchef_in(&args, None, &directory, &home);
+        assert_success(&result);
+        assert!(!result.stdout.contains(&0x1b));
+        assert!(!result.stdout.contains(&0x07));
+        assert!(!String::from_utf8_lossy(&result.stdout).contains('\u{9b}'));
+        assert!(String::from_utf8_lossy(&result.stdout).contains("\\u{1b}"));
+    }
+    std::fs::remove_dir_all(directory).unwrap();
+}
+
+#[test]
 fn graph_history_opt_in_records_metadata_without_inputs_outputs_or_arguments() {
     let (directory, home) = isolated_store();
     let graph = directory.join("graph.json");

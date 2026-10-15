@@ -15,8 +15,9 @@ export interface GraphRunState {
   status: RunStatus; snapshot?: RunSnapshot; capabilities?: Capabilities;
   result: GraphResult | null; error?: string; notice?: string; canCancel: boolean;
   nodes?: GraphNodeProgress[];
+  cancellationRequested?: boolean;
 }
-interface Run { snapshot: RunSnapshot; client: RxchefClient; job?: string; cancelled: boolean }
+interface Run { snapshot: RunSnapshot; client: RxchefClient; job?: string; cancelled: boolean; cancellation?: Promise<void> }
 function freeze<T>(value: T): T {
   if (value && typeof value === 'object') { Object.values(value).forEach(freeze); Object.freeze(value); }
   return value;
@@ -46,7 +47,12 @@ export class GraphExecution {
   editGraph() { this.graphRevision++; this.invalidate(); }
   editInputs() { this.inputRevision++; this.invalidate(); }
   private invalidate() {
-    this.emit({ ...this.state, result: null, nodes:[], notice: this.active ? 'Graph or inputs changed; this run belongs to an earlier revision.' : undefined });
+    const run = this.active;
+    this.emit({ ...this.state, result: null, nodes:[], cancellationRequested: !!run,
+      notice: run ? 'Graph or inputs changed; cancellation requested for the earlier revision.' : undefined });
+    if (run) void this.cancelRun(run).catch(error => {
+      if (this.current(run)) this.emit({ ...this.state, error: errorMessage(error) });
+    });
   }
   private current(run: Run) { return this.active === run && this.client === run.client; }
   private matches(run: Run) {
@@ -54,10 +60,17 @@ export class GraphExecution {
   }
   private async cancelRun(run: Run) {
     run.cancelled = true;
-    if (run.job) await run.client.cancelJob(run.job);
+    if (run.job && !run.cancellation) {
+      run.cancellation = run.client.cancelJob(run.job).then(() => {}).catch(error => {
+        run.cancellation = undefined;
+        throw error;
+      });
+    }
+    await run.cancellation;
   }
   async cancel() {
     const run = this.active; if (!run) return;
+    this.emit({ ...this.state, cancellationRequested: true, notice: 'Cancellation requested; waiting for execution to end.' });
     try { await this.cancelRun(run); }
     catch (error) { if (this.current(run)) this.emit({ ...this.state, error: errorMessage(error) }); }
   }
@@ -73,13 +86,15 @@ export class GraphExecution {
       const capabilities = await client.capabilities();
       if (!this.current(run)) return;
       if (!capabilities.graphs) throw new Error('Engine does not support graphs.');
-      if (run.cancelled) { this.emit({ status: 'cancelled', snapshot, result: null, canCancel: false }); return; }
+      if (run.cancelled) { this.emit({ status: this.matches(run) ? 'cancelled' : 'discarded', snapshot, result: null, canCancel: false }); return; }
       this.emit({ status: 'queued', snapshot, capabilities, result: null, canCancel: capabilities.jobs });
       await client.validateGraph(snapshot.request);
       if (!this.current(run)) return;
-      if (run.cancelled) { this.emit({ status: 'cancelled', snapshot, result: null, canCancel: false }); return; }
+      if (run.cancelled) { this.emit({ status: this.matches(run) ? 'cancelled' : 'discarded', snapshot, result: null, canCancel: false }); return; }
       const outcome = await executeTask(client, { method: 'graph_execute', params: snapshot.request }, {
         current: () => this.current(run), cancelled: () => run.cancelled,
+        requestCancel: () => this.cancelRun(run),
+        cancellationError: error => { if (this.current(run)) this.emit({ ...this.state, error: errorMessage(error) }); },
         job: id => { run.job = id; }, status: status => { if (this.current(run)) this.emit({ ...this.state, status }); },
         snapshot: snapshot => {if(this.matches(run))this.emit({...this.state,nodes:snapshot.graph_nodes??[]});},
       }, capabilities);
@@ -91,7 +106,7 @@ export class GraphExecution {
       }
       this.emit({ status: 'succeeded', snapshot, capabilities, result: parseGraphResponse(result), canCancel: false });
     } catch (error) {
-      if (this.current(run)) { const kind = error && typeof error === 'object' && 'kind' in error ? error.kind : ''; this.emit({ status: kind === 'cancelled' ? 'cancelled' : kind === 'timeout' ? 'timed_out' : 'failed', snapshot, result: null, error: errorMessage(error), canCancel: false }); }
+      if (this.current(run)) { const kind = error && typeof error === 'object' && 'kind' in error ? error.kind : ''; this.emit({ status: !this.matches(run) ? 'discarded' : kind === 'cancelled' ? 'cancelled' : kind === 'timeout' ? 'timed_out' : 'failed', snapshot, result: null, error: errorMessage(error), canCancel: false }); }
     } finally { if (this.active === run) this.active = undefined; }
   }
 }

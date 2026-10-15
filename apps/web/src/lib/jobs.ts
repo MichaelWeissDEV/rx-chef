@@ -3,6 +3,8 @@ export interface TaskControl {
   current(): boolean; cancelled(): boolean; job(id: string): void;
   status(status: 'queued' | 'running'): void;
   snapshot?(snapshot:JobSnapshot):void;
+  requestCancel?(): Promise<void>;
+  cancellationError?(error: unknown): void;
 }
 const interrupted = () => ({ kind: 'cancelled', message: 'Execution was superseded or cancelled before dispatch.' });
 /** One transport lifecycle for graph and recipe work; no domain execution here. */
@@ -15,7 +17,10 @@ export async function executeTask(client: RxchefClient, task: EngineTask, contro
     throw new Error('This task requires supervised jobs.');
   }
   const submitted = await client.submitJob(task); control.job(submitted.id);
-  if (!control.current() || control.cancelled()) await client.cancelJob(submitted.id);
+  if (!control.current() || control.cancelled()) {
+    try { await (control.requestCancel ? control.requestCancel() : client.cancelJob(submitted.id)); }
+    catch (error) { control.cancellationError?.(error); }
+  }
   if (!control.current()) throw interrupted();
   for (;;) {
     const state = await client.getJob(submitted.id);
