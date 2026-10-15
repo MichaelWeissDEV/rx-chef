@@ -311,3 +311,7 @@ checks the other generated surfaces; CI generation is deliberately disabled.
 Tag validation installs `rustfmt` explicitly: the minimal Rust profile does not
 include the formatter used by `xtask check-registry`. Registry diagnostics remain
 visible so a missing tool is not misreported as stale generated code.
+
+`precise-builds = true` builds distributable CLI/TUI/server crates separately.
+The default workspace-wide binary build also includes the Tauri desktop, which
+requires GTK/WebKit on Linux and belongs to `build-workbench.yml` instead.

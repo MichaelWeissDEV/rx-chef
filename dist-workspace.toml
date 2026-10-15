@@ -11,6 +11,9 @@ ci = "github"
 # gates after validation failure. Keep our fail-closed publication guard.
 # Regression coverage: scripts/test-release-version.py.
 allow-dirty = ["ci"]
+# Build each distributable package separately. A workspace-wide --bins build
+# accidentally includes the separately packaged Tauri desktop and needs GTK.
+precise-builds = true
 # The installers to generate for each app
 installers = ["shell", "homebrew"]
 # Target platforms to build apps for (Rust target-triple syntax)
