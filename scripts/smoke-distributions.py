@@ -17,7 +17,7 @@ import urllib.request
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--directory", default="target/distributions")
-parser.add_argument("--version", default="0.2.0-rc.1")
+parser.add_argument("--version", default="0.0.1")
 args = parser.parse_args()
 root = pathlib.Path(__file__).resolve().parent.parent
 archives = list(pathlib.Path(args.directory).resolve().glob(f"rxchef-{args.version}-*.tar.gz"))

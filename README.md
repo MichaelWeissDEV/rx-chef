@@ -14,7 +14,7 @@ encoding, cryptography, hashing, compression, structured data, networking,
 forensics, image processing, and more. Versioned multi-input graphs now share
 the Rust engine across the CLI, authenticated HTTP server and browser/desktop
 workbench. See the [graph guide](docs/concepts/graphs.md) and
-[current RC readiness evidence](docs/development/0.2.0-rc.1-release-readiness.md).
+[0.0.1 release checks](docs/development/0.0.1-release.md).
 
 Start the built macOS GUI: `open -n target/release/bundle/macos/rx-chef.app`.
 The local engine needs no server. For an HTTP/browser workbench, use the
@@ -28,9 +28,10 @@ Workbench guides: [browser](docs/workbench/browser.md),
 [testing handbook](docs/development/testing.md) and
 [acceptance matrix](docs/development/acceptance-matrix.md).
 
-Version `0.2.0-rc.1` is prepared locally. Release approval remains blocked until
-the required native platform, installer and acceptance evidence is complete;
-the version string alone does not certify those platforms.
+Version `0.0.1` is the first public release being prepared. The maintainer has
+approved the shared UI; CLI/server checks and release CI validate the versioned
+artifacts. Platform-specific acceptance limits are listed in the
+[release report](docs/development/0.0.1-release.md).
 
 **[Documentation](https://rx-chef.readthedocs.io/en/latest/)** ·
 **[CLI reference](https://rx-chef.readthedocs.io/en/latest/cli/reference/)** ·
@@ -263,7 +264,7 @@ cargo run --example generate_operation_docs -- --check
 mkdocs build --strict
 ```
 
-The current v0.2.0-rc.1 workspace registers 478 operations. Quality evidence and
+The current v0.0.1 workspace registers 478 operations. Quality evidence and
 remaining unknown parity are published in the generated operation matrix; the
 repository does not equate registration with complete verification.
 

@@ -1,11 +1,12 @@
 # Installation
 
-The current source checkout prepares `0.2.0-rc.1`. Package-manager and release
-download commands below describe distribution channels; they do not imply this
-RC has already been published. For immediate local use see the
-[desktop start guide](../workbench/desktop.md), [native HTTP server](../server/configuration.md)
-and [Docker/Compose deployment](../server/docker.md). Current acceptance limits
-are recorded in the [RC report](../development/0.2.0-rc.1-release-readiness.md).
+The first public version is `0.0.1`. Release assets are produced by the gated
+[GitHub release workflow](https://github.com/MichaelWeissDEV/rx-chef/releases/tag/v0.0.1).
+Consult the [release report](../development/0.0.1-release.md) for publication and
+platform verification status. A successful local build does not certify every
+installer. For local use see the [desktop start guide](../workbench/desktop.md),
+[native HTTP server](../server/configuration.md) and
+[Docker/Compose deployment](../server/docker.md).
 
 rx-chef ships as prebuilt binaries, native OS packages, and Rust crates.
 Pick whichever fits your platform; all of them install the same `rxchef`

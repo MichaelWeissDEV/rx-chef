@@ -7,9 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.2.0-rc.1] - 2026-10-15
+## [0.0.1] - 2026-10-15
 
-Prepared locally; publication and final release approval are pending.
+First public version. This supersedes the unpublished `0.2.0-rc.1` development
+version; portable graph/project format 1 and client/server protocol 2 are unchanged.
 
 ### Added
 

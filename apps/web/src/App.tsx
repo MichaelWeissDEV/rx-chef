@@ -252,7 +252,7 @@ export const App: React.FC = () => {
             rx-chef
           </span>
           <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '4px' }}>
-            v0.2.0-rc.1 {isTauri ? (connectedRemote ? '(Desktop / Remote)' : '(Desktop / Local)') : '(Web / Remote)'}
+            v0.0.1 {isTauri ? (connectedRemote ? '(Desktop / Remote)' : '(Desktop / Local)') : '(Web / Remote)'}
           </span>
         </div>
 

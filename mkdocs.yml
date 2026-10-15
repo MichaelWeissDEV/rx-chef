@@ -105,7 +105,8 @@ nav:
       - Shared engine clients: architecture/client.md
       - Release readiness: development/release-readiness.md
       - Graph development evidence: development/graph-release-status.md
-      - RC 0.2.0 readiness: development/0.2.0-rc.1-release-readiness.md
+      - Version 0.0.1 release: development/0.0.1-release.md
+      - Historical RC 0.2.0 readiness: development/0.2.0-rc.1-release-readiness.md
       - Graph integration progress: development/graph-integration-progress.md
 
 markdown_extensions:

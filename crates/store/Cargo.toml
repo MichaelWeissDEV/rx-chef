@@ -13,7 +13,7 @@ keywords = ["cyberchef", "recipes", "storage"]
 categories = ["command-line-utilities", "data-structures"]
 
 [dependencies]
-rxchef = { version = "0.2.0-rc.1", path = "../..", default-features = false }
+rxchef = { version = "0.0.1", path = "../..", default-features = false }
 serde       = { version = "1", features = ["derive"] }
 serde_json  = "1"
 serde_yaml  = "0.9"

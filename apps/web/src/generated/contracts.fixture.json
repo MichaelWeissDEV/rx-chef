@@ -29395,7 +29395,7 @@
     "trace_truncated": false
   },
   "capabilities": {
-    "version": "0.2.0-rc.1",
+    "version": "0.0.1",
     "protocol_version": 2,
     "binary_transport": "base64",
     "trace": true,

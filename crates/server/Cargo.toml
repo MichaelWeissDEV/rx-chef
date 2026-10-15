@@ -11,8 +11,8 @@ readme = "README.md"
 include = ["src/**", "tests/**", "build.rs", "web-dist/**", "README.md", "Cargo.toml"]
 
 [dependencies]
-rxchef = { version = "0.2.0-rc.1", path = "../.." }
-rxchef-client = { version = "0.2.0-rc.1", path = "../client", features = ["worker"] }
+rxchef = { version = "0.0.1", path = "../.." }
+rxchef-client = { version = "0.0.1", path = "../client", features = ["worker"] }
 axum = { version = "0.8", features = ["ws"] }
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "net", "process", "io-util", "sync", "time", "signal"] }
 serde = { version = "1", features = ["derive"] }
@@ -32,7 +32,7 @@ libc = "0.2"
 
 [dev-dependencies]
 reqwest = { version = "0.13.3", features = ["blocking", "json"] }
-rxchef-client = { version = "0.2.0-rc.1", path = "../client", features = ["remote"] }
+rxchef-client = { version = "0.0.1", path = "../client", features = ["remote"] }
 tempfile = "3"
 base64 = "0.22"
 tokio-tungstenite = "0.28"

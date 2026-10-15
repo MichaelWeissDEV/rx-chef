@@ -26,11 +26,12 @@ checks, not automatic approval of all native products.
 
 ## Current release rehearsal
 
-The prepared version is `0.2.0-rc.1`; no tag or external publication is authorized
-by the local finalization work. See the [readiness report](0.2.0-rc.1-release-readiness.md)
-before considering the publication instructions below.
+The requested first public version is `0.0.1`. The maintainer explicitly
+approved the UI and authorized publication after CLI/server verification.
+See the [current release report](0.0.1-release.md) for results; the
+[earlier RC report](0.2.0-rc.1-release-readiness.md) is historical evidence.
 
-`scripts/check-release-tag.sh v0.2.0-rc.1 HEAD` validates a synthetic tag string
+`scripts/check-release-tag.sh v0.0.1 HEAD` validates a synthetic tag string
 without creating a Git tag. The full version must match Cargo and an exact
 changelog section. SemVer numeric leading zeroes, empty identifiers and malformed
 prerelease/build metadata are rejected. Build metadata participates in the exact
@@ -266,9 +267,10 @@ unavailable; users who need them build from source with `--features full`
 
 ## UI acceptance before publication
 
-The first release remains blocked until the desktop and browser UI have been
-reviewed. `.release/ui-acceptance.json` currently records `pending`;
-automated browser success alone must not change that status.
+The maintainer explicitly accepted the desktop and browser UI for `0.0.1`.
+`.release/ui-acceptance.json` records that decision against the prepared source
+commit. Automated browser success alone does not constitute acceptance for
+future versions.
 
 1. Review the built production desktop app and the matching server-served UI,
    including compact menus, panel docking, Auto-Bake, multiple outputs,
