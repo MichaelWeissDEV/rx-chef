@@ -24,7 +24,7 @@ test('a multi-graph project survives reload with metadata history and explicitly
   await page.getByRole('button',{name:'Run graph',exact:true}).click();await expect(page.getByRole('tab',{name:'output',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Save project locally',exact:true}).click();
   await expect(page.getByText('Project saved locally without input payloads or credentials.',{exact:true})).toBeVisible();
-  const downloaded=page.waitForEvent('download');await page.getByRole('button',{name:'Export project',exact:true}).click();
+  await page.getByRole('button',{name:'Export project',exact:true}).click(); await page.getByRole('button',{name:'Complete definitions',exact:true}).click(); const downloaded=page.waitForEvent('download'); await page.getByRole('button',{name:'Download project file',exact:true}).click();
   const text=(await readFile((await (await downloaded).path())!)).toString();const project=JSON.parse(text);
   expect(project.graphs.map((graph:{id:string})=>graph.id)).toEqual(['first','second','third']);
   expect(project.recipes).toHaveLength(2);

@@ -25,8 +25,11 @@ does not save the other.
 5. Keep a copy outside browser/app profile storage before clearing site data,
    removing profiles or reinstalling the application.
 
-Portable projects preserve settings, selected definitions and bounded run
-metadata. They intentionally exclude bound input bytes, output payloads and
+Portable projects can include settings, selected definitions and bounded run
+metadata. In the GUI export dialog, choose Complete definitions for those
+optional fields or select them individually. The default Team / Git profile
+shares definitions and layout. Import shows a review before replacing the
+workspace; save or export current work first. They intentionally exclude bound input bytes, output payloads and
 credentials. File references never cause automatic host-file reads. Known
 sensitive literal arguments are rejected; use named inputs for key material.
 See [portable formats and recovery](portable-projects.md) for exact limits.

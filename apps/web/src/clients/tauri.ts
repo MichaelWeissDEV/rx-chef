@@ -20,4 +20,4 @@ export class TauriRxchefClient implements RxchefClient {
 }
 export const configureConnection = (url: string, token: string) => invoke('configure_connection', { url: url || null, token: token || null });
 export const importNativeFile = (limit = 8 * 1024 * 1024) => invoke<string | null>('import_file', { limit });
-export const exportNativeFile = (data: string) => invoke('export_file', { data });
+export const exportNativeFile = (data: string, filename?: string) => invoke<boolean>('export_file', { data, filename: filename ?? null });

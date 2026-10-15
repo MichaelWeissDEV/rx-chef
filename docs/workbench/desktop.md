@@ -58,10 +58,15 @@ Follow the [browser workflow](browser.md) for recipe and graph editing. Native
 import/export actions use operating-system dialogs. Cancelling a dialog leaves
 the existing session in place. Choose a complete destination path through the
 dialog's folder selection and name controls, then verify the resulting file.
-Native saves are explicit; navigating or closing the app is not a save action.
+Native saves suggest a format-specific filename. Cancelling a save keeps the
+export dialog open and does not report a successful export. Project import
+shows a review before replacing the workspace. Native saves are explicit;
+navigating or closing the app is not a save action.
 
-Graph saves preserve definitions and positions. Project exports additionally
-preserve multiple definitions, settings and metadata history. Both exclude bound
+Graph saves preserve definitions and positions. Project exports let you select multiple definitions and optionally include
+layout, settings, external references and metadata history. The Team / Git
+profile excludes settings, references and history by default. A validated JSON
+preview shows the selected content before the native save dialog opens. Both exclude bound
 input bytes, output payloads and credentials. Known sensitive literal arguments
 are rejected; replace them with named input bindings before export. File
 references in a project are metadata and are never automatically opened.

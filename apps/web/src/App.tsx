@@ -18,6 +18,7 @@ const GraphEditor = React.lazy(() => import('./features/graph/GraphEditor').then
 import { useTaskExecution } from './hooks/useTaskExecution';
 import { errorMessage } from './lib/contracts';
 import { ProjectPanel } from './components/ProjectPanel';
+import { readPreferenceList } from './lib/preferences';
 import { starterGraph } from './features/graph/model';
 
 export const App: React.FC = () => {
@@ -62,13 +63,7 @@ export const App: React.FC = () => {
   const [palette, setPalette] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [favorites, setFavorites] = useState<string[]>(() => {
-    try {
-      return JSON.parse(localStorage.getItem('rxchef_favs') || '[]');
-    } catch {
-      return ['To Base64', 'From Base64', 'To Hex', 'From Hex', 'MD5', 'SHA256'];
-    }
-  });
+  const [favorites, setFavorites] = useState(() => readPreferenceList('rxchef_favs', ['to_base64', 'from_base64', 'to_hex', 'from_hex']));
 
   // Toggle Theme
   useEffect(() => {
@@ -275,7 +270,7 @@ export const App: React.FC = () => {
       {mode === 'list' && palette && <CommandPalette operations={operations} onSelect={handleAddOperation} onClose={() => setPalette(false)} />}
       {mode === 'list' && <button className="palette-toggle btn btn-secondary" onClick={() => setPalette(true)}>Commands · ⌘/Ctrl K</button>}
       <nav className="workbench-mode" aria-label="Workbench mode"><button onClick={() => setMode('list')} aria-pressed={mode === 'list'}>List mode</button><button onClick={() => { setGraphOpened(true); setMode('graph'); }} aria-pressed={mode === 'graph'}>Graph mode</button></nav>
-      <div hidden={mode !== 'graph'}>{graphOpened && <React.Suspense fallback={<p role="status">Loading graph editor…</p>}><GraphEditor client={client} operations={operations} theme={theme} visible={mode === 'graph'} document={project.graphs?.find(graph=>graph.id===project.settings?.selected_graph)} documentVersion={documentVersion} projectEpoch={projectEpoch} onDocumentChange={graphChanged} onRun={graphRun} /></React.Suspense>}</div>
+      <div className="graph-host" hidden={mode !== 'graph'}>{graphOpened && <React.Suspense fallback={<p role="status">Loading graph editor…</p>}><GraphEditor client={client} operations={operations} favorites={favorites} onToggleFavorite={handleToggleFavorite} theme={theme} visible={mode === 'graph'} reservedIds={project.graphs?.filter(graph => graph.id !== project.settings?.selected_graph).map(graph => graph.id)} document={project.graphs?.find(graph=>graph.id===project.settings?.selected_graph)} documentVersion={documentVersion} projectEpoch={projectEpoch} onDocumentChange={graphChanged} onRun={graphRun} /></React.Suspense>}</div>
       {mode === 'list' && <><RecipeTools recipe={recipe} onLoad={setRecipe} onError={setError} undo={() => dispatch({ type: 'undo' })} redo={() => dispatch({ type: 'redo' })} canUndo={!!history.past.length} canRedo={!!history.future.length} />
       {/* Main workbench */}
       <main className="workbench-main">

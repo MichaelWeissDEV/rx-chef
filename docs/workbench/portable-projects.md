@@ -9,7 +9,7 @@ Rebind data in the destination client and execute explicitly.
 | Format | Contains | Does not contain |
 |---|---|---|
 | `.rxgraph.json`, version 1 | One graph, ports, arguments, edges, presentation positions | Input bindings, result bytes, connection token |
-| `.rxproject.json`, version 1 | Graphs, recipes, selected definitions, theme, external file references, bounded run metadata | Bundled external files, execution payloads, credentials |
+| `.rxproject.json`, version 1 | Selected graphs and recipes; optional layout, selected definitions, theme, external file references, bounded run metadata | Bundled external files, execution payloads, credentials |
 | Legacy CLI project JSON/YAML | Pipeline, variables and an explicit data source | Workbench session state |
 
 Legacy `project init` creates a `.rxchef` Store marker. It does not create a
@@ -42,6 +42,35 @@ rxchef project inspect session.rxproject.json
 Unknown fields and unsupported versions are rejected. Do not remove a version
 field or silently reinterpret a newer document as version 1. Preserve the source
 and use a compatible client or an explicit reviewed migration.
+
+## Selective sharing from the GUI
+
+Desktop and server-served browser workbenches use the same **Export project**
+dialog. Select the graphs and recipes to share, then choose optional content.
+The Team / Git preset includes all definitions and canvas layout; settings,
+run history and external file references are opt-in. Complete definitions
+includes all optional metadata. References and history belonging to excluded
+graphs are omitted; excluded selections cannot leave dangling settings.
+
+The dialog freezes the workspace when opened. Preview and download both pass
+through Rust project validation. Import validates first, shows the definitions
+that will be opened, and requires **Open imported project** before replacing the
+workspace. Import is replacement, not a merge. Cancel preserves current work.
+A pending import is rejected if the workspace or connection changes meanwhile.
+
+For collaboration through an existing Git repository:
+
+1. Export the selected definitions as `name.rxproject.json` into the repository.
+2. Review the JSON diff, then commit and share using your usual Git tools.
+3. Pull the updated file on the other machine, import it and confirm the review.
+4. Bind local inputs and run a known fixture before continuing.
+
+Exports use indented JSON, stable object keys and sorted definition/node/edge
+identities with a final newline. Recipe step order is preserved. This reduces
+irrelevant diffs; it does not resolve conflicting semantic edits. Resolve Git
+conflicts in the text, validate the result, then import. The GUI does not push,
+pull or merge Git repositories. These selection controls are GUI features;
+the existing server API, CLI and TUI project formats remain compatible.
 
 ## Validation boundaries
 

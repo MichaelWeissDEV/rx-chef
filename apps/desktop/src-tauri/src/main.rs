@@ -215,8 +215,28 @@ async fn import_file(
     .await
     .map_err(|_| error("File dialog failed"))?
 }
+fn checked_export_filename(filename: Option<String>) -> Result<String, ClientError> {
+    let filename = filename.unwrap_or_else(|| "rxchef_output.bin".into());
+    if filename.is_empty()
+        || filename.len() > 512
+        || filename == "."
+        || filename == ".."
+        || filename
+            .chars()
+            .any(|c| c.is_control() || c == '/' || c == '\\')
+    {
+        return Err(error("Invalid suggested export filename"));
+    }
+    Ok(filename)
+}
+
 #[tauri::command]
-async fn export_file(app: tauri::AppHandle, data: String) -> Result<(), ClientError> {
+async fn export_file(
+    app: tauri::AppHandle,
+    data: String,
+    filename: Option<String>,
+) -> Result<bool, ClientError> {
+    let filename = checked_export_filename(filename)?;
     if data.len() > 24 << 20 {
         return Err(error("Output exceeds export limit"));
     }
@@ -230,15 +250,16 @@ async fn export_file(app: tauri::AppHandle, data: String) -> Result<(), ClientEr
         let Some(path) = app
             .dialog()
             .file()
-            .set_file_name("rxchef_output.bin")
+            .set_file_name(&filename)
             .blocking_save_file()
         else {
-            return Ok(());
+            return Ok(false);
         };
         let path = path
             .into_path()
             .map_err(|_| error("Unsupported file location"))?;
-        write_export(&path, &bytes)
+        write_export(&path, &bytes)?;
+        Ok(true)
     })
     .await
     .map_err(|_| error("File dialog failed"))?
@@ -347,6 +368,28 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn suggested_export_names_cannot_be_paths_or_controls() {
+        assert_eq!(checked_export_filename(None).unwrap(), "rxchef_output.bin");
+        assert_eq!(
+            checked_export_filename(Some("Team.rxproject.json".into())).unwrap(),
+            "Team.rxproject.json"
+        );
+        for name in [
+            "",
+            ".",
+            "..",
+            "../outside.json",
+            "folder/file.json",
+            "folder\\file.json",
+            "name\n.json",
+        ] {
+            assert!(
+                checked_export_filename(Some(name.into())).is_err(),
+                "{name:?}"
+            );
+        }
+    }
     #[test]
     fn exports_replace_existing_files_with_exact_bytes() {
         let directory = tempfile::tempdir().unwrap();

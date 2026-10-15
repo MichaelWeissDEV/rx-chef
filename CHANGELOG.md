@@ -21,6 +21,8 @@ Prepared locally; publication and final release approval are pending.
   export with real local/remote PTY coverage.
 - Private graph/project repositories, portable project sessions, browser project
   library and payload-free execution history.
+- Shared desktop/web project export dialog with individual graph/recipe selection,
+  optional metadata, validated JSON preview, Git-friendly formatting and reviewed import.
 
 ### Changed
 
@@ -28,6 +30,9 @@ Prepared locally; publication and final release approval are pending.
   consume decoded bytes; use explicit decoder operations for encoded source text.
 - Native packaging targets the bundle types supported by the build platform and
   includes the application's icon in PNG, ICNS and ICO formats.
+- Graph editing now guides input binding, operation insertion and execution, with
+  automatic chain connections, simpler output selection and searchable operations.
+  Moving nodes and changing display labels preserve existing results.
 
 ### Fixed
 
@@ -49,6 +54,9 @@ Prepared locally; publication and final release approval are pending.
   file replacement preserve bytes and reject invalid definitions.
 - Remote diagnostic failures return failure exit codes. Store keys prevent path
   traversal, symlink escapes, case collisions and Windows device-name collisions.
+- Delayed graph/project imports cannot overwrite edits made during validation.
+  Corrupt UI preferences recover safely; native export cancellation no longer
+  reports success and native save dialogs suggest format-specific filenames.
 
 ## Earlier development checkpoint
 

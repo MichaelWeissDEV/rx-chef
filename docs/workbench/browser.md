@@ -35,11 +35,23 @@ empty successful result. Disabled steps remain definitions but do not execute.
 
 ## Build and run a graph
 
-Choose **Graph mode**. The inspector offers node selection and explicit
-Source/Target/Port connection controls as an alternative to canvas handles.
-Create an Input, an Operation and an Output. Connect each producer's `data` port
-to the next node's `data` input. Give inputs and outputs distinct, useful names.
-Select **Run graph** after binding every input required by the selected outputs.
+Choose **Graph mode**. The starter graph already connects an Input to an
+Output. Select the Input and enter data in the inspector on the right. Find an
+operation on the left and click it: **Connect new operations automatically**
+inserts it into the selected data chain. Selecting an Output inserts before that
+output and preserves other branches. Dragging an operation onto the canvas adds
+it separately; wire it deliberately before running.
+
+The three-step guide shows missing bindings and disconnected outputs. Click a
+readiness issue to select the relevant node. **Inputs ready · run to validate**
+means the local readiness check passed; Rust still validates types, arguments
+and graph structure when you run. Use **Run all outputs** to choose all or
+individual outputs, then **Run graph**. Results appear in named tabs below.
+
+Use **More node types** for combine, typed argument and embedded recipe nodes.
+Expand **Connect nodes manually** for Source/Target/Port controls as an
+alternative to canvas handles. Give inputs and outputs distinct, useful names.
+**Arrange nodes** fits the graph after arranging its dependency layers.
 
 Input modes describe the representation being entered:
 
@@ -67,8 +79,9 @@ adapters, embedded recipes, dependency selection and resource budgets.
 
 ## Editing, cancellation and errors
 
-Execution freezes a definition and its input/connection revisions. Any later
-edit invalidates that run's output and requests cancellation. A submission that
+Execution freezes a definition and its input/connection revisions. A later
+execution-affecting edit invalidates that run's output and requests cancellation.
+Moving nodes, arranging them and changing display labels preserve results. A submission that
 has not yet returned its job ID is cancelled when the ID arrives. A transport
 acknowledgment is not proof of worker termination: the client continues observing
 the job until its terminal state is known. Cancellation transport failures are
@@ -86,11 +99,22 @@ editing shortcuts. Copying selected nodes includes their internal connections.
 
 ## Projects and local persistence
 
-Expand **Project**, name the session, and use **New project graph** or **New
-project recipe** to add definitions. **Save project locally** waits for the
+Expand **Project files & library**, name the session, and use **New project
+graph** or **New project recipe** to add definitions. The project strip keeps
+Save and Export visible and indicates unsaved definition changes. **Save project locally** waits for the
 IndexedDB transaction to commit. **Open saved project** restores the definitions,
 selected items, theme and bounded run metadata. Inputs and results must be rebound
-and rerun. **Export project** creates a portable `.rxproject.json` backup.
+and rerun. **Export project** opens a dialog: choose individual graphs and recipes, layout,
+appearance/selection, run history and external references. **Team / Git** omits
+personal settings, history and references by default. **Complete definitions**
+selects all optional metadata; input/output bytes and credentials are excluded
+in either profile. Preview the validated JSON, then **Download project file**.
+
+**Import project** validates the file and shows an import review. Confirm
+**Open imported project** to replace the current workspace; Cancel keeps it.
+Save or export your current work before replacement. Inputs must be rebound.
+The same file works in the desktop app and the server's browser workbench;
+see [portable projects](portable-projects.md) for sharing through Git.
 
 Local project saves belong to this browser profile and origin. Changing host,
 port, profile or client can expose a different local library. Clearing site data
