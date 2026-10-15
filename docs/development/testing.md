@@ -148,5 +148,5 @@ HEAD, dirty status, features, UTC start, duration, exit code and parsed counts
 where available. A missing count is unknown, not zero. Keep failed attempts and
 successful reruns separately. If files change during a long run, describe exactly
 which source state was covered; do not label a dirty-tree run as clean-commit
-certification. The [current RC report](0.2.0-rc.1-release-readiness.md) links the
+certification. The [current release report](0.0.1-release.md) links the
 checked-in evidence summary and unresolved platform/GUI work.

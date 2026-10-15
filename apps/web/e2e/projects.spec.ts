@@ -29,7 +29,7 @@ test('a multi-graph project survives reload with metadata history and explicitly
   expect(project.graphs.map((graph:{id:string})=>graph.id)).toEqual(['first','second','third']);
   expect(project.recipes).toHaveLength(2);
   expect(project.history).toHaveLength(1);expect(project.history[0].output_sizes.output).toBe(256);
-  expect(project.history[0].status).toBe('succeeded');expect(project.recipes[0].steps[0].op).toBe('To Base64');
+  expect(project.history[0].status).toBe('succeeded');expect(project.recipes.find((recipe: { name: string }) => recipe.name === 'Recipe 1').steps[0].op).toBe('To Base64');
   const portable = testInfo.outputPath('browser-export.rxproject.json'); await writeFile(portable, text);
   const target = process.env.CARGO_TARGET_DIR ? resolve('../..', process.env.CARGO_TARGET_DIR) : resolve('../../target');
   const cli = resolve(target, 'debug', process.platform === 'win32' ? 'rxchef.exe' : 'rxchef');

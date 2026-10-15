@@ -220,7 +220,11 @@ if [[ "$mode" == "linux" || "$mode" == "linux-arm" ]]; then
         skip_gate "quick x86_64 Linux benchmarks" "this runner is Linux aarch64; do not label its measurements as x86_64"
     fi
     run_gate "Core package" cargo package --locked -p rxchef --allow-dirty
-    run_gate "Store package" cargo package --locked -p rxchef-store --allow-dirty
+    # Dependent crates resolve through crates.io even during package verification.
+    # Before the first core publication, validate their contents here; the real
+    # dependency-ordered publish verifies each crate after its dependencies exist.
+    run_gate "Store package contents" cargo package --locked -p rxchef-store --allow-dirty --list >/dev/null
+    not_tested_gate "dependent crate archive verification" "requires registry bootstrap; publication verifies in core/store/client/CLI/TUI order"
     run_gate "Client package contents" \
         cargo package --locked -p rxchef-client --allow-dirty --list >/dev/null
     run_gate "CLI package contents" \

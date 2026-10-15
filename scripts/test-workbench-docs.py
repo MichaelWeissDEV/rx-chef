@@ -9,6 +9,7 @@ import re
 import subprocess
 import tempfile
 import unittest
+from shell_runtime import bash_executable
 
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser(description=__doc__)
@@ -79,7 +80,7 @@ class HandbookExamples(unittest.TestCase):
         # fixtures into a disposable cwd, so documented output files stay local.
         (self.directory / "examples").symlink_to(ROOT / "examples", target_is_directory=True)
         result = subprocess.run(
-            ["bash", "-euo", "pipefail", "-c", commands], cwd=self.directory,
+            [bash_executable(), "-euo", "pipefail", "-c", commands], cwd=self.directory,
             env=self.environment, capture_output=True, timeout=30,
         )
         self.assertEqual(result.returncode, 0, result.stderr.decode(errors="replace"))

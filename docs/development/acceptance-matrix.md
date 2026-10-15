@@ -2,7 +2,7 @@
 
 This is a repeatable test specification. It does not assert that each scenario
 has passed on every platform. Actual outcomes belong in the
-[RC readiness report](0.2.0-rc.1-release-readiness.md), with commands, environment,
+[release report](0.0.1-release.md), with commands, environment,
 artifact identity and retained logs. Use an isolated profile/account and
 synthetic data. Never reuse a debug app as production installer evidence.
 

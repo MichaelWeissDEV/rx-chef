@@ -10,6 +10,10 @@ set -euo pipefail
 
 cd /src
 
+# /src is the explicitly mounted checkout; its host UID differs from the
+# container build user. Trust only this mount, never all filesystem paths.
+git config --global --add safe.directory /src
+
 case "$(uname -m)" in
     x86_64) gate_mode=linux ;;
     aarch64) gate_mode=linux-arm ;;

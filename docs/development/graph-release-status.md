@@ -2,7 +2,7 @@
 
 **Historical checkpoint.** The entire document below, including its checklist
 and next tasks, describes an earlier development state. The authoritative
-current assessment is [0.2.0-rc.1 readiness](0.2.0-rc.1-release-readiness.md).
+current assessment is [0.2.0-rc.1 readiness](0.0.1-release.md).
 
 This records the previous checkpoint. For the subsequent binding assignment and
 current implementation evidence, see [the continuation report](graph-integration-progress.md).

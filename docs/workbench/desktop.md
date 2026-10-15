@@ -23,7 +23,7 @@ under `target/release/bundle/dmg/`. Locate other platform installers in the
 bundle directory produced by that platform's native build. A cross-compile or
 archive hash does not prove that an installer starts or uninstalls correctly.
 Current evidence and untested platforms are in the
-[RC readiness report](../development/0.2.0-rc.1-release-readiness.md).
+[release report](../development/0.0.1-release.md).
 
 ## Start the built application
 
@@ -82,7 +82,7 @@ are display views. Copying text from a preview does not save the original bytes.
 A proper offline check starts the installed production bundle, disables network
 access in the test environment, runs a local recipe and a multi-input graph, and
 saves/reopens definitions and exact outputs. The local architecture supports this
-workflow; the current RC report records whether it has actually been executed.
+workflow; the current release report records whether it has actually been executed.
 A browser served from localhost and a debug app are different evidence.
 
 Test installers in an isolated account or disposable system: install, launch,

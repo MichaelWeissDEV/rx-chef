@@ -2,7 +2,7 @@
 
 **Historical checkpoints only.** The dates, counts and remaining-work tables
 below are preserved as development history and are not current release gates.
-Use the [consolidated RC readiness report](0.2.0-rc.1-release-readiness.md)
+Use the [consolidated release report](0.0.1-release.md)
 for the current implementation, fresh evidence and release blockers.
 
 Updated 2026-10-15: stored graph/project repositories, portable session contracts,

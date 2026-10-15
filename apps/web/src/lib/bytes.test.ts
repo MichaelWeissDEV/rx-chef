@@ -5,8 +5,11 @@ describe('exact bytes', () => {
   const all = Uint8Array.from({ length: 256 }, (_, i) => i);
   for (const bytes of [new Uint8Array(), all, new Uint8Array([0, 255, 192, 128, 0]), Uint8Array.from({ length: 2 * 1024 * 1024 }, (_, i) => i % 256)]) {
     it(`round trips ${bytes.length} bytes without text conversion`, () => {
-      expect(parseBase64(encodeBase64(bytes))).toEqual(bytes);
-      expect(parseHex(encodeHex(bytes))).toEqual(bytes);
+      for (const decoded of [parseBase64(encodeBase64(bytes)), parseHex(encodeHex(bytes))]) {
+        expect(decoded.length).toBe(bytes.length);
+        // Compare every byte without Vitest recursively inspecting millions of numeric keys.
+        expect(decoded.findIndex((value, index) => value !== bytes[index])).toBe(-1);
+      }
     });
   }
   it.each(['0', 'GG', 'FF 0Z', '0xFF', '00\u200bff'])('rejects malformed HEX %s', input => expect(() => parseHex(input)).toThrow());

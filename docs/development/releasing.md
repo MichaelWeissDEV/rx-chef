@@ -110,7 +110,7 @@ git push origin vX.Y.Z
         ├── host                 creates the GitHub Release, uploads everything
         │
         ├── publish-homebrew-formula   MichaelWeissDEV/homebrew-tap
-        ├── publish-crates             rxchef-store → rxchef → rxchef-client → rxchef-cli → rxchef-tui
+        ├── publish-crates             rxchef → rxchef-store → rxchef-client → rxchef-cli → rxchef-tui
         │
         └── announce
 ```
@@ -224,12 +224,12 @@ history shows was removed from what is now `build-aur.yml`.
 workflow that runs the entire pipeline — gates, `dist plan`/`dist build`,
 `.deb` and `.rpm` builds, an AUR `makepkg` build against the current commit,
 Homebrew formula generation, and `cargo publish --dry-run` for
-`rxchef-store`/`rxchef` — with **no GitHub Release and no crates.io or
+`rxchef` — with **no GitHub Release and no crates.io or
 Homebrew upload** (AUR is never pushed externally regardless — see the
 scope decision above). Trigger it from the Actions tab before cutting a
 real tag.
 
-(`rxchef-client`/`rxchef-cli`/`rxchef-tui` can't be dry-run publish-checked this way:
+(`rxchef-store`/`rxchef-client`/`rxchef-cli`/`rxchef-tui` can't be dry-run publish-checked this way:
 `cargo publish` resolves path dependencies against the real registry even
 in `--dry-run` mode, so until their dependencies (including `rxchef-client` for the TUI) are actually live,
 those packages error with "no matching package found" — this is a real Cargo
