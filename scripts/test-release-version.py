@@ -98,6 +98,14 @@ class ReleaseVersionTests(unittest.TestCase):
         workflow = (root / '.github/workflows/validate-tag.yml').read_text()
         self.assertRegex(workflow, r'toolchain install [^\n]+--component rustfmt')
 
+    def test_windows_archive_build_uses_native_perl(self):
+        root = pathlib.Path(__file__).resolve().parent.parent
+        for name in ['release.yml', 'platform-checks.yml', 'build-workbench.yml']:
+            workflow = (root / '.github/workflows' / name).read_text()
+            with self.subTest(workflow=name):
+                self.assertIn('OPENSSL_SRC_PERL=C:/Strawberry/perl/bin/perl.exe', workflow)
+                self.assertIn('-MLocale::Maketext::Simple -MIPC::Cmd', workflow)
+
     def test_invalid_identifiers(self):
         for version in ["01.2.0", "0.02.0", "0.2.00", "0.2.0-01", "0.2.0-rc.01", "0.2.0-", "0.2.0-rc..1", "0.2.0-rc_1", "0.2.0+", "0.2.0+a..b", "0.2.0\n"]:
             with self.subTest(version=version), self.assertRaises(ValueError):

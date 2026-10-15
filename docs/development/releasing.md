@@ -115,15 +115,14 @@ git push origin vX.Y.Z
         └── announce
 ```
 
-Every job above (except the two publish jobs) also runs on every pull
-request and on push to `master`, gated so publishing steps only fire on a
-real tag. The publish jobs run only on tags, and only for **stable** tags
+Platform checks run on pull requests and pushes to `master`. The complete
+release graph runs on a version tag, with release-specific validation skipped
+on pull-request rehearsals. Publishing steps only fire on a real tag. The publish jobs run only on tags, and only for **stable** tags
 (`v0.2.0-rc.1`-style prerelease tags get a GitHub prerelease, archives, and
 installers, but never touch the Homebrew tap or crates.io — see
 `publish-prereleases` in `dist-workspace.toml`, which defaults to `false`).
 
-Nothing here is hand-maintained YAML you should edit directly for its
-build/host jobs: `dist-workspace.toml` configures `dist`, and
+`dist-workspace.toml` configures packaging and custom jobs.
 The repository maintains `.github/workflows/release.yml` from the cargo-dist
 0.32.0 baseline with a stricter publication condition. `allow-dirty = ["ci"]`
 prevents regeneration from restoring the upstream condition that accepts skipped
@@ -303,12 +302,11 @@ future versions.
    cargo-dist's plan may prepare a GitHub draft before custom validation; failed
    acceptance blocks the publishing/announcement jobs. A draft is not approval.
 
-The generated cargo-dist release workflow still builds archives/installers and
+The maintained cargo-dist release workflow builds archives/installers and
 attaches workbench packages, with prereleases excluded from stable package
-publication. This change does not publish a tag, dispatch CI, upload artifacts,
-change repository environments or mark the current UI accepted. Validate the
-release rules with `python3 scripts/test-ui-acceptance.py`, `actionlint` and
-`dist generate --check` before using them.
+publication. Validate release rules with `python3 scripts/test-release-version.py`,
+`python3 scripts/test-ui-acceptance.py` and `actionlint`. `dist generate --check`
+checks the other generated surfaces; CI generation is deliberately disabled.
 
 Tag validation installs `rustfmt` explicitly: the minimal Rust profile does not
 include the formatter used by `xtask check-registry`. Registry diagnostics remain
