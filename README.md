@@ -16,6 +16,13 @@ the Rust engine across the CLI, authenticated HTTP server and browser/desktop
 workbench. See the [graph guide](docs/concepts/graphs.md) and
 [current RC readiness evidence](docs/development/0.2.0-rc.1-release-readiness.md).
 
+Workbench guides: [browser](docs/workbench/browser.md),
+[desktop](docs/workbench/desktop.md), [terminal graphs](docs/workbench/terminal.md),
+[portable projects and recovery](docs/workbench/portable-projects.md), and
+[server protocol/jobs](docs/server/protocol.md). Contributors can use the
+[testing handbook](docs/development/testing.md) and
+[acceptance matrix](docs/development/acceptance-matrix.md).
+
 Version `0.2.0-rc.1` is prepared locally. Release approval remains blocked until
 the required native platform, installer and acceptance evidence is complete;
 the version string alone does not certify those platforms.

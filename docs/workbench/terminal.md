@@ -3,6 +3,8 @@
 The CLI is suitable for automation and exact file output. The TUI adds an
 interactive inspector over the same engine. Example commands below run from the
 repository root with locally built binaries on PATH.
+The shell examples use Bash/POSIX syntax; Windows users can use Bash or adapt
+line continuations to their shell.
 
 ## Reproducible binary fixture
 

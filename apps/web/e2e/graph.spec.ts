@@ -15,7 +15,7 @@ async function input(page: Page, name: string, value: string, mode = 'hex') {
   await selectNamed(page, 'Selected graph node', name);
   await page.getByLabel('Graph input encoding').selectOption(mode); await page.getByLabel('Graph input data').fill(value);
 }
-test('build and run three-input graph with fan-out and three exact named downloads', async ({ page }) => {
+test('build and run three-input graph with fan-out and three exact named downloads', async ({ page }, testInfo) => {
   await page.goto('/'); await page.getByLabel('Server Bearer Token').fill('browser-test-token-0123456789');
   await page.getByRole('button', { name: 'Connect (this session)' }).click();
   await expect(page.getByText('Operations (478)')).toBeVisible();
@@ -60,7 +60,9 @@ test('build and run three-input graph with fan-out and three exact named downloa
   await page.getByRole('tab', { name: 'combined', exact: true }).click();
   const reloaded = page.waitForEvent('download'); await page.getByRole('button', { name: 'Download graph output' }).click();
   expect(await readFile((await (await reloaded).path())!)).toEqual(Buffer.concat([bytes, Buffer.from([0, 255, 192, 0])]));
-  await page.screenshot({ path: '/private/tmp/rxchef-graph-browser.png', fullPage: true });
+  const screenshot = testInfo.outputPath('graph-workbench.png');
+  await page.screenshot({ path: screenshot, fullPage: true });
+  await testInfo.attach('graph-workbench.png', { path: screenshot, contentType: 'image/png' });
 });
 
 test('graph import validation and cancellation use the real supervised server', async ({ page }) => {

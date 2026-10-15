@@ -23,6 +23,13 @@ Playwright. Running Playwright alone after editing Rust can accidentally test an
 older executable. Unit tests use controlled transports to force races; E2E and
 native worker tests provide separate real-process evidence.
 
+Playwright retains failure screenshots and `trace.zip` under the ignored
+`apps/web/test-results/` directory. Open a retained trace from `apps/web` with
+`npm exec -- playwright show-trace test-results/TEST/trace.zip`. Test attachments
+use Playwright's portable output paths, including the successful graph screenshot
+and performance JSON. Use synthetic fixtures because traces include page and
+request details.
+
 ## Frontend and contract checks
 
 ```sh
