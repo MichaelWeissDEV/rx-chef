@@ -7,6 +7,8 @@
 CyberChef-style data transformations for the terminal, Rust applications, and
 editor integrations.
 
+![alt text](assets/ui1.png)
+
 rxchef provides one shared execution engine and operation registry across a
 native command-line interface, reusable Rust library, interactive TUI,
 experimental C-compatible FFI, and persistent JSONL/JSON-RPC server. Its 478 registered operations cover
@@ -15,6 +17,8 @@ forensics, image processing, and more. Versioned multi-input graphs now share
 the Rust engine across the CLI, authenticated HTTP server and browser/desktop
 workbench. See the [graph guide](docs/concepts/graphs.md) and
 [0.0.1 release checks](docs/development/0.0.1-release.md).
+
+![alt text](assets/ui2.png)
 
 Start the built macOS GUI: `open -n target/release/bundle/macos/rx-chef.app`.
 The local engine needs no server. For an HTTP/browser workbench, use the
