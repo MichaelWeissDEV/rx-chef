@@ -84,6 +84,7 @@ fi
         return result
 
     def test_exact_members_checksums_and_no_overwrite(self):
+        suffix = ".exe" if os.name == "nt" else ""
         for variant, members in (("cli", {"rxchef"}), ("tui", {"rxchef_tui"}),
                                  ("combined", {"rxchef", "rxchef_tui"}),
                                  ("headless", {"rxchef-server"}), ("web", {"rxchef-server"})):
@@ -92,7 +93,7 @@ fi
                 archive, = self.output.glob(f"rxchef-8.9.0-rc.2-{variant}-*.tar.gz")
                 before = archive.read_bytes()
                 with tarfile.open(archive) as source:
-                    self.assertEqual(set(source.getnames()), members | {"LICENSE"})
+                    self.assertEqual(set(source.getnames()), {name + suffix for name in members} | {"LICENSE"})
                     self.assertTrue(all(member.isfile() for member in source.getmembers()))
                 checksum = Path(str(archive) + ".sha256")
                 self.assertEqual(checksum.read_text(), f"{hashlib.sha256(before).hexdigest()}  {archive.name}\n")
@@ -105,7 +106,12 @@ fi
         self.assertEqual(list(self.output.iterdir()), [])
 
     def test_failed_tar_leaves_no_partial_artifacts(self):
-        self.command("tar", 'printf partial > "$2"\nexit 1\n')
+        if os.name == "nt":
+            # Git Bash resolves the native tar.exe before an extensionless
+            # fixture command. Make the real GNU tar fail via its own option.
+            self.env["TAR_OPTIONS"] = "--rxchef-intentional-tar-failure"
+        else:
+            self.command("tar", 'printf partial > "$2"\nexit 1\n')
         self.run_build(success=False)
         self.assertEqual(list(self.output.iterdir()), [])
 
