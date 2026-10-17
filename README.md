@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.png" alt="rxchef logo" width="200" />
+</p>
+
 # rxchef
 
 [![Documentation](https://readthedocs.org/projects/rx-chef/badge/?version=latest)](https://rx-chef.readthedocs.io/en/latest/)
