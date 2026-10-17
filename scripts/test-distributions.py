@@ -2,6 +2,7 @@
 """Packaging regression tests with real tar and isolated build-command fixtures."""
 import hashlib
 import json
+import ntpath
 import os
 from pathlib import Path
 import shutil
@@ -15,7 +16,22 @@ from shell_runtime import bash_executable
 ROOT = Path(__file__).resolve().parent.parent
 
 
+def bash_path(path, platform=None):
+    """Express a native Windows path in Git Bash's /c/... namespace."""
+    value = str(path)
+    if (platform or os.name) != "nt":
+        return value
+    drive, tail = ntpath.splitdrive(value)
+    if not drive:
+        return value.replace("\\", "/")
+    return "/" + drive[0].lower() + tail.replace("\\", "/")
+
+
 class DistributionTests(unittest.TestCase):
+    def test_native_windows_paths_are_git_bash_paths(self):
+        self.assertEqual(bash_path(r"C:\Users\runner\tmp dir", platform="nt"),
+                         "/c/Users/runner/tmp dir")
+
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix="rxchef-packaging-")
         self.addCleanup(self.temporary.cleanup)
@@ -40,9 +56,17 @@ else
 fi
 """)
         self.command("npm", "exit 0\n")
-        self.env = {**os.environ, "PATH": str(self.bin) + os.pathsep + os.environ["PATH"],
-                    "CARGO_TARGET_DIR": str(self.target.parent),
-                    "RXCHEF_DISTRIBUTION_DIR": str(self.output)}
+        if os.name == "nt":
+            # Query Git Bash's own POSIX search path. Python's Windows PATH is
+            # semicolon-delimited and cannot be passed to Bash unchanged.
+            base_path = subprocess.check_output(
+                [bash_executable(), "-c", 'printf %s "$PATH"'], text=True)
+            bash_search_path = bash_path(self.bin) + ":" + base_path
+        else:
+            bash_search_path = str(self.bin) + os.pathsep + os.environ["PATH"]
+        self.env = {**os.environ, "PATH": bash_search_path,
+                    "CARGO_TARGET_DIR": bash_path(self.target.parent),
+                    "RXCHEF_DISTRIBUTION_DIR": bash_path(self.output)}
 
     def command(self, name, body):
         path = self.bin / name
@@ -109,7 +133,7 @@ fi
         self.assertFalse(Path(str(archive) + ".sha256").exists())
 
     def test_archive_publication_race_rolls_back_only_our_checksum(self):
-        python = shutil.which("python3")
+        python = bash_path(shutil.which("python3"))
         # Introduce a competing archive after the shell's initial existence check.
         self.command("python3", f'''if [[ "$1" == - ]]; then
   printf competitor > "$3"
@@ -131,6 +155,13 @@ exec "{python}" "$@"
 
     def test_smoke_version_comes_from_metadata(self):
         shutil.copy(ROOT / "scripts/smoke-distributions.py", self.root / "scripts")
+        (self.root / "Cargo.toml").write_text(
+            '[package]\nname = "rxchef"\nversion = "8.9.0-rc.2"\nedition = "2021"\n')
+        source = self.root / "src"
+        source.mkdir()
+        (source / "lib.rs").write_text("")
+        (self.root / "Cargo.lock").write_text(
+            'version = 4\n\n[[package]]\nname = "rxchef"\nversion = "8.9.0-rc.2"\n')
         examples = self.root / "examples/graphs"
         examples.mkdir(parents=True)
         (examples / "three-inputs.rxgraph.json").write_text("{}")
@@ -138,8 +169,11 @@ exec "{python}" "$@"
         with tarfile.open(archive, "w:gz") as destination:
             destination.add(self.root / "LICENSE", arcname="LICENSE")
         Path(str(archive) + ".sha256").write_text(hashlib.sha256(archive.read_bytes()).hexdigest())
+        # This fixture is Python-launched and has a tiny real Cargo package.
+        # Use the native PATH so metadata is verified by real cargo on every OS.
+        env = {**self.env, "PATH": os.environ["PATH"]}
         result = subprocess.run([shutil.which("python3"), str(self.root / "scripts/smoke-distributions.py"),
-                                 "--directory", str(self.output)], env=self.env,
+                                 "--directory", str(self.output)], env=env,
                                 capture_output=True, text=True, timeout=30)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn(archive.name, result.stdout)

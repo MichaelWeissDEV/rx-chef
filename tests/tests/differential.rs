@@ -318,18 +318,21 @@ fn differential_fixture_is_well_formed() {
 
 #[test]
 fn non_deterministic_operations_are_excluded_from_comparison() {
-    // Operations that declare side effects or non-determinism cannot be
-    // compared byte for byte and must be marked not_comparable.
+    // Operations that declare side effects or non-determinism cannot have
+    // successful output compared byte for byte. Invalid-input cases may still
+    // assert that both implementations reject the input.
     let file = load_cases();
     for case in &file.cases {
         let info = runtime::operation_info(&case.operation).unwrap();
         let comparable = info.deterministic && info.side_effects.is_empty();
         if !comparable {
-            assert_eq!(
-                case.expect,
-                Expectation::NotComparable,
-                "{} is non-deterministic or has side effects, so it must be \
-                 marked not_comparable rather than compared byte for byte",
+            assert!(
+                matches!(
+                    case.expect,
+                    Expectation::NotComparable | Expectation::Rejected
+                ),
+                "{} is non-deterministic or has side effects, so successful \
+                 output must be marked not_comparable rather than compared byte for byte",
                 case.operation
             );
         }
