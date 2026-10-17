@@ -1,7 +1,7 @@
 [
   {
     "path": ".cargo/config.toml",
-    "sha256": "cf3283ff84dbe41af4d4087aafd24a292d233a286b1ac50772b2a4c95ea490d5"
+    "sha256": "c166f6b94c742527555b355ebddc610ab553d63178160cdd1c57f0dad8fee4a0"
   },
   {
     "path": ".dockerignore",
@@ -13,19 +13,19 @@
   },
   {
     "path": ".github/workflows/build-aur.yml",
-    "sha256": "13f2314cac922c531d1531f5477a3cb12e2775682a371c42be66652eec320026"
+    "sha256": "a3c2b3687858617c1b72ff855d8c0c21b6061f83bfd771fd4abb5a1a3fbc923e"
   },
   {
     "path": ".github/workflows/build-deb.yml",
-    "sha256": "f02ff8657368f41fbdbda2511bdb6a2fdeaebd10185dcbacdada8f748ef04710"
+    "sha256": "71ce580481c69e9f8fea02b484302060e54a7643b4b2fef1c2f55d2656ee515e"
   },
   {
     "path": ".github/workflows/build-rpm.yml",
-    "sha256": "11825f49e349c21e88e0112bd02bb8b310a569daa62bec1210bf3e40df12233b"
+    "sha256": "c2df1b0f98a9737d93548a52397c54629feb7d6f171e995affc1b3180c1547e2"
   },
   {
     "path": ".github/workflows/build-workbench.yml",
-    "sha256": "be1df8289e26b7b36cf6cac6cff6bf25aa6f5fe9a49ccb2b8fd944f5f9d28eea"
+    "sha256": "f71fb87083d556be7c3ab13b0e9cbb7111b3428f47fb66568d305e2f16bd491a"
   },
   {
     "path": ".github/workflows/container.yml",
@@ -33,15 +33,15 @@
   },
   {
     "path": ".github/workflows/platform-checks.yml",
-    "sha256": "7bc176085716f310857940b0bfc0a27a9582b96971e4d714c65c503a58f1d05f"
+    "sha256": "b5ff33031be1c34f20359f6d8f7becf7aeb9858b64d7b73ee0febe919eb565c5"
   },
   {
     "path": ".github/workflows/publish-crates.yml",
-    "sha256": "99b342d608b5071cbe36a944e0b00441923365969aa0d1d8a3c0194d32c3900a"
+    "sha256": "5325f4788b4cc829f22e731b919655884706c1bc133ed21c4d047e2177699ae4"
   },
   {
     "path": ".github/workflows/release-dry-run.yml",
-    "sha256": "5623985ae0c851bcd1feb672e0720ab8e26a1e3479e2340ee051f73654069ff5"
+    "sha256": "f57d6138bd320558e9e40a72439c752c38feb7bbb6ef172af622150a8a6a427c"
   },
   {
     "path": ".github/workflows/release-gates.yml",
@@ -49,7 +49,7 @@
   },
   {
     "path": ".github/workflows/release.yml",
-    "sha256": "6a8fc6467025d064c67db694206b0a224dea13ccb6c6198121fa73dc557f997f"
+    "sha256": "3bbb2f4b185aa552b15eddf6ea56b5ae5b65fbc3a43e79940c535f2c59240bfb"
   },
   {
     "path": ".github/workflows/validate-tag.yml",
@@ -209,11 +209,11 @@
   },
   {
     "path": "apps/web/e2e/projects.spec.ts",
-    "sha256": "cef9cc000679dd887ffc749a1fae7f7e5d2d79c22214a774131f9dedcf8a41b2"
+    "sha256": "434ad5962ca1b6d501bab3eda5cdac3edfd765494fdd8a4fba1ca5cdf87c0410"
   },
   {
     "path": "apps/web/e2e/workbench.spec.ts",
-    "sha256": "ea3fdf400b3da905172de4f46db7b485a8282081e3ae6d671e6958810dd78151"
+    "sha256": "ada34a98344db54f2421796d6384bf68c11f90a844eecb006c99298867a7fe55"
   },
   {
     "path": "apps/web/eslint.config.mjs",
@@ -249,7 +249,7 @@
   },
   {
     "path": "apps/web/scripts/test-server.mjs",
-    "sha256": "7789fc3ad6246c292f2a0b2e98a6b9707460cee528dc42a0d06f346814fe4df0"
+    "sha256": "335b9b2697d1eeff57ff9cadf8f1c6aca835b4374a0e7458afaef77e0c5f1b1c"
   },
   {
     "path": "apps/web/src/App.tsx",
@@ -393,7 +393,7 @@
   },
   {
     "path": "apps/web/src/generated/contracts.fixture.json",
-    "sha256": "67a395f1dd6f2fca6fada34f9a6325ad5d6bd9f27b64cdbb9e30a6263edcba5b"
+    "sha256": "862b2ce685826bfc79b6476481b1e3af38ba1e0d7941896455f26a1060ededf0"
   },
   {
     "path": "apps/web/src/generated/contracts.schema.json",
@@ -510,6 +510,14 @@
   {
     "path": "assets/ui2.png",
     "sha256": "fd220a0ac307674c6c0d38709013082da0407337d5b4e8cb6582805d35e56cd5"
+  },
+  {
+    "path": "assets/workbench-graph.png",
+    "sha256": "df394204459e830f8acc87332f12f3d7186e1d2fad24fd0f47aeb183bad4815d"
+  },
+  {
+    "path": "assets/workbench-project-export.png",
+    "sha256": "2f99e89bf41c1c9aebdce3e27de0403d7e759537dc30f9feb6ca1ad721ecf32a"
   },
   {
     "path": "benchmarks/cases.toml",
@@ -969,7 +977,7 @@
   },
   {
     "path": "scripts/check-native-platform.sh",
-    "sha256": "d95eef87cad230689474175782d93ef2dd6e274972622c032037e6255f0ca697"
+    "sha256": "bdda660096e82d99c492b62acf67dd3ed29befef9a94a6553d2423b9ca4cc6c0"
   },
   {
     "path": "scripts/check-platforms.sh",
@@ -1029,7 +1037,7 @@
   },
   {
     "path": "scripts/test-distributions.py",
-    "sha256": "0a3fbae08fcb3a00a83e5f4f2f9a9f98efeb28ebc9475f3ceef164d5443eb955"
+    "sha256": "2a7a7bc5a9c09b58844496f24d5a58943601257115d5dd23e2bd8a40712f2e19"
   },
   {
     "path": "scripts/test-homebrew-formula.sh",
@@ -1040,8 +1048,12 @@
     "sha256": "aceba1ea49a9060fe8430dcac758cc4be86301218ff91679d85588265c913f48"
   },
   {
+    "path": "scripts/test-release-download.py",
+    "sha256": "b648296f97ec59a1f7af1f0d4abe1f72204fafb572f4a83d11dd08e261d855fb"
+  },
+  {
     "path": "scripts/test-release-version.py",
-    "sha256": "950761435d488b0012b51646a18745b95e839968d2569f35d84bb6b43546d90c"
+    "sha256": "d70282daa8f5e0797299b644767d18416c2d6004a7d57844648c16df6a0f961b"
   },
   {
     "path": "scripts/test-ui-acceptance.py",
@@ -1054,6 +1066,14 @@
   {
     "path": "scripts/tui-graph-smoke.py",
     "sha256": "eb7153106a92c3d7bb14d02bcd368a43fa4ca98a1ab47bb33b15ce2ab144f8aa"
+  },
+  {
+    "path": "scripts/tui-recipe-smoke.py",
+    "sha256": "acedee8496e6c597288a8549e9cd1f5d4b9452c740eb3158a738e2e66c54cbb6"
+  },
+  {
+    "path": "scripts/verify-release-download.py",
+    "sha256": "6af031210154bbebf24344f3b3a5d271a590b2675ef74d0ec58ea7393b9c05b4"
   },
   {
     "path": "scripts/workbench-gates.sh",
@@ -1837,7 +1857,7 @@
   },
   {
     "path": "src/operations/generate_pgp_key_pair.rs",
-    "sha256": "aec06423d53565a17ae9a82ffc3e5a8be2b29bce0c3123d8c6329dc33216ac42"
+    "sha256": "e86809bb4b3ccea2ea1ed73492a679e0d533102e296b0d4d3557efdd73ecc8e2"
   },
   {
     "path": "src/operations/generate_qr_code.rs",
@@ -2329,11 +2349,11 @@
   },
   {
     "path": "src/operations/pgp_encrypt.rs",
-    "sha256": "3754891eb004a2778b851ce7296c3bc221ef92d349d3e2286acbac7030152526"
+    "sha256": "4faa0fa5029a07d7abcf8b03199e5cb81a511f0fd060d7f5c6d3c06a9dfa39ef"
   },
   {
     "path": "src/operations/pgp_encrypt_and_sign.rs",
-    "sha256": "01c5fc8e6b9803c686ec2f7b09bae03517afcc696fdc08c16abcaadddcd6807b"
+    "sha256": "bbe8f9d775af3a413551d4c063a6927ebb75c336196183dbd34495cd02577543"
   },
   {
     "path": "src/operations/pgp_verify.rs",
@@ -3117,7 +3137,7 @@
   },
   {
     "path": "tests/tests/differential.rs",
-    "sha256": "30a58c96773368bba9ba8735ad18554645cb386625b00b0c548054145ec11744"
+    "sha256": "bcfe003202e974635ef9149827627acbe50144cb72710e844a74784ad1a034e2"
   },
   {
     "path": "tests/tests/ffi_boundary.rs",
@@ -3853,7 +3873,7 @@
   },
   {
     "path": "tests/tests/operations/generate_pgp_key_pair.rs",
-    "sha256": "5a21b248855f558994d94adec7ca9adafde1465da0bfa6097f2d569b301a4648"
+    "sha256": "19e63a7e364bd555dea00451e715d298566340f49b8ee5c0e0e96ec0ef0011c6"
   },
   {
     "path": "tests/tests/operations/generate_qr_code.rs",

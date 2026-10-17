@@ -1,7 +1,8 @@
 # First public release readiness
 
-Assessment: 2026-10-17, Europe/Berlin. Candidate: `0.2.0-rc.1`.
-Base commit: `d07213d86e0849239cb169489221fea5ff7d8411` plus local changes.
+Assessment updated: 2026-10-18, Europe/Berlin. Candidate: `0.2.0-rc.1`.
+Remote `master` at assessment: `58bf552acc359a505648eba3fb3495bbfb2fe67a`.
+Local CI-fix commit: `cfd0a8f1` on `codex/release-ci-fixes`; not pushed.
 **NOT READY FOR RELEASE**. No push, tag, GitHub Release, registry publication,
 remote repository edit, workflow dispatch or artifact upload was performed.
 
@@ -13,6 +14,8 @@ portable summaries are in `verification/first-public-release/`.
 ## Source, version and tools
 
 The checkout initially matched the requested failing CI commit and was clean.
+The maintainer subsequently pushed `58bf552a`, which was the basis of the first
+native CI run. The local fix commit `cfd0a8f1` has no native runner result yet.
 Read-only GitHub checks found tags `v0.0.1` and `v0.1.0`, and no GitHub Release.
 All five crates.io package API requests returned 404. The Homebrew tap contents
 request returned 404; absence and insufficient access cannot be distinguished.
@@ -29,8 +32,8 @@ source archive exists; it must never be used as evidence of source verification.
 Host: macOS ARM64, Rust/Cargo 1.97.1, Node 26.7.0, Python 3.10,
 cargo-dist 0.32.0, cargo-audit 0.22.2. CI uses Rust 1.96.1 and Node 22.20.0;
 this host cannot certify those other native runner environments.
-`verification/first-public-release/source-files.json` fingerprints the local
-non-documentation source. Final artifact checksums identify actual files,
+`verification/first-public-release/source-files.json` fingerprints 1,272 local
+non-documentation source files. Final artifact checksums identify actual files,
 not a claimed clean build commit.
 
 ## Fixes and failure classification
@@ -52,18 +55,29 @@ and `dependencies.md` (these files are outside the published MkDocs tree).
 
 ## Current test evidence
 
-The final serialized host rehearsal is still being collected. Its audit failure
-is expected while the unresolved dependencies remain; it is not waived. Results
-below will be finalized from the retained command records.
+The serialized host rehearsal finished with two failed gates: the mandatory
+RustSec audit (11 matches) and an ESM import error in a newly added browser test.
+The browser test was corrected and 32 tests passed against the unpacked release
+web-server and CLI archives. The current local CI-fix commit passed a subsequent
+complete Rust matrix; the failed host wrapper is retained as FAIL.
+
+The [native platform run on `58bf552a`](https://github.com/MichaelWeissDEV/rx-chef/actions/runs/39056219136)
+failed on all five native runners. Linux/macOS and the Linux release container
+hit a differential-test assertion that disallowed expected invalid-input
+rejections from non-deterministic PGP operations. Native Windows failed earlier
+in the packaging regression: its Windows PATH and `C:` archive paths were passed
+to Git Bash/tar. Commit `cfd0a8f1` fixes both causes locally; the Windows path
+fix requires a new native run. The Windows GNU cross-build job passed.
 
 | Check | Status | Scope |
 |---|---|---|
 | Version/publication/acceptance rules | PASS | 13 version, 10 publishing, 5 UI acceptance and public-download regression tests |
-| Packaging regressions | PASS | 11 tests on both real GNU tar 1.35 and BSD tar, failure cleanup, collision and checksum cases; Windows naming uses fixtures |
+| Packaging regressions | PASS locally | 12 tests on macOS, including Windows path translation; GNU tar 1.35 and BSD tar passed the earlier 11 archive tests; native Git Bash rerun pending |
 | Server integration and concurrency repetitions | PASS | 25 tests plus 40 queue repetitions across four simultaneous processes |
 | Frontend unit/typecheck/lint | PASS | 107 unit tests and clean checks on updated dependencies/version |
-| Default Rust workspace | PASS | 2,525 tests, zero failures/ignored, including both executable macro doctests |
-| Corrected real-server browser suite | PASS | 32 tests on updated dependencies/UI version; release-archive binary rerun remains separate |
+| Default Rust workspace | PASS locally | 2,526 tests, zero failures/ignored, including both executable macro doctests |
+| All-features Rust workspace | PASS locally | 2,582 tests, zero failures/ignored; both feature-set Clippy checks and rustfmt passed |
+| Corrected real-server browser suite | PASS locally | 32 tests against unpacked release web-server and CLI archives |
 | npm dependency audit | PASS | No known vulnerabilities at audit time |
 | RustSec dependency audit | FAIL | 11 workspace advisory/version matches; one RSA match in fuzz lock |
 | actionlint / dist generated workflow check | PASS | Local syntax and generated-surface validation, no CI dispatch |
@@ -104,21 +118,22 @@ dist generate --check
 
 | Platform | Source/runtime | Archive/package install/reinstall | Desktop production acceptance |
 |---|---|---|---|
-| macOS ARM64 | NOT TESTED, final run pending | NOT TESTED, final artifacts pending | NOT TESTED |
+| macOS ARM64 | PASS locally for default/all-features Rust tests | PASS locally for four archives, checksum and install/uninstall/reinstall; archive source predates local CI-fix commit | NOT TESTED to publication standard |
 | macOS Intel | NOT TESTED on changed source | NOT TESTED | NOT TESTED |
 | Linux x86_64 | NOT TESTED on changed source | NOT TESTED | NOT TESTED |
 | Linux ARM64 | NOT TESTED on changed source | NOT TESTED | NOT TESTED |
 | Windows x86_64 MSVC | NOT TESTED on changed source | NOT TESTED | NOT TESTED |
 
-Prior CI results cover the base commit, not the changed candidate. GNU cross
+The native CI run covers `58bf552a`, not local `cfd0a8f1`. GNU cross
 compilation is not an MSVC runtime test. A source build is not an installer test.
 The requested Linux archives/DEB/RPM/AppImage, Intel/Apple Silicon APP/DMG,
 Windows EXE/MSI/NSIS, both server variants and container architectures are only
 certified when their actual files pass installation and functional acceptance.
 No untested platform is advertised as release-supported.
 
-Docker Desktop was launched in the background, but the daemon remained
-unreachable. Docker/Compose runtime, Arch makepkg, DEB/RPM and both container
+Docker Desktop was launched in the background, but the local daemon remained
+unreachable. The [server container build/smoke run](https://github.com/MichaelWeissDEV/rx-chef/actions/runs/39056219167)
+passed on `58bf552a`; local Docker/Compose runtime, Arch makepkg, DEB/RPM and both container
 architectures remain NOT TESTED locally. Compose configuration validates;
 configuration inspection does not replace runtime evidence. Container bases use
 version tags, not immutable image digests; capture reviewed digests before a

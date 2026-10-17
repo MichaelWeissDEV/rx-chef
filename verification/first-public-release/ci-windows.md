@@ -177,3 +177,16 @@ vcpkg baseline is recorded but not yet pinned in repository configuration;
 port availability and build time must be proven on the target before claiming
 Windows all-feature support or reproducibility. The mandatory gates fail if
 that provisioning is incomplete.
+
+## Native run on 58bf552a and local follow-up
+
+The [platform run](https://github.com/MichaelWeissDEV/rx-chef/actions/runs/39056219136)
+installed the Windows static OCR dependencies successfully, then failed in
+`scripts/test-distributions.py` before Cargo tests. Git Bash received a Windows
+semicolon PATH, so the fixture `cargo` script was missed and real Cargo found
+no manifest. `tar` also interpreted a `C:` output path as a remote archive.
+The local fix on `cfd0a8f1` translates fixture target/output directories to
+Git Bash paths and prepends the fixture tools to Bash's own POSIX PATH. A tiny
+real Cargo package checks the smoke test's metadata version across platforms.
+Twelve packaging tests pass on macOS after this change. Native Windows and the
+MSVC doctests remain **NOT TESTED on cfd0a8f1** until a new CI run.
