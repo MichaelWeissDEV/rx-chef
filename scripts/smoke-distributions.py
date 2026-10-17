@@ -17,9 +17,13 @@ import urllib.request
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--directory", default="target/distributions")
-parser.add_argument("--version", default="0.0.1")
+parser.add_argument("--version", help="Release version (defaults to locked Cargo workspace metadata)")
 args = parser.parse_args()
 root = pathlib.Path(__file__).resolve().parent.parent
+if args.version is None:
+    metadata = json.loads(subprocess.check_output(
+        ["cargo", "metadata", "--locked", "--format-version", "1", "--no-deps"], cwd=root))
+    args.version = next(package["version"] for package in metadata["packages"] if package["name"] == "rxchef")
 archives = list(pathlib.Path(args.directory).resolve().glob(f"rxchef-{args.version}-*.tar.gz"))
 assert archives, "No archives to test"
 graph = json.loads((root / "examples/graphs/three-inputs.rxgraph.json").read_text())

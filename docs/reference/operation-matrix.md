@@ -10,7 +10,7 @@
 |---|---:|
 | Registered operations | 478 |
 | With executable tests | 478 |
-| Test functions | 2543 |
+| Test functions | 2544 |
 | With negative tests | 385 |
 | With boundary tests | 478 |
 | Reference-verified (known answer) | 231 |
@@ -555,7 +555,7 @@ See [What "verified" means](../reference/verification.md) for what each evidence
 
 | Operation | Status | Parity | Args | Tests | Neg | Bound | KAT | Diff | Property | Fuzz | Bench | Docs |
 |---|---|---|:---:|---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Generate PGP Key Pair | partial | unknown | yes | 4 | yes | yes | yes | — | — | — | — | yes |
+| Generate PGP Key Pair | partial | unknown | yes | 5 | yes | yes | yes | — | — | — | — | yes |
 | PGP Decrypt | partial | unknown | yes | 1 | — | — | yes | yes | — | — | — | yes |
 | PGP Decrypt and Verify | partial | unknown | yes | 1 | — | — | yes | yes | — | — | — | yes |
 | PGP Encrypt | partial | unknown | yes | 3 | — | — | yes | yes | — | — | — | yes |

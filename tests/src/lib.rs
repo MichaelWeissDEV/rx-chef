@@ -68,7 +68,7 @@ pub fn assert_op_text(op_name: &str, input: &str, args: &[ArgValue], expected: &
 ///
 /// # Usage
 ///
-/// ```
+/// ```rust,test_harness
 /// use cyberchef_rust_tests::op_test;
 /// use rxchef::operation::ArgValue;
 ///
@@ -110,7 +110,7 @@ macro_rules! op_test {
 ///
 /// # Usage
 ///
-/// ```
+/// ```rust,test_harness
 /// use cyberchef_rust_tests::recipe_test;
 ///
 /// recipe_test!(my_roundtrip,

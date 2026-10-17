@@ -1,8 +1,8 @@
 {
-  "version": "0.0.1",
-  "status": "accepted",
-  "accepted_commit": "2bba83abc732b9b061940511a34fe0cf0dcfebb7",
-  "reviewer": "Maintainer: explicit UI acceptance and release authorization in this conversation",
-  "reviewed_at": "2026-10-15T20:56:31.821626+00:00",
-  "notes": "Explicit maintainer approval in this conversation covers the compact UI released as 0.0.1. Workbench runtime behavior matches the reviewed UI; subsequent changes correct test comparisons, recipe-order assumptions, Windows shell selection and release packaging only."
+  "version": "0.2.0-rc.1",
+  "status": "pending",
+  "accepted_commit": null,
+  "reviewer": null,
+  "reviewed_at": null,
+  "notes": "New release rehearsal. Prior 0.0.1 acceptance does not authorize this version or its Cargo/UI changes. Maintainer must review an immutable final commit before publication."
 }

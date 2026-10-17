@@ -1,9 +1,9 @@
 # Release readiness
 
-The sections below record an earlier operation-quality round. For the active
-2026-10-13 product-completion scope, see the [product roadmap](product-roadmap.md).
-The network server, web and desktop components are not yet implemented, and
-this checkout is not release-ready against that scope.
+This is historical evidence from an earlier operation-quality round. Its
+statements about missing server/web/desktop components describe that earlier
+checkout. See [first public release readiness](first-public-release-readiness.md)
+for the current implementation, tests and release blockers.
 
 Status of the quality hardening round. Numbers here come from
 `cargo run -p xtask -- audit-operations`, which derives them from the

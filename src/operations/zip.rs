@@ -143,7 +143,7 @@ impl Operation for ZipOp {
         {
             let mut zip = ZipWriter::new(Cursor::new(&mut buf));
 
-            let mut options: FileOptions<'_, ExtendedFileOptions> =
+            let mut options: FileOptions<'_, '_, ExtendedFileOptions> =
                 FileOptions::default().compression_method(method);
 
             if !password.is_empty() {

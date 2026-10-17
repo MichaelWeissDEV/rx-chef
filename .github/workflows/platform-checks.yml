@@ -49,7 +49,7 @@ jobs:
       matrix:
         os: [macos-15, macos-15-intel, ubuntu-24.04, ubuntu-24.04-arm, windows-latest]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 90
+    timeout-minutes: 180
     defaults:
       run:
         shell: bash
@@ -81,9 +81,54 @@ jobs:
           cache-dependency-path: apps/web/package-lock.json
       - name: Install documentation dependencies
         run: python -m pip install --disable-pip-version-check -r docs/requirements.txt
-      - name: Install Linux desktop dependencies
+      - name: Install Linux desktop and optional OCR dependencies
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential pkg-config libssl-dev libayatana-appindicator3-dev librsvg2-dev patchelf
+        run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential pkg-config libssl-dev libayatana-appindicator3-dev librsvg2-dev patchelf libtesseract-dev libleptonica-dev tesseract-ocr-eng clang cmake libclang-dev
+      - name: Install macOS optional OCR dependencies
+        if: runner.os == 'macOS'
+        run: |
+          brew install tesseract pkgconf
+          pkg-config --modversion tesseract
+      - name: Install Windows static OCR dependencies and pkg-config
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $vcpkgRoot = $env:VCPKG_INSTALLATION_ROOT
+          if (-not $vcpkgRoot -or -not (Test-Path "$vcpkgRoot/vcpkg.exe")) {
+            throw 'The native runner must provide VCPKG_INSTALLATION_ROOT and vcpkg.exe'
+          }
+          # Record the runner's exact ports baseline; do not update it implicitly.
+          git -C "$vcpkgRoot" rev-parse HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot identify vcpkg baseline' }
+          $installRoot = "$env:RUNNER_TEMP/rxchef-vcpkg-installed"
+          & "$vcpkgRoot/vcpkg.exe" install tesseract:x64-windows-static pkgconf:x64-windows-static "--x-install-root=$installRoot"
+          if ($LASTEXITCODE -ne 0) { throw 'Static Tesseract/pkgconf installation failed' }
+          & "$vcpkgRoot/vcpkg.exe" list "--x-install-root=$installRoot"
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot inventory installed native packages' }
+          $prefix = "$installRoot/x64-windows-static"
+          $pkgconf = "$prefix/tools/pkgconf/pkgconf.exe"
+          if (-not (Test-Path $pkgconf)) { throw "Missing native pkgconf executable: $pkgconf" }
+          $env:PKG_CONFIG = $pkgconf
+          $env:PKG_CONFIG_PATH = "$prefix/lib/pkgconfig;$prefix/share/pkgconfig"
+          $env:PKG_CONFIG_LIBDIR = $env:PKG_CONFIG_PATH
+          $env:PKG_CONFIG_ALL_STATIC = '1'
+          & $pkgconf --modversion tesseract
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot resolve tesseract.pc' }
+          & $pkgconf --static --libs tesseract
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot resolve the complete static OCR link closure' }
+          foreach ($name in @('PKG_CONFIG', 'PKG_CONFIG_PATH', 'PKG_CONFIG_LIBDIR', 'PKG_CONFIG_ALL_STATIC')) {
+            "$name=$([Environment]::GetEnvironmentVariable($name))" >> $env:GITHUB_ENV
+          }
+          # vcpkg installs the library, not the English language model. Use the
+          # immutable tessdata_fast 4.1.0 commit and log the actual model hash.
+          $tessdata = "$env:RUNNER_TEMP/rxchef-tessdata"
+          New-Item -ItemType Directory -Force -Path $tessdata | Out-Null
+          Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/65727574dfcd264acbb0c3e07860e4e9e9b22185/eng.traineddata' -OutFile "$tessdata/eng.traineddata"
+          Get-FileHash -Algorithm SHA256 "$tessdata/eng.traineddata"
+          "TESSDATA_PREFIX=$tessdata" >> $env:GITHUB_ENV
+          & "$prefix/tools/tesseract/tesseract.exe" --list-langs --tessdata-dir "$tessdata"
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot load the installed OCR language data' }
       - name: Run the native portability gate
         run: ./scripts/check-native-platform.sh
       - name: Build native desktop installer

@@ -1,3 +1,4 @@
+import { version as appVersion } from '../package.json';
 import React, { useState, useEffect, useMemo, useCallback, useReducer, useRef } from 'react';
 import { HttpRxchefClient } from './clients/http';
 import { TauriRxchefClient, configureConnection, importNativeFile } from './clients/tauri';
@@ -252,7 +253,7 @@ export const App: React.FC = () => {
             rx-chef
           </span>
           <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '4px' }}>
-            v0.0.1 {isTauri ? (connectedRemote ? '(Desktop / Remote)' : '(Desktop / Local)') : '(Web / Remote)'}
+            v{appVersion} {isTauri ? (connectedRemote ? '(Desktop / Remote)' : '(Desktop / Local)') : '(Web / Remote)'}
           </span>
         </div>
 

@@ -18,7 +18,7 @@ Encrypts a message using the recipient's ASCII-armoured PGP public key. Input: p
 | Input requirement | `Required` |
 | Features | pgp |
 | Side effects | `[]` |
-| Deterministic | true |
+| Deterministic | false |
 
 ## Input
 

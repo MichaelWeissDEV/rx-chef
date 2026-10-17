@@ -15,7 +15,7 @@ class AcceptanceTests(unittest.TestCase):
         self.record = dict(version='0.2.0-rc.1', status='accepted', accepted_commit='a' * 40, reviewer='Human reviewer', reviewed_at='2026-10-15T18:00:00+02:00')
 
     def git(self, *args):
-        return SimpleNamespace(returncode=0, stdout='100644 blob gui-source\n')
+        return SimpleNamespace(returncode=0, stdout='' if args[0] == 'status' else '100644 blob gui-source\n')
 
     def check(self, **changes):
         module.validate({**self.record, **changes}, '0.2.0-rc.1', 'b' * 40, self.git)
@@ -56,6 +56,8 @@ class AcceptanceTests(unittest.TestCase):
             (root / 'README.md').write_text('documentation review')
             module.validate(record, '0.2.0-rc.1', commit(), git)
             source.write_text('changed UI')
+            with self.assertRaisesRegex(ValueError, 'working tree differs'):
+                module.validate(record, '0.2.0-rc.1', git('rev-parse', 'HEAD').stdout.strip(), git)
             with self.assertRaisesRegex(ValueError, 'source changed'):
                 module.validate(record, '0.2.0-rc.1', commit(), git)
             source.write_text('original UI'); lock.write_text('changed lockfile')

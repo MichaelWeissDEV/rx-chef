@@ -1,8 +1,12 @@
 import { test, expect } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+const { version } = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 import { readFile } from 'node:fs/promises';
 const token = 'browser-test-token-0123456789';
 test('public assets, protected API, memory session, binary import/export and reload', async ({ page, request }) => {
   expect((await request.get('/')).status()).toBe(200);
+  await page.goto('/');
+  await expect(page.getByText(`v${version} (Web / Remote)`, { exact: true })).toBeVisible();
   expect((await request.get('/api/v1/operations')).status()).toBe(401);
   await page.addInitScript(() => localStorage.setItem('rxchef_token', 'legacy-secret'));
   const errors: string[] = [];

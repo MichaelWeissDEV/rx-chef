@@ -1,32 +1,33 @@
 # Maintainer: Michael Weiss <michael.weiss.std@gmail.com>
 #
 # This PKGBUILD is checked into the main repository and regenerated (pkgver
-# and sha256sums only) by .github/workflows/publish-aur.yml on every stable
+# _releasever and sha256sums) by .github/workflows/build-aur.yml on every
 # release tag. Do not hand-edit pkgver/sha256sums here; they are overwritten
 # at release time. Regenerate .SRCINFO after any other change:
 #
 #   makepkg --printsrcinfo > .SRCINFO
 pkgbase=rxchef
 pkgname=(rxchef rxchef-tui)
-pkgver=0.1.0
+pkgver=0.2.0rc.1
+_releasever=0.2.0-rc.1
 pkgrel=1
 pkgdesc="CyberChef-style cryptographic, encoding, and data transformation toolkit, ported to Rust"
 arch=('x86_64' 'aarch64')
 url="https://rx-chef.readthedocs.io/"
 license=('Apache-2.0')
 makedepends=('cargo' 'rust' 'pkgconf' 'openssl')
-source=("$pkgbase-$pkgver.tar.gz::https://github.com/MichaelWeissDEV/rx-chef/archive/refs/tags/v$pkgver.tar.gz")
+source=("$pkgbase-$pkgver.tar.gz::https://github.com/MichaelWeissDEV/rx-chef/archive/refs/tags/v$_releasever.tar.gz")
 # Overwritten with the real digest at release time; a stale placeholder here
 # would fail `makepkg --verifysource`, catching an unreleased regeneration.
 sha256sums=('0000000000000000000000000000000000000000000000000000000000000000')
 
 prepare() {
-  cd "rx-chef-$pkgver"
+  cd "rx-chef-$_releasever"
   cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
 }
 
 build() {
-  cd "rx-chef-$pkgver"
+  cd "rx-chef-$_releasever"
   export RUSTUP_TOOLCHAIN=stable
   export CARGO_TARGET_DIR=target
   # Default features only: portable, no OCR/YARA/PGP system dependencies.
@@ -34,9 +35,10 @@ build() {
 }
 
 check() {
-  cd "rx-chef-$pkgver"
+  cd "rx-chef-$_releasever"
   export RUSTUP_TOOLCHAIN=stable
-  printf 'hello' | target/release/rxchef run to_base64
+  test "$(printf 'hello' | target/release/rxchef run to_base64)" = "aGVsbG8="
+  target/release/rxchef_tui --help >/dev/null
 }
 
 package_rxchef() {
@@ -44,7 +46,7 @@ package_rxchef() {
   depends=('gcc-libs' 'openssl')
   provides=('rxchef')
   conflicts=('rxchef-bin')
-  cd "rx-chef-$pkgver"
+  cd "rx-chef-$_releasever"
 
   install -Dm755 target/release/rxchef "$pkgdir/usr/bin/rxchef"
   install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
@@ -64,7 +66,7 @@ package_rxchef() {
 package_rxchef-tui() {
   pkgdesc="rxchef interactive terminal interface"
   depends=('gcc-libs' 'openssl')
-  cd "rx-chef-$pkgver"
+  cd "rx-chef-$_releasever"
 
   install -Dm755 target/release/rxchef_tui "$pkgdir/usr/bin/rxchef_tui"
   install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"

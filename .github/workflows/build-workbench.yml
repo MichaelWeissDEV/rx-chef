@@ -73,6 +73,6 @@ jobs:
         if: inputs.upload-artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
+          if-no-files-found: error
           name: artifacts-workbench-${{ matrix.os }}
           path: target/workbench-artifacts/*
-          if-no-files-found: error

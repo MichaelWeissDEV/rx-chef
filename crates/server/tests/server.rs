@@ -440,6 +440,23 @@ fn wait_terminal(remote: &RemoteEngineClient, id: &str) -> rxchef_client::JobSna
     }
 }
 
+fn wait_running(remote: &RemoteEngineClient, id: &str) {
+    let deadline = Instant::now() + Duration::from_secs(15);
+    loop {
+        let snapshot = remote.job(id).unwrap();
+        if snapshot.status == JobStatus::Running {
+            return;
+        }
+        assert_eq!(
+            snapshot.status,
+            JobStatus::Queued,
+            "job ended before running"
+        );
+        assert!(Instant::now() < deadline, "job did not start");
+        thread::sleep(Duration::from_millis(10));
+    }
+}
+
 fn slow_request() -> ExecuteRequest {
     request(
         b"",
@@ -458,7 +475,7 @@ fn jobs_can_be_cancelled_and_the_worker_is_killed() {
         .submit_job(EngineTask::Execute(slow_request()))
         .unwrap();
     assert!(matches!(job.status, JobStatus::Queued | JobStatus::Running));
-    thread::sleep(Duration::from_millis(500));
+    wait_running(&remote, &job.id);
     let cancelled = remote.cancel_job(&job.id).unwrap();
     assert_eq!(cancelled.status, JobStatus::Cancelled);
     assert_eq!(cancelled.progress, None);
@@ -496,6 +513,9 @@ fn queue_and_concurrency_are_bounded() {
     let first = remote
         .submit_job(EngineTask::Execute(slow_request()))
         .unwrap();
+    // Submission spawns an async task: wait until the first job owns the only
+    // worker permit before asserting that the next submission stays queued.
+    wait_running(&remote, &first.id);
     let second = remote
         .submit_job(EngineTask::Execute(slow_request()))
         .unwrap();
@@ -506,7 +526,6 @@ fn queue_and_concurrency_are_bounded() {
             .kind,
         ErrorKind::Busy
     );
-    thread::sleep(Duration::from_millis(500));
     assert_eq!(remote.job(&first.id).unwrap().status, JobStatus::Running);
     assert_eq!(remote.job(&second.id).unwrap().status, JobStatus::Queued);
     // Cancelling a queued job never starts a worker.
@@ -935,7 +954,7 @@ fn shutdown_cancels_running_jobs_and_stops_listening() {
     let job = remote
         .submit_job(EngineTask::Execute(slow_request()))
         .unwrap();
-    thread::sleep(Duration::from_millis(400));
+    wait_running(&remote, &job.id);
     let addr = server.addr;
     let started = Instant::now();
     drop(server); // joins the serving thread, i.e. graceful shutdown completed
@@ -1190,7 +1209,7 @@ fn graph_cancellation_kills_the_worker_and_releases_capacity() {
     let job = remote
         .submit_job(EngineTask::GraphExecute(slow_graph_request()))
         .unwrap();
-    thread::sleep(Duration::from_millis(300));
+    wait_running(&remote, &job.id);
     let cancelled = remote.cancel_job(&job.id).unwrap();
     assert_eq!(cancelled.status, JobStatus::Cancelled);
     assert!(cancelled.result.is_none());

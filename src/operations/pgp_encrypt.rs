@@ -57,6 +57,10 @@ impl Operation for PGPEncrypt {
         !cfg!(feature = "pgp")
     }
 
+    fn deterministic(&self) -> bool {
+        false
+    }
+
     fn feature_requirements(&self) -> &'static [&'static str] {
         &["pgp"]
     }

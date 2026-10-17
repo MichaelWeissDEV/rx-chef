@@ -26,17 +26,20 @@ checks, not automatic approval of all native products.
 
 ## Current release rehearsal
 
-The requested first public version is `0.0.1`. The maintainer explicitly
-approved the UI and authorized publication after CLI/server verification.
-See the [current release report](0.0.1-release.md) for results; the
-[earlier RC report](0.2.0-rc.1-release-readiness.md) is historical evidence.
+The current rehearsal version is `0.2.0-rc.1`; the stable successor is `0.2.0`
+only after all acceptance gates pass. Remote tags `v0.0.1` and `v0.1.0` already
+exist and must never be moved. Read-only checks on 2026-10-17 found no GitHub
+Release and none of the five crates.io packages. Recheck version availability
+immediately before publication. The tap could not be inspected (adapter 404).
 
-`scripts/check-release-tag.sh v0.0.1 HEAD` validates a synthetic tag string
-without creating a Git tag. The full version must match Cargo and an exact
-changelog section. SemVer numeric leading zeroes, empty identifiers and malformed
-prerelease/build metadata are rejected. Build metadata participates in the exact
-comparison; only a prerelease identifier classifies a tag as an RC. Run
-`python3 scripts/test-release-version.py` for the version and clean-fixture gates.
+The [current readiness report](first-public-release-readiness.md) supersedes
+prior reports. Prior UI/publication authorization recorded in historical documents
+does not authorize publishing this candidate. All external writes need explicit
+maintainer approval. `.release/ui-acceptance.json` is pending for this version.
+
+`scripts/check-release-tag.sh v0.2.0-rc.1 HEAD` validates a tag string without
+creating a Git tag; publication validation must reject pending acceptance.
+Run `python3 scripts/test-release-version.py` for the SemVer and clean-fixture gates.
 
 The actual cargo-dist 0.32.0 plan includes CLI, TUI and the default headless
 server. Desktop is explicitly excluded from cargo-dist and uses Tauri bundles.
@@ -46,8 +49,10 @@ and Windows x86_64. These configured jobs require native CI execution; YAML alon
 is not platform certification. Runner labels follow the
 [GitHub runner reference](https://docs.github.com/en/actions/reference/runners/github-hosted-runners).
 
-For a local rehearsal install the pinned `dist`, then run
-`bash scripts/release-gates.sh host`. It builds from current web source, checks
+For a local rehearsal install pinned `cargo-audit` 0.22.2 and `dist` 0.32.0, then run
+`bash scripts/release-gates.sh host`. Dependency audits are mandatory: RustSec or npm audit failures block release.
+The Linux gate image installs the pinned audit tool; host users need `cargo audit`
+on PATH. The gate builds from current web source, checks
 both Rust feature sets, runs real browser/PTY tests, creates fresh local archive
 variants, tests temporary install/uninstall/reinstall, builds host GUI bundles
 and checks dist plan/build. `SKIPPED`, `NOT TESTED` and `FAIL` remain separate;
@@ -109,8 +114,10 @@ git push origin vX.Y.Z
         │
         ├── host                 creates the GitHub Release, uploads everything
         │
-        ├── publish-homebrew-formula   MichaelWeissDEV/homebrew-tap
+        ├── verify downloaded public assets (exact file set, sizes, SHA-256)
         ├── publish-crates             rxchef → rxchef-store → rxchef-client → rxchef-cli → rxchef-tui
+        │     └── install exact published CLI/TUI versions and functionally test
+        ├── publish-homebrew-formula   only after registry verification succeeds
         │
         └── announce
 ```
@@ -183,7 +190,9 @@ first publish of each of the five crates needs a real, scoped token:
    uses it directly for all five crates, in order.
 3. On crates.io, for each of the five crates, add a Trusted Publisher:
    repository `MichaelWeissDEV/rx-chef`, workflow `release.yml`, environment
-   `release`.
+   `release`. The current registry validates `workflow_ref` (the caller filename),
+   as shown in its [GitHub claims implementation](https://github.com/rust-lang/crates.io/blob/33e1ca9abb94e17779d580bd37516c6db1bcd1ab/crates/crates_io_trustpub/src/github/claims.rs).
+   Recheck the live configuration after bootstrap; YAML cannot prove the account settings.
 4. Delete `CRATES_IO_BOOTSTRAP_TOKEN` from the `release` environment. Every
    later publish now goes through OIDC via `rust-lang/crates-io-auth-action`
    automatically — `publish-crates.yml` checks for the secret and falls back
@@ -262,8 +271,9 @@ git tag -s vX.Y.Z -m "rx-chef vX.Y.Z"
 git push origin vX.Y.Z
 ```
 
-CI takes it from there. Watch the Actions run; `announce` succeeding means
-every artifact and package manager is live.
+CI takes it from there. Inspect the final job results and then download and
+verify the public files and perform real package-manager installations. A started
+workflow or successful announcement is not proof that every public path works.
 
 ## Feature profile for distributed packages
 
@@ -278,10 +288,9 @@ unavailable; users who need them build from source with `--features full`
 
 ## UI acceptance before publication
 
-The maintainer explicitly accepted the desktop and browser UI for `0.0.1`.
-`.release/ui-acceptance.json` records that decision against the prepared source
-commit. Automated browser success alone does not constitute acceptance for
-future versions.
+The previous `0.0.1` acceptance is historical. `.release/ui-acceptance.json`
+now records pending review for `0.2.0-rc.1`. Automated browser success alone
+does not constitute maintainer acceptance.
 
 1. Review the built production desktop app and the matching server-served UI,
    including compact menus, panel docking, Auto-Bake, multiple outputs,
@@ -299,8 +308,10 @@ future versions.
 5. Only after the UI and the remaining platform/installation release criteria
    pass, create/push the version tag according to the workflow above. The tag
    validation job enforces UI acceptance before builds/publication proceed.
-   cargo-dist's plan may prepare a GitHub draft before custom validation; failed
-   acceptance blocks the publishing/announcement jobs. A draft is not approval.
+   Planning runs `dist plan` with read-only permissions. In cargo-dist 0.32.0,
+   GitHub `host --steps=create` computes hosting metadata rather than creating a
+   remote draft; the actual release write runs in `host` after all required
+   gates succeed, with `contents: write` and the `release` environment.
 
 The maintained cargo-dist release workflow builds archives/installers and
 attaches workbench packages, with prereleases excluded from stable package

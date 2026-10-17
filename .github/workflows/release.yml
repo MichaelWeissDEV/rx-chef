@@ -16,7 +16,7 @@
 
 name: Release
 permissions:
-  "contents": "write"
+  "contents": "read"
 
 # This task will run whenever you push a git tag that looks like a version
 # like "1.0.0", "v0.1.0-prerelease.1", "my-app/0.1.0", "releases/v1.0.0", etc.
@@ -69,22 +69,20 @@ jobs:
       - name: Cache dist
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
+          if-no-files-found: error
           name: cargo-dist-cache
           path: ~/.cargo/bin/dist
-      # sure would be cool if github gave us proper conditionals...
-      # so here's a doubly-nested ternary-via-truthiness to try to provide the best possible
-      # functionality based on whether this is a pull_request, and whether it's from a fork.
-      # (PRs run on the *source* but secrets are usually on the *target* -- that's *good*
-      # but also really annoying to build CI around when it needs secrets to work right.)
+      # Planning is read-only; hosting waits for every required gate.
       - id: plan
         run: |
-          dist ${{ (!github.event.pull_request && format('host --steps=create --tag={0}', github.ref_name)) || 'plan' }} --output-format=json > plan-dist-manifest.json
+          dist plan ${{ (!github.event.pull_request && format('--tag={0}', github.ref_name)) || '' }} --output-format=json > plan-dist-manifest.json
           echo "dist ran successfully"
           cat plan-dist-manifest.json
           echo "manifest=$(jq -c "." plan-dist-manifest.json)" >> "$GITHUB_OUTPUT"
       - name: "Upload dist-manifest.json"
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
+          if-no-files-found: error
           name: artifacts-plan-dist-manifest
           path: plan-dist-manifest.json
 
@@ -173,6 +171,7 @@ jobs:
       - name: "Upload artifacts"
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
+          if-no-files-found: error
           name: artifacts-build-local-${{ join(matrix.targets, '_') }}
           path: |
             ${{ steps.cargo-dist.outputs.paths }}
@@ -231,6 +230,7 @@ jobs:
       - name: "Upload artifacts"
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
+          if-no-files-found: error
           name: artifacts-build-global
           path: |
             ${{ steps.cargo-dist.outputs.paths }}
@@ -277,6 +277,9 @@ jobs:
     secrets: inherit
   # Determines if we should publish/announce
   host:
+    environment: release
+    permissions:
+      contents: write
     needs:
       - plan
       - custom-validate-tag
@@ -322,6 +325,7 @@ jobs:
       - name: "Upload dist-manifest.json"
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
+          if-no-files-found: error
           # Overwrite the previous copy
           name: artifacts-dist-manifest
           path: dist-manifest.json
@@ -348,12 +352,21 @@ jobs:
 
           # Include the explicitly uploaded Arch .SRCINFO metadata too.
           shopt -s dotglob
+          python3 scripts/test-release-download.py
           gh release create "${{ needs.plan.outputs.tag }}" --target "$RELEASE_COMMIT" $PRERELEASE_FLAG --title "$ANNOUNCEMENT_TITLE" --notes-file "$RUNNER_TEMP/notes.txt" artifacts/*
 
+      - name: Verify actual public assets before publishing packages
+        run: |
+          downloaded=$(mktemp -d "$RUNNER_TEMP/release-download-XXXXXXXX")
+          gh release download "${{ needs.plan.outputs.tag }}" --dir "$downloaded"
+          python3 scripts/verify-release-download.py artifacts "$downloaded"
+
   publish-homebrew-formula:
+    environment: release
     needs:
       - plan
       - host
+      - custom-publish-crates
     runs-on: "ubuntu-22.04"
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -389,7 +402,7 @@ jobs:
             export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
             brew update
             # We avoid reformatting user-provided data such as the app description and homepage.
-            brew style --except-cops FormulaAudit/Homepage,FormulaAudit/Desc,FormulaAuditStrict --fix "Formula/${filename}" || true
+            brew style --except-cops FormulaAudit/Homepage,FormulaAudit/Desc,FormulaAuditStrict --fix "Formula/${filename}"
 
             git add "Formula/${filename}"
             git commit -m "${name} ${version}"
@@ -416,10 +429,9 @@ jobs:
       - host
       - publish-homebrew-formula
       - custom-publish-crates
-    # use "always() && ..." to allow us to wait for all publish jobs while
-    # still allowing individual publish jobs to skip themselves (for prereleases).
-    # "host" however must run to completion, no skipping allowed!
-    if: ${{ always() && needs.host.result == 'success' && (needs.publish-homebrew-formula.result == 'skipped' || needs.publish-homebrew-formula.result == 'success') && (needs.custom-publish-crates.result == 'skipped' || needs.custom-publish-crates.result == 'success') }}
+    # Stable publication requires both publishers to succeed. Only a deliberate
+    # prerelease may skip both publishers; failure must never look announced.
+    if: ${{ always() && needs.host.result == 'success' && ((needs.publish-homebrew-formula.result == 'success' && needs.custom-publish-crates.result == 'success') || (fromJson(needs.plan.outputs.val).announcement_is_prerelease && !fromJson(needs.plan.outputs.val).publish_prereleases && needs.publish-homebrew-formula.result == 'skipped' && needs.custom-publish-crates.result == 'skipped')) }}
     runs-on: "ubuntu-22.04"
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

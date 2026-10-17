@@ -30,7 +30,7 @@ jobs:
       image: fedora:latest
     steps:
       - name: Install build tooling
-        run: dnf install -y gcc pkgconf-pkg-config openssl-devel curl
+        run: dnf install -y gcc pkgconf-pkg-config openssl-devel curl python3
 
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
@@ -52,7 +52,7 @@ jobs:
 
       - name: Install and functionally test rxchef
         run: |
-          dnf install -y target/generate-rpm/rxchef-*.rpm
+          dnf install -y target/generate-rpm/rxchef-[0-9]*.rpm
           rxchef --version
           test "$(printf 'hello' | rxchef run to_base64)" = "aGVsbG8="
           rxchef operations --json | python3 -c "import json,sys; assert len(json.load(sys.stdin)) > 0"
@@ -62,12 +62,17 @@ jobs:
       - name: Install and functionally test rxchef-tui
         run: |
           dnf install -y target/generate-rpm/rxchef-tui-*.rpm
-          rxchef_tui --help >/dev/null
+          python3 scripts/tui-graph-smoke.py /usr/bin/rxchef_tui
           dnf remove -y rxchef-tui
           ! command -v rxchef_tui
+          dnf install -y target/generate-rpm/rxchef-[0-9]*.rpm target/generate-rpm/rxchef-tui-*.rpm
+          test "$(printf 'hello' | /usr/bin/rxchef run to_base64)" = "aGVsbG8="
+          python3 scripts/tui-graph-smoke.py /usr/bin/rxchef_tui
+          dnf remove -y rxchef rxchef-tui
 
       - name: Upload artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
+          if-no-files-found: error
           name: artifacts-rpm-${{ matrix.rpm_arch }}
           path: target/generate-rpm/*.rpm

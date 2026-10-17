@@ -18,7 +18,7 @@ Encrypts a message to the recipient and signs it with the signer's private key. 
 | Input requirement | `Required` |
 | Features | pgp |
 | Side effects | `[]` |
-| Deterministic | true |
+| Deterministic | false |
 
 ## Input
 

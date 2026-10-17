@@ -1,21 +1,25 @@
 # Installation
 
-The first public version is `0.0.1`. Release assets are produced by the gated
-[GitHub release workflow](https://github.com/MichaelWeissDEV/rx-chef/releases/tag/v0.0.1).
-Consult the [release report](../development/0.0.1-release.md) for publication and
-platform verification status. A successful local build does not certify every
-installer. For local use see the [desktop start guide](../workbench/desktop.md),
-[native HTTP server](../server/configuration.md) and
-[Docker/Compose deployment](../server/docker.md).
+The current version `0.2.0-rc.1` is a local release rehearsal. No public
+GitHub Release or crates.io package was present at the 2026-10-17 registry
+check. The Homebrew tap was not accessible through the read-only adapter.
+The commands below are prepared installation paths, not claims of availability.
+Consult the [current release report](../development/first-public-release-readiness.md)
+for actual artifact and installer evidence. Until publication, use
+[Build from source](#build-from-source) or a tested local archive.
 
-rx-chef ships as prebuilt binaries, native OS packages, and Rust crates.
-Pick whichever fits your platform; all of them install the same `rxchef`
-CLI and `rxchef_tui` terminal interface.
+Local use: [desktop](../workbench/desktop.md),
+[HTTP server](../server/configuration.md),
+[Docker/Compose](../server/docker.md).
 
-!!! note
-    The package-manager and prebuilt-binary paths below become available
-    starting with the first tagged release. Until then, use
-    [Build from source](#build-from-source).
+Unsigned macOS packages are not notarized and may require a deliberate system
+security approval when downloaded. Windows signing and SmartScreen behavior have
+not been verified. Do not disable operating system security globally.
+
+CLI, TUI, headless server, embedded-web server and desktop installers are separate
+artifacts. The headless server has no browser assets; the web variant embeds them.
+A platform is supported for release only after its actual installer/archive passes
+the checks in the report.
 
 ## Cargo
 
@@ -42,10 +46,10 @@ This is a dedicated tap (`MichaelWeissDEV/homebrew-tap`), not
 
 ## Arch Linux / AUR
 
-Not yet published to the AUR. `packaging/aur/PKGBUILD` is built and
-functionally tested on every release and attached to the
+Not yet published to the AUR. `packaging/aur/PKGBUILD` is configured to be built and
+functionally tested by the release workflow and attached to the
 [GitHub Releases page](https://github.com/MichaelWeissDEV/rx-chef/releases)
-as `artifacts-aur`, so you can build it locally today:
+as `artifacts-aur`, after a successful publication:
 
 ```bash
 curl -L -o PKGBUILD https://github.com/MichaelWeissDEV/rx-chef/releases/latest/download/PKGBUILD

@@ -39,6 +39,17 @@ class ReleaseVersionTests(unittest.TestCase):
                     with self.assertRaises(ValueError):
                         module.validate(tag, version, f"## [{version}]\n")
 
+    def test_public_assets_are_verified_before_sequential_package_publishers(self):
+        root = pathlib.Path(__file__).resolve().parent.parent
+        workflow = (root / '.github/workflows/release.yml').read_text()
+        host = workflow.split('  host:\n', 1)[1].split('  publish-homebrew-formula:', 1)[0]
+        self.assertIn('gh release download', host)
+        self.assertIn('python3 scripts/verify-release-download.py artifacts', host)
+        homebrew = workflow.split('  publish-homebrew-formula:\n', 1)[1].split('    runs-on:', 1)[0]
+        self.assertIn('- custom-publish-crates', homebrew)
+        announce = workflow.split('  announce:\n', 1)[1]
+        self.assertIn('announcement_is_prerelease && !fromJson(needs.plan.outputs.val).publish_prereleases', announce)
+
     def test_publish_order_respects_workspace_runtime_dependencies(self):
         root = pathlib.Path(__file__).resolve().parent.parent
         workflow = (root / '.github/workflows/publish-crates.yml').read_text()

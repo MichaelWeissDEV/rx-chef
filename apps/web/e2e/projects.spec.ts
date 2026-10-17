@@ -32,7 +32,7 @@ test('a multi-graph project survives reload with metadata history and explicitly
   expect(project.history[0].status).toBe('succeeded');expect(project.recipes.find((recipe: { name: string }) => recipe.name === 'Recipe 1').steps[0].op).toBe('To Base64');
   const portable = testInfo.outputPath('browser-export.rxproject.json'); await writeFile(portable, text);
   const target = process.env.CARGO_TARGET_DIR ? resolve('../..', process.env.CARGO_TARGET_DIR) : resolve('../../target');
-  const cli = resolve(target, 'debug', process.platform === 'win32' ? 'rxchef.exe' : 'rxchef');
+  const cli = process.env.RXCHEF_E2E_CLI_BINARY ? resolve(process.env.RXCHEF_E2E_CLI_BINARY) : resolve(target, 'debug', process.platform === 'win32' ? 'rxchef.exe' : 'rxchef');
   execFileSync(cli, ['project', 'validate', portable]);
   for(const secret of ['PRIVATE-INPUT-DO-NOT-SAVE',bytes.toString('hex'),'browser-test-token-0123456789','output_base64','inputs_base64'])expect(text).not.toContain(secret);
   await page.reload();await page.getByLabel('Server Bearer Token').fill('browser-test-token-0123456789');await page.getByRole('button',{name:'Connect (this session)'}).click();

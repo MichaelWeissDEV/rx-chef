@@ -8,10 +8,10 @@
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://github.com/MichaelWeissDEV/rx-chef/blob/master/LICENSE)
 [![Rust](https://img.shields.io/badge/Rust-stable-orange.svg?logo=rust)](https://www.rust-lang.org/)
 
-CyberChef-style data transformations for the terminal, Rust applications, and
-editor integrations.
+CyberChef-style data transformations in a native desktop app, browser workbench,
+terminal UI, command line, authenticated server and reusable Rust library.
 
-![alt text](assets/ui1.png)
+![Recipe and graph workbench](assets/workbench-graph.png)
 
 rxchef provides one shared execution engine and operation registry across a
 native command-line interface, reusable Rust library, interactive TUI,
@@ -20,9 +20,9 @@ encoding, cryptography, hashing, compression, structured data, networking,
 forensics, image processing, and more. Versioned multi-input graphs now share
 the Rust engine across the CLI, authenticated HTTP server and browser/desktop
 workbench. See the [graph guide](docs/concepts/graphs.md) and
-[0.0.1 release checks](docs/development/0.0.1-release.md).
+[current release checks](docs/development/first-public-release-readiness.md).
 
-![alt text](assets/ui2.png)
+![Workbench output and project tools](assets/workbench-project-export.png)
 
 Start the built macOS GUI: `open -n target/release/bundle/macos/rx-chef.app`.
 The local engine needs no server. For an HTTP/browser workbench, use the
@@ -36,10 +36,11 @@ Workbench guides: [browser](docs/workbench/browser.md),
 [testing handbook](docs/development/testing.md) and
 [acceptance matrix](docs/development/acceptance-matrix.md).
 
-Version `0.0.1` is the first public release being prepared. The maintainer has
-approved the shared UI; CLI/server checks and release CI validate the versioned
-artifacts. Platform-specific acceptance limits are listed in the
-[release report](docs/development/0.0.1-release.md).
+Version `0.2.0-rc.1` is a local release rehearsal. There is currently no public
+GitHub Release, crates.io package or verified Homebrew installation. Existing
+`v0.0.1` and `v0.1.0` tags are preserved. See the
+[release readiness report](docs/development/first-public-release-readiness.md)
+for tested artifacts, platform limitations and outstanding acceptance.
 
 **[Documentation](https://rx-chef.readthedocs.io/en/latest/)** ·
 **[CLI reference](https://rx-chef.readthedocs.io/en/latest/cli/reference/)** ·
@@ -66,11 +67,10 @@ artifacts. Platform-specific acceptance limits are listed in the
 - **Generated Read the Docs site** whose 478 operation pages are checked for
   freshness by the local release check.
 
-## Product development
+## Interfaces
 
-The [product roadmap](docs/development/product-roadmap.md) guides rx-chef's
-expansion into a multi-interface suite:
-- **Core, Client & Store**: Complete 478 operations, binary-safe contracts, and isolated local storage.
+The shared engine powers these interfaces:
+- **Core, Client & Store**: Shared registry of 478 operations, binary-safe contracts, and isolated local storage.
 - **Server**: Axum/Tokio HTTP, JSON-RPC, WebSocket, bearer auth, and process worker supervision (`rxchef-server`).
 - **Web Workbench**: Modern React/TypeScript frontend (`apps/web`) with dark/light themes, exact binary I/O, recipe tracing and a visual graph editor. Browser execution requires a server; assets are local.
 - **TUI & CLI**: Interactive terminal workbench (`rxchef_tui` / `rxchef tui`) with local & remote server support, diagnostic `doctor`, connection testing `connect`, and verified `examples`.
@@ -90,6 +90,13 @@ native host gates are documented in the
 
 ## Installation
 
+Prebuilt downloads and package-manager commands below describe the planned
+release. Use them after the [Releases page](https://github.com/MichaelWeissDEV/rx-chef/releases)
+contains the matching assets and published package versions. Until then, build
+from source or use explicitly tested local artifacts from the readiness report.
+Unsigned macOS bundles are not notarized; Windows signing and installer behavior
+still require native verification. No platform is certified by a source build.
+
 ```bash
 cargo install rxchef-cli                          # Cargo
 brew install MichaelWeissDEV/tap/rxchef           # Homebrew (macOS/Linux)
@@ -97,8 +104,7 @@ sudo apt install ./rxchef_<version>_<arch>.deb    # Debian/Ubuntu
 sudo dnf install ./rxchef-<version>-1.<arch>.rpm  # Fedora/RHEL/openSUSE
 ```
 
-`.deb`/`.rpm` packages, an AUR `PKGBUILD`, and platform archives are
-attached to each
+`.deb`/`.rpm` packages, an AUR `PKGBUILD`, and platform archives are planned for each
 [GitHub Release](https://github.com/MichaelWeissDEV/rx-chef/releases)
 (the AUR package isn't published to `aur.archlinux.org` yet — see the
 [installation guide](https://rx-chef.readthedocs.io/en/latest/getting-started/installation/)).
@@ -118,6 +124,40 @@ requires a system Tesseract/Leptonica installation.
 See the [installation guide](https://rx-chef.readthedocs.io/en/latest/getting-started/installation/)
 and [feature matrix](https://rx-chef.readthedocs.io/en/latest/reference/feature-matrix/)
 for platform-specific details.
+
+## Desktop, terminal and server quick starts
+
+Launch an installed desktop application from the operating system app launcher.
+Its default local engine works without an HTTP server. Open files, compose a
+recipe or graph, bake, and export the exact bytes. Save definitions through the
+project export dialog and re-import them after restart. Input/output payloads and
+credentials are deliberately excluded from shared project files.
+
+Start the terminal workbench with `rxchef_tui`. Use its help screen for recipe
+editing, graph bindings, exact output export and local/remote job cancellation.
+See the [TUI guide](docs/workbench/terminal.md).
+
+The headless and embedded-web archives both contain `rxchef-server`; choose the
+web variant for the browser UI. Set a private bearer token before startup:
+
+```bash
+export RXCHEF_TOKEN='<generate-a-long-random-token>'
+rxchef-server --listen 127.0.0.1:8787
+```
+
+Open the web variant at `http://127.0.0.1:8787` and enter the token in its
+connection settings. The default bind is loopback; external bindings need
+explicit opt-in and TLS termination. Workers have job/input/output limits but
+are not a complete operating system sandbox. Review the
+[server security model](docs/server/configuration.md) before remote use.
+For container use, configure the same token and run `docker compose up --build`;
+[Docker prerequisites](docs/server/docker.md) explain host networking and TLS.
+No public image is claimed before registry publication.
+
+The [browser guide](docs/workbench/browser.md) covers recipes, multi-input graphs,
+Undo/Redo, opt-in Auto-Bake, binary exports and remote connections. Known
+operation parity differences are tracked in the
+[operation quality matrix](docs/_generated/operation-quality.json).
 
 ## Quick start
 
@@ -272,7 +312,7 @@ cargo run --example generate_operation_docs -- --check
 mkdocs build --strict
 ```
 
-The current v0.0.1 workspace registers 478 operations. Quality evidence and
+The current v0.2.0-rc.1 workspace registers 478 operations. Quality evidence and
 remaining unknown parity are published in the generated operation matrix; the
 repository does not equate registration with complete verification.
 

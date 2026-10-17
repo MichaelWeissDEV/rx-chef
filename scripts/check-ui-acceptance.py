@@ -32,6 +32,9 @@ def validate(record, version, head, git):
     after = git('ls-tree', '-r', head, '--', *UI_PATHS)
     if before.returncode or after.returncode or not before.stdout or before.stdout != after.stdout:
         raise ValueError('GUI source changed after acceptance; review the new UI commit')
+    dirty = git('status', '--porcelain', '--untracked-files=all', '--', *UI_PATHS)
+    if dirty.returncode or dirty.stdout.strip():
+        raise ValueError('GUI/Cargo working tree differs from the reviewed commit; commit and review the actual source')
 
 
 def main():

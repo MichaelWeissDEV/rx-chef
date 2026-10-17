@@ -1,6 +1,11 @@
-# Product completion roadmap
+# Product completion roadmap (historical design)
 
-This is the active product direction from 13 October 2026. It supersedes plans
+This is a historical design from 13 October 2026. The HTTP server, web workbench
+and Tauri desktop have since been implemented; descriptions of those components
+as absent or planned below are historical. See the [current readiness report](first-public-release-readiness.md)
+and [architecture](../architecture/overview.md) for current release status.
+
+The original direction was: It supersedes plans
 for a source-code analysis, call-graph, taint-analysis, vulnerability-detector,
 or independent binary-analysis platform. Existing CyberChef operations,
 including optional disassembly, remain supported. Do not add placeholder crates

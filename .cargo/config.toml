@@ -2,6 +2,15 @@
 xtask = "run --package xtask --"
 
 [env]
+# Distributable binaries must not retain a developer Homebrew/OpenSSL dylib path.
+# Native builders install the development archives; Windows already vendors it.
+OPENSSL_STATIC = "1"
 # yara-x otherwise tries to rewrite generated files inside Cargo's read-only
 # registry cache during clean builds.
 YRX_REGENERATE_MODULES_RS = "false"
+
+[target.x86_64-pc-windows-msvc]
+# Let Rust and native dependency build scripts agree on the static CRT.
+# Tauri's own static CRT shim adds an empty msvcrt.lib to a native search
+# directory that Cargo also passes to unrelated workspace doctests.
+rustflags = ["-C", "target-feature=+crt-static"]

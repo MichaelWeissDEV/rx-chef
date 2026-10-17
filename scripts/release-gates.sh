@@ -62,9 +62,13 @@ not_tested_gate() {
 run_gate "cargo metadata (locked)" \
     cargo metadata --locked --format-version 1 --no-deps >/dev/null
 run_gate "release version regression" python3 scripts/test-release-version.py
+run_gate "distribution regression" python3 scripts/test-distributions.py
+run_gate "crate publication regression" python3 scripts/test-publish-crate.py
+run_gate "RustSec dependency audit" cargo audit --json
 
 # Web source generation precedes all-features Rust builds (embedded assets).
 run_gate "frontend clean install" npm --prefix apps/web ci
+run_gate "frontend dependency audit" npm --prefix apps/web audit --json
 run_gate "wire contracts" npm --prefix apps/web run contracts:check
 run_gate "frontend typecheck" npm --prefix apps/web run typecheck
 run_gate "frontend unit tests" npm --prefix apps/web test

@@ -26,12 +26,15 @@ permissions:
 jobs:
   build-and-test:
     runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash
     container:
       image: archlinux:latest
     steps:
       - name: Install build tooling
         run: |
-          pacman -Syu --noconfirm --needed base-devel git rust cargo openssl pkgconf namcap
+          pacman -Syu --noconfirm --needed base-devel git rust cargo openssl pkgconf namcap python
 
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
@@ -55,10 +58,12 @@ jobs:
         run: |
           version="${{ fromJson(inputs.plan).announcement_tag }}"
           version="${version#v}"
+          pkgver="${version/-/}"
+          echo "pkgver=$pkgver" >> "$GITHUB_OUTPUT"
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
           url="https://github.com/${{ github.repository }}/archive/refs/tags/v${version}.tar.gz"
-          sha256=$(curl -sL "$url" | sha256sum | cut -d' ' -f1)
+          sha256=$(curl --fail --show-error --location "$url" | sha256sum | cut -d' ' -f1)
           if [[ -z "$sha256" ]]; then
             echo "error: could not compute sha256 for $url" >&2
             exit 1
@@ -68,7 +73,8 @@ jobs:
       - name: Render PKGBUILD for this release
         run: |
           sed -i \
-            -e "s/^pkgver=.*/pkgver=${{ steps.meta.outputs.version }}/" \
+            -e "s/^pkgver=.*/pkgver=${{ steps.meta.outputs.pkgver }}/" \
+            -e "s/^_releasever=.*/_releasever=${{ steps.meta.outputs.version }}/" \
             -e "s/^pkgrel=.*/pkgrel=1/" \
             -e "s/^sha256sums=.*/sha256sums=('${{ steps.meta.outputs.sha256 }}')/" \
             packaging/aur/PKGBUILD
@@ -82,23 +88,28 @@ jobs:
             makepkg --printsrcinfo > .SRCINFO
             makepkg --verifysource
             makepkg --syncdeps --noconfirm --clean
-            namcap PKGBUILD || true
+            namcap PKGBUILD
             for pkg in *.pkg.tar.*; do
-              namcap "$pkg" || true
+              namcap "$pkg"
             done
           '
 
       - name: Functional smoke test of the built package
         run: |
-          pacman -U --noconfirm packaging/aur/rxchef-*.pkg.tar.* packaging/aur/rxchef-tui-*.pkg.tar.*
+          pacman -U --noconfirm packaging/aur/rxchef-[0-9]*.pkg.tar.* packaging/aur/rxchef-tui-*.pkg.tar.*
           rxchef --version
-          printf 'hello' | rxchef run to_base64
-          rxchef_tui --help >/dev/null
+          test "$(printf 'hello' | rxchef run to_base64)" = "aGVsbG8="
+          python3 scripts/tui-graph-smoke.py /usr/bin/rxchef_tui
+          pacman -R --noconfirm rxchef rxchef-tui
+          pacman -U --noconfirm packaging/aur/rxchef-[0-9]*.pkg.tar.* packaging/aur/rxchef-tui-*.pkg.tar.*
+          test "$(printf 'hello' | /usr/bin/rxchef run to_base64)" = "aGVsbG8="
+          python3 scripts/tui-graph-smoke.py /usr/bin/rxchef_tui
           pacman -R --noconfirm rxchef rxchef-tui
 
       - name: Upload artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
+          if-no-files-found: error
           name: artifacts-aur
           include-hidden-files: true
           path: |

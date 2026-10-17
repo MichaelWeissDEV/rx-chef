@@ -98,3 +98,18 @@ fn test_generate_pgp_key_pair_exact_interoperability_payload() {
         .unwrap();
     assert_eq!(decrypted, b"generated PGP key proof");
 }
+
+#[test]
+fn test_pgp_randomized_operations_report_nondeterminism_even_when_disabled() {
+    assert!(!GeneratePGPKeyPair.deterministic());
+    for name in [
+        "Generate PGP Key Pair",
+        "PGP Encrypt",
+        "PGP Encrypt and Sign",
+    ] {
+        assert!(
+            !rxchef::runtime::operation_info(name).unwrap().deterministic,
+            "{name} must not advertise repeatable results"
+        );
+    }
+}

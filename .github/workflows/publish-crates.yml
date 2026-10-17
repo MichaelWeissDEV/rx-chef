@@ -92,3 +92,12 @@ jobs:
 
       - name: Publish rxchef-tui
         run: ./scripts/publish-crate.sh rxchef-tui
+
+      - name: Verify actual registry installations before the Homebrew update
+        run: |
+          version=$(cargo metadata --locked --format-version 1 --no-deps | python3 -c "import json,sys; print(next(p['version'] for p in json.load(sys.stdin)['packages'] if p['name']=='rxchef'))")
+          export RXCHEF_HOME="$RUNNER_TEMP/registry-smoke-store"
+          cargo install --locked --version "=$version" --root "$RUNNER_TEMP/registry-install" rxchef-cli
+          test "$(printf 'hello' | "$RUNNER_TEMP/registry-install/bin/rxchef" run to_base64)" = "aGVsbG8="
+          cargo install --locked --version "=$version" --root "$RUNNER_TEMP/registry-install" rxchef-tui
+          python3 scripts/tui-graph-smoke.py "$RUNNER_TEMP/registry-install/bin/rxchef_tui"

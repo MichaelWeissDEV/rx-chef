@@ -26,6 +26,9 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
         | sh -s -- -y --profile minimal --default-toolchain "${RUST_TOOLCHAIN}" \
     && rustup component add rustfmt clippy
 
+# Mandatory release gate; known vulnerabilities must fail before publication.
+RUN cargo install cargo-audit --locked --version 0.22.2
+
 COPY docs/requirements.txt /tmp/rxchef-docs-requirements.txt
 RUN python3 -m venv /opt/rxchef-docs \
     && pip install --no-cache-dir -r /tmp/rxchef-docs-requirements.txt

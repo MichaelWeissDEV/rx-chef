@@ -9,6 +9,8 @@ rustc --version
 cargo --version
 python3 scripts/test-release-version.py
 python3 scripts/test-ui-acceptance.py
+python3 scripts/test-distributions.py
+python3 scripts/test-publish-crate.py
 
 npm --prefix apps/web ci
 npm --prefix apps/web run contracts:check
@@ -19,11 +21,21 @@ npm --prefix apps/web run lint
 npm --prefix apps/web exec -- playwright install chromium
 npm --prefix apps/web run test:e2e
 
+# The all-feature gate requires the real optional OCR development library.
+# On Windows CI, PKG_CONFIG selects native pkgconf and a static vcpkg prefix
+# whose CRT matches .cargo/config.toml; Unix runners use their system package.
+pkg_config_command=${PKG_CONFIG:-pkg-config}
+"$pkg_config_command" --modversion tesseract
+
 cargo fmt --all -- --check
 cargo check --locked --workspace --all-targets
 cargo test --locked --workspace
+cargo check --locked --workspace --all-targets --all-features
+cargo test --locked --workspace --all-features
 cargo test --locked -p rxchef-client --features remote
 cargo clippy --locked --workspace --all-targets -- \
+    -D clippy::correctness -D clippy::suspicious
+cargo clippy --locked --workspace --all-targets --all-features -- \
     -D clippy::correctness -D clippy::suspicious
 cargo run --locked --package xtask -- check-registry
 cargo run --locked --package xtask -- audit-operations

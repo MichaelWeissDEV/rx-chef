@@ -98,7 +98,15 @@ impl Operation for Unzip {
                     })?
             };
 
-            let name = file.name().to_string();
+            let name = file
+                .name()
+                .map_err(|e| {
+                    OperationError::ProcessingError(format!(
+                        "Failed to read zip entry {} name: {}",
+                        i, e
+                    ))
+                })?
+                .into_owned();
             if file.is_file() {
                 let mut content = Vec::new();
                 file.read_to_end(&mut content).map_err(|e| {

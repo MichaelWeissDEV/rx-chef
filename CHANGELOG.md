@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0-rc.1] - Unreleased rehearsal
+
+This is a local release candidate preparation, not a published release. Existing
+`v0.0.1` and `v0.1.0` tags are preserved. Protocol 2 and portable format 1 remain.
+
+### Fixed
+
+- Distribution archives are created outside their contents directory, contain
+  explicit payload files, and retain no-overwrite and cleanup protection.
+- Distribution smoke tests derive the workspace version rather than assuming 0.0.1.
+- Queue regression tests synchronize on observable worker states.
+- Native Windows macro examples use a test harness to execute their assertions.
+
+### Release status
+
+- Versions synchronized across Cargo, web, desktop and package metadata.
+- UI acceptance is pending again for this version; publication remains blocked.
+- Cross-platform installer and native Windows results must be collected before approval.
+
 ## [0.0.1] - 2026-10-15
 
 First public version. This supersedes the unpublished `0.2.0-rc.1` development

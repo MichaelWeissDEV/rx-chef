@@ -21,7 +21,7 @@ fn test_unzip_single_file() {
     let mut buf = Vec::new();
     {
         let mut zip = ZipWriter::new(Cursor::new(&mut buf));
-        let options: FileOptions<'_, ()> = FileOptions::default();
+        let options: FileOptions<'_, '_, ()> = FileOptions::default();
         zip.start_file("test.txt", options).unwrap();
         zip.write_all(b"hello").unwrap();
         zip.finish().unwrap();
@@ -40,10 +40,10 @@ fn test_unzip_multiple_files() {
     let mut buf = Vec::new();
     {
         let mut zip = ZipWriter::new(Cursor::new(&mut buf));
-        let options: FileOptions<'_, ()> = FileOptions::default();
+        let options: FileOptions<'_, '_, ()> = FileOptions::default();
         zip.start_file("a.txt", options).unwrap();
         zip.write_all(b"aaaaa").unwrap();
-        let options: FileOptions<'_, ()> = FileOptions::default();
+        let options: FileOptions<'_, '_, ()> = FileOptions::default();
         zip.start_file("b.txt", options).unwrap();
         zip.write_all(b"bbbbb").unwrap();
         zip.finish().unwrap();

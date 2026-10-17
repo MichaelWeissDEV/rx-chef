@@ -35,6 +35,7 @@ jobs:
           fetch-depth: 0
       - name: Check UI acceptance rules without requiring human acceptance for rehearsal
         run: |
+          python3 scripts/test-release-download.py
           python3 scripts/test-ui-acceptance.py
           python3 scripts/check-ui-acceptance.py --allow-pending
 
@@ -79,10 +80,10 @@ jobs:
       - name: Homebrew formula sanity check
         run: |
           dist build --artifacts=global
-          gem install --user-install rubocop rubocop-sorbet 2>/dev/null || true
+          ruby --version
           for formula in target/distrib/*.rb; do
             echo "=== $formula ==="
-            cat "$formula"
+            ruby -c "$formula"
           done
 
   build-deb:
@@ -98,12 +99,21 @@ jobs:
           rustup default 1.96.1
       - name: Install cargo-deb
         run: cargo install cargo-deb --locked --version 3.7.0
-      - name: Build (no install/functional test — see build-deb.yml for that)
+      - name: Build
         run: ./scripts/build-deb.sh
+      - name: Install, exercise, remove and reinstall actual DEB packages
+        run: |
+          for attempt in 1 2; do
+            sudo apt-get install -y ./target/debian/rxchef_*.deb ./target/debian/rxchef-tui_*.deb
+            test "$(printf 'hello' | /usr/bin/rxchef run to_base64)" = "aGVsbG8="
+            python3 scripts/tui-graph-smoke.py /usr/bin/rxchef_tui
+            sudo apt-get remove -y rxchef rxchef-tui
+          done
       - name: Upload for inspection
         if: inputs.retain-artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
+          if-no-files-found: error
           name: dry-run-deb-packages
           path: target/debian/*.deb
 
@@ -114,7 +124,7 @@ jobs:
       image: fedora:latest
     steps:
       - name: Install build tooling
-        run: dnf install -y gcc pkgconf-pkg-config openssl-devel curl
+        run: dnf install -y gcc pkgconf-pkg-config openssl-devel curl python3
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           persist-credentials: false
@@ -125,23 +135,35 @@ jobs:
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
       - name: Install cargo-generate-rpm
         run: cargo install cargo-generate-rpm --locked --version 0.21.0
-      - name: Build (no install/functional test — see build-rpm.yml for that)
+      - name: Build
         run: ./scripts/build-rpm.sh
+      - name: Install, exercise, remove and reinstall actual RPM packages
+        run: |
+          for attempt in 1 2; do
+            dnf install -y target/generate-rpm/rxchef-[0-9]*.rpm target/generate-rpm/rxchef-tui-*.rpm
+            test "$(printf 'hello' | /usr/bin/rxchef run to_base64)" = "aGVsbG8="
+            python3 scripts/tui-graph-smoke.py /usr/bin/rxchef_tui
+            dnf remove -y rxchef rxchef-tui
+          done
       - name: Upload for inspection
         if: inputs.retain-artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
+          if-no-files-found: error
           name: dry-run-rpm-packages
           path: target/generate-rpm/*.rpm
 
   build-aur:
     needs: validate-tag
     runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash
     container:
       image: archlinux:latest
     steps:
       - name: Install build tooling
-        run: pacman -Syu --noconfirm --needed base-devel git rust cargo openssl pkgconf namcap
+        run: pacman -Syu --noconfirm --needed base-devel git rust cargo openssl pkgconf namcap python
       - name: Create an unprivileged build user
         run: |
           useradd -m builder
@@ -152,11 +174,12 @@ jobs:
       - name: Render PKGBUILD against the current workspace version (not a real tag)
         run: |
           version=$(cargo metadata --locked --format-version 1 --no-deps \
-            | python3 -c "import json,sys; d=json.load(sys.stdin); print(next(p['version'] for p in d['packages'] if p['name']=='rxchef'))" 2>/dev/null \
-            || grep -m1 '^version' Cargo.toml | cut -d'"' -f2)
-          sha256=$(curl -sL "https://github.com/${{ github.repository }}/archive/${{ github.sha }}.tar.gz" | sha256sum | cut -d' ' -f1)
+            | python3 -c "import json,sys; d=json.load(sys.stdin); print(next(p['version'] for p in d['packages'] if p['name']=='rxchef'))")
+          pkgver="${version/-/}"
+          sha256=$(curl --fail --show-error --location "https://github.com/${{ github.repository }}/archive/${{ github.sha }}.tar.gz" | sha256sum | cut -d' ' -f1)
           sed -i \
-            -e "s/^pkgver=.*/pkgver=${version}/" \
+            -e "s/^pkgver=.*/pkgver=${pkgver}/" \
+            -e "s/^_releasever=.*/_releasever=${{ github.sha }}/" \
             -e "s|^source=.*|source=(\"rxchef-\${pkgver}.tar.gz::https://github.com/${{ github.repository }}/archive/${{ github.sha }}.tar.gz\")|" \
             -e "s/^sha256sums=.*/sha256sums=('${sha256}')/" \
             packaging/aur/PKGBUILD
@@ -169,12 +192,21 @@ jobs:
             makepkg --printsrcinfo > .SRCINFO
             makepkg --verifysource
             makepkg --syncdeps --noconfirm --clean
-            namcap PKGBUILD || true
+            namcap PKGBUILD
           '
+      - name: Install, exercise, remove and reinstall actual Arch packages
+        run: |
+          for attempt in 1 2; do
+            pacman -U --noconfirm packaging/aur/rxchef-[0-9]*.pkg.tar.* packaging/aur/rxchef-tui-*.pkg.tar.*
+            test "$(printf 'hello' | /usr/bin/rxchef run to_base64)" = "aGVsbG8="
+            python3 scripts/tui-graph-smoke.py /usr/bin/rxchef_tui
+            pacman -R --noconfirm rxchef rxchef-tui
+          done
       - name: Upload for inspection
         if: inputs.retain-artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
+          if-no-files-found: error
           name: dry-run-aur-packages
           path: |
             packaging/aur/*.pkg.tar.*
