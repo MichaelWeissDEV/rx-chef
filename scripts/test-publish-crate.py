@@ -2,6 +2,7 @@
 """No-publication tests for registry probes, dry-runs and propagation gates."""
 import os
 from pathlib import Path
+import shlex
 import shutil
 import subprocess
 import tempfile
@@ -47,8 +48,17 @@ fi
 ''')
         self.command("sleep", 'echo "sleep $*" >> "$CALL_LOG"\n')
         curl = self.bin / "curl"
+        curl_fixture = self.bin / "curl.py"
         python = bash_path(shutil.which("python3"))
-        curl.write_text("#!" + python + "\n" + '''import json, os, pathlib, sys
+        # Invoke the native interpreter explicitly from a Bash fixture. Git
+        # Bash does not reliably honour a native Windows Python shebang on a
+        # script found through PATH, which would otherwise fall through to its
+        # bundled real curl.exe and make the tests wait for network timeouts.
+        curl.write_text(
+            "#!/usr/bin/env bash\nset -eu\nexec " + shlex.quote(python)
+            + ' "$(dirname "$0")/curl.py" "$@"\n'
+        )
+        curl_fixture.write_text('''import json, os, pathlib, sys
 args = sys.argv[1:]
 url = args[-1]
 path = pathlib.Path(args[args.index("--output") + 1])
@@ -82,6 +92,15 @@ else:
     def test_native_windows_paths_are_git_bash_paths(self):
         self.assertEqual(bash_path(r"C:\Users\runner\tmp dir", platform="nt"),
                          "/c/Users/runner/tmp dir")
+
+    def test_fixtures_shadow_real_commands(self):
+        resolved = subprocess.check_output(
+            [bash_executable(), "-c", "command -v cargo curl sleep"],
+            env=self.env,
+            text=True,
+        ).splitlines()
+        self.assertEqual([Path(path).name for path in resolved], ["cargo", "curl", "sleep"])
+        self.assertTrue(all(path.startswith(bash_path(self.bin) + "/") for path in resolved))
 
     def command(self, name, body):
         path = self.bin / name
