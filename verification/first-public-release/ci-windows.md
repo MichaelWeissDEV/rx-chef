@@ -190,3 +190,38 @@ Git Bash paths and prepends the fixture tools to Bash's own POSIX PATH. A tiny
 real Cargo package checks the smoke test's metadata version across platforms.
 Twelve packaging tests pass on macOS after this change. Native Windows and the
 MSVC doctests remain **NOT TESTED on cfd0a8f1** until a new CI run.
+
+## Windows publishing fixture follow-up (local-only `4379d809`)
+
+The subsequent native Windows run for `86270470` still failed in
+`scripts/test-publish-crate.py`: the fixture-shadow assertion resolved real
+commands, and ten publish-helper cases reached their 30-second process timeout.
+The cause is distinct from the distribution-test path conversion: MSYS2/Git
+Bash rewrites a POSIX `PATH` inherited through the Windows process environment
+before the shell evaluates the test command. The fixture directory therefore
+did not reliably precede Git's bundled `curl.exe` and Cargo.
+
+`4379d809` keeps the host environment paths in their native form, starts Git
+Bash without profile files, then assigns the colon-delimited fixture `PATH`
+inside that already-running Bash process and uses `exec` for the helper. The
+fixture-shadow assertion uses the identical profile-free command environment.
+The curl fixture is a Bash wrapper which invokes a companion Python file by its
+explicit interpreter path, avoiding Windows shebang resolution differences.
+
+Local validation on macOS:
+
+| Check | Result |
+| --- | --- |
+| `python3 scripts/test-publish-crate.py -v` | PASS, 12 tests |
+| `python3 scripts/test-release-version.py` | PASS, 13 tests |
+| `python3 scripts/test-distributions.py` | PASS, 12 tests |
+| `cargo fmt --all -- --check` | PASS |
+| `cargo check --locked --workspace --all-targets` | PASS |
+| `cargo check --locked --workspace --all-targets --all-features` | PASS |
+| `actionlint` | PASS |
+| Native Windows test on `4379d809` | **NOT TESTED**; no remote run was started |
+
+No workflow failure is masked and no fixture test is skipped. The local commit
+has deliberately not been pushed; the release remains blocked by the required
+RustSec gate documented in `dependencies.md` and needs a native Windows run on
+this exact commit before the Windows pipeline can be declared green.
