@@ -2,7 +2,6 @@
 """Packaging regression tests with real tar and isolated build-command fixtures."""
 import hashlib
 import json
-import ntpath
 import os
 from pathlib import Path
 import shutil
@@ -11,20 +10,9 @@ import tarfile
 import tempfile
 import unittest
 
-from shell_runtime import bash_executable
+from shell_runtime import bash_executable, bash_path
 
 ROOT = Path(__file__).resolve().parent.parent
-
-
-def bash_path(path, platform=None):
-    """Express a native Windows path in Git Bash's /c/... namespace."""
-    value = str(path)
-    if (platform or os.name) != "nt":
-        return value
-    drive, tail = ntpath.splitdrive(value)
-    if not drive:
-        return value.replace("\\", "/")
-    return "/" + drive[0].lower() + tail.replace("\\", "/")
 
 
 class DistributionTests(unittest.TestCase):
