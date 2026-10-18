@@ -109,6 +109,20 @@ jobs:
           $prefix = "$installRoot/x64-windows-static"
           $pkgconf = "$prefix/tools/pkgconf/pkgconf.exe"
           if (-not (Test-Path $pkgconf)) { throw "Missing native pkgconf executable: $pkgconf" }
+          # tesseract-rs 0.4.0 retains `#[link(name = "tesseract")]` in its
+          # FFI declarations even when `use-system-tesseract` is selected.
+          # vcpkg 5.5 installs the static archive as tesseract55.lib, while
+          # pkgconf correctly reports `-ltesseract55`. Provide the exact alias
+          # required by those declarations and prove it names the same archive.
+          $tesseractArchive = "$prefix/lib/tesseract55.lib"
+          $tesseractAlias = "$prefix/lib/tesseract.lib"
+          if (-not (Test-Path $tesseractArchive)) {
+            throw "Missing vcpkg Tesseract static archive: $tesseractArchive"
+          }
+          Copy-Item -Force -LiteralPath $tesseractArchive -Destination $tesseractAlias
+          if ((Get-FileHash -Algorithm SHA256 $tesseractArchive).Hash -ne (Get-FileHash -Algorithm SHA256 $tesseractAlias).Hash) {
+            throw 'The tesseract-rs compatibility archive does not match vcpkg Tesseract'
+          }
           $env:PKG_CONFIG = $pkgconf
           $env:PKG_CONFIG_PATH = "$prefix/lib/pkgconfig;$prefix/share/pkgconfig"
           $env:PKG_CONFIG_LIBDIR = $env:PKG_CONFIG_PATH

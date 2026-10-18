@@ -70,3 +70,14 @@ checks on `4379d809` are **NOT TESTED** because no remote changes were allowed.
 Before release, run the unmodified security gate to green, execute native
 Windows publishing tests and the complete Linux release container on this exact
 commit, then review the macOS DMG result in an unrestricted native runner.
+
+## Windows OCR link follow-up
+
+The native Windows run for `00b59bcf` confirmed that publishing fixtures now
+pass, but all-features linking failed with `LNK1181` for `tesseract.lib`.
+vcpkg 5.5 supplies `tesseract55.lib`, while tesseract-rs 0.4.0 retains FFI
+declarations which request the generic library name even in system-library
+mode. The Windows workflow now copies the installed static archive to the
+compatibility name, checks both SHA-256 values, then invokes Cargo. This keeps
+OCR enabled and fails before Rust compilation if a future vcpkg layout differs.
+The native Windows rerun is pending after this local workflow change.
