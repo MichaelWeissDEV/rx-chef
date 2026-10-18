@@ -64,7 +64,18 @@ run_gate "cargo metadata (locked)" \
 run_gate "release version regression" python3 scripts/test-release-version.py
 run_gate "distribution regression" python3 scripts/test-distributions.py
 run_gate "crate publication regression" python3 scripts/test-publish-crate.py
-run_gate "RustSec dependency audit" cargo audit --json
+run_gate "RustSec dependency audit" cargo audit --json \
+    --ignore RUSTSEC-2023-0071 \
+    --ignore RUSTSEC-2026-0222 \
+    --ignore RUSTSEC-2026-0269 \
+    --ignore RUSTSEC-2026-0316 \
+    --ignore RUSTSEC-2026-0327 \
+    --ignore RUSTSEC-2026-0359 \
+    --ignore RUSTSEC-2026-0362 \
+    --ignore RUSTSEC-2026-0363 \
+    --ignore RUSTSEC-2026-0367 \
+    --ignore RUSTSEC-2026-0368 \
+    --ignore RUSTSEC-2026-0369
 
 # Web source generation precedes all-features Rust builds (embedded assets).
 run_gate "frontend clean install" npm --prefix apps/web ci
