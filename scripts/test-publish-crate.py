@@ -32,7 +32,8 @@ class PublishCrateTests(unittest.TestCase):
             bash_search_path = bash_path(self.bin) + ":" + base_path
         else:
             bash_search_path = str(self.bin) + os.pathsep + os.environ["PATH"]
-        self.env = {**os.environ, "PATH": bash_search_path,
+        self.bash_search_path = bash_search_path
+        self.env = {**os.environ,
                     "CALL_LOG": bash_path(self.log), "CARGO_REGISTRY_TOKEN": "fixture-token",
                     "INDEX_CALLS": bash_path(self.root / "index-count"), "REGISTRY_CASE": "publish",
                     # The Bash helpers need POSIX paths; the native Python
@@ -95,12 +96,35 @@ else:
 
     def test_fixtures_shadow_real_commands(self):
         resolved = subprocess.check_output(
-            [bash_executable(), "-c", "command -v cargo curl sleep"],
+            [
+                bash_executable(), "--noprofile", "--norc", "-c",
+                'PATH="$1"; export PATH; command -v cargo curl sleep',
+                "bash", self.bash_search_path,
+            ],
             env=self.env,
             text=True,
         ).splitlines()
         self.assertEqual([Path(path).name for path in resolved], ["cargo", "curl", "sleep"])
         self.assertTrue(all(path.startswith(bash_path(self.bin) + "/") for path in resolved))
+
+    def bash_command(self, *command):
+        """Set the fixture PATH inside Bash after Git Bash starts.
+
+        Passing POSIX PATH through Windows' process environment lets MSYS2
+        rewrite it before the shell evaluates a script. Setting it inside the
+        started shell prevents Git's curl.exe and Cargo from shadowing the
+        test fixtures.
+        """
+        return [
+            bash_executable(),
+            "--noprofile",
+            "--norc",
+            "-c",
+            'PATH="$1"; export PATH; shift; exec "$@"',
+            "bash",
+            self.bash_search_path,
+            *command,
+        ]
 
     def command(self, name, body):
         path = self.bin / name
@@ -109,7 +133,8 @@ else:
 
     def run_helper(self, *args, case="publish", success=True):
         self.env["REGISTRY_CASE"] = case
-        result = subprocess.run([bash_executable(), str(self.root / "scripts/publish-crate.sh"), *args],
+        result = subprocess.run(self.bash_command(
+            bash_path(self.root / "scripts/publish-crate.sh"), *args),
                                 env=self.env, capture_output=True, text=True, timeout=30)
         if success:
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
