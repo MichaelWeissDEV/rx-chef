@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """No-publication tests for registry probes, dry-runs and propagation gates."""
 import os
+import ntpath
 from pathlib import Path
 import shutil
 import subprocess
@@ -10,6 +11,17 @@ import unittest
 from shell_runtime import bash_executable
 
 ROOT = Path(__file__).resolve().parent.parent
+
+
+def bash_path(path, platform=None):
+    """Express a native Windows path in Git Bash's /c/... namespace."""
+    value = str(path)
+    if (platform or os.name) != "nt":
+        return value
+    drive, tail = ntpath.splitdrive(value)
+    if not drive:
+        return value.replace("\\", "/")
+    return "/" + drive[0].lower() + tail.replace("\\", "/")
 
 
 class PublishCrateTests(unittest.TestCase):
@@ -22,7 +34,13 @@ class PublishCrateTests(unittest.TestCase):
         self.bin.mkdir()
         shutil.copy(ROOT / "scripts/publish-crate.sh", self.root / "scripts")
         self.log = self.root / "calls"
-        self.env = {**os.environ, "PATH": str(self.bin) + os.pathsep + os.environ["PATH"],
+        if os.name == "nt":
+            base_path = subprocess.check_output(
+                [bash_executable(), "-c", 'printf %s "$PATH"'], text=True)
+            bash_search_path = bash_path(self.bin) + ":" + base_path
+        else:
+            bash_search_path = str(self.bin) + os.pathsep + os.environ["PATH"]
+        self.env = {**os.environ, "PATH": bash_search_path,
                     "CALL_LOG": str(self.log), "CARGO_REGISTRY_TOKEN": "fixture-token",
                     "INDEX_CALLS": str(self.root / "index-count"), "REGISTRY_CASE": "publish"}
         self.command("cargo", '''if [[ "$1" == metadata ]]; then
