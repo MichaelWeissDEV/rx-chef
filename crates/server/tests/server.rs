@@ -955,11 +955,12 @@ fn shutdown_cancels_running_jobs_and_stops_listening() {
         .submit_job(EngineTask::Execute(slow_request()))
         .unwrap();
     wait_running(&remote, &job.id);
-    let addr = server.addr;
     let started = Instant::now();
-    drop(server); // joins the serving thread, i.e. graceful shutdown completed
+    // The join proves serve() returned and released its owned listener. A new
+    // connect to the ephemeral address can hit another parallel test server
+    // after the OS reuses the port, so it cannot identify this server.
+    drop(server);
     assert!(started.elapsed() < Duration::from_secs(10));
-    assert!(std::net::TcpStream::connect_timeout(&addr, Duration::from_millis(500)).is_err());
     let _ = job;
 }
 
