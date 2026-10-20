@@ -64,7 +64,10 @@ run_gate "cargo metadata (locked)" \
 run_gate "release version regression" python3 scripts/test-release-version.py
 run_gate "distribution regression" python3 scripts/test-distributions.py
 run_gate "crate publication regression" python3 scripts/test-publish-crate.py
-run_gate "RustSec dependency audit" cargo audit --json
+# RUSTSEC-2023-0071 has no patched rsa release. The remaining copies are
+# transitive dependencies of ssh-key, sequoia-openpgp, and optional yara-x;
+# core RSA operations use OpenSSL. Keep all other advisories blocking CI.
+run_gate "RustSec dependency audit" cargo audit --json --ignore RUSTSEC-2023-0071
 
 # Web source generation precedes all-features Rust builds (embedded assets).
 run_gate "frontend clean install" npm --prefix apps/web ci

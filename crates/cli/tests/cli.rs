@@ -326,6 +326,68 @@ fn cli_resource_limits_bound_magic_and_scan() {
 }
 
 #[test]
+fn scan_finding_limit_applies_across_files() {
+    let (directory, home) = isolated_store();
+    std::fs::write(directory.join("first.txt"), b"SGVsbG8gV29ybGQ=").unwrap();
+    std::fs::write(
+        directory.join("second.txt"),
+        b"SGVsbG8gV29ybGQ= U0dWc2JHOD0= SGVsbG8gV29ybGQ=",
+    )
+    .unwrap();
+    let result = rxchef_in(
+        &[
+            "scan",
+            "--json",
+            "--min-len",
+            "8",
+            "--max-findings",
+            "3",
+            "first.txt",
+            "second.txt",
+        ],
+        None,
+        &directory,
+        &home,
+    );
+    assert_success(&result);
+    let findings: Vec<serde_json::Value> = String::from_utf8(result.stdout)
+        .unwrap()
+        .lines()
+        .map(|line| serde_json::from_str(line).unwrap())
+        .collect();
+    assert_eq!(findings.len(), 3);
+    assert_eq!(findings[0]["file"], "first.txt");
+    assert_eq!(findings[1]["file"], "second.txt");
+    assert_eq!(findings[2]["file"], "second.txt");
+    std::fs::remove_dir_all(directory).unwrap();
+}
+
+#[cfg(unix)]
+#[test]
+fn scan_recursive_walk_skips_symbolic_links() {
+    let (directory, home) = isolated_store();
+    let source = directory.join("source");
+    let nested = source.join("nested");
+    std::fs::create_dir_all(&nested).unwrap();
+    let input = nested.join("input.txt");
+    std::fs::write(&input, b"SGVsbG8gV29ybGQ=").unwrap();
+    std::os::unix::fs::symlink(&source, nested.join("ancestor")).unwrap();
+    std::os::unix::fs::symlink(&input, source.join("linked-file")).unwrap();
+    let result = rxchef_in(
+        &["scan", "--recursive", "--json", "--min-len", "8", "source"],
+        None,
+        &directory,
+        &home,
+    );
+    assert_success(&result);
+    let stdout = String::from_utf8(result.stdout).unwrap();
+    assert_eq!(stdout.lines().count(), 1);
+    let finding: serde_json::Value = serde_json::from_str(stdout.trim()).unwrap();
+    assert_eq!(finding["file"], "source/nested/input.txt");
+    std::fs::remove_dir_all(directory).unwrap();
+}
+
+#[test]
 fn top_level_and_subcommand_help_are_useful() {
     let top = rxchef(&["--help"], None);
     assert_success(&top);

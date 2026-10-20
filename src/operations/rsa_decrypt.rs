@@ -8,17 +8,12 @@
  * -----------------------------------------------------------------------------
  */
 
-use md5::Md5;
-use rsa::{
-    pkcs1::DecodeRsaPrivateKey,
-    pkcs8::DecodePrivateKey,
-    traits::{PrivateKeyParts, PublicKeyParts},
-    Oaep, Pkcs1v15Encrypt, RsaPrivateKey,
-};
-use sha1::Sha1;
-use sha2::{Sha224, Sha256, Sha384, Sha512};
+use openssl::{encrypt::Decrypter, rsa::Padding};
 
-use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
+use crate::{
+    operation::{ArgSchema, ArgValue, DataType, Operation, OperationError},
+    rsa_backend,
+};
 
 /// RSA Decrypt operation
 pub struct RSADecrypt;
@@ -107,53 +102,67 @@ impl Operation for RSADecrypt {
         }
 
         let priv_key = if password.is_empty() {
-            RsaPrivateKey::from_pkcs8_pem(pem_key)
-                .or_else(|_| RsaPrivateKey::from_pkcs1_pem(pem_key))
-                .map_err(|e| {
-                    OperationError::InvalidInput(format!("Failed to load private key: {}", e))
-                })?
+            rsa_backend::private_key_from_pem(pem_key)
         } else {
-            RsaPrivateKey::from_pkcs8_pem(pem_key)
-                .or_else(|_| RsaPrivateKey::from_pkcs1_pem(pem_key))
-                .map_err(|e| {
-                    OperationError::InvalidInput(format!(
-                        "Failed to load private key (password not supported): {}",
-                        e
-                    ))
-                })?
-        };
+            openssl::pkey::PKey::private_key_from_pem_passphrase(
+                pem_key.as_bytes(),
+                password.as_bytes(),
+            )
+        }
+        .map_err(|e| OperationError::InvalidInput(format!("Failed to load private key: {e}")))?;
 
         let decrypted = match scheme {
             "RSA-OAEP" => {
-                let padding = match md {
-                    "SHA-1" => Oaep::new::<Sha1>(),
-                    "SHA-224" => Oaep::new::<Sha224>(),
-                    "SHA-256" => Oaep::new::<Sha256>(),
-                    "SHA-384" => Oaep::new::<Sha384>(),
-                    "SHA-512" => Oaep::new::<Sha512>(),
-                    "MD5" => Oaep::new::<Md5>(),
-                    _ => {
-                        return Err(OperationError::InvalidInput(format!(
-                            "Unsupported digest: {}",
-                            md
-                        )))
-                    }
-                };
-                priv_key.decrypt(padding, &input)
+                let digest = rsa_backend::digest(md).ok_or_else(|| {
+                    OperationError::InvalidInput(format!("Unsupported digest: {md}"))
+                })?;
+                let mut decrypter = Decrypter::new(&priv_key)
+                    .map_err(|e| OperationError::InvalidInput(format!("Decryption failed: {e}")))?;
+                decrypter
+                    .set_rsa_padding(Padding::PKCS1_OAEP)
+                    .and_then(|_| decrypter.set_rsa_oaep_md(digest))
+                    .and_then(|_| decrypter.set_rsa_mgf1_md(digest))
+                    .map_err(|e| OperationError::InvalidInput(format!("Decryption failed: {e}")))?;
+                let mut output = vec![
+                    0;
+                    decrypter.decrypt_len(&input).map_err(|e| {
+                        OperationError::InvalidInput(format!("Decryption failed: {e}"))
+                    })?
+                ];
+                let len = decrypter
+                    .decrypt(&input, &mut output)
+                    .map_err(|e| OperationError::InvalidInput(format!("Decryption failed: {e}")))?;
+                output.truncate(len);
+                Ok(output)
             }
-            "RSAES-PKCS1-V1_5" => priv_key.decrypt(Pkcs1v15Encrypt, &input),
+            "RSAES-PKCS1-V1_5" => {
+                let mut decrypter = Decrypter::new(&priv_key)
+                    .map_err(|e| OperationError::InvalidInput(format!("Decryption failed: {e}")))?;
+                decrypter
+                    .set_rsa_padding(Padding::PKCS1)
+                    .map_err(|e| OperationError::InvalidInput(format!("Decryption failed: {e}")))?;
+                let mut output = vec![
+                    0;
+                    decrypter.decrypt_len(&input).map_err(|e| {
+                        OperationError::InvalidInput(format!("Decryption failed: {e}"))
+                    })?
+                ];
+                let len = decrypter
+                    .decrypt(&input, &mut output)
+                    .map_err(|e| OperationError::InvalidInput(format!("Decryption failed: {e}")))?;
+                output.truncate(len);
+                Ok(output)
+            }
             "RAW" => {
-                let n = priv_key.n();
-                let c = rsa::BigUint::from_bytes_be(&input);
-                if &c >= n {
-                    return Err(OperationError::InvalidInput(
-                        "Ciphertext too large for key size".to_string(),
-                    ));
-                }
-                let d = priv_key.d();
-                let m = c.modpow(d, n);
-                let m_bytes = m.to_bytes_be();
-                Ok(m_bytes)
+                let rsa = priv_key.rsa().map_err(|e| {
+                    OperationError::InvalidInput(format!("Failed to load private key: {e}"))
+                })?;
+                let mut output = vec![0; rsa.size() as usize];
+                let len = rsa
+                    .private_decrypt(&input, &mut output, Padding::NONE)
+                    .map_err(|e| OperationError::InvalidInput(format!("Decryption failed: {e}")))?;
+                output.truncate(len);
+                Ok(output)
             }
             _ => {
                 return Err(OperationError::InvalidInput(format!(
@@ -161,8 +170,7 @@ impl Operation for RSADecrypt {
                     scheme
                 )))
             }
-        }
-        .map_err(|e| OperationError::InvalidInput(format!("Decryption failed: {}", e)))?;
+        }?;
 
         Ok(decrypted)
     }

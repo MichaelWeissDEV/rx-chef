@@ -19,6 +19,7 @@ pub mod magic;
 pub mod operation;
 pub mod operations;
 pub mod pipeline;
+mod rsa_backend;
 pub mod runtime;
 pub mod scan;
 

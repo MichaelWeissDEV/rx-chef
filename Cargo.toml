@@ -24,6 +24,7 @@ categories = ["command-line-utilities", "cryptography", "encoding"]
 include = [
     "src/**",
     "include/**",
+    "/examples/generate_operation_docs.rs",
     "/LICENSE",
     "/README.md",
 ]
@@ -94,7 +95,7 @@ rand       = "0.8"
 pbkdf2     = "0.12"
 argon2     = "0.5"
 scrypt     = "0.11"
-rsa        = { version = "0.9", features = ["sha2"] }
+openssl    = "0.10.81"
 cipher     = "0.4"
 block-padding = "0.3"
 generic-array = "0.14"
@@ -161,7 +162,9 @@ protobuf = "3.7.2"
 protobuf-parse = "3.7.2"
 tempfile = "3.23.0"
 prost = "0.14.3"
-yara-x = { version = "1.16.0", optional = true }
+# 1.21.0 is vulnerable through rsa 0.9, zip 8 and Wasmtime 45.  Pin the
+# upstream security-update commit until the next crates.io release includes it.
+yara-x = { version = "1.21.0", git = "https://github.com/VirusTotal/yara-x.git", rev = "649cd3bb08e1c4ecc1524cc016c7aa27a75d2193", optional = true }
 phf = "0.13.1"
 phf_codegen = "0.13.1"
 deku = "0.20.3"
@@ -210,3 +213,8 @@ disassembly = ["dep:capstone"]
 [profile.dist]
 inherits = "release"
 lto = "thin"
+
+# tesseract-rs 0.4.0 links dynamically on Windows even with a static vcpkg
+# archive. Patch that link kind and its vulnerable zip build dependency.
+[patch.crates-io]
+tesseract-rs = { path = "vendor/tesseract-rs" }

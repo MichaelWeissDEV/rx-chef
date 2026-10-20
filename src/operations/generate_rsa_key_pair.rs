@@ -8,12 +8,7 @@
  * -----------------------------------------------------------------------------
  */
 
-use rand::thread_rng;
-use rsa::{
-    pkcs1::{EncodeRsaPrivateKey, EncodeRsaPublicKey},
-    traits::{PrivateKeyParts, PublicKeyParts},
-    RsaPrivateKey, RsaPublicKey,
-};
+use openssl::rsa::Rsa;
 use serde_json::json;
 
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
@@ -97,41 +92,88 @@ impl Operation for GenerateRSAKeyPair {
 
         let output_format = args.get(1).and_then(|v| v.as_str()).unwrap_or("PEM");
 
-        let mut rng = thread_rng();
-        let private_key = RsaPrivateKey::new(&mut rng, key_length).map_err(|e| {
+        let private_key = Rsa::generate(key_length as u32).map_err(|e| {
             OperationError::ProcessingError(format!("Key generation failed: {}", e))
         })?;
-        let public_key = RsaPublicKey::from(&private_key);
-
         match output_format {
             "PEM" => {
-                let priv_pem = private_key
-                    .to_pkcs1_pem(rsa::pkcs1::LineEnding::LF)
-                    .map_err(|e| {
-                        OperationError::ProcessingError(format!(
-                            "Failed to encode private key to PEM: {}",
-                            e
-                        ))
-                    })?;
-                let pub_pem = public_key
-                    .to_pkcs1_pem(rsa::pkcs1::LineEnding::LF)
-                    .map_err(|e| {
-                        OperationError::ProcessingError(format!(
-                            "Failed to encode public key to PEM: {}",
-                            e
-                        ))
-                    })?;
+                let priv_pem = private_key.private_key_to_pem().map_err(|e| {
+                    OperationError::ProcessingError(format!(
+                        "Failed to encode private key to PEM: {}",
+                        e
+                    ))
+                })?;
+                let pub_pem = private_key.public_key_to_pem_pkcs1().map_err(|e| {
+                    OperationError::ProcessingError(format!(
+                        "Failed to encode public key to PEM: {}",
+                        e
+                    ))
+                })?;
 
-                let result = format!("{}\n{}", pub_pem, &*priv_pem);
+                let result = format!(
+                    "{}\n{}",
+                    String::from_utf8_lossy(&pub_pem),
+                    String::from_utf8_lossy(&priv_pem)
+                );
                 Ok(result.into_bytes())
             }
             "JSON" => {
                 // node-forge like JSON
-                let n = private_key.n().to_str_radix(16);
-                let e = private_key.e().to_str_radix(16);
-                let d = private_key.d().to_str_radix(16);
-                let p = private_key.primes()[0].to_str_radix(16);
-                let q = private_key.primes()[1].to_str_radix(16);
+                let n = private_key
+                    .n()
+                    .to_hex_str()
+                    .map_err(|e| {
+                        OperationError::ProcessingError(format!(
+                            "Failed to encode RSA component: {e}"
+                        ))
+                    })?
+                    .to_string();
+                let e = private_key
+                    .e()
+                    .to_hex_str()
+                    .map_err(|e| {
+                        OperationError::ProcessingError(format!(
+                            "Failed to encode RSA component: {e}"
+                        ))
+                    })?
+                    .to_string();
+                let d = private_key
+                    .d()
+                    .to_hex_str()
+                    .map_err(|e| {
+                        OperationError::ProcessingError(format!(
+                            "Failed to encode RSA component: {e}"
+                        ))
+                    })?
+                    .to_string();
+                let p = private_key
+                    .p()
+                    .ok_or_else(|| {
+                        OperationError::ProcessingError(
+                            "Generated RSA key is missing p".to_string(),
+                        )
+                    })?
+                    .to_hex_str()
+                    .map_err(|e| {
+                        OperationError::ProcessingError(format!(
+                            "Failed to encode RSA component: {e}"
+                        ))
+                    })?
+                    .to_string();
+                let q = private_key
+                    .q()
+                    .ok_or_else(|| {
+                        OperationError::ProcessingError(
+                            "Generated RSA key is missing q".to_string(),
+                        )
+                    })?
+                    .to_hex_str()
+                    .map_err(|e| {
+                        OperationError::ProcessingError(format!(
+                            "Failed to encode RSA component: {e}"
+                        ))
+                    })?
+                    .to_string();
 
                 let json_res = json!({
                     "publicKey": {
@@ -151,13 +193,13 @@ impl Operation for GenerateRSAKeyPair {
                     .into_bytes())
             }
             "DER" => {
-                let priv_der = private_key.to_pkcs1_der().map_err(|e| {
+                let priv_der = private_key.private_key_to_der().map_err(|e| {
                     OperationError::ProcessingError(format!(
                         "Failed to encode private key to DER: {}",
                         e
                     ))
                 })?;
-                Ok(priv_der.to_bytes().to_vec())
+                Ok(priv_der)
             }
             _ => Err(OperationError::InvalidArgument {
                 name: "Output Format".to_string(),

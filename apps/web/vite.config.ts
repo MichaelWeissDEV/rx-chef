@@ -17,5 +17,13 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        // Keep the editor's vendor code separate from the application and contracts.
+        manualChunks(id) {
+          if (id.includes('/node_modules/@codemirror/') || id.includes('/node_modules/@lezer/')) return 'editor';
+        },
+      },
+    },
   },
 });

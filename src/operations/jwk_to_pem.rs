@@ -9,7 +9,12 @@
  */
 
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
-use rsa::pkcs8::{EncodePrivateKey, EncodePublicKey};
+use openssl::{
+    bn::{BigNum, BigNumContext},
+    pkey::PKey,
+    rsa::Rsa,
+};
+use p256::pkcs8::{EncodePrivateKey, EncodePublicKey};
 use serde_json::Value;
 
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
@@ -74,75 +79,152 @@ impl Operation for JWKToPem {
                         OperationError::ProcessingError("RSA JWK missing e".to_string())
                     })?;
 
-                    let n = rsa::BigUint::from_bytes_be(&URL_SAFE_NO_PAD.decode(n_b64).map_err(
-                        |_| OperationError::ProcessingError("Invalid base64 in n".to_string()),
-                    )?);
-                    let e = rsa::BigUint::from_bytes_be(&URL_SAFE_NO_PAD.decode(e_b64).map_err(
-                        |_| OperationError::ProcessingError("Invalid base64 in e".to_string()),
-                    )?);
+                    let n = BigNum::from_slice(&URL_SAFE_NO_PAD.decode(n_b64).map_err(|_| {
+                        OperationError::ProcessingError("Invalid base64 in n".to_string())
+                    })?)
+                    .map_err(|e| {
+                        OperationError::ProcessingError(format!("Invalid RSA modulus: {e}"))
+                    })?;
+                    let e = BigNum::from_slice(&URL_SAFE_NO_PAD.decode(e_b64).map_err(|_| {
+                        OperationError::ProcessingError("Invalid base64 in e".to_string())
+                    })?)
+                    .map_err(|e| {
+                        OperationError::ProcessingError(format!("Invalid RSA exponent: {e}"))
+                    })?;
 
                     if let Some(d_b64) = jwk.get("d").and_then(|v| v.as_str()) {
                         // Private key
-                        let d = rsa::BigUint::from_bytes_be(
-                            &URL_SAFE_NO_PAD.decode(d_b64).map_err(|_| {
+                        let d =
+                            BigNum::from_slice(&URL_SAFE_NO_PAD.decode(d_b64).map_err(|_| {
                                 OperationError::ProcessingError("Invalid base64 in d".to_string())
-                            })?,
-                        );
+                            })?)
+                            .map_err(|e| {
+                                OperationError::ProcessingError(format!(
+                                    "Invalid RSA private exponent: {e}"
+                                ))
+                            })?;
                         let p_b64 = jwk.get("p").and_then(|v| v.as_str()).ok_or_else(|| {
                             OperationError::ProcessingError("RSA private JWK missing p".to_string())
                         })?;
                         let q_b64 = jwk.get("q").and_then(|v| v.as_str()).ok_or_else(|| {
                             OperationError::ProcessingError("RSA private JWK missing q".to_string())
                         })?;
-                        let p = rsa::BigUint::from_bytes_be(
-                            &URL_SAFE_NO_PAD.decode(p_b64).map_err(|_| {
+                        let p =
+                            BigNum::from_slice(&URL_SAFE_NO_PAD.decode(p_b64).map_err(|_| {
                                 OperationError::ProcessingError("Invalid base64 in p".to_string())
-                            })?,
-                        );
-                        let q = rsa::BigUint::from_bytes_be(
-                            &URL_SAFE_NO_PAD.decode(q_b64).map_err(|_| {
-                                OperationError::ProcessingError("Invalid base64 in q".to_string())
-                            })?,
-                        );
-
-                        let primes = vec![p, q];
-                        let priv_key = rsa::RsaPrivateKey::from_components(n, e, d, primes)
+                            })?)
                             .map_err(|e| {
-                                OperationError::ProcessingError(format!(
-                                    "Invalid RSA key components: {}",
-                                    e
-                                ))
+                                OperationError::ProcessingError(format!("Invalid RSA prime: {e}"))
                             })?;
-                        output.push_str(
-                            &priv_key
-                                .to_pkcs8_pem(rsa::pkcs8::LineEnding::LF)
+                        let q =
+                            BigNum::from_slice(&URL_SAFE_NO_PAD.decode(q_b64).map_err(|_| {
+                                OperationError::ProcessingError("Invalid base64 in q".to_string())
+                            })?)
+                            .map_err(|e| {
+                                OperationError::ProcessingError(format!("Invalid RSA prime: {e}"))
+                            })?;
+
+                        let mut context = BigNumContext::new().map_err(|e| {
+                            OperationError::ProcessingError(format!(
+                                "Invalid RSA key components: {e}"
+                            ))
+                        })?;
+                        let mut p_minus_one = p.to_owned().map_err(|e| {
+                            OperationError::ProcessingError(format!(
+                                "Invalid RSA key components: {e}"
+                            ))
+                        })?;
+                        p_minus_one.sub_word(1).map_err(|e| {
+                            OperationError::ProcessingError(format!(
+                                "Invalid RSA key components: {e}"
+                            ))
+                        })?;
+                        let mut q_minus_one = q.to_owned().map_err(|e| {
+                            OperationError::ProcessingError(format!(
+                                "Invalid RSA key components: {e}"
+                            ))
+                        })?;
+                        q_minus_one.sub_word(1).map_err(|e| {
+                            OperationError::ProcessingError(format!(
+                                "Invalid RSA key components: {e}"
+                            ))
+                        })?;
+                        let mut dmp1 = BigNum::new().map_err(|e| {
+                            OperationError::ProcessingError(format!(
+                                "Invalid RSA key components: {e}"
+                            ))
+                        })?;
+                        dmp1.nnmod(&d, &p_minus_one, &mut context).map_err(|e| {
+                            OperationError::ProcessingError(format!(
+                                "Invalid RSA key components: {e}"
+                            ))
+                        })?;
+                        let mut dmq1 = BigNum::new().map_err(|e| {
+                            OperationError::ProcessingError(format!(
+                                "Invalid RSA key components: {e}"
+                            ))
+                        })?;
+                        dmq1.nnmod(&d, &q_minus_one, &mut context).map_err(|e| {
+                            OperationError::ProcessingError(format!(
+                                "Invalid RSA key components: {e}"
+                            ))
+                        })?;
+                        let mut iqmp = BigNum::new().map_err(|e| {
+                            OperationError::ProcessingError(format!(
+                                "Invalid RSA key components: {e}"
+                            ))
+                        })?;
+                        iqmp.mod_inverse(&q, &p, &mut context).map_err(|e| {
+                            OperationError::ProcessingError(format!(
+                                "Invalid RSA key components: {e}"
+                            ))
+                        })?;
+                        let priv_key = Rsa::from_private_components(
+                            n, e, d, p, q, dmp1, dmq1, iqmp,
+                        )
+                        .map_err(|e| {
+                            OperationError::ProcessingError(format!(
+                                "Invalid RSA key components: {e}"
+                            ))
+                        })?;
+                        output.push_str(&String::from_utf8_lossy(
+                            &PKey::from_rsa(priv_key)
+                                .map_err(|e| {
+                                    OperationError::ProcessingError(format!(
+                                        "Failed to encode PEM: {e}"
+                                    ))
+                                })?
+                                .private_key_to_pem_pkcs8()
                                 .map_err(|e| {
                                     OperationError::ProcessingError(format!(
                                         "Failed to encode PEM: {}",
                                         e
                                     ))
-                                })?
-                                .to_string(),
-                        );
+                                })?,
+                        ));
                     } else {
                         // Public key
-                        let pub_key = rsa::RsaPublicKey::new(n, e).map_err(|e| {
+                        let pub_key = Rsa::from_public_components(n, e).map_err(|e| {
                             OperationError::ProcessingError(format!(
                                 "Invalid RSA key components: {}",
                                 e
                             ))
                         })?;
-                        output.push_str(
-                            &pub_key
-                                .to_public_key_pem(rsa::pkcs8::LineEnding::LF)
+                        output.push_str(&String::from_utf8_lossy(
+                            &PKey::from_rsa(pub_key)
+                                .map_err(|e| {
+                                    OperationError::ProcessingError(format!(
+                                        "Failed to encode PEM: {e}"
+                                    ))
+                                })?
+                                .public_key_to_pem()
                                 .map_err(|e| {
                                     OperationError::ProcessingError(format!(
                                         "Failed to encode PEM: {}",
                                         e
                                     ))
-                                })?
-                                .to_string(),
-                        );
+                                })?,
+                        ));
                     }
                 }
                 "EC" => {
@@ -178,7 +260,7 @@ impl Operation for JWKToPem {
                                     ))
                                 })?;
                                 output.push_str(
-                                    &priv_key
+                                    priv_key
                                         .to_pkcs8_pem(p256::pkcs8::LineEnding::LF)
                                         .map_err(|e| {
                                             OperationError::ProcessingError(format!(
@@ -186,7 +268,7 @@ impl Operation for JWKToPem {
                                                 e
                                             ))
                                         })?
-                                        .to_string(),
+                                        .as_ref(),
                                 );
                             } else {
                                 let mut encoded = vec![0x04];
@@ -200,7 +282,7 @@ impl Operation for JWKToPem {
                                         ))
                                     })?;
                                 output.push_str(
-                                    &pub_key
+                                    pub_key
                                         .to_public_key_pem(p256::pkcs8::LineEnding::LF)
                                         .map_err(|e| {
                                             OperationError::ProcessingError(format!(
@@ -208,7 +290,7 @@ impl Operation for JWKToPem {
                                                 e
                                             ))
                                         })?
-                                        .to_string(),
+                                        .as_ref(),
                                 );
                             }
                         }
@@ -226,7 +308,7 @@ impl Operation for JWKToPem {
                                     ))
                                 })?;
                                 output.push_str(
-                                    &priv_key
+                                    priv_key
                                         .to_pkcs8_pem(k256::pkcs8::LineEnding::LF)
                                         .map_err(|e| {
                                             OperationError::ProcessingError(format!(
@@ -234,7 +316,7 @@ impl Operation for JWKToPem {
                                                 e
                                             ))
                                         })?
-                                        .to_string(),
+                                        .as_ref(),
                                 );
                             } else {
                                 let mut encoded = vec![0x04];
@@ -248,7 +330,7 @@ impl Operation for JWKToPem {
                                         ))
                                     })?;
                                 output.push_str(
-                                    &pub_key
+                                    pub_key
                                         .to_public_key_pem(k256::pkcs8::LineEnding::LF)
                                         .map_err(|e| {
                                             OperationError::ProcessingError(format!(
@@ -256,7 +338,7 @@ impl Operation for JWKToPem {
                                                 e
                                             ))
                                         })?
-                                        .to_string(),
+                                        .as_ref(),
                                 );
                             }
                         }

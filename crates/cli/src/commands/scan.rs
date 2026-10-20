@@ -42,6 +42,9 @@ pub(crate) fn cmd_scan(a: ScanArgs) -> Result<(), String> {
     }
 
     'sources: for src in sources {
+        if total.get() >= a.max_findings {
+            break;
+        }
         let label = src
             .as_ref()
             .map(|p| p.display().to_string())
@@ -55,7 +58,10 @@ pub(crate) fn cmd_scan(a: ScanArgs) -> Result<(), String> {
         };
         let mut reader = io::BufReader::with_capacity(64 * 1024, reader);
 
-        let mut scanner = Scanner::new(opts.clone());
+        let mut scanner = Scanner::new(ScanOptions {
+            max_findings: a.max_findings - total.get(),
+            ..opts.clone()
+        });
         let mut buf = vec![0u8; 64 * 1024];
         let mut emit = |f: rxchef::scan::Finding| {
             total.set(total.get() + 1);
@@ -83,28 +89,34 @@ pub(crate) fn cmd_scan(a: ScanArgs) -> Result<(), String> {
     Ok(())
 }
 
-/// Expand a path into a list of files to scan, walking directories.
+/// Expand a path into regular files, without following symbolic links.
 pub(crate) fn collect_paths(
     path: &std::path::Path,
     recursive: bool,
     out: &mut Vec<Option<PathBuf>>,
 ) -> Result<(), String> {
-    let meta = fs::metadata(path).map_err(|e| format!("cannot stat '{}': {e}", path.display()))?;
+    let meta =
+        fs::symlink_metadata(path).map_err(|e| format!("cannot stat '{}': {e}", path.display()))?;
     if meta.is_dir() {
         let entries =
             fs::read_dir(path).map_err(|e| format!("cannot read dir '{}': {e}", path.display()))?;
-        let mut children: Vec<PathBuf> = entries.filter_map(|e| e.ok().map(|e| e.path())).collect();
-        children.sort();
+        let mut children = entries
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(|e| format!("cannot read dir '{}': {e}", path.display()))?;
+        children.sort_by_key(|entry| entry.path());
         for child in children {
-            if child.is_dir() {
+            let kind = child
+                .file_type()
+                .map_err(|e| format!("cannot stat '{}': {e}", child.path().display()))?;
+            if kind.is_dir() {
                 if recursive {
-                    collect_paths(&child, recursive, out)?;
+                    collect_paths(&child.path(), recursive, out)?;
                 }
-            } else {
-                out.push(Some(child));
+            } else if kind.is_file() {
+                out.push(Some(child.path()));
             }
         }
-    } else {
+    } else if meta.is_file() {
         out.push(Some(path.to_path_buf()));
     }
     Ok(())
@@ -144,3 +156,13 @@ pub(crate) fn print_finding<W: Write>(
 }
 
 // ─── Pipeline execution helpers ───────────────────────────────────────────────
+
+#[cfg(all(test, unix))]
+mod tests {
+    #[test]
+    fn scan_skips_non_regular_files() {
+        let mut files = Vec::new();
+        super::collect_paths(std::path::Path::new("/dev/null"), true, &mut files).unwrap();
+        assert!(files.is_empty());
+    }
+}

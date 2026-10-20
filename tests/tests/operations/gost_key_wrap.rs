@@ -86,8 +86,7 @@ fn test_gost_key_wrap_matches_cyberchef_reference_vectors() {
         .unwrap();
     assert_eq!(
         kuzn_result,
-        b"b0b6cd75f7d4abaeef05831ebbdc2548ab6e07a461794982b30d29d48a5dda5476b7e051e5f72007"
-            .as_ref()
+        &b"b0b6cd75f7d4abaeef05831ebbdc2548ab6e07a461794982b30d29d48a5dda5476b7e051e5f72007"[..]
     );
 }
 

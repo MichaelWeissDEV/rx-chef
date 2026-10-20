@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Run the complete Linux release gate
         run: ./scripts/release-check-linux.sh
 
@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Cross-build Windows CLI and TUI
         run: ./scripts/check-windows-cross.sh
 
@@ -54,7 +54,7 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Prefer Strawberry Perl over Git's bundled Perl
         # Git for Windows ships its own minimal `perl` earlier on PATH than
         # Strawberry Perl in bash shells on the windows-latest runner. That
@@ -67,14 +67,14 @@ jobs:
           echo 'C:/Strawberry/perl/bin' >> "$GITHUB_PATH"
           echo 'OPENSSL_SRC_PERL=C:/Strawberry/perl/bin/perl.exe' >> "$GITHUB_ENV"
           'C:/Strawberry/perl/bin/perl.exe' -MLocale::Maketext::Simple -MIPC::Cmd -e 'print "OpenSSL Perl ready\n"'
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Install the pinned Rust toolchain
         run: |
           rustup toolchain install 1.96.1 --profile minimal --component rustfmt,clippy
           rustup default 1.96.1
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: "22.20.0"
           cache: npm
@@ -109,11 +109,10 @@ jobs:
           $prefix = "$installRoot/x64-windows-static"
           $pkgconf = "$prefix/tools/pkgconf/pkgconf.exe"
           if (-not (Test-Path $pkgconf)) { throw "Missing native pkgconf executable: $pkgconf" }
-          # tesseract-rs 0.4.0 retains `#[link(name = "tesseract")]` in its
-          # FFI declarations even when `use-system-tesseract` is selected.
-          # vcpkg 5.5 installs the static archive as tesseract55.lib, while
-          # pkgconf correctly reports `-ltesseract55`. Provide the exact alias
-          # required by those declarations and prove it names the same archive.
+          # The local tesseract-rs patch links its FFI declarations statically
+          # on Windows. vcpkg 5.5 calls the archive tesseract55.lib; provide
+          # the tesseract.lib alias those declarations request and verify it
+          # names the same archive.
           $tesseractArchive = "$prefix/lib/tesseract55.lib"
           $tesseractAlias = "$prefix/lib/tesseract.lib"
           if (-not (Test-Path $tesseractArchive)) {

@@ -3,6 +3,38 @@ import { readFileSync } from 'node:fs';
 const { version } = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 import { readFile } from 'node:fs/promises';
 const token = 'browser-test-token-0123456789';
+test('changing connections during a recipe request leaves Bake available', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Server Bearer Token').fill(token);
+  await page.getByRole('button', { name: 'Connect (this session)' }).click();
+  await expect(page.getByText('Operations (478)')).toBeVisible();
+  let release!: () => void; let received!: () => void;
+  const gate = new Promise<void>(resolve => { release = resolve; });
+  const pending = new Promise<void>(resolve => { received = resolve; });
+  await page.route('**/api/v1/capabilities', async route => {
+    const response = await route.fetch(); received(); await gate; await route.fulfill({ response });
+  }, { times: 1 });
+  let submitted = 0;
+  page.on('request', request => {
+    if (request.method() === 'POST' && request.url().endsWith('/api/v1/jobs')) submitted++;
+  });
+  await page.getByRole('button', { name: 'Bake', exact: true }).click();
+  await pending;
+  try {
+    await page.getByTitle('Server Auth Token').click();
+    await page.getByLabel('Server Bearer Token').fill('replacement-token');
+    await page.getByRole('button', { name: 'Connect (this session)' }).click();
+    await expect(page.getByLabel('Server Bearer Token')).toBeVisible();
+    await page.getByLabel('Server Bearer Token').fill(token);
+    await page.getByRole('button', { name: 'Connect (this session)' }).click();
+    await expect(page.getByText('Operations (478)')).toBeVisible();
+  } finally { release(); }
+  await expect(page.getByRole('button', { name: 'Bake', exact: true })).toBeEnabled();
+  expect(submitted).toBe(0);
+  await page.getByRole('button', { name: 'Bake', exact: true }).click();
+  await expect(page.getByTitle('Download Raw Bytes')).toBeVisible();
+  expect(submitted).toBe(1);
+});
 test('public assets, protected API, memory session, binary import/export and reload', async ({ page, request }) => {
   expect((await request.get('/')).status()).toBe(200);
   await page.goto('/');

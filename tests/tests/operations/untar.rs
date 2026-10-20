@@ -20,7 +20,7 @@ fn test_untar_single_file() {
     header.set_size(5);
     header.set_path("test.txt").unwrap();
     header.set_cksum();
-    builder.append(&header, b"hello".as_ref()).unwrap();
+    builder.append(&header, &b"hello"[..]).unwrap();
     let input = builder.into_inner().unwrap();
     let result = op.run(input, &[]).unwrap();
     // The archive is produced by the independent `tar` crate; assert the
@@ -38,12 +38,12 @@ fn test_untar_multiple_files() {
     h1.set_size(5);
     h1.set_path("a.txt").unwrap();
     h1.set_cksum();
-    builder.append(&h1, b"aaaaa".as_ref()).unwrap();
+    builder.append(&h1, &b"aaaaa"[..]).unwrap();
     let mut h2 = tar::Header::new_gnu();
     h2.set_size(5);
     h2.set_path("b.txt").unwrap();
     h2.set_cksum();
-    builder.append(&h2, b"bbbbb".as_ref()).unwrap();
+    builder.append(&h2, &b"bbbbb"[..]).unwrap();
     let input = builder.into_inner().unwrap();
     let result = op.run(input, &[]).unwrap();
     let result_str = String::from_utf8_lossy(&result);

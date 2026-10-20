@@ -8,16 +8,12 @@
  * -----------------------------------------------------------------------------
  */
 
-use md5::Md5;
-use num_bigint::BigUint;
-use rsa::{
-    pkcs1::DecodeRsaPublicKey, pkcs8::DecodePublicKey, traits::PublicKeyParts, Oaep,
-    Pkcs1v15Encrypt, RsaPublicKey,
-};
-use sha1::Sha1;
-use sha2::{Sha224, Sha256, Sha384, Sha512};
+use openssl::{encrypt::Encrypter, rsa::Padding};
 
-use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
+use crate::{
+    operation::{ArgSchema, ArgValue, DataType, Operation, OperationError},
+    rsa_backend,
+};
 
 /// RSA Encrypt operation
 pub struct RSAEncrypt;
@@ -104,54 +100,69 @@ impl Operation for RSAEncrypt {
             ));
         }
 
-        let pub_key = RsaPublicKey::from_public_key_pem(pem_key)
-            .or_else(|_| RsaPublicKey::from_pkcs1_pem(pem_key))
-            .map_err(|e| {
-                OperationError::InvalidInput(format!("Failed to load public key: {}", e))
-            })?;
-
-        let mut rng = rand::thread_rng();
+        let pub_key = rsa_backend::public_key_from_pem(pem_key).map_err(|e| {
+            OperationError::InvalidInput(format!("Failed to load public key: {}", e))
+        })?;
 
         let encrypted = match scheme {
             "RSA-OAEP" => {
-                let padding = match md {
-                    "SHA-1" => Oaep::new::<Sha1>(),
-                    "SHA-224" => Oaep::new::<Sha224>(),
-                    "SHA-256" => Oaep::new::<Sha256>(),
-                    "SHA-384" => Oaep::new::<Sha384>(),
-                    "SHA-512" => Oaep::new::<Sha512>(),
-                    "MD5" => Oaep::new::<Md5>(),
-                    _ => {
-                        return Err(OperationError::InvalidInput(format!(
-                            "Unsupported digest: {}",
-                            md
-                        )))
-                    }
-                };
-                pub_key.encrypt(&mut rng, padding, &input)
+                let digest = rsa_backend::digest(md).ok_or_else(|| {
+                    OperationError::InvalidInput(format!("Unsupported digest: {}", md))
+                })?;
+                let mut encrypter = Encrypter::new(&pub_key)
+                    .map_err(|e| OperationError::InvalidInput(format!("Encryption failed: {e}")))?;
+                encrypter
+                    .set_rsa_padding(Padding::PKCS1_OAEP)
+                    .and_then(|_| encrypter.set_rsa_oaep_md(digest))
+                    .and_then(|_| encrypter.set_rsa_mgf1_md(digest))
+                    .map_err(|e| OperationError::InvalidInput(format!("Encryption failed: {e}")))?;
+                let mut output = vec![
+                    0;
+                    encrypter.encrypt_len(&input).map_err(|e| {
+                        OperationError::InvalidInput(format!("Encryption failed: {e}"))
+                    })?
+                ];
+                let len = encrypter
+                    .encrypt(&input, &mut output)
+                    .map_err(|e| OperationError::InvalidInput(format!("Encryption failed: {e}")))?;
+                output.truncate(len);
+                Ok(output)
             }
-            "RSAES-PKCS1-V1_5" => pub_key.encrypt(&mut rng, Pkcs1v15Encrypt, &input),
+            "RSAES-PKCS1-V1_5" => {
+                let mut encrypter = Encrypter::new(&pub_key)
+                    .map_err(|e| OperationError::InvalidInput(format!("Encryption failed: {e}")))?;
+                encrypter
+                    .set_rsa_padding(Padding::PKCS1)
+                    .map_err(|e| OperationError::InvalidInput(format!("Encryption failed: {e}")))?;
+                let mut output = vec![
+                    0;
+                    encrypter.encrypt_len(&input).map_err(|e| {
+                        OperationError::InvalidInput(format!("Encryption failed: {e}"))
+                    })?
+                ];
+                let len = encrypter
+                    .encrypt(&input, &mut output)
+                    .map_err(|e| OperationError::InvalidInput(format!("Encryption failed: {e}")))?;
+                output.truncate(len);
+                Ok(output)
+            }
             "RAW" => {
-                let n_bytes = pub_key.n().to_bytes_be();
-                let e_bytes = pub_key.e().to_bytes_be();
-                let n_big = BigUint::from_bytes_be(&n_bytes);
-                let e_big = BigUint::from_bytes_be(&e_bytes);
-                let m = BigUint::from_bytes_be(&input);
-                if &m >= &n_big {
+                let rsa = pub_key.rsa().map_err(|e| {
+                    OperationError::InvalidInput(format!("Failed to load public key: {e}"))
+                })?;
+                if input.len() > rsa.size() as usize {
                     return Err(OperationError::InvalidInput(
                         "Message too large for key size".to_string(),
                     ));
                 }
-                let c = m.modpow(&e_big, &n_big);
-                let mut c_bytes = c.to_bytes_be();
-                // `PublicKeyParts::size` is already expressed in bytes.
-                let key_size = pub_key.size();
-                if c_bytes.len() < key_size {
-                    let mut padded = vec![0u8; key_size - c_bytes.len()];
-                    padded.extend(c_bytes);
-                    c_bytes = padded;
-                }
-                Ok(c_bytes)
+                let mut output = vec![0; rsa.size() as usize];
+                let mut raw_input = vec![0; rsa.size() as usize - input.len()];
+                raw_input.extend_from_slice(&input);
+                let len = rsa
+                    .public_encrypt(&raw_input, &mut output, Padding::NONE)
+                    .map_err(|e| OperationError::InvalidInput(format!("Encryption failed: {e}")))?;
+                output.truncate(len);
+                Ok(output)
             }
             _ => {
                 return Err(OperationError::InvalidInput(format!(
@@ -159,8 +170,7 @@ impl Operation for RSAEncrypt {
                     scheme
                 )))
             }
-        }
-        .map_err(|e| OperationError::InvalidInput(format!("Encryption failed: {}", e)))?;
+        }?;
 
         Ok(encrypted)
     }

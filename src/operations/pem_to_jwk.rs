@@ -9,7 +9,7 @@
  */
 
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
-use rsa::{pkcs8::DecodePublicKey, traits::PublicKeyParts};
+use openssl::{pkey::PKey, rsa::Rsa};
 use serde_json::{json, Value};
 use x509_parser::prelude::*;
 
@@ -99,14 +99,17 @@ fn key_to_jwk(key_der: &[u8]) -> Result<Value, OperationError> {
 
     // RSA: 1.2.840.113549.1.1.1
     if oid == "1.2.840.113549.1.1.1" {
-        let rsa_pub = rsa::RsaPublicKey::from_public_key_der(key_der).map_err(|e| {
-            OperationError::ProcessingError(format!("Failed to parse RSA key: {}", e))
-        })?;
+        let rsa_pub = PKey::public_key_from_der(key_der)
+            .and_then(|key| key.rsa())
+            .or_else(|_| Rsa::public_key_from_der(key_der))
+            .map_err(|e| {
+                OperationError::ProcessingError(format!("Failed to parse RSA key: {e}"))
+            })?;
 
         return Ok(json!({
             "kty": "RSA",
-            "n": URL_SAFE_NO_PAD.encode(rsa_pub.n().to_bytes_be()),
-            "e": URL_SAFE_NO_PAD.encode(rsa_pub.e().to_bytes_be()),
+            "n": URL_SAFE_NO_PAD.encode(rsa_pub.n().to_vec()),
+            "e": URL_SAFE_NO_PAD.encode(rsa_pub.e().to_vec()),
         }));
     }
 

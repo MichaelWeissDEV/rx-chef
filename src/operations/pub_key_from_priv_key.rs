@@ -9,13 +9,10 @@
  */
 
 use k256::SecretKey as K256SecretKey;
+use openssl::pkey::PKey;
+use p256::pkcs8::{DecodePrivateKey, EncodePublicKey, LineEnding};
 use p256::SecretKey as P256SecretKey;
 use regex::Regex;
-use rsa::{
-    pkcs1::DecodeRsaPrivateKey,
-    pkcs8::{DecodePrivateKey, EncodePublicKey, LineEnding},
-    RsaPrivateKey,
-};
 
 use crate::operation::{ArgSchema, ArgValue, DataType, Operation, OperationError};
 // Removed redundant and failing spki import
@@ -65,21 +62,12 @@ impl Operation for PubKeyFromPrivKeyOp {
         for caps in re.captures_iter(&input_str) {
             let full_pem = caps.get(0).unwrap().as_str();
 
-            // Try RSA PKCS#8
-            if let Ok(priv_key) = RsaPrivateKey::from_pkcs8_pem(full_pem) {
-                let pub_key = priv_key.to_public_key();
-                if let Ok(pub_pem) = pub_key.to_public_key_pem(LineEnding::LF) {
-                    output.push_str(&pub_pem);
-                    continue;
-                }
-            }
-
-            // Try RSA PKCS#1
-            if let Ok(priv_key) = RsaPrivateKey::from_pkcs1_pem(full_pem) {
-                let pub_key = priv_key.to_public_key();
-                if let Ok(pub_pem) = pub_key.to_public_key_pem(LineEnding::LF) {
-                    output.push_str(&pub_pem);
-                    continue;
+            if let Ok(priv_key) = PKey::private_key_from_pem(full_pem.as_bytes()) {
+                if priv_key.rsa().is_ok() {
+                    if let Ok(pub_pem) = priv_key.public_key_to_pem() {
+                        output.push_str(&String::from_utf8_lossy(&pub_pem));
+                        continue;
+                    }
                 }
             }
 
