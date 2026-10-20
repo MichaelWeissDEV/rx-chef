@@ -126,11 +126,28 @@ jobs:
           $env:PKG_CONFIG_PATH = "$prefix/lib/pkgconfig;$prefix/share/pkgconfig"
           $env:PKG_CONFIG_LIBDIR = $env:PKG_CONFIG_PATH
           $env:PKG_CONFIG_ALL_STATIC = '1'
+          # lzma-sys otherwise compiles a second liblzma on MSVC, which
+          # duplicates symbols from vcpkg's static Leptonica dependency.
+          if (-not (Test-Path "$prefix/lib/lzma.lib")) { throw 'Missing vcpkg static liblzma' }
+          $cargoHome = if ($env:CARGO_HOME) { $env:CARGO_HOME } else { Join-Path $HOME '.cargo' }
+          New-Item -ItemType Directory -Force -Path $cargoHome | Out-Null
+          $env:CARGO_HOME = $cargoHome
+          $libPath = (Join-Path $prefix 'lib').Replace('\', '/')
+          @(
+            '',
+            '[target.x86_64-pc-windows-msvc.lzma]',
+            'rustc-link-lib = ["static=lzma"]',
+            "rustc-link-search = ['native=$libPath']"
+          ) | Add-Content -LiteralPath (Join-Path $cargoHome 'config.toml')
+          # libarchive also uses vcpkg OpenSSL; use that same archive for the
+          # Rust OpenSSL bindings instead of embedding a second copy.
+          $env:OPENSSL_NO_VENDOR = '1'
+          $env:OPENSSL_DIR = $prefix
           & $pkgconf --modversion tesseract
           if ($LASTEXITCODE -ne 0) { throw 'Cannot resolve tesseract.pc' }
-          & $pkgconf --static --libs tesseract
+          & $pkgconf --static --libs tesseract libarchive libcurl
           if ($LASTEXITCODE -ne 0) { throw 'Cannot resolve the complete static OCR link closure' }
-          foreach ($name in @('PKG_CONFIG', 'PKG_CONFIG_PATH', 'PKG_CONFIG_LIBDIR', 'PKG_CONFIG_ALL_STATIC')) {
+          foreach ($name in @('CARGO_HOME', 'PKG_CONFIG', 'PKG_CONFIG_PATH', 'PKG_CONFIG_LIBDIR', 'PKG_CONFIG_ALL_STATIC', 'OPENSSL_NO_VENDOR', 'OPENSSL_DIR')) {
             "$name=$([Environment]::GetEnvironmentVariable($name))" >> $env:GITHUB_ENV
           }
           # vcpkg installs the library, not the English language model. Use the

@@ -642,6 +642,7 @@ mod build_tesseract {
 
 #[cfg(feature = "use-system-tesseract")]
 mod system_tesseract {
+    use std::collections::HashSet;
     use std::env;
 
     /// Link against a system-installed Tesseract (Homebrew, libtesseract-dev,
@@ -651,9 +652,42 @@ mod system_tesseract {
     /// transitively via the `Requires:` entry. libtesseract is C++, so the
     /// C++ standard library runtime is linked explicitly.
     pub fn link_system_tesseract() {
-        pkg_config::Config::new()
-            .probe("tesseract")
-            .expect("use-system-tesseract requires the Tesseract development library (e.g. `brew install tesseract` or `apt install libtesseract-dev`)");
+        if cfg!(target_os = "windows") {
+            // vcpkg's tesseract.pc omits these static dependencies even though
+            // its Tesseract archive references both libraries. Keep the
+            // secondary archives for the final MSVC link instead of bundling
+            // them into this rlib, where lzma would clash with lzma-sys.
+            let mut linked = HashSet::new();
+            for package in ["tesseract", "libarchive", "libcurl"] {
+                let library = pkg_config::Config::new()
+                    .statik(true)
+                    .cargo_metadata(false)
+                    .probe(package)
+                    .unwrap_or_else(|_| panic!("static Tesseract requires {package}"));
+                for path in library.link_paths {
+                    println!("cargo:rustc-link-search=native={}", path.display());
+                }
+                for name in library.libs {
+                    // The FFI declarations provide the static Tesseract link.
+                    // lzma-sys and openssl-sys own these shared libraries.
+                    if name.starts_with("tesseract")
+                        || matches!(
+                            name.as_str(),
+                            "lzma" | "ssl" | "crypto" | "libssl" | "libcrypto"
+                        )
+                    {
+                        continue;
+                    }
+                    if linked.insert(name.clone()) {
+                        println!("cargo:rustc-link-lib=dylib={name}");
+                    }
+                }
+            }
+        } else {
+            pkg_config::Config::new()
+                .probe("tesseract")
+                .expect("use-system-tesseract requires the Tesseract development library (e.g. `brew install tesseract` or `apt install libtesseract-dev`)");
+        }
 
         if cfg!(target_os = "macos") {
             println!("cargo:rustc-link-lib=c++");
