@@ -31,8 +31,9 @@ test('changing connections during a recipe request leaves Bake available', async
   } finally { release(); }
   await expect(page.getByRole('button', { name: 'Bake', exact: true })).toBeEnabled();
   expect(submitted).toBe(0);
+  await expect(page.getByTitle('Download Raw Bytes')).toBeDisabled();
   await page.getByRole('button', { name: 'Bake', exact: true }).click();
-  await expect(page.getByTitle('Download Raw Bytes')).toBeVisible();
+  await expect(page.getByTitle('Download Raw Bytes')).toBeEnabled();
   expect(submitted).toBe(1);
 });
 test('public assets, protected API, memory session, binary import/export and reload', async ({ page, request }) => {
