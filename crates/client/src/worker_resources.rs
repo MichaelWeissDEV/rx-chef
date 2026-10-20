@@ -1,5 +1,7 @@
 //! Platform constraints are installed before any invocation reaches the child.
-use crate::{ClientError, ErrorKind};
+use crate::ClientError;
+#[cfg(any(target_os = "macos", windows))]
+use crate::ErrorKind;
 pub(crate) struct Guard {
     #[cfg(target_os = "macos")]
     pid: u32,

@@ -4243,7 +4243,6 @@ dependencies = [
  "ripemd",
  "rmp-serde",
  "rqrr",
- "rsa",
  "rusttype",
  "salsa20 0.11.0",
  "scraper",
