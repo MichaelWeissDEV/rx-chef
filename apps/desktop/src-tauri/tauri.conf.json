@@ -35,6 +35,11 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "shortDescription": "Local binary transformation workbench"
+    "shortDescription": "Local binary transformation workbench",
+    "windows": {
+      "wix": {
+        "version": "0.2.0.1"
+      }
+    }
   }
 }

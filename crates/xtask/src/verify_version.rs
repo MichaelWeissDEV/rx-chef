@@ -16,6 +16,20 @@ use std::{env, fs, path::PathBuf};
 /// The workspace version, inherited from `[workspace.package]`.
 const WORKSPACE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
+/// WiX needs a numeric MSI version even when the app has a semver prerelease.
+fn expected_wix_version(version: &str) -> Result<String, String> {
+    let version = version.split('+').next().unwrap_or(version);
+    if let Some((core, prerelease)) = version.split_once('-') {
+        let revision = prerelease.rsplit('.').next().unwrap_or(prerelease);
+        let revision = revision.parse::<u16>().map_err(|_| {
+            format!("{version} needs a numeric prerelease revision for the MSI version")
+        })?;
+        Ok(format!("{core}.{revision}"))
+    } else {
+        Ok(version.to_string())
+    }
+}
+
 fn workspace_root() -> Result<PathBuf, String> {
     Ok(PathBuf::from(env::var("CARGO_MANIFEST_DIR").map_err(|e| e.to_string())?).join("../.."))
 }
@@ -135,6 +149,14 @@ pub fn run(check: bool) -> Result<(), String> {
                 "{name} root package version differs from the workspace"
             ));
         }
+        if name.ends_with("tauri.conf.json") {
+            let expected = expected_wix_version(WORKSPACE_VERSION)?;
+            if document["bundle"]["windows"]["wix"]["version"].as_str() != Some(expected.as_str()) {
+                errors.push(format!(
+                    "{name} bundle.windows.wix.version must be {expected} for the workspace version"
+                ));
+            }
+        }
     }
     let readme_path = root.join("README.md");
     let readme = fs::read_to_string(&readme_path)
@@ -165,7 +187,14 @@ pub fn run(check: bool) -> Result<(), String> {
 
 #[cfg(test)]
 mod tests {
-    use super::declared_features;
+    use super::{declared_features, expected_wix_version};
+
+    #[test]
+    fn msi_version_uses_a_numeric_prerelease_revision() {
+        assert_eq!(expected_wix_version("0.2.0-rc.1").unwrap(), "0.2.0.1");
+        assert_eq!(expected_wix_version("0.2.0").unwrap(), "0.2.0");
+        assert!(expected_wix_version("0.2.0-rc").is_err());
+    }
 
     #[test]
     fn declared_features_skips_default_and_full_aggregates() {
