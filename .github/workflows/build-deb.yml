@@ -51,14 +51,14 @@ jobs:
           test "$(printf 'hello' | rxchef run to_base64)" = "aGVsbG8="
           rxchef operations --json | python3 -c "import json,sys; assert len(json.load(sys.stdin)) > 0"
           sudo apt-get remove -y rxchef
-          ! command -v rxchef
+          test ! -e /usr/bin/rxchef
 
       - name: Install and functionally test rxchef-tui
         run: |
           sudo apt-get install -y ./target/debian/rxchef-tui_*.deb
           python3 scripts/tui-graph-smoke.py /usr/bin/rxchef_tui
           sudo apt-get remove -y rxchef-tui
-          ! command -v rxchef_tui
+          test ! -e /usr/bin/rxchef_tui
           sudo apt-get install -y ./target/debian/rxchef_*.deb ./target/debian/rxchef-tui_*.deb
           test "$(printf 'hello' | /usr/bin/rxchef run to_base64)" = "aGVsbG8="
           python3 scripts/tui-graph-smoke.py /usr/bin/rxchef_tui

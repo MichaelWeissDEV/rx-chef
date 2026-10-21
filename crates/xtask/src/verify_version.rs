@@ -191,7 +191,7 @@ mod tests {
 
     #[test]
     fn msi_version_uses_a_numeric_prerelease_revision() {
-        assert_eq!(expected_wix_version("0.2.0-rc.1").unwrap(), "0.2.0.1");
+        assert_eq!(expected_wix_version("0.2.0-rc.2").unwrap(), "0.2.0.2");
         assert_eq!(expected_wix_version("0.2.0").unwrap(), "0.2.0");
         assert!(expected_wix_version("0.2.0-rc").is_err());
     }

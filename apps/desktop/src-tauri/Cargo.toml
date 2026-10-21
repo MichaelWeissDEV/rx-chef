@@ -6,9 +6,10 @@ rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
 description = "Native rx-chef workbench"
+publish = false
 
 [dependencies]
-rxchef-client = { path = "../../../crates/client", version = "0.2.0-rc.1", features = ["remote", "worker"] }
+rxchef-client = { path = "../../../crates/client", version = "0.2.0-rc.2", features = ["remote", "worker"] }
 serde_json = "1"
 serde = "1"
 tokio = { version = "1", features = ["sync"] }

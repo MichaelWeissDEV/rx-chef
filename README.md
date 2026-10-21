@@ -36,11 +36,11 @@ Workbench guides: [browser](docs/workbench/browser.md),
 [testing handbook](docs/development/testing.md) and
 [acceptance matrix](docs/development/acceptance-matrix.md).
 
-Version `0.2.0-rc.1` is a local release rehearsal. There is currently no public
-GitHub Release, crates.io package or verified Homebrew installation. Existing
-`v0.0.1` and `v0.1.0` tags are preserved. See the
-[release readiness report](docs/development/first-public-release-readiness.md)
-for tested artifacts, platform limitations and outstanding acceptance.
+Version `0.2.0-rc.2` is the first public release candidate. Once its release
+checks pass, download the CLI, TUI, server, browser workbench, or desktop bundle
+from [GitHub Releases](https://github.com/MichaelWeissDEV/rx-chef/releases).
+crates.io and the Homebrew tap are reserved for the stable release. Existing
+`v0.0.1` and `v0.1.0` tags are preserved.
 
 **[Documentation](https://rx-chef.readthedocs.io/en/latest/)** ·
 **[CLI reference](https://rx-chef.readthedocs.io/en/latest/cli/reference/)** ·
@@ -312,7 +312,7 @@ cargo run --example generate_operation_docs -- --check
 mkdocs build --strict
 ```
 
-The current v0.2.0-rc.1 workspace registers 478 operations. Quality evidence and
+The current v0.2.0-rc.2 workspace registers 478 operations. Quality evidence and
 remaining unknown parity are published in the generated operation matrix; the
 repository does not equate registration with complete verification.
 

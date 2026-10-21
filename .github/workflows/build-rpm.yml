@@ -30,7 +30,7 @@ jobs:
       image: fedora:latest
     steps:
       - name: Install build tooling
-        run: dnf install -y gcc pkgconf-pkg-config openssl-devel curl python3
+        run: dnf install -y gcc pkgconf-pkg-config openssl-devel zlib-ng-compat-devel curl python3
 
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
@@ -57,14 +57,14 @@ jobs:
           test "$(printf 'hello' | rxchef run to_base64)" = "aGVsbG8="
           rxchef operations --json | python3 -c "import json,sys; assert len(json.load(sys.stdin)) > 0"
           dnf remove -y rxchef
-          ! command -v rxchef
+          test ! -e /usr/bin/rxchef
 
       - name: Install and functionally test rxchef-tui
         run: |
           dnf install -y target/generate-rpm/rxchef-tui-*.rpm
           python3 scripts/tui-graph-smoke.py /usr/bin/rxchef_tui
           dnf remove -y rxchef-tui
-          ! command -v rxchef_tui
+          test ! -e /usr/bin/rxchef_tui
           dnf install -y target/generate-rpm/rxchef-[0-9]*.rpm target/generate-rpm/rxchef-tui-*.rpm
           test "$(printf 'hello' | /usr/bin/rxchef run to_base64)" = "aGVsbG8="
           python3 scripts/tui-graph-smoke.py /usr/bin/rxchef_tui

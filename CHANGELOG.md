@@ -7,10 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.2.0-rc.1] - Unreleased rehearsal
+## [0.2.0-rc.2] - 2026-10-21
 
-This is a local release candidate preparation, not a published release. Existing
-`v0.0.1` and `v0.1.0` tags are preserved. Protocol 2 and portable format 1 remain.
+First public release candidate for the Rust-powered rx-chef toolkit. It includes
+the library, CLI, terminal UI, headless and browser-enabled server, and desktop
+workbench. Client/server protocol 2 and portable project format 1 remain unchanged.
+
+### Added
+
+- Native CLI and TUI packages for Debian, Fedora, and Arch Linux, plus
+  cross-platform archives, Windows installers, macOS bundles, and web assets.
+- Release gates that build and exercise the complete package matrix before
+  publication, including an explicit browser and desktop UI approval.
 
 ### Fixed
 
@@ -19,12 +27,17 @@ This is a local release candidate preparation, not a published release. Existing
 - Distribution smoke tests derive the workspace version rather than assuming 0.0.1.
 - Queue regression tests synchronize on observable worker states.
 - Native Windows macro examples use a test harness to execute their assertions.
+- Debian package removal checks now inspect installed files without relying on
+  the shell's cached command locations.
+- Fedora builds install the zlib compatibility development files required by
+  the Rust dependencies; Arch builds avoid incompatible C link-time optimization.
 
-### Release status
+### Distribution
 
-- Versions synchronized across Cargo, web, desktop and package metadata.
-- UI acceptance is pending again for this version; publication remains blocked.
-- Cross-platform installer and native Windows results must be collected before approval.
+- Cargo workspace, internal dependencies, web package, Tauri bundle, Windows
+  MSI revision, generated contracts, and package metadata use `0.2.0-rc.2`.
+- Prerelease tags publish GitHub artifacts only. The five crates.io packages
+  and Homebrew tap are reserved for a later stable release.
 
 ## [0.0.1] - 2026-10-15
 

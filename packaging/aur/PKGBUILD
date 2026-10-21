@@ -8,14 +8,16 @@
 #   makepkg --printsrcinfo > .SRCINFO
 pkgbase=rxchef
 pkgname=(rxchef rxchef-tui)
-pkgver=0.2.0rc.1
-_releasever=0.2.0-rc.1
+pkgver=0.2.0rc.2
+_releasever=0.2.0-rc.2
 pkgrel=1
 pkgdesc="CyberChef-style cryptographic, encoding, and data transformation toolkit, ported to Rust"
 arch=('x86_64' 'aarch64')
 url="https://rx-chef.readthedocs.io/"
 license=('Apache-2.0')
 makedepends=('cargo' 'rust' 'pkgconf' 'openssl')
+# Rust and bundled C sources do not link reliably with makepkg's C LTO enabled.
+options=('!lto')
 source=("$pkgbase-$pkgver.tar.gz::https://github.com/MichaelWeissDEV/rx-chef/archive/refs/tags/v$_releasever.tar.gz")
 # Overwritten with the real digest at release time; a stale placeholder here
 # would fail `makepkg --verifysource`, catching an unreleased regeneration.

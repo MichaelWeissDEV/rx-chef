@@ -1,12 +1,11 @@
 # Installation
 
-The current version `0.2.0-rc.1` is a local release rehearsal. No public
-GitHub Release or crates.io package was present at the 2026-10-17 registry
-check. The Homebrew tap was not accessible through the read-only adapter.
-The commands below are prepared installation paths, not claims of availability.
-Consult the [current release report](../development/first-public-release-readiness.md)
-for actual artifact and installer evidence. Until publication, use
-[Build from source](#build-from-source) or a tested local archive.
+Version `0.2.0-rc.2` is a GitHub prerelease candidate. Once the release is
+published, choose the artifact for your platform from the
+[GitHub Releases page](https://github.com/MichaelWeissDEV/rx-chef/releases).
+The Cargo and Homebrew commands below apply to the later stable release; this
+candidate does not publish to crates.io or the Homebrew tap. Before publication,
+use [Build from source](#build-from-source).
 
 Local use: [desktop](../workbench/desktop.md),
 [HTTP server](../server/configuration.md),

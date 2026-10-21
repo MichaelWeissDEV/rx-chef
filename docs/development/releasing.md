@@ -24,20 +24,19 @@ GUI dialogs/offline work, byte-exact saves and missing platform evidence before
 tagging. A green host gate and a configured image workflow are individual
 checks, not automatic approval of all native products.
 
-## Current release rehearsal
+## Current release candidate
 
-The current rehearsal version is `0.2.0-rc.1`; the stable successor is `0.2.0`
-only after all acceptance gates pass. Remote tags `v0.0.1` and `v0.1.0` already
-exist and must never be moved. Read-only checks on 2026-10-17 found no GitHub
-Release and none of the five crates.io packages. Recheck version availability
-immediately before publication. The tap could not be inspected (adapter 404).
+The current candidate is `0.2.0-rc.2`; the stable successor is `0.2.0`
+after the prerelease artifacts and acceptance gates pass. The failed
+`v0.2.0-rc.1` build remains an immutable historical tag. Existing `v0.0.1`
+and `v0.1.0` tags must not be moved. Recheck registry and tap availability
+immediately before the stable release.
 
-The [current readiness report](first-public-release-readiness.md) supersedes
-prior reports. Prior UI/publication authorization recorded in historical documents
-does not authorize publishing this candidate. All external writes need explicit
-maintainer approval. `.release/ui-acceptance.json` is pending for this version.
+The [previous readiness report](first-public-release-readiness.md) records
+earlier local evidence. The `rc.2` browser and desktop source needs its own
+entry in `.release/ui-acceptance.json` before publication.
 
-`scripts/check-release-tag.sh v0.2.0-rc.1 HEAD` validates a tag string without
+`scripts/check-release-tag.sh v0.2.0-rc.2 HEAD` validates a tag string without
 creating a Git tag; publication validation must reject pending acceptance.
 Run `python3 scripts/test-release-version.py` for the SemVer and clean-fixture gates.
 
@@ -288,8 +287,8 @@ unavailable; users who need them build from source with `--features full`
 
 ## UI acceptance before publication
 
-The previous `0.0.1` acceptance is historical. `.release/ui-acceptance.json`
-now records pending review for `0.2.0-rc.1`. Automated browser success alone
+The previous `0.2.0-rc.1` acceptance is historical. `.release/ui-acceptance.json`
+now records pending review for `0.2.0-rc.2`. Automated browser success alone
 does not constitute maintainer acceptance.
 
 1. Review the built production desktop app and the matching server-served UI,

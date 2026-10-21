@@ -2006,7 +2006,7 @@ dependencies = [
 
 [[package]]
 name = "cyberchef-rust-tests"
-version = "0.2.0-rc.1"
+version = "0.2.0-rc.2"
 dependencies = [
  "base64 0.22.1",
  "bcrypt",
@@ -7536,7 +7536,7 @@ dependencies = [
 
 [[package]]
 name = "rxchef"
-version = "0.2.0-rc.1"
+version = "0.2.0-rc.2"
 dependencies = [
  "ab_glyph",
  "aes 0.8.4",
@@ -7671,7 +7671,7 @@ dependencies = [
 
 [[package]]
 name = "rxchef-cli"
-version = "0.2.0-rc.1"
+version = "0.2.0-rc.2"
 dependencies = [
  "base64 0.22.1",
  "chrono",
@@ -7692,7 +7692,7 @@ dependencies = [
 
 [[package]]
 name = "rxchef-client"
-version = "0.2.0-rc.1"
+version = "0.2.0-rc.2"
 dependencies = [
  "base64 0.22.1",
  "libc",
@@ -7711,7 +7711,7 @@ dependencies = [
 
 [[package]]
 name = "rxchef-gui"
-version = "0.2.0-rc.1"
+version = "0.2.0-rc.2"
 dependencies = [
  "base64 0.22.1",
  "rxchef-client",
@@ -7727,7 +7727,7 @@ dependencies = [
 
 [[package]]
 name = "rxchef-server"
-version = "0.2.0-rc.1"
+version = "0.2.0-rc.2"
 dependencies = [
  "axum",
  "base64 0.22.1",
@@ -7750,7 +7750,7 @@ dependencies = [
 
 [[package]]
 name = "rxchef-store"
-version = "0.2.0-rc.1"
+version = "0.2.0-rc.2"
 dependencies = [
  "chrono",
  "dirs 5.0.1",
@@ -7766,7 +7766,7 @@ dependencies = [
 
 [[package]]
 name = "rxchef-tui"
-version = "0.2.0-rc.1"
+version = "0.2.0-rc.2"
 dependencies = [
  "base64 0.22.1",
  "chrono",
@@ -11443,7 +11443,7 @@ dependencies = [
 
 [[package]]
 name = "xtask"
-version = "0.2.0-rc.1"
+version = "0.2.0-rc.2"
 dependencies = [
  "regex",
  "rxchef",

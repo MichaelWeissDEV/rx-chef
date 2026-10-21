@@ -3,7 +3,7 @@ name = "rxchef-store"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
-description = "Global and project store for rxchef (recipes, variables, history)"
+description = "Persistent rxchef recipes, variables, project data, and execution history"
 license.workspace = true
 repository.workspace = true
 homepage.workspace = true
@@ -13,7 +13,7 @@ keywords = ["cyberchef", "recipes", "storage"]
 categories = ["command-line-utilities", "data-structures"]
 
 [dependencies]
-rxchef = { version = "0.2.0-rc.1", path = "../..", default-features = false }
+rxchef = { version = "0.2.0-rc.2", path = "../..", default-features = false }
 serde       = { version = "1", features = ["derive"] }
 serde_json  = "1"
 serde_yaml  = "0.9"

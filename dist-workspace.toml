@@ -11,6 +11,8 @@ ci = "github"
 # gates after validation failure. Keep our fail-closed publication guard.
 # Regression coverage: scripts/test-release-version.py.
 allow-dirty = ["ci"]
+# Exercise the complete artifact matrix on PRs before creating a release tag.
+pr-run-mode = "upload"
 # Build each distributable package separately. A workspace-wide --bins build
 # accidentally includes the separately packaged Tauri desktop and needs GTK.
 precise-builds = true
@@ -28,7 +30,7 @@ install-updater = false
 # docs/development/releasing.md) with write access to this one repo only.
 tap = "MichaelWeissDEV/homebrew-tap"
 # publish-prereleases defaults to false, which is exactly what we want:
-# prerelease tags (v0.2.0-rc.1 etc.) build archives/installers but never
+# prerelease tags (v0.2.0-rc.2 etc.) build archives/installers but never
 # touch the stable Homebrew tap or crates.io.
 #
 # AUR is intentionally NOT in this list. The PKGBUILD/.SRCINFO in

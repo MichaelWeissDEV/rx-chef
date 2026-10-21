@@ -56,13 +56,21 @@ jobs:
       - name: Determine version and compute source tarball checksum
         id: meta
         run: |
-          version="${{ fromJson(inputs.plan).announcement_tag }}"
-          version="${version#v}"
+          if [[ "${{ github.event_name }}" == pull_request ]]; then
+            version=$(cargo metadata --locked --format-version 1 --no-deps \
+              | python3 -c "import json,sys; d=json.load(sys.stdin); print(next(p['version'] for p in d['packages'] if p['name']=='rxchef'))")
+            source_ref="${{ github.sha }}"
+          else
+            version="${{ fromJson(inputs.plan).announcement_tag }}"
+            version="${version#v}"
+            source_ref="v${version}"
+          fi
           pkgver="${version/-/}"
           echo "pkgver=$pkgver" >> "$GITHUB_OUTPUT"
           echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "source_ref=$source_ref" >> "$GITHUB_OUTPUT"
 
-          url="https://github.com/${{ github.repository }}/archive/refs/tags/v${version}.tar.gz"
+          url="https://github.com/${{ github.repository }}/archive/${source_ref}.tar.gz"
           sha256=$(curl --fail --show-error --location "$url" | sha256sum | cut -d' ' -f1)
           if [[ -z "$sha256" ]]; then
             echo "error: could not compute sha256 for $url" >&2
@@ -76,8 +84,12 @@ jobs:
             -e "s/^pkgver=.*/pkgver=${{ steps.meta.outputs.pkgver }}/" \
             -e "s/^_releasever=.*/_releasever=${{ steps.meta.outputs.version }}/" \
             -e "s/^pkgrel=.*/pkgrel=1/" \
+            -e "s|^source=.*|source=(\"\$pkgbase-\$pkgver.tar.gz::https://github.com/${{ github.repository }}/archive/${{ steps.meta.outputs.source_ref }}.tar.gz\")|" \
             -e "s/^sha256sums=.*/sha256sums=('${{ steps.meta.outputs.sha256 }}')/" \
             packaging/aur/PKGBUILD
+          if [[ "${{ github.event_name }}" == pull_request ]]; then
+            sed -i "s/^_releasever=.*/_releasever=${{ steps.meta.outputs.source_ref }}/" packaging/aur/PKGBUILD
+          fi
 
       - name: Generate .SRCINFO, build, and lint (as the unprivileged user)
         run: |

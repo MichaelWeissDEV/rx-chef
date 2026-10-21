@@ -3,7 +3,7 @@ name = "rxchef-cli"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
-description = "Command-line interface for rxchef"
+description = "Command-line recipes, pipelines, and data transformations powered by rxchef"
 license.workspace = true
 repository.workspace = true
 homepage.workspace = true
@@ -64,8 +64,8 @@ assets = [
 clap         = { version = "4.5", features = ["derive"] }
 clap_complete = "4.5"
 clap_mangen   = "0.2"
-rxchef       = { version = "0.2.0-rc.1", path = "../.." }
-rxchef_store = { package = "rxchef-store", version = "0.2.0-rc.1", path = "../store" }
+rxchef       = { version = "0.2.0-rc.2", path = "../.." }
+rxchef_store = { package = "rxchef-store", version = "0.2.0-rc.2", path = "../store" }
 serde        = { version = "1", features = ["derive"] }
 serde_json   = "1"
 serde_yaml   = "0.9"
@@ -75,4 +75,4 @@ regex        = "1"
 rustyline    = "13"
 shlex        = "2"
 hex          = "0.4"
-rxchef-client = { version = "0.2.0-rc.1", path = "../client", features = ["remote"] }
+rxchef-client = { version = "0.2.0-rc.2", path = "../client", features = ["remote"] }

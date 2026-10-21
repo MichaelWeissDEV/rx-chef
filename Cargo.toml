@@ -4,7 +4,7 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 autobins = false
-description = "CyberChef ported to Rust - cryptographic, encoding, and data transformation operations"
+description = "Rust library for cryptographic, encoding, and data transformation recipes"
 license.workspace = true
 repository.workspace = true
 homepage.workspace = true
@@ -48,7 +48,7 @@ default-members = [
 ]
 
 [workspace.package]
-version = "0.2.0-rc.1"
+version = "0.2.0-rc.2"
 edition = "2021"
 license = "Apache-2.0"
 repository = "https://github.com/MichaelWeissDEV/rx-chef"

@@ -3,7 +3,7 @@ name = "rxchef-tui"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
-description = "Interactive terminal interface for rxchef"
+description = "Interactive terminal workbench for rxchef recipes and graph jobs"
 license.workspace = true
 repository.workspace = true
 homepage.workspace = true
@@ -17,13 +17,13 @@ name = "rxchef_tui"
 path = "src/main.rs"
 
 [dependencies]
-rxchef-client = { version = "0.2.0-rc.1", path = "../client", features = ["remote", "worker"] }
+rxchef-client = { version = "0.2.0-rc.2", path = "../client", features = ["remote", "worker"] }
 tokio = { version = "1", features = ["rt-multi-thread", "time"] }
 hex = "0.4"
 tempfile = "3"
 base64 = "0.22"
-rxchef       = { version = "0.2.0-rc.1", path = "../.." }
-rxchef_store = { package = "rxchef-store", version = "0.2.0-rc.1", path = "../store" }
+rxchef       = { version = "0.2.0-rc.2", path = "../.." }
+rxchef_store = { package = "rxchef-store", version = "0.2.0-rc.2", path = "../store" }
 ratatui      = "0.28"
 crossterm    = "0.27"
 serde_json   = "1"
