@@ -159,6 +159,14 @@ else
     fail "version consistency check failed"
 fi
 
+# The operation audit regenerates committed documentation. Catch stale
+# generated files even when the worktree was clean before the checks ran.
+if [[ -n "$(git status --porcelain)" ]]; then
+    fail "release checks changed the working tree; regenerate and commit generated files"
+else
+    ok "release checks left the working tree clean"
+fi
+
 # --- Summary ----------------------------------------------------------------
 
 echo
