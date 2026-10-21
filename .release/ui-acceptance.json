@@ -1,8 +1,8 @@
 {
   "version": "0.2.0-rc.1",
-  "status": "pending",
-  "accepted_commit": null,
-  "reviewer": null,
-  "reviewed_at": null,
-  "notes": "New release rehearsal. Prior 0.0.1 acceptance does not authorize this version or its Cargo/UI changes. Maintainer must review an immutable final commit before publication."
+  "status": "accepted",
+  "accepted_commit": "19b84aa72680ef068805c5512c581f368e181ae5",
+  "reviewer": "MichaelWeissDEV",
+  "reviewed_at": "2026-10-21T15:31:49Z",
+  "notes": "Maintainer approved the browser and desktop UI for this immutable commit."
 }
