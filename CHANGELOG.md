@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.2.0-rc.2] - 2026-10-21
+## [0.2.0-rc.2] - 2026-10-22
 
 First public release candidate for the Rust-powered rx-chef toolkit. It includes
 the library, CLI, terminal UI, headless and browser-enabled server, and desktop
