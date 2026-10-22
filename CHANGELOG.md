@@ -31,6 +31,8 @@ workbench. Client/server protocol 2 and portable project format 1 remain unchang
   the shell's cached command locations.
 - Fedora builds install the zlib compatibility development files required by
   the Rust dependencies; Arch builds avoid incompatible C link-time optimization.
+- The randomized SM2 round-trip test validates decoded payload length instead of
+  treating a possible coordinate prefix as a format error.
 
 ### Distribution
 

@@ -53,9 +53,10 @@ fn test_sm2_roundtrip() {
                 ],
             )
             .unwrap();
-        let transport = String::from_utf8(ciphertext.clone()).unwrap();
-        assert_eq!(transport.len(), 2 * (64 + 32 + b"SM2 round trip".len()));
-        assert!(!transport.starts_with("04"));
+        let transport = hex::decode(&ciphertext).unwrap();
+        // The transport contains C1 coordinates, C2 and C3, but not the
+        // separate SEC1 point marker. A coordinate may itself start with 04.
+        assert_eq!(transport.len(), 64 + 32 + b"SM2 round trip".len());
         let plaintext = Sm2Decrypt
             .run(
                 ciphertext,

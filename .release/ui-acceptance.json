@@ -1,5 +1,8 @@
 {
   "version": "0.2.0-rc.2",
-  "status": "pending",
-  "notes": "Browser and desktop UI require review of the final rc.2 source commit."
+  "status": "accepted",
+  "accepted_commit": "28d162e99ebf5c2c2c2c920912b99b2ef2de720e",
+  "reviewer": "MichaelWeissDEV",
+  "reviewed_at": "2026-10-22T08:04:06Z",
+  "notes": "Maintainer approved the browser and desktop UI for this immutable rc.2 source commit."
 }
